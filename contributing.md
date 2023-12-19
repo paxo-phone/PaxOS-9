@@ -55,6 +55,90 @@ private:
     static int* m_spData;
 };
 ```
+
+# Polymorphisme
+
+### ⚠️ Ne pas oublier les destructeurs virtuels
+- Assurez-vous de déclarer le destructeur de la classe de
+base comme virtuel si vous prévoyez d'utiliser l'héritage polymorphique.
+
+```c++
+class CBase {
+public:
+    virtual ~CBase() = default;
+};
+
+class CDerived : public CBase {
+public:
+    ~CDerived() override { /* Destructeur de la classe dérivée */ }
+};
+```
+
+
+## Utilisation prudente des Casts
+- **Privilégiez les Casts C++** :
+Utilisez les casts C++ (`static_cast` et `dynamic_cast`)
+plutôt que les anciens style casts (C-style casts).
+Les casts C++ fournissent une sémantique plus claire et permettent une
+vérification de type plus robuste.
+
+
+### **Casts Entre Types Similaires**
+### ✅ Utilisez `static_cast` pour des conversions simples entre types compatibles.
+```c++
+// Utilisation de static_cast pour des conversions simples
+float floatValue = static_cast<float>(intValue);
+```
+
+
+### ✅ Casts de Sécurité avec `dynamic_cast`
+-  Utilisez `dynamic_cast` pour effectuer des casts dynamiques,
+principalement dans le contexte de la programmation orientée objet avec
+héritage **polymorphique**.
+```c++
+class CBase {
+    // ...
+};
+
+class CDerived : public CBase {
+    // ...
+};
+
+CBase* pBasePtr = new CDerived;
+CDerived* pDerivedPtr = dynamic_cast<CDerived*>(pBasePtr);
+```
+
+
+### ⚠️ Évitez les C-Style Casts
+- Évitez l'utilisation des anciens style casts `((type)value)`.
+Les casts C++ offrent une meilleure expressivité et une sécurité accrue.
+```c++
+// Évitez l'utilisation des anciens style casts
+float floatValue = (float)intValue;  // À éviter
+```
+
+
+### ⚠️ **Évitez `reinterpret_cast` dans la mesure du possible**
+- Limitez l'utilisation de `reinterpret_cast` aux situations où
+une conversion entre types pointeurs ou entre pointeur et
+entier est absolument nécessaire. Cela peut introduire des
+comportements indéfinis et doit être utilisé avec prudence.
+```c++
+// Évitez autant que possible l'utilisation de reinterpret_cast
+int* pValue = reinterpret_cast<int*>(pSomeVoidPointer);
+```
+
+### ⚠️ **Évitez `const_cast`**
+- **Évitez** autant que possible l'utilisation de `const_cast`.
+Cherchez des alternatives pour éviter des modifications non intentionnelles
+de la constance.
+```c++
+// Évitez autant que possible l'utilisation de const_cast
+const int constValue = 42;
+int& nonConstRef = const_cast<int&>(constValue);  // À éviter 
+```
+
+
 ## Structures
 - Commencez le nom des structures par un "**S**" majuscule.
 - Utilisez les structures uniquement si elles ne contiennent pas de méthodes.
