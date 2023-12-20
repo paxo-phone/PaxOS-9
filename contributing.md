@@ -45,7 +45,7 @@ static int* spMonPointeurStatique;
 - Commencez le nom des classes par un "**C**" majuscule.
 - Commencez le nom de la variable par un `m_` pour indiquer que cette
 variable est membre.
-- ⚠️ **N'oubliez pas** : par défaut dans une structure, tout est en **privé**.
+- ⚠️ **N'oubliez pas** : par défaut dans une classe, tout est en **privé**.
 ```c++
 class CApp {
 private:
