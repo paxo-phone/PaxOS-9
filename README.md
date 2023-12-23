@@ -9,8 +9,6 @@
 - [En savoir plus](#see-more)
 - [Contributeurs](#contributors)
 
-REFIX_PATH=src/lib/SDL2-2.28.2/` to your cmake command.
-
 # License
 Ce projet est distribué sous licence GPL-3.0.
 
