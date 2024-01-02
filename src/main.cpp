@@ -14,8 +14,6 @@
 extern "C" void app_main()
 {
     graphics::init();
-    graphics::setColor(255, 0, 0);
-    graphics::fillRect(0, 0, 64, 64);
 
     while (graphics::isRunning())
     {

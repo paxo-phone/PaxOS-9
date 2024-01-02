@@ -26,10 +26,6 @@ namespace graphics
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());
 #endif
-
-    void setColor(uint8_t r, uint8_t g, uint8_t b);
-
-    void fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
 }
 
 #endif //GRAPHICS_HPP

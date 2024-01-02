@@ -67,7 +67,8 @@ void graphics::SDLInit(void (*appMain)())
 {
     lgfx::Panel_sdl::setup();
 
-    SDLUpdateData updateData {
+    SDLUpdateData updateData
+    {
         appMain
     };
 
@@ -75,12 +76,14 @@ void graphics::SDLInit(void (*appMain)())
 
     // Multithreading can be an issue, be careful
     SDL_Thread *thread = SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
-    if (thread == nullptr) {
+    if (thread == nullptr)
+    {
         printf("Unable to create thread : %s\n", SDL_GetError());
         exit(1);
     }
 
-    while (lgfx::Panel_sdl::loop() == 0) {};
+    while (lgfx::Panel_sdl::loop() == 0)
+    {};
 
     running = false;
 
@@ -90,13 +93,3 @@ void graphics::SDLInit(void (*appMain)())
 }
 
 #endif
-
-void graphics::setColor(const uint8_t r, const uint8_t g, const uint8_t b)
-{
-    lcd->setColor(r, g, b);
-}
-
-void graphics::fillRect(const uint16_t x, const uint16_t y, const uint16_t w, const uint16_t h)
-{
-    lcd->fillRect(x, y, w, h);
-}
