@@ -26,6 +26,20 @@ namespace graphics
         return m_sprite.height();
     }
 
+    void Surface::pushSurface(Surface *surface, const uint16_t x, const uint16_t y)
+    {
+        surface->m_sprite.pushSprite(
+            &m_sprite,
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale()
+        );
+    }
+
+    void Surface::clear(const uint8_t r, const uint8_t g, const uint8_t b)
+    {
+        m_sprite.clear(lgfx::color565(r, g, b));
+    }
+
     void Surface::clear()
     {
         m_sprite.clear();

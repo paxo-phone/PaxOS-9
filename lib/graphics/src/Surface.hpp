@@ -25,6 +25,9 @@ namespace graphics
         [[nodiscard]] uint16_t getWidth() const;
         [[nodiscard]] uint16_t getHeight() const;
 
+        void pushSurface(Surface *surface, uint16_t x, uint16_t y);
+
+        void clear(uint8_t r, uint8_t g, uint8_t b);
         void clear();
 
         void setColor(uint8_t r, uint8_t g, uint8_t b);

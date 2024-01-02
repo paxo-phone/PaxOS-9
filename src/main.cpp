@@ -31,9 +31,8 @@ extern "C" void app_main()
         surface2.setColor(0, 255, 0);
         surface2.fillRect(i % (100 - 20), i % (100 - 20), 20, 20);
 
-        surface.clear();
-        surface.setColor(255, 0, 0);
-        surface.fillRect(i % (graphics::getScreenWidth() - 64), i % (graphics::getScreenHeight() - 64), 64, 64);
+        surface.clear(0, 0, 255);
+        surface.pushSurface(&surface2, i % (graphics::getScreenWidth() - 100), i % (graphics::getScreenHeight() - 100));
 
         graphics::renderSurface(&surface);
         graphics::flip();
