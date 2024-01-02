@@ -25,7 +25,18 @@ namespace graphics
         return 480;
     }
 
-    void init();
+    enum ERenderScale
+    {
+        DEFAULT,
+        SCALE_X2,
+        SCALE_X4,
+        SCALE_X8
+    };
+
+    void init(ERenderScale scale = DEFAULT);
+
+    int getRenderScale();
+    ERenderScale getRenderScaleEnum();
 
     bool isRunning();
 

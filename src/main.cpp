@@ -14,10 +14,9 @@
 // ESP-IDF main
 extern "C" void app_main()
 {
-    graphics::init();
+    graphics::init(graphics::SCALE_X2);
 
-    // auto surface = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
-    auto surface = graphics::Surface(320, 240);
+    auto surface = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
 
     uint16_t i = 0;
 

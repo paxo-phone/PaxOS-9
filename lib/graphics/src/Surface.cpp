@@ -5,13 +5,15 @@
 
 #include "Surface.hpp"
 
+#include <graphics.hpp>
+
 namespace graphics
 {
     Surface::Surface(const uint16_t width, const uint16_t height)
     {
         m_sprite.setColorDepth(16);
 
-        m_sprite.createSprite(width, height);
+        m_sprite.createSprite(width / graphics::getRenderScale(), height / graphics::getRenderScale());
     }
 
     uint16_t Surface::getWidth() const
@@ -36,11 +38,21 @@ namespace graphics
 
     void Surface::fillRect(const uint16_t x, const uint16_t y, const uint16_t w, const uint16_t h)
     {
-        m_sprite.fillRect(x, y, w, h);
+        m_sprite.fillRect(
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale(),
+            w / graphics::getRenderScale(),
+            h / graphics::getRenderScale()
+        );
     }
 
     void Surface::drawRect(const uint16_t x, const uint16_t y, const uint16_t w, const uint16_t h)
     {
-        m_sprite.drawRect(x, y, w, h);
+        m_sprite.drawRect(
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale(),
+            w / graphics::getRenderScale(),
+            h / graphics::getRenderScale()
+        );
     }
 } // graphics

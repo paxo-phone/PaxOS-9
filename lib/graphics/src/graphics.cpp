@@ -21,11 +21,12 @@
 namespace
 {
     bool running;
+    graphics::ERenderScale renderScale;
 
     std::shared_ptr<LGFX> lcd;
 }
 
-void graphics::init()
+void graphics::init(const ERenderScale scale)
 {
 #ifdef ESP_PLATFORM
 
@@ -39,6 +40,8 @@ void graphics::init()
 
 #endif
 
+    renderScale = scale;
+
     lcd->init();
     lcd->setBrightness(0xFF);
     lcd->setColorDepth(16);
@@ -46,6 +49,28 @@ void graphics::init()
     lcd->fillScreen(TFT_BLACK);
 
     lcd->startWrite(); // Keep the SPI Bus busy ?
+}
+
+int graphics::getRenderScale()
+{
+    switch (renderScale)
+    {
+    case DEFAULT:
+        return 1;
+    case SCALE_X2:
+        return 2;
+    case SCALE_X4:
+        return 4;
+    case SCALE_X8:
+        return 8;
+    default:
+        return -1; // That's gonna be fun
+    }
+}
+
+graphics::ERenderScale graphics::getRenderScaleEnum()
+{
+    return renderScale;
 }
 
 bool graphics::isRunning()
@@ -104,7 +129,7 @@ void graphics::SDLInit(void (*appMain)())
 void graphics::renderSurface(const Surface* surface)
 {
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
-    sprite.pushSprite(lcd.get(), 0, 0);
+    sprite.pushRotateZoom(lcd.get(), 0, static_cast<float>(getRenderScale()), static_cast<float>(getRenderScale()));
 }
 
 void graphics::flip()
