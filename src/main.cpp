@@ -11,12 +11,15 @@
 #include "Surface.hpp"
 #include "gui.hpp"
 
+#include "delay.hpp"
+
 // ESP-IDF main
 extern "C" void app_main()
 {
     graphics::init();
 
     auto surface = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
+    auto surface2 = graphics::Surface(100, 100);
 
     uint16_t i = 0;
 
@@ -24,22 +27,16 @@ extern "C" void app_main()
     {
         i++;
 
+        surface2.clear();
+        surface2.setColor(0, 255, 0);
+        surface2.fillRect(i % (100 - 20), i % (100 - 20), 20, 20);
+
         surface.clear();
         surface.setColor(255, 0, 0);
         surface.fillRect(i % (graphics::getScreenWidth() - 64), i % (graphics::getScreenHeight() - 64), 64, 64);
 
         graphics::renderSurface(&surface);
         graphics::flip();
-
-#ifdef ESP_PLATFORM
-
-        vTaskDelay(pdMS_TO_TICKS(200));
-
-#else
-
-        SDL_Delay(200);
-
-#endif
     }
 }
 
