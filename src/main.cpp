@@ -8,6 +8,7 @@
 #endif
 
 #include "graphics.hpp"
+#include "gui.hpp"
 
 // ESP-IDF main
 extern "C" void app_main()
