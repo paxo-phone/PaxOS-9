@@ -21,12 +21,11 @@
 namespace
 {
     bool running;
-    graphics::ERenderScale renderScale;
 
     std::shared_ptr<LGFX> lcd;
 }
 
-void graphics::init(const ERenderScale scale)
+void graphics::init()
 {
 #ifdef ESP_PLATFORM
 
@@ -40,8 +39,6 @@ void graphics::init(const ERenderScale scale)
 
 #endif
 
-    renderScale = scale;
-
     lcd->init();
     lcd->setBrightness(0xFF);
     lcd->setColorDepth(16);
@@ -49,28 +46,6 @@ void graphics::init(const ERenderScale scale)
     lcd->fillScreen(TFT_BLACK);
 
     lcd->startWrite(); // Keep the SPI Bus busy ?
-}
-
-int graphics::getRenderScale()
-{
-    switch (renderScale)
-    {
-    case DEFAULT:
-        return 1;
-    case SCALE_X2:
-        return 2;
-    case SCALE_X4:
-        return 4;
-    case SCALE_X8:
-        return 8;
-    default:
-        return -1; // That's gonna be fun
-    }
-}
-
-graphics::ERenderScale graphics::getRenderScaleEnum()
-{
-    return renderScale;
 }
 
 bool graphics::isRunning()
