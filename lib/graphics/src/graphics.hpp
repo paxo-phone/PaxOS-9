@@ -15,13 +15,23 @@ namespace graphics
 {
     class Surface;
 
-    constexpr uint16_t screenWidth = 320;
-    constexpr uint16_t screenHeight = 480;
+    constexpr uint16_t getScreenWidth()
+    {
+        return 320;
+    }
+
+    constexpr uint16_t getScreenHeight()
+    {
+        return 480;
+    }
 
     void init();
-    void close();
 
     bool isRunning();
+
+    void renderSurface(const Surface *surface);
+
+    void flip();
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());

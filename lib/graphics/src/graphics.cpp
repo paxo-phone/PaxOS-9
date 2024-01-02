@@ -5,6 +5,8 @@
 
 #include "graphics.hpp"
 
+#include <Surface.hpp>
+
 #ifdef ESP_PLATFORM
 
 #include "platforms/LGFX_ESP32.hpp"
@@ -27,11 +29,13 @@ void graphics::init()
 {
 #ifdef ESP_PLATFORM
 
+    running = true; // It doesn't feel right to set this here...
+
     lcd = std::make_shared<LGFX>();
 
 #else
 
-    lcd = std::make_shared<LGFX>(screenWidth, screenHeight);
+    lcd = std::make_shared<LGFX>(getScreenWidth(), getScreenHeight());
 
 #endif
 
@@ -40,6 +44,8 @@ void graphics::init()
     lcd->setColorDepth(16);
     lcd->setTextColor(TFT_WHITE);
     lcd->fillScreen(TFT_BLACK);
+
+    lcd->startWrite(); // Keep the SPI Bus busy ?
 }
 
 bool graphics::isRunning()
@@ -93,3 +99,17 @@ void graphics::SDLInit(void (*appMain)())
 }
 
 #endif
+
+// You should only use this function with a "Canvas" (Surface that is the size of the screen)
+void graphics::renderSurface(const Surface* surface)
+{
+    lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
+    sprite.pushSprite(lcd.get(), 0, 0);
+}
+
+void graphics::flip()
+{
+    lcd->endWrite(); // Push write data
+    lcd->display();
+    lcd->startWrite(); // Keep the SPI bus busy ? Faster ?
+}

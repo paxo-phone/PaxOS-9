@@ -7,40 +7,40 @@
 
 namespace graphics
 {
-    uint16_t Surface::getPos(const uint16_t x, const uint16_t y) const
-    {
-        return y * m_width + x;
-    }
-
     Surface::Surface(const uint16_t width, const uint16_t height)
     {
-        m_width = width;
-        m_heigth = height;
-        m_buffer = std::vector<uint16_t>(width * height);
+        m_sprite.setColorDepth(16);
+
+        m_sprite.createSprite(width, height);
     }
 
     uint16_t Surface::getWidth() const
     {
-        return m_width;
+        return m_sprite.width();
     }
 
     uint16_t Surface::getHeight() const
     {
-        return m_heigth;
+        return m_sprite.height();
     }
 
-    const std::vector<uint16_t>* Surface::getBuffer() const
+    void Surface::clear()
     {
-        return &m_buffer;
+        m_sprite.clear();
     }
 
-    uint16_t Surface::getPixel(const uint16_t x, const uint16_t y) const
+    void Surface::setColor(const uint8_t r, const uint8_t g, const uint8_t b)
     {
-        return m_buffer[getPos(x, y)];
+        m_sprite.setColor(r, g, b);
     }
 
-    void Surface::setPixel(const uint16_t x, const uint16_t y, const uint16_t color)
+    void Surface::fillRect(const uint16_t x, const uint16_t y, const uint16_t w, const uint16_t h)
     {
-        m_buffer[getPos(x, y)] = color;
+        m_sprite.fillRect(x, y, w, h);
+    }
+
+    void Surface::drawRect(const uint16_t x, const uint16_t y, const uint16_t w, const uint16_t h)
+    {
+        m_sprite.drawRect(x, y, w, h);
     }
 } // graphics

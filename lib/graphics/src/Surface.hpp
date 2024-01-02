@@ -7,28 +7,30 @@
 #define SURFACE_HPP
 
 #include <cstdint>
-#include <vector>
+
+#include "LovyanGFX.hpp"
 
 namespace graphics
 {
     class Surface
     {
-    private:
-        uint16_t m_width;
-        uint16_t m_heigth;
-        std::vector<uint16_t> m_buffer;
+        friend void renderSurface(const Surface *surface);
 
-        uint16_t getPos(uint16_t x, uint16_t y) const;
+    private:
+        lgfx::LGFX_Sprite m_sprite;
 
     public:
         Surface(uint16_t width, uint16_t height);
 
-        uint16_t getWidth() const;
-        uint16_t getHeight() const;
-        const std::vector<uint16_t> * getBuffer() const;
+        [[nodiscard]] uint16_t getWidth() const;
+        [[nodiscard]] uint16_t getHeight() const;
 
-        uint16_t getPixel(uint16_t x, uint16_t y) const;
-        void setPixel(uint16_t x, uint16_t y, uint16_t color);
+        void clear();
+
+        void setColor(uint8_t r, uint8_t g, uint8_t b);
+
+        void fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+        void drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
     };
 } // graphics
 
