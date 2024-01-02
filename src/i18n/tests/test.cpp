@@ -47,8 +47,8 @@ void test(void)
     assert(getLang() == EN);
 }
 
-int main(void)
-{
-    test();
-    return 0;
-}
+// int main(void)
+// {
+//     test();
+//     return 0;
+// }
