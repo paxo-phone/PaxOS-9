@@ -1,2 +1,0 @@
-/home/gabriel/Bureau/PaxOS-9/CMakeFiles/edit_cache.dir
-/home/gabriel/Bureau/PaxOS-9/CMakeFiles/rebuild_cache.dir
