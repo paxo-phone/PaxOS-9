@@ -1,6 +1,7 @@
 #include <array>
 #include <string>
-#include "../include/i18n_config.hpp"
+
+#include "i18n_config.hpp"
 
 namespace i18n {
     

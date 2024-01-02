@@ -3,8 +3,11 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include "../include/i18n_translate.hpp"
-#include "../include/i18n_config.hpp"
+#include "i18n_translate.hpp"
+
+#include <filesystem>
+
+#include "i18n_config.hpp"
 
 namespace i18n {
 
