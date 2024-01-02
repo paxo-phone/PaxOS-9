@@ -29,7 +29,12 @@ namespace graphics
 
     constexpr int getRenderScale()
     {
-        return 2;
+        // SDL2 does not support scaling
+#ifdef ESP_PLATFORM
+        return 2; // Change this value
+#else
+        return 1; // Don't change this value
+#endif
     }
 
     bool isRunning();

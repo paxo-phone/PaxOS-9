@@ -4,6 +4,7 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include "esp_pm.h"
 
 #endif
 
@@ -36,6 +37,8 @@ extern "C" void app_main()
 
         graphics::renderSurface(&surface);
         graphics::flip();
+
+        temp::delay(100);
     }
 }
 

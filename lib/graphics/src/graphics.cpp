@@ -104,7 +104,13 @@ void graphics::SDLInit(void (*appMain)())
 void graphics::renderSurface(const Surface* surface)
 {
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
+
+    // SDL2 does not support "pushRotateZoom", weird...
+#ifdef ESP_PLATFORM
     sprite.pushRotateZoom(lcd.get(), 0, static_cast<float>(getRenderScale()), static_cast<float>(getRenderScale()));
+#else
+    sprite.pushSprite(lcd.get(), 0, 0);
+#endif
 }
 
 void graphics::flip()
