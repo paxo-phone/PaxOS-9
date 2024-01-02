@@ -9,38 +9,38 @@ namespace graphics
 {
     uint16_t Surface::getPos(const uint16_t x, const uint16_t y) const
     {
-        return y * width + x;
+        return y * m_width + x;
     }
 
     Surface::Surface(const uint16_t width, const uint16_t height)
     {
-        this->width = width;
-        this->heigth = height;
-        buffer = std::vector<uint16_t>(width * height);
+        m_width = width;
+        m_heigth = height;
+        m_buffer = std::vector<uint16_t>(width * height);
     }
 
     uint16_t Surface::getWidth() const
     {
-        return width;
+        return m_width;
     }
 
     uint16_t Surface::getHeight() const
     {
-        return heigth;
+        return m_heigth;
     }
 
     const std::vector<uint16_t>* Surface::getBuffer() const
     {
-        return &buffer;
+        return &m_buffer;
     }
 
     uint16_t Surface::getPixel(const uint16_t x, const uint16_t y) const
     {
-        return buffer[getPos(x, y)];
+        return m_buffer[getPos(x, y)];
     }
 
     void Surface::setPixel(const uint16_t x, const uint16_t y, const uint16_t color)
     {
-        buffer[getPos(x, y)] = color;
+        m_buffer[getPos(x, y)] = color;
     }
 } // graphics

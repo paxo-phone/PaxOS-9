@@ -14,9 +14,9 @@ namespace graphics
     class Surface
     {
     private:
-        uint16_t width;
-        uint16_t heigth;
-        std::vector<uint16_t> buffer;
+        uint16_t m_width;
+        uint16_t m_heigth;
+        std::vector<uint16_t> m_buffer;
 
         uint16_t getPos(uint16_t x, uint16_t y) const;
 
