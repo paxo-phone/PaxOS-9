@@ -16,6 +16,8 @@
 #include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
 #include "LGFX_AUTODETECT.hpp"
 
+#include "LovyanGFX"
+
 #endif
 
 namespace
@@ -46,6 +48,9 @@ void graphics::init()
     lcd->fillScreen(TFT_BLACK);
 
     lcd->startWrite(); // Keep the SPI Bus busy ?
+
+    uint16_t calibrationData[8];
+    lcd->calibrateTouch(calibrationData, TFT_MAGENTA, TFT_BLACK);
 }
 
 bool graphics::isRunning()
@@ -118,4 +123,19 @@ void graphics::flip()
     lcd->endWrite(); // Push write data
     lcd->display();
     lcd->startWrite(); // Keep the SPI bus busy ? Faster ?
+}
+
+void graphics::getTouchPos(uint16_t* x, uint16_t* y)
+{
+    int16_t tx;
+    int16_t ty;
+
+    lcd->getTouch(&tx, &ty);
+
+    printf("Touch Raw : %d %d\n", tx, ty);
+
+    *x = static_cast<uint16_t>(tx);
+    *y = static_cast<uint16_t>(ty);
+
+    printf("Touch : %d %d\n", *x, *y);
 }
