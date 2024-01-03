@@ -25,15 +25,15 @@ namespace graphics
         [[nodiscard]] uint16_t getWidth() const;
         [[nodiscard]] uint16_t getHeight() const;
 
-        void pushSurface(Surface *surface, uint16_t x, uint16_t y);
+        void pushSurface(Surface *surface, int16_t x, int16_t y);
 
         void clear(uint8_t r, uint8_t g, uint8_t b);
         void clear();
 
         void setColor(uint8_t r, uint8_t g, uint8_t b);
 
-        void fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
-        void drawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+        void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
+        void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
     };
 } // graphics
 

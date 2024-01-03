@@ -26,7 +26,7 @@ namespace graphics
         return m_sprite.height();
     }
 
-    void Surface::pushSurface(Surface *surface, const uint16_t x, const uint16_t y)
+    void Surface::pushSurface(Surface *surface, const int16_t x, const int16_t y)
     {
         surface->m_sprite.pushSprite(
             &m_sprite,
@@ -50,7 +50,7 @@ namespace graphics
         m_sprite.setColor(r, g, b);
     }
 
-    void Surface::fillRect(const uint16_t x, const uint16_t y, const uint16_t w, const uint16_t h)
+    void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
     {
         m_sprite.fillRect(
             x / graphics::getRenderScale(),
@@ -60,7 +60,7 @@ namespace graphics
         );
     }
 
-    void Surface::drawRect(const uint16_t x, const uint16_t y, const uint16_t w, const uint16_t h)
+    void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
     {
         m_sprite.drawRect(
             x / graphics::getRenderScale(),

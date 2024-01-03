@@ -40,7 +40,6 @@ extern "C" void app_main()
         surface.clear(0, 0, 255);
         // surface.pushSurface(&surface2, i % (graphics::getScreenWidth() - 100), i % (graphics::getScreenHeight() - 100));
 
-        // TODO : Maybe use int16_t and not uint16_t, because the location could be negative...
         surface.pushSurface(&surface2, touchX - 50, touchY - 50);
 
         graphics::renderSurface(&surface);
