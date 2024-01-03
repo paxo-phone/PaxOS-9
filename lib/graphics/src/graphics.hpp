@@ -43,7 +43,7 @@ namespace graphics
 
     void flip();
 
-    void getTouchPos(uint16_t *x, uint16_t *y);
+    void getTouchPos(int16_t *x, int16_t *y);
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());

@@ -125,17 +125,22 @@ void graphics::flip()
     lcd->startWrite(); // Keep the SPI bus busy ? Faster ?
 }
 
-void graphics::getTouchPos(uint16_t* x, uint16_t* y)
+void graphics::getTouchPos(int16_t* x, int16_t* y)
 {
     int16_t tx;
     int16_t ty;
 
     lcd->getTouch(&tx, &ty);
 
-    printf("Touch Raw : %d %d\n", tx, ty);
-
-    *x = static_cast<uint16_t>(tx);
-    *y = static_cast<uint16_t>(ty);
-
-    printf("Touch : %d %d\n", *x, *y);
+    if (tx < -1 || ty < -1)
+    {
+        // Be sure to be offscreen
+        *x = INT16_MIN;
+        *y = INT16_MIN;
+    }
+    else
+    {
+        *x = tx;
+        *y = ty;
+    }
 }

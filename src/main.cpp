@@ -24,8 +24,8 @@ extern "C" void app_main()
 
     uint16_t i = 0;
 
-    uint16_t touchX = 0;
-    uint16_t touchY = 0;
+    int16_t touchX = 0;
+    int16_t touchY = 0;
 
     while (graphics::isRunning())
     {
@@ -35,12 +35,12 @@ extern "C" void app_main()
 
         surface2.clear();
         surface2.setColor(0, 255, 0);
-        surface2.fillRect(i % (100 - 20), i % (100 - 20), 20, 20);
+        surface2.fillRect(static_cast<int16_t>(i % (100 - 20)), static_cast<int16_t>(i % (100 - 20)), 20, 20);
 
         surface.clear(0, 0, 255);
         // surface.pushSurface(&surface2, i % (graphics::getScreenWidth() - 100), i % (graphics::getScreenHeight() - 100));
 
-        surface.pushSurface(&surface2, touchX - 50, touchY - 50);
+        surface.pushSurface(&surface2, static_cast<int16_t>(touchX - 50), static_cast<int16_t>(touchY - 50));
 
         graphics::renderSurface(&surface);
         graphics::flip();
