@@ -50,8 +50,6 @@ extern "C" void app_main()
 
             graphics::getTouchPos(&touchX, &touchY);
 
-            printf("Touch : %d %d\n", touchX, touchY);
-
             // Default case remove
             if (oldTouchX != -1 && oldTouchY != -1)
             {

@@ -49,8 +49,22 @@ void graphics::init()
 
     lcd->startWrite(); // Keep the SPI Bus busy ?
 
-    uint16_t calibrationData[8];
-    lcd->calibrateTouch(calibrationData, TFT_MAGENTA, TFT_BLACK);
+    // uint16_t calibrationData[8];
+    // lcd->calibrateTouch(calibrationData, TFT_MAGENTA, TFT_BLACK);
+
+    // Please do a real calibration thing... (see above)
+    uint16_t calibrationData[] = {
+        390,
+        170,
+        350,
+        3960,
+        3800,
+        150,
+        3900,
+        3950
+    };
+
+    lcd->setTouchCalibrate(calibrationData);
 }
 
 bool graphics::isRunning()
