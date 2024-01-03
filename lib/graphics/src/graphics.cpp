@@ -132,15 +132,25 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
 
     lcd->getTouch(&tx, &ty);
 
-    if (tx < -1 || ty < -1)
+    if (tx < 0 || ty < 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
-        *x = INT16_MIN;
-        *y = INT16_MIN;
+        *x = -32768;
+        *y = -32768;
     }
     else
     {
         *x = tx;
         *y = ty;
     }
+}
+
+bool graphics::isTouched()
+{
+    int16_t x;
+    int16_t y;
+
+    getTouchPos(&x, &y);
+
+    return x != INT16_MIN && y != INT16_MIN;
 }

@@ -74,4 +74,15 @@ namespace graphics
             h / graphics::getRenderScale()
         );
     }
+
+    void Surface::drawLine(const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2)
+    {
+        m_sprite.drawLine(
+            x1 / graphics::getRenderScale(),
+            y1 / graphics::getRenderScale(),
+            x2 / graphics::getRenderScale(),
+            y2 / graphics::getRenderScale()
+        );
+    }
+
 } // graphics

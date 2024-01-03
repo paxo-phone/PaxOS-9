@@ -35,6 +35,8 @@ namespace graphics
 
         void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
         void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
+
+        void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
     };
 } // graphics
 
