@@ -135,8 +135,8 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     if (tx < 0 || ty < 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
-        *x = -32768;
-        *y = -32768;
+        *x = INT16_MIN;
+        *y = INT16_MIN;
     }
     else
     {
