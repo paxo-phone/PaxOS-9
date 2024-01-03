@@ -21,6 +21,7 @@ namespace graphics
 
     public:
         Surface(uint16_t width, uint16_t height);
+        ~Surface();
 
         [[nodiscard]] uint16_t getWidth() const;
         [[nodiscard]] uint16_t getHeight() const;

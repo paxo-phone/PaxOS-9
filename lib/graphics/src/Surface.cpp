@@ -16,6 +16,11 @@ namespace graphics
         m_sprite.createSprite(width / graphics::getRenderScale(), height / graphics::getRenderScale());
     }
 
+    Surface::~Surface()
+    {
+        m_sprite.deleteSprite();
+    }
+
     uint16_t Surface::getWidth() const
     {
         return m_sprite.width();
