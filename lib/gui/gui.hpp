@@ -1,1 +1,4 @@
-#include "widget/widget.hpp"
+namespace gui
+{
+
+}
