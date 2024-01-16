@@ -1,5 +1,6 @@
 #include "widget.hpp"
 
+// TODO : Remove this, the user need to define its widget for the screen itself.
 Widget* Widget::m_widgetPressed = nullptr;
 Widget* Widget::masterOfRender = nullptr;
 
@@ -47,7 +48,7 @@ void Widget::renderAll()
 
         render();
 
-        for (auto child : m_children)
+        for (const auto child : m_children)
         {
             // restreindre l'écriture de child sur le buffer local a ses coordonées
             child->renderAll();
@@ -61,7 +62,8 @@ void Widget::renderAll()
         if(m_parent != nullptr && m_parent->m_isDrawn == false)  // le parent demande le rendu
         {
             // push le buffer local vers le buffer du parent
-        }else   // le parent ne demande pas de rendu ou le parent n'existe pas
+        }
+        else   // le parent ne demande pas de rendu ou le parent n'existe pas
         {
             // restreindre l'écriture sur l'écran en fonction du buffer local
 
@@ -105,38 +107,38 @@ void Widget::setHeight(uint16_t height)
     m_height = height;
 }
 
-uint16_t Widget::getAbsoluteX()
+uint16_t Widget::getAbsoluteX() const
 {
     if (m_parent == nullptr)
         return getX();
-    else
-        return m_parent->getAbsoluteX() + getX();
+
+    return m_parent->getAbsoluteX() + getX();
 }
 
-uint16_t Widget::getAbsoluteY()
+uint16_t Widget::getAbsoluteY() const
 {
     if (m_parent == nullptr)
         return getY();
-    else
-        return m_parent->getAbsoluteY() + getY();
+
+    return m_parent->getAbsoluteY() + getY();
 }
 
-uint16_t Widget::getX()
+uint16_t Widget::getX() const
 {
     return m_x;
 }
 
-uint16_t Widget::getY()
+uint16_t Widget::getY() const
 {
     return m_y;
 }
 
-uint16_t Widget::getWidth()
+uint16_t Widget::getWidth() const
 {
     return m_width;
 }
 
-uint16_t Widget::getHeight()
+uint16_t Widget::getHeight() const
 {
     return m_height;
 }
@@ -151,12 +153,12 @@ void Widget::setBorderColor(const color_t color)
     m_borderColor = color;
 }
 
-color_t Widget::getBackgroundColor()
+color_t Widget::getBackgroundColor() const
 {
     return m_backgroundColor;
 }
 
-color_t Widget::getBorderColor()
+color_t Widget::getBorderColor() const
 {
     return m_borderColor;
 }
@@ -173,6 +175,11 @@ void Widget::disable()
 
 Widget* Widget::getMaster()
 {
+    // We shoud probably remove this function.
+    // Because the "Master" widget (and rename it to "main" please)
+    // Is for almost every cases the "Screen" widget.
+    // So the user already have a reference to it.
+
     Widget* master = this;
 
     if (this->m_parent != nullptr)
@@ -183,7 +190,7 @@ Widget* Widget::getMaster()
     return master;
 }
 
-Widget* Widget::getParent()
+Widget* Widget::getParent() const
 {
     return m_parent;
 }
@@ -196,6 +203,12 @@ void Widget::reloadAlone()
 
 void Widget::reloadParent()
 {
+    // The is almost no difference with just reloading the parent ?
+    // Easier to understand, or rename this function something like :
+    // - "reloadFromParent()"
+    // - "reloadPushParent()"
+    // - ...
+
     this->m_isDrawn = false;
     if(this->m_parent != nullptr)
     {
@@ -205,6 +218,11 @@ void Widget::reloadParent()
 
 void Widget::setChildrenDrawn()
 {
+    // What the fuck ?!
+    // You are not updating anything in this loop
+    // You are just making a recursive call chain,
+    // but not updating any value during this call chain...
+
     for (int i = 0; i < m_children.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
     {
         if(m_children[i] != nullptr)
