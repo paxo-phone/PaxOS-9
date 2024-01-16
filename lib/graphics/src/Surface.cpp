@@ -5,42 +5,84 @@
 
 #include "Surface.hpp"
 
+#include <graphics.hpp>
+
 namespace graphics
 {
-    uint16_t Surface::getPos(const uint16_t x, const uint16_t y) const
-    {
-        return y * width + x;
-    }
-
     Surface::Surface(const uint16_t width, const uint16_t height)
     {
-        this->width = width;
-        this->heigth = height;
-        buffer = std::vector<uint16_t>(width * height);
+        m_sprite.setColorDepth(16);
+
+        m_sprite.createSprite(width / graphics::getRenderScale(), height / graphics::getRenderScale());
+    }
+
+    Surface::~Surface()
+    {
+        m_sprite.deleteSprite();
     }
 
     uint16_t Surface::getWidth() const
     {
-        return width;
+        return m_sprite.width();
     }
 
     uint16_t Surface::getHeight() const
     {
-        return heigth;
+        return m_sprite.height();
     }
 
-    const std::vector<uint16_t>* Surface::getBuffer() const
+    void Surface::pushSurface(Surface *surface, const int16_t x, const int16_t y)
     {
-        return &buffer;
+        surface->m_sprite.pushSprite(
+            &m_sprite,
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale()
+        );
     }
 
-    uint16_t Surface::getPixel(const uint16_t x, const uint16_t y) const
+    void Surface::clear(const uint8_t r, const uint8_t g, const uint8_t b)
     {
-        return buffer[getPos(x, y)];
+        m_sprite.clear(lgfx::color565(r, g, b));
     }
 
-    void Surface::setPixel(const uint16_t x, const uint16_t y, const uint16_t color)
+    void Surface::clear()
     {
-        buffer[getPos(x, y)] = color;
+        m_sprite.clear();
     }
+
+    void Surface::setColor(const uint8_t r, const uint8_t g, const uint8_t b)
+    {
+        m_sprite.setColor(r, g, b);
+    }
+
+    void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
+    {
+        m_sprite.fillRect(
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale(),
+            w / graphics::getRenderScale(),
+            h / graphics::getRenderScale()
+        );
+    }
+
+    void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
+    {
+        m_sprite.drawRect(
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale(),
+            w / graphics::getRenderScale(),
+            h / graphics::getRenderScale()
+        );
+    }
+
+    void Surface::drawLine(const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2)
+    {
+        m_sprite.drawLine(
+            x1 / graphics::getRenderScale(),
+            y1 / graphics::getRenderScale(),
+            x2 / graphics::getRenderScale(),
+            y2 / graphics::getRenderScale()
+        );
+    }
+
 } // graphics
