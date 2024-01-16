@@ -16,7 +16,7 @@
 #include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
 #include "LGFX_AUTODETECT.hpp"
 
-#include "LovyanGFX"
+#include "LovyanGFX.hpp"
 
 #endif
 
