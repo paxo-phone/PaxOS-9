@@ -192,22 +192,44 @@ void Widget::reloadAlone()
 {
     this->m_isDrawn = false;
     this->m_isRendered = false;
+
+    if(m_parent != nullptr)
+        m_parent->parentAreNotRendered();
 }
 
 void Widget::reloadParent()
 {
     this->m_isDrawn = false;
-    if(this->m_parent != nullptr)
-    {
-        this->m_parent->m_isRendered = false;
-    }
+    this->m_isRendered = false;
+
+    if(m_parent != nullptr)
+        m_parent->parentAreNotDrawn();
 }
 
-void Widget::setChildrenDrawn()
+void Widget::parentAreNotRendered()
 {
-    for (int i = 0; i < m_children.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
+    if(m_parent != nullptr)
+        m_parent->parentAreNotRendered();
+
+    m_isRendered = false;
+}
+
+void Widget::parentAreNotDrawn()
+{
+    if(m_parent != nullptr)
+        m_parent->parentAreNotDrawn();
+
+    m_isDrawn = false;
+    m_isRendered = false;
+}
+
+void Widget::childrenAreDrawn()
+{
+    for (int i = 0; i < m_children.size(); i++)
     {
         if(m_children[i] != nullptr)
-            m_children[i]->setChildrenDrawn();
+            m_children[i]->childrenAreDrawn();
     }
+
+    m_isDrawn = true;
 }

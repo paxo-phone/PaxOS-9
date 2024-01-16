@@ -7,7 +7,7 @@ class Widget
 {
     public:
     Widget();
-    ~Widget();
+    virtual ~Widget();
 
     void renderAll();
     virtual void render() = 0;
@@ -49,6 +49,12 @@ class Widget
     void reloadAlone();  // mise a jour locale
     void reloadParent();  // mise a jour qui concerne le parent
     void setChildrenDrawn(); // les enfants sont update sur l'écran
+
+    void reloadAlone();  // mise a jour sur le buffer de l'objet
+    void reloadParent();  // mise a jour qui concerne le buffer du parent
+    void parentAreNotDrawn();       // fonction récurrente associée a reloadParent
+    void parentAreNotRendered();    // fonction récurrente associée a reloadAlone
+    void childrenAreDrawn();        // mettre tous les enfants en drawn=true
 
     private:
     // variables générales
