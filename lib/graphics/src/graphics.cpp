@@ -49,6 +49,7 @@ void graphics::init()
 
     lcd->startWrite(); // Keep the SPI Bus busy ?
 
+#ifdef ESP_PLATFORM
     // uint16_t calibrationData[8];
     // lcd->calibrateTouch(calibrationData, TFT_MAGENTA, TFT_BLACK);
 
@@ -65,6 +66,7 @@ void graphics::init()
     };
 
     lcd->setTouchCalibrate(calibrationData);
+#endif
 }
 
 bool graphics::isRunning()
