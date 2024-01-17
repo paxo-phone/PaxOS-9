@@ -21,6 +21,8 @@ namespace gui::elements {
 
     void Box::render()
     {
+        printf("Box render !\n");
+
         m_surface->setColor(255, 0, 0);
         m_surface->fillRect(0, 0, m_width, m_height);
     }

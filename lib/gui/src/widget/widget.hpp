@@ -1,4 +1,7 @@
-#include <stdint.h> // for uint16_t
+#ifndef WIDGET_HPP
+#define WIDGET_HPP
+
+#include <cstdint> // for uint16_t
 #include <Surface.hpp>
 #include <vector>
 
@@ -141,3 +144,5 @@ namespace gui
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
     };
 }
+
+#endif

@@ -20,11 +20,19 @@ extern "C" void app_main()
 {
     graphics::init();
 
-    auto box = gui::elements::Box(0, 0, 64, 64);
+    auto screen = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
+
+    gui::setRenderTarget(screen);
+
+    auto box = gui::elements::Box(16, 16, 64, 64);
 
     while (graphics::isRunning())
     {
         box.renderAll();
+
+        // Flip screen
+        graphics::renderSurface(&screen);
+        graphics::flip();
 
         temp::delay(1); // Watchdog
     }

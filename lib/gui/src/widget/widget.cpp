@@ -1,5 +1,7 @@
 #include "widget.hpp"
 
+#include "gui.hpp"
+
 // TODO : Remove this, the user need to define its widget for the screen itself.
 gui::Widget* gui::Widget::m_widgetPressed = nullptr;
 gui::Widget* gui::Widget::masterOfRender = nullptr;
@@ -72,14 +74,15 @@ void gui::Widget::renderAll()
             // push le buffer local vers le buffer du parent
 
             // TODO : Change position
-            m_parent->m_surface->pushSurface(m_surface.get(), 0, 0);
+            m_parent->m_surface->pushSurface(m_surface.get(), m_x, m_y);
         }
         else   // le parent ne demande pas de rendu ou le parent n'existe pas
         {
             // restreindre l'écriture sur l'écran en fonction du buffer local
 
             // push le buffer local vers l'écran
-            renderSurface(m_surface.get());
+            // TODO : Change position
+            gui::getRenderTarget()->pushSurface(m_surface.get(), m_x, m_y);
 
             setChildrenDrawn();
         }
