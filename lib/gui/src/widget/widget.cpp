@@ -45,6 +45,14 @@ void gui::Widget::renderAll()
     if (!m_isRendered)
     {
         // initialiser le buffer ou le clear
+        if (m_surface == nullptr)
+        {
+            m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
+        }
+        else
+        {
+            m_surface->clear();
+        }
 
         render();
 
@@ -62,12 +70,16 @@ void gui::Widget::renderAll()
         if(m_parent != nullptr && m_parent->m_isDrawn == false)  // le parent demande le rendu
         {
             // push le buffer local vers le buffer du parent
+
+            // TODO : Change position
+            m_parent->m_surface->pushSurface(m_surface.get(), 0, 0);
         }
         else   // le parent ne demande pas de rendu ou le parent n'existe pas
         {
             // restreindre l'écriture sur l'écran en fonction du buffer local
 
             // push le buffer local vers l'écran
+            renderSurface(m_surface.get());
 
             setChildrenDrawn();
         }

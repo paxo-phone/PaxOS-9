@@ -1,4 +1,5 @@
 #include <stdint.h> // for uint16_t
+#include <Surface.hpp>
 #include <vector>
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
@@ -94,7 +95,7 @@ namespace gui
         */
         void setChildrenDrawn(); // les enfants sont update sur l'écran
 
-    private:
+    protected:
         // variables générales
         uint16_t m_x, m_y;
         uint16_t m_width, m_height;
@@ -136,5 +137,7 @@ namespace gui
         bool m_isScrolling;
 
         static Widget* m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
+
+        std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
     };
 }
