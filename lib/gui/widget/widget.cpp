@@ -223,12 +223,12 @@ void Widget::parentAreNotDrawn()
     m_isRendered = false;
 }
 
-void Widget::childrenAreDrawn()
+void Widget::setChildrenDrawn()
 {
     for (int i = 0; i < m_children.size(); i++)
     {
         if(m_children[i] != nullptr)
-            m_children[i]->childrenAreDrawn();
+            m_children[i]->setChildrenDrawn();
     }
 
     m_isDrawn = true;

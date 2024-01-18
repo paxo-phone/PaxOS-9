@@ -9,10 +9,12 @@
 
 #include "graphics.hpp"
 #include "gui.hpp"
+#include "path.hpp"
 
 // ESP-IDF main
 extern "C" void app_main()
 {
+    storage::init();
     graphics::init();
     graphics::setColor(255, 0, 0);
     graphics::fillRect(0, 0, 64, 64);

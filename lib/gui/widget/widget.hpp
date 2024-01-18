@@ -2,6 +2,7 @@
 #include <vector>
 
 typedef uint16_t color_t;   // @Charles a remplacer quand tu auras mis la lib graphique
+                            // Il faut aussi ajouter tous les consts
 
 class Widget
 {
@@ -46,15 +47,11 @@ class Widget
     Widget* getMaster(); // get the highest parent
     Widget* getParent(); // get the parent
 
-    void reloadAlone();  // mise a jour locale
-    void reloadParent();  // mise a jour qui concerne le parent
-    void setChildrenDrawn(); // les enfants sont update sur l'écran
-
     void reloadAlone();  // mise a jour sur le buffer de l'objet
     void reloadParent();  // mise a jour qui concerne le buffer du parent
     void parentAreNotDrawn();       // fonction récurrente associée a reloadParent
     void parentAreNotRendered();    // fonction récurrente associée a reloadAlone
-    void childrenAreDrawn();        // mettre tous les enfants en drawn=true
+    void setChildrenDrawn();        // mettre tous les enfants en drawn=true
 
     private:
     // variables générales
