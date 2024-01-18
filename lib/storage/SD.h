@@ -1,9 +1,5 @@
-#ifndef SD_HPP
-#define SD_HPP 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef SD_H
+#define SD_H
 
 #include <stdbool.h>
 
@@ -12,8 +8,4 @@ extern "C" {
 bool SD_init(void);
 void SD_disconnect(void);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* SD_HPP */
+#endif /* SD_H */

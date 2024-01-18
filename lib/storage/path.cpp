@@ -22,7 +22,7 @@
     #define SYSTEM_PATH_SEPARATOR '/'
 #endif
 
-#include "SD.h"
+#include "SD.hpp"
 
 bool storage::init()
 {
