@@ -85,4 +85,9 @@ namespace graphics
         );
     }
 
+    void Surface::drawImage(const Image& image, const int16_t x, const int16_t y)
+    {
+        m_sprite.pushImage();
+    }
+
 } // graphics
