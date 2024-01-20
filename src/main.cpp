@@ -26,6 +26,8 @@ extern "C" void app_main()
 
     auto box = gui::elements::Box(16, 16, 64, 64);
 
+    box.setColor(58, 186, 153);
+
     while (graphics::isRunning())
     {
         box.renderAll();
