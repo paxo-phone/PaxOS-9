@@ -69,7 +69,7 @@ bool SD_init (void) {
         return false;
     }
 
-    puts("[Succes]: Successfully mounted filesystem");
+    puts("[Success]: Successfully mounted filesystem");
 
     return true;
 }

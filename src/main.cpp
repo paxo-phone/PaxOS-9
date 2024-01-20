@@ -10,20 +10,17 @@
 #include "graphics.hpp"
 #include "gui.hpp"
 #include "path.hpp"
+#include "filestream.hpp"
 #include <iostream>
 
 // ESP-IDF main
 extern "C" void app_main()
 {
     storage::init();
-    std::cout << "ligne 1" << std::endl;
 
-    storage::Path path("/");
-    std::vector<std::string> paths = path.listdir();
-    for (int i = 0; i < paths.size(); i++)
-    {
-        std::cout << paths[i] << std::endl;
-    }
+    storage::Path path("test.txt");
+    storage::FileStream stream(path.str(), storage::Mode::READ);
+    std::cout << "content: " << stream.read() << std::endl;
 
     graphics::init();
     graphics::setColor(255, 0, 0);

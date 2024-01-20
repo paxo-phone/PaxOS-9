@@ -21,6 +21,10 @@ namespace storage {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             m_stream.close();
         #endif
+        #ifdef ESP_PLATFORM
+        if(m_file != NULL)
+            fclose(m_file);
+        #endif
     }
 
     void FileStream::open(const std::string& path, 
@@ -42,11 +46,34 @@ namespace storage {
             }
 
         #endif
+
+        #ifdef ESP_PLATFORM
+
+        if(m_file == NULL)
+        {
+            if( mode == READ ) {
+                m_file = fopen(path.c_str(), "r");
+            }
+            else { // if ( mode == WRITE ) 
+                if(erase) {
+                    m_file = fopen(path.c_str(), "w");
+                }
+                else {
+                    m_file = fopen(path.c_str(), "a");
+                }
+            }
+        }
+        
+        #endif
     }
 
     void FileStream::close(void) {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             m_stream.close();
+        #endif
+        #ifdef ESP_PLATFORM
+            if(m_file != NULL)
+                fclose(m_file);
         #endif
     }
 
@@ -60,7 +87,21 @@ namespace storage {
 
             return text;
         #endif
-        return "";
+        #ifdef ESP_PLATFORM
+            std::string text = "";
+            char buffer[1024];
+
+            if (m_file == NULL) {
+                return "";
+            }
+
+            while (fgets(buffer, sizeof(buffer), m_file) != NULL) {
+
+                text += std::string(buffer);
+            }
+
+            return text;
+        #endif
     }
 
     std::string FileStream::readline(void) {
@@ -69,7 +110,20 @@ namespace storage {
             std::getline(m_stream, line);
             return line;
         #endif
-        return "";
+
+        #ifdef ESP_PLATFORM
+            char buffer[1024];
+
+            if (m_file == NULL) {
+                return "";
+            }
+
+            while (fgets(buffer, sizeof(buffer), m_file) != NULL) {
+                return std::string(buffer);
+            }
+
+            return "";
+        #endif
     }
 
     std::string FileStream::readword(void) {
@@ -78,19 +132,46 @@ namespace storage {
             m_stream >> word;
             return word;
         #endif
-        return "";
+        #ifdef ESP_PLATFORM
+            if (m_file == NULL) {
+                return "";
+            }
+
+            char word[1024];
+            while (fscanf(m_file, "%s", word) != EOF) {
+                printf("Word: %s\n", word);
+            }
+            return std::string(word);
+        #endif
     }
 
     char FileStream::readchar(void) {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             return m_stream.get();
         #endif
-        return -1;
+        #ifdef ESP_PLATFORM
+            if (m_file == NULL) {
+                return -1;
+            }
+
+            int character;
+            if ((character = fgetc(m_file)) != EOF) {
+                return char(character);
+            }
+            return -1;
+        #endif
     }
 
     void FileStream::write(const std::string& str) {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             m_stream << str;
+        #endif
+        #ifdef ESP_PLATFORM
+            if (m_file == NULL) {
+                return;
+            }
+
+            fprintf(m_file, str.c_str());
         #endif
     }
 
@@ -98,13 +179,22 @@ namespace storage {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             m_stream << c;
         #endif
+        #ifdef ESP_PLATFORM
+            if (m_file == NULL) {
+                return;
+            }
+
+            fputc(c, m_file);
+        #endif
     }
 
     bool FileStream::isopen(void) const {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             return m_stream.is_open();
         #endif
-        return false;
+        #ifdef ESP_PLATFORM
+            return (m_file != NULL);
+        #endif
     }
 
     FileStream& operator<<(FileStream& stream, 

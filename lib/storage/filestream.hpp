@@ -6,6 +6,9 @@
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
     #include <fstream>
 #endif
+#ifdef ESP_PLATFORM
+    #include "SD.h"
+#endif
 
 namespace storage {
     
@@ -53,6 +56,9 @@ namespace storage {
 
             #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
                 std::fstream m_stream;
+            #endif
+            #ifdef ESP_PLATFORM
+                FILE *m_file = nullptr;
             #endif
     };
 
