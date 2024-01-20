@@ -87,13 +87,18 @@ namespace graphics
 
     void Surface::drawImage(const Image& image, const int16_t x, const int16_t y)
     {
-        // m_sprite.drawBitmap(x, y, image.getData8(), 320, 320, TFT_RED);
-        // m_sprite.drawBmp(
-        //     image.getData8(),
-        //     image.getSize()
-        // );
-        // m_sprite.pushImage(0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()), image.getData8());
-        m_sprite.drawBmp(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+        switch (image.getType())
+        {
+        case BMP:
+            m_sprite.drawBmp(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            break;
+        case PNG:
+            m_sprite.drawPng(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            break;
+        case JPG:
+            m_sprite.drawJpg(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            break;
+        }
     }
 
 } // graphics
