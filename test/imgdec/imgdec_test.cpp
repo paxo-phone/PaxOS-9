@@ -63,34 +63,10 @@ TEST(IMGDECTest, ImageWidthHeight)
 {
     const uint8_t *fileData = getFileData("resources/images/logo.bmp");
 
-    const imgdec::IMGData imgData = imgdec::decodeBMP(fileData);
+    const imgdec::IMGData imgData = imgdec::decodeHeader(fileData);
 
     EXPECT_EQ(imgData.width, 302);
     EXPECT_EQ(imgData.heigth, 302);
-
-    delete fileData;
-}
-
-TEST(IMGDECTest, ImageSize)
-{
-    const uint8_t *fileData = getFileData("resources/images/logo.bmp");
-
-    const imgdec::IMGData imgData = imgdec::decodeBMP(fileData);
-
-    EXPECT_EQ(imgData.size, 274216);
-
-    delete fileData;
-}
-
-TEST(IMGDECTest, ImageData)
-{
-    const uint8_t *fileData = getFileData("resources/images/logo.bmp");
-
-    const imgdec::IMGData imgData = imgdec::decodeBMP(fileData);
-
-    EXPECT_EQ(imgData.image[0x00], 0xFF);
-    EXPECT_EQ(imgData.image[0x00004ED0 - 0x36], 0xF3);
-    EXPECT_EQ(imgData.image[0x000358AF - 0x36], 0x95);
 
     delete fileData;
 }

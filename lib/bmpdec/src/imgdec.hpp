@@ -9,20 +9,24 @@
 
 namespace imgdec
 {
+    enum IMGType
+    {
+        ERROR,
+        BMP,
+        PNG,
+        JPG
+    };
+
     typedef struct IMGData IMGData;
     struct IMGData
     {
+        IMGType type = ERROR;
+
         uint32_t width = -1;
         uint32_t heigth = -1;
-
-        uint32_t size = -1;
-
-        uint8_t *image = nullptr;
     };
 
-    IMGData decodeBMP(const uint8_t *rawData);
-    IMGData decodePNG(const uint8_t *rawData);
-    IMGData decodeJPG(const uint8_t *rawData);
+    IMGData decodeHeader(const uint8_t *rawData);
 }
 
 #endif //IMGDEC_HPP

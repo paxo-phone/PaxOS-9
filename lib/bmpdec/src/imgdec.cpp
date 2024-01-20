@@ -18,35 +18,20 @@ inline uint32_t make32(const uint8_t v1, const uint8_t v2, const uint8_t v3, con
     return (v4 << 24) + (v3 << 16) + (v2 << 8) + v1;
 }
 
-imgdec::IMGData imgdec::decodeBMP(const uint8_t* rawData)
+imgdec::IMGData imgdec::decodeHeader(const uint8_t* rawData)
 {
-    IMGData bmpData = {};
+    IMGData imgData = {};
 
-    bmpData.width = make32(rawData[0x12], rawData[0x13], rawData[0x14], rawData[0x15]);
-    bmpData.heigth = make32(rawData[0x16], rawData[0x17], rawData[0x18], rawData[0x19]);
-
-    bmpData.size = make32(rawData[0x22], rawData[0x23], rawData[0x24], rawData[0x25]);
-
-    bmpData.image = new uint8_t[bmpData.size];
-
-    const uint32_t imageDataOffset = make32(rawData[0x0A], rawData[0x0B], rawData[0x0C], rawData[0x0D]);
-
-    uint32_t i = 0;
-    while (i < bmpData.size)
+    if (rawData[0x00] == 'B' && rawData[0x01] == 'M')
     {
-        bmpData.image[i] = rawData[imageDataOffset + i];
-        i++;
+        // BMP
+        imgData.width = make32(rawData[0x12], rawData[0x13], rawData[0x14], rawData[0x15]);
+        imgData.heigth = make32(rawData[0x16], rawData[0x17], rawData[0x18], rawData[0x19]);
+    }
+    else
+    {
+        imgData.type = ERROR; // Unknown image
     }
 
-    return bmpData;
-}
-
-imgdec::IMGData imgdec::decodePNG(const uint8_t* rawData)
-{
-    throw std::exception(); // Not yet implemented.
-}
-
-imgdec::IMGData imgdec::decodeJPG(const uint8_t* rawData)
-{
-    throw std::exception(); // Not yet implemented.
+    return imgData;
 }
