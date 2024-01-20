@@ -1,12 +1,12 @@
-#include "widget.hpp"
+#include "ElementBase.hpp"
 
 #include "gui.hpp"
 
 // TODO : Remove this, the user need to define its widget for the screen itself.
-gui::Widget* gui::Widget::m_widgetPressed = nullptr;
-gui::Widget* gui::Widget::masterOfRender = nullptr;
+gui::ElementBase* gui::ElementBase::m_widgetPressed = nullptr;
+gui::ElementBase* gui::ElementBase::masterOfRender = nullptr;
 
-gui::Widget::Widget() :
+gui::ElementBase::ElementBase() :
     m_x(0), m_y(0),
     m_width(0), m_height(0),
     m_backgroundColor(0),
@@ -27,7 +27,7 @@ gui::Widget::Widget() :
     // Initialiser d'autres membres si nécessaire dans le constructeur
 }
 
-gui::Widget::~Widget()
+gui::ElementBase::~ElementBase()
 {
     // Libération de la mémoire allouée pour les enfants de l'objet
     for(int i = 0; i < m_children.size(); i++)
@@ -39,7 +39,7 @@ gui::Widget::~Widget()
     }
 }
 
-void gui::Widget::renderAll()
+void gui::ElementBase::renderAll()
 {
     if (!m_isEnabled)
         return;
@@ -89,7 +89,7 @@ void gui::Widget::renderAll()
     }
 }
 
-void gui::Widget::updateAll()
+void gui::ElementBase::updateAll()
 {
     for (auto child : m_children)
     {
@@ -97,32 +97,32 @@ void gui::Widget::updateAll()
     }
 }
 
-void gui::Widget::update()
+void gui::ElementBase::update()
 {
     // algorithme de mise a jour des interactions tactiles
 }
 
-void gui::Widget::setX(uint16_t x)
+void gui::ElementBase::setX(uint16_t x)
 {
     m_x = x;
 }
 
-void gui::Widget::setY(uint16_t y)
+void gui::ElementBase::setY(uint16_t y)
 {
     m_y = y;
 }
 
-void gui::Widget::setWidth(uint16_t width)
+void gui::ElementBase::setWidth(uint16_t width)
 {
     m_width = width;
 }
 
-void gui::Widget::setHeight(uint16_t height)
+void gui::ElementBase::setHeight(uint16_t height)
 {
     m_height = height;
 }
 
-uint16_t gui::Widget::getAbsoluteX() const
+uint16_t gui::ElementBase::getAbsoluteX() const
 {
     if (m_parent == nullptr)
         return getX();
@@ -130,7 +130,7 @@ uint16_t gui::Widget::getAbsoluteX() const
     return m_parent->getAbsoluteX() + getX();
 }
 
-uint16_t gui::Widget::getAbsoluteY() const
+uint16_t gui::ElementBase::getAbsoluteY() const
 {
     if (m_parent == nullptr)
         return getY();
@@ -138,64 +138,64 @@ uint16_t gui::Widget::getAbsoluteY() const
     return m_parent->getAbsoluteY() + getY();
 }
 
-uint16_t gui::Widget::getX() const
+uint16_t gui::ElementBase::getX() const
 {
     return m_x;
 }
 
-uint16_t gui::Widget::getY() const
+uint16_t gui::ElementBase::getY() const
 {
     return m_y;
 }
 
-uint16_t gui::Widget::getWidth() const
+uint16_t gui::ElementBase::getWidth() const
 {
     return m_width;
 }
 
-uint16_t gui::Widget::getHeight() const
+uint16_t gui::ElementBase::getHeight() const
 {
     return m_height;
 }
 
-void gui::Widget::setBackgroundColor(const color_t color)
+void gui::ElementBase::setBackgroundColor(const color_t color)
 {
     m_backgroundColor = color;
 }
 
-void gui::Widget::setBorderColor(const color_t color)
+void gui::ElementBase::setBorderColor(const color_t color)
 {
     m_borderColor = color;
 }
 
-color_t gui::Widget::getBackgroundColor() const
+color_t gui::ElementBase::getBackgroundColor() const
 {
     return m_backgroundColor;
 }
 
-color_t gui::Widget::getBorderColor() const
+color_t gui::ElementBase::getBorderColor() const
 {
     return m_borderColor;
 }
 
-void gui::Widget::enable()
+void gui::ElementBase::enable()
 {
     m_isEnabled = true;
 }
 
-void gui::Widget::disable()
+void gui::ElementBase::disable()
 {
     m_isEnabled = false;
 }
 
-gui::Widget* gui::Widget::getMaster()
+gui::ElementBase* gui::ElementBase::getMaster()
 {
     // We shoud probably remove this function.
     // Because the "Master" widget (and rename it to "main" please)
     // Is for almost every cases the "Screen" widget.
     // So the user already have a reference to it.
 
-    Widget* master = this;
+    ElementBase* master = this;
 
     if (this->m_parent != nullptr)
     {
@@ -205,18 +205,18 @@ gui::Widget* gui::Widget::getMaster()
     return master;
 }
 
-gui::Widget* gui::Widget::getParent() const
+gui::ElementBase* gui::ElementBase::getParent() const
 {
     return m_parent;
 }
 
-void gui::Widget::reloadAlone()
+void gui::ElementBase::reloadAlone()
 {
     this->m_isDrawn = false;
     this->m_isRendered = false;
 }
 
-void gui::Widget::reloadParent()
+void gui::ElementBase::reloadParent()
 {
     // The is almost no difference with just reloading the parent ?
     // Easier to understand, or rename this function something like :
@@ -231,7 +231,7 @@ void gui::Widget::reloadParent()
     }
 }
 
-void gui::Widget::setChildrenDrawn()
+void gui::ElementBase::setChildrenDrawn()
 {
     // What the fuck ?!
     // You are not updating anything in this loop

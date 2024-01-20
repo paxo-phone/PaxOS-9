@@ -1,5 +1,5 @@
-#ifndef WIDGET_HPP
-#define WIDGET_HPP
+#ifndef ELEMENTBASE_HPP
+#define ELEMENTBASE_HPP
 
 #include <cstdint> // for uint16_t
 #include <Surface.hpp>
@@ -9,11 +9,11 @@ typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib grap
 
 namespace gui
 {
-    class Widget
+    class ElementBase
     {
     public:
-        Widget();
-        virtual ~Widget();
+        ElementBase();
+        virtual ~ElementBase();
 
         void renderAll();
         virtual void render() = 0;
@@ -73,13 +73,13 @@ namespace gui
         * \brief Get the highest parent widget in the hierachy
         * \return the highest parent in the hierarchy
         */
-        Widget* getMaster();
+        ElementBase* getMaster();
 
         /**
         * \brief Get the parent of this widget
         * \return the parent of this widget
         */
-        [[nodiscard]] Widget* getParent() const;
+        [[nodiscard]] ElementBase* getParent() const;
 
         /**
         * Update the widget
@@ -109,8 +109,8 @@ namespace gui
         uint16_t m_borderSize;
         uint16_t m_borderRadius;
 
-        Widget* m_parent;
-        std::vector<Widget*> m_children;
+        ElementBase* m_parent;
+        std::vector<ElementBase*> m_children;
 
         // variables sur les mouvements
         bool m_verticalScrollEnabled;
@@ -125,7 +125,7 @@ namespace gui
 
         bool m_isRendered; // si le buffer est a jour
         bool m_isDrawn; // si le widget est bien a jour sur l'écran
-        static Widget* masterOfRender;
+        static ElementBase* masterOfRender;
 
         // variables sur les events
         enum PressedState
@@ -139,7 +139,7 @@ namespace gui
         PressedState m_pressedState;
         bool m_isScrolling;
 
-        static Widget* m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
+        static ElementBase* m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
     };

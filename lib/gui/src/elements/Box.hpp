@@ -5,11 +5,11 @@
 #ifndef BOX_HPP
 #define BOX_HPP
 
-#include "../widget/widget.hpp"
+#include "../ElementBase.hpp"
 
 namespace gui::elements
 {
-    class Box : public Widget
+    class Box : public ElementBase
     {
     public:
         Box(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
