@@ -22,8 +22,7 @@ extern "C" void app_main()
 
     auto canvas = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
 
-    auto image = graphics::Image(graphics::BMP);
-    image.loadBMP("resources/images/logo.bmp");
+    const auto image = graphics::Image("resources/images/logo.bmp");
 
     canvas.drawImage(image, 0, 0);
 

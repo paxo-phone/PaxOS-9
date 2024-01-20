@@ -21,8 +21,6 @@ uint8_t * getFileData(const char *filename)
 {
     const size_t filesize = getFileSize(filename);
 
-    printf("Filesize : %llu\n", filesize);
-
     auto *data = new uint8_t[filesize];
 
     auto inputStream = std::ifstream(filename, std::ios::binary);
@@ -37,13 +35,29 @@ uint8_t * getFileData(const char *filename)
 }
 
 namespace graphics {
-    Image::Image(const ImageType type) :
-        width(-1),
-        height(-1),
-        size(-1),
-        data(nullptr)
+    Image::Image(const std::string& filename)
     {
-        this->type = type;
+        const size_t fileSize = getFileSize(filename.c_str());
+
+        size = fileSize;
+        data = getFileData(filename.c_str());;
+
+        const imgdec::IMGData imageData = imgdec::decodeHeader(data);
+
+        switch (imageData.type)
+        {
+        case imgdec::ERROR:
+            throw std::exception();
+        case imgdec::BMP:
+            type = BMP;
+        case imgdec::PNG:
+            type = PNG;
+        case imgdec::JPG:
+            type = JPG;
+        }
+
+        width = imageData.width;
+        height = imageData.heigth;
     }
 
     Image::~Image()
@@ -66,40 +80,9 @@ namespace graphics {
         return size;
     }
 
-    uint8_t * Image::getData8() const
+    uint8_t* Image::getData() const
     {
         return data;
-    }
-
-    uint16_t * Image::getData16() const
-    {
-        throw std::exception();
-    }
-
-    uint32_t * Image::getData32() const
-    {
-        throw std::exception();
-    }
-
-    uint8_t* Image::getRawData() const
-    {
-        return rawData;
-    }
-
-
-    void Image::loadBMP(const std::string& filename)
-    {
-        rawData = getFileData(filename.c_str());;
-
-        const imgdec::IMGData imageData = imgdec::decodeBMP(rawData);
-
-        width = imageData.width;
-        height = imageData.heigth;
-
-        size = imageData.size;
-        data = imageData.image;
-
-        printf("HELLO I'M HERE BRO !");
     }
 
 } // graphics

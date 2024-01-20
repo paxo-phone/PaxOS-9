@@ -93,7 +93,7 @@ namespace graphics
         //     image.getSize()
         // );
         // m_sprite.pushImage(0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()), image.getData8());
-        m_sprite.drawBmp(image.getRawData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+        m_sprite.drawBmp(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
     }
 
 } // graphics
