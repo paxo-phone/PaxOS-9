@@ -11,4 +11,19 @@ namespace graphics {
     }
 
     Image::~Image() = default;
+
+    uint8_t Image::getData8() const
+    {
+
+    }
+
+    uint16_t Image::getData16() const
+    {
+
+    }
+
+    uint32_t Image::getData32() const
+    {
+
+    }
 } // graphics
