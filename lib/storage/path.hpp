@@ -36,7 +36,7 @@ namespace storage {
             bool newdir  (void) const;
             bool remove  (void) const;
             
-            void rename (const Path& to);
+            bool rename (const Path& to);
 
         private:
 

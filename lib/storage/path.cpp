@@ -11,6 +11,8 @@
 #endif
 
 #include "path.hpp"
+#include "SD.hpp"
+
 
 #define PATH_SEPARATOR '/'
 
@@ -22,15 +24,24 @@
     #define SYSTEM_PATH_SEPARATOR '/'
 #endif
 
-#include "SD.hpp"
 
 bool storage::init()
 {
-    bool result = SD_init();
+    #ifdef ESP_PLATFORM
 
-    std::cout << "init sd card: " << std::to_string(result) << std::endl;
+    for (int i = 0; i < 4; i++)
+    {
+        if(SD_init())
+            return true;
+    }
 
-    return result;
+    // Show error message on the screen?
+
+    return false;
+
+    #endif
+
+    return true;
 }
 
 namespace storage {
@@ -51,13 +62,23 @@ namespace storage {
     
     std::string Path::str(void) const {
         
+        std::cout << "tostring" << std::endl;
         std::string o = "";
+
+        #ifdef ESP_PLATFORM // specific to esp32 file system
+            o += MOUNT_POINT;
+            o += "/";
+        #else
+            o += "";
+        #endif
+
         for(uint16_t i = 0; i < m_steps.size(); i++) {
             o += m_steps[i];
             if(i != m_steps.size() - 1) 
                 o += SYSTEM_PATH_SEPARATOR;
         }
 
+        std::cout << "tostring" << std::endl;
         return o;
     }
 
@@ -135,40 +156,92 @@ namespace storage {
     }
 
     std::vector<std::string> Path::listdir(bool onlyDirs) const {
-        #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+        std::cout << "2" << std::endl;
+        std::vector<std::string> list;
+            std::cout << "dir: " << std::endl;
+        std::cout << "3" << std::endl;
 
-            std::vector<std::string> list;
-            for (const auto &entry : std::filesystem::directory_iterator(this->str())) {
+        #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+            std::filesystem::path dirPath = this->str();
+
+        std::cout << "4" << std::endl;
+
+            if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath)) {
+                std::cerr << "Error: The directory does not exist or is not a valid directory." << std::endl;
+                return {};
+            }
+
+        std::cout << "5" << std::endl;
+
+            for (const auto &entry : std::filesystem::directory_iterator(dirPath)) {
                 if (onlyDirs && !entry.is_directory())
                     continue;
 
                 list.push_back(entry.path().filename().string());
             }
-            
-            return list;
 
+        std::cout << "6" << std::endl;
         #endif
-        return {};
+        #ifdef ESP_PLATFORM
+            DIR* dir = opendir(this->str().c_str());
+            
+            if (dir != NULL)
+            {
+                struct dirent* entry;
+                while ((entry = readdir(dir)) != NULL) {
+                    list.push_back(entry->d_name);
+                }
+
+                closedir(dir);
+            }
+        #endif
+    
+        return list;
     }
 
     bool Path::exists(void) const {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             return std::filesystem::exists(this->str());
         #endif
-        return false;
+
+        #ifdef ESP_PLATFORM
+            struct stat st;
+            if (stat(this->str().c_str(), &st) == 0)
+                return true;
+
+            return false;
+        #endif
     }
 
     bool Path::isfile(void) const {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             return std::filesystem::is_regular_file(this->str());
         #endif
-        return false;
+
+        #ifdef ESP_PLATFORM
+            struct stat st;
+            if (stat(this->str().c_str(), &st) == 0) {
+                return S_ISREG(st.st_mode);
+            } else {
+                return false;
+            }
+        #endif
     }
 
     bool Path::isdir(void) const {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             return std::filesystem::is_directory(this->str());
         #endif
+
+        #ifdef ESP_PLATFORM
+            struct stat st;
+            if (stat(this->str().c_str(), &st) == 0) {
+                return S_ISDIR(st.st_mode);
+            } else {
+                return false;
+            }
+        #endif
+
         return false;
     }
 
@@ -181,7 +254,9 @@ namespace storage {
         
         #endif
 
-        return false;
+        #ifdef ESP_PLATFORM
+            return mkdir(this->str().c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == 0;
+        #endif
     }
 
     bool Path::newfile(void) const {
@@ -194,6 +269,17 @@ namespace storage {
             }
             return false;
         #endif
+
+        #ifdef ESP_PLATFORM
+            FILE* file = fopen(this->str().c_str(), "w");
+            if (file != NULL) {
+                fclose(file);
+                return true;
+            } else {
+                return false;
+            }
+        #endif
+        
         return false;
     }
 
@@ -201,14 +287,22 @@ namespace storage {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             return std::filesystem::remove(this->str());
         #endif
-        return false;
+
+        #ifdef ESP_PLATFORM
+            return ::remove(this->str().c_str()) == 0;
+        #endif
     }
 
-    void Path::rename(const Path& to) 
+    bool Path::rename(const Path& to) 
     {
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             std::filesystem::rename(this->str(), to.str());
             this->assign(to);
+            return true;
+        #endif
+
+        #ifdef ESP_PLATFORM
+            return (::rename(this->str().c_str(), to.str().c_str()) == 0);
         #endif
     }
 }
