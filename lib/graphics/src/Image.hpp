@@ -21,13 +21,13 @@ namespace graphics
     class Image
     {
     private:
-        ImageType type;
+        ImageType m_type;
 
-        uint32_t width;
-        uint32_t height;
+        uint32_t m_width;
+        uint32_t m_height;
 
-        uint32_t size;
-        std::shared_ptr<uint8_t[]> data;
+        uint32_t m_size;
+        std::shared_ptr<uint8_t[]> m_data;
 
     public:
         explicit Image(const std::string& filename);

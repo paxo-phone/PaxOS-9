@@ -40,25 +40,25 @@ namespace graphics {
     {
         const size_t fileSize = getFileSize(filename.c_str());
 
-        size = fileSize;
-        data = getFileData(filename.c_str());;
+        m_size = fileSize;
+        m_data = getFileData(filename.c_str());;
 
-        const imgdec::IMGData imageData = imgdec::decodeHeader(data.get());
+        const imgdec::IMGData imageData = imgdec::decodeHeader(m_data.get());
 
         switch (imageData.type)
         {
         case imgdec::ERROR:
             throw std::exception();
         case imgdec::BMP:
-            type = BMP;
+            m_type = BMP;
         case imgdec::PNG:
-            type = PNG;
+            m_type = PNG;
         case imgdec::JPG:
-            type = JPG;
+            m_type = JPG;
         }
 
-        width = imageData.width;
-        height = imageData.heigth;
+        m_width = imageData.width;
+        m_height = imageData.heigth;
     }
 
     // TODO : Fix error when deleted data's smart_ptr
@@ -66,22 +66,22 @@ namespace graphics {
 
     uint32_t Image::getWidth() const
     {
-        return width;
+        return m_width;
     }
 
     uint32_t Image::getHeight() const
     {
-        return height;
+        return m_height;
     }
 
     uint32_t Image::getSize() const
     {
-        return size;
+        return m_size;
     }
 
     uint8_t * Image::getData() const
     {
-        return data.get();
+        return m_data.get();
     }
 
 } // graphics
