@@ -6,6 +6,7 @@
 #define IMAGE_HPP
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace graphics
@@ -26,7 +27,7 @@ namespace graphics
         uint32_t height;
 
         uint32_t size;
-        uint8_t *data;
+        std::shared_ptr<uint8_t[]> data;
 
     public:
         explicit Image(const std::string& filename);
