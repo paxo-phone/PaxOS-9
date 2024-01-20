@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include "i18n/test.cpp"
+#include "imgdec\imgdec_test.cpp"
 
 int main(int argc, char **argv)
 {
