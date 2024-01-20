@@ -24,7 +24,8 @@ imgdec::IMGData imgdec::decodeHeader(const uint8_t* rawData)
 
     if (rawData[0x00] == 'B' && rawData[0x01] == 'M')
     {
-        // BMP
+        imgData.type = BMP;
+
         imgData.width = make32(rawData[0x12], rawData[0x13], rawData[0x14], rawData[0x15]);
         imgData.heigth = make32(rawData[0x16], rawData[0x17], rawData[0x18], rawData[0x19]);
     }

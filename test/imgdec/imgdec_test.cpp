@@ -59,6 +59,18 @@ TEST(IMGDECTest, FileSize)
     delete fileData;
 }
 
+TEST(IMGDECTest, ImageType)
+{
+    const uint8_t *fileData = getFileData("resources/images/logo.bmp");
+
+    const imgdec::IMGData imgData = imgdec::decodeHeader(fileData);
+
+    EXPECT_EQ(imgData.type, imgdec::BMP);
+
+    delete fileData;
+}
+
+
 TEST(IMGDECTest, ImageWidthHeight)
 {
     const uint8_t *fileData = getFileData("resources/images/logo.bmp");
