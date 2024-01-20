@@ -121,7 +121,16 @@ namespace storage {
     void Path::simplify(void) {
         
         uint16_t pos = 0;
-        while(pos < m_steps.size() - 1) {
+        const size_t size = m_steps.size();
+
+        // Don't go to the "while" loop
+        // because "size - 1" will create an integer overflow
+        if (size == 0)
+        {
+            return;
+        }
+
+        while(pos < size - 1) {
             if( m_steps[pos+1] == "..") {
                 m_steps.erase(m_steps.begin() + pos, 
                               m_steps.begin() + pos + 2);
