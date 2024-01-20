@@ -33,6 +33,8 @@ namespace graphics
         explicit Image(const std::string& filename);
         ~Image();
 
+        [[nodiscard]] ImageType getType() const;
+
         [[nodiscard]] uint32_t getWidth() const;
         [[nodiscard]] uint32_t getHeight() const;
 

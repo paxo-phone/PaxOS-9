@@ -51,10 +51,13 @@ namespace graphics {
             throw std::exception();
         case imgdec::BMP:
             m_type = BMP;
+            break;
         case imgdec::PNG:
             m_type = PNG;
+            break;
         case imgdec::JPG:
             m_type = JPG;
+            break;
         }
 
         m_width = imageData.width;
@@ -62,6 +65,11 @@ namespace graphics {
     }
 
     Image::~Image() = default;
+
+    ImageType Image::getType() const
+    {
+        return m_type;
+    }
 
     uint32_t Image::getWidth() const
     {

@@ -90,13 +90,13 @@ namespace graphics
         switch (image.getType())
         {
         case BMP:
-            m_sprite.drawBmp(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            m_sprite.drawBmp(image.getData(), image.getSize(), x, y, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
             break;
         case PNG:
-            m_sprite.drawPng(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            m_sprite.drawPng(image.getData(), image.getSize(), x, y, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
             break;
         case JPG:
-            m_sprite.drawJpg(image.getData(), image.getSize(), 0, 0, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            m_sprite.drawJpg(image.getData(), image.getSize(), x, y, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
             break;
         }
     }
