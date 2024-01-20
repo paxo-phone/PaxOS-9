@@ -27,7 +27,7 @@ std::shared_ptr<uint8_t[]> getFileData(const char *filename)
     auto inputStream = std::ifstream(filename, std::ios::binary);
 
     size_t i = 0;
-    while (!inputStream.eof())
+    while (i < filesize)
     {
         data.get()[i++] = inputStream.get();
     }
@@ -61,7 +61,6 @@ namespace graphics {
         m_height = imageData.heigth;
     }
 
-    // TODO : Fix error when deleted data's smart_ptr
     Image::~Image() = default;
 
     uint32_t Image::getWidth() const
