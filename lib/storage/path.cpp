@@ -67,7 +67,7 @@ namespace storage {
             o += MOUNT_POINT;
             o += "/";
         #else
-            o += "./";
+            o += "./storage/";
         #endif
 
         for(uint16_t i = 0; i < m_steps.size(); i++) {
@@ -163,7 +163,6 @@ namespace storage {
 
     std::vector<std::string> Path::listdir(bool onlyDirs) const {
         std::vector<std::string> list;
-        std::cout << "dir: " << this->str() << std::endl;
 
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             std::filesystem::path dirPath = this->str();
