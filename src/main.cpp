@@ -14,6 +14,8 @@
 
 #include "delay.hpp"
 #include "elements/Box.hpp"
+#include "arial.h"
+#include <iostream>
 
 // ESP-IDF main
 extern "C" void app_main()
@@ -21,8 +23,13 @@ extern "C" void app_main()
     graphics::init();
 
     auto screen = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
-
+    screen.m_sprite.setFont(&Arial12ptLatin1);
     gui::setRenderTarget(screen);
+    std::string text = "aze";
+    text+=0xa0;
+    std::string text2 = "é";
+    std::cout << "char: " << int(text2.size()) << std::endl;
+    screen.m_sprite.print(text.c_str());
 
     auto box = gui::elements::Box(16, 16, 64, 64);
 
@@ -30,7 +37,7 @@ extern "C" void app_main()
 
     while (graphics::isRunning())
     {
-        box.renderAll();
+        //box.renderAll();
 
         // Flip screen
         graphics::renderSurface(&screen);

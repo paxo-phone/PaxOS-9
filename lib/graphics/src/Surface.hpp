@@ -16,7 +16,7 @@ namespace graphics
     {
         friend void renderSurface(const Surface *surface);
 
-    private:
+    public:
         lgfx::LGFX_Sprite m_sprite;
 
     public:
