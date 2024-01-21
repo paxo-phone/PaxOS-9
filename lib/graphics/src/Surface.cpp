@@ -138,7 +138,7 @@ namespace graphics
 
     void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
     {
-        m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
+        m_sprite.setTextColor(packRGB565(m_r, m_g, m_b)); // Provide only the foreground color, background is transparent
         m_sprite.drawString(text.c_str(), x, y);
     }
 } // graphics
