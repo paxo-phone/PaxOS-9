@@ -51,6 +51,7 @@ namespace graphics
 
         void setTextScale(uint8_t scale);
         void drawText(const std::string& text, int16_t x, int16_t y);
+        void drawTextCentered(const std::string& text, int16_t x, int16_t y, uint16_t w = -1);
     };
 } // graphics
 

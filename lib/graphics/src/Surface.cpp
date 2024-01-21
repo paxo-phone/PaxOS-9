@@ -141,4 +141,18 @@ namespace graphics
         m_sprite.setTextColor(packRGB565(m_r, m_g, m_b)); // Provide only the foreground color, background is transparent
         m_sprite.drawString(text.c_str(), x, y);
     }
+
+    void Surface::drawTextCentered(const std::string& text, const int16_t x, const int16_t y, const uint16_t w)
+    {
+        const uint16_t textWidth = m_sprite.textWidth(text.c_str());
+
+        if (w == -1)
+        {
+            drawText(text, static_cast<int16_t>(x + getScreenWidth() * 0.5 - textWidth * 0.5), y);
+        }
+        else
+        {
+            drawText(text, static_cast<int16_t>(x + w * 0.5 - textWidth * 0.5), y);
+        }
+    }
 } // graphics
