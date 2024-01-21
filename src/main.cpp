@@ -12,6 +12,7 @@
 
 #include "Surface.hpp"
 #include "Image.hpp"
+#include "color.hpp"
 
 #include "delay.hpp"
 
@@ -25,7 +26,7 @@ extern "C" void app_main()
     canvas.clear(0, 0, 0);
 
     // Draw wallpaper
-    const auto wallpaper = graphics::Image("resources/images/wallpaper.png");
+    const auto wallpaper = graphics::Image("resources/images/wallpaper_2.png");
     canvas.drawImage(wallpaper, 0, 0);
 
     // Draw status bar
@@ -111,6 +112,19 @@ extern "C" void app_main()
         canvas.setTextScale(1);
         canvas.drawText("PaxOS 9 (lib/graphics test)", 0, 2);
     }
+
+    uint8_t r, g, b;
+    graphics::unpackRGB565(canvas.getPixel(160, 280), &r, &g, &b);
+
+    for (uint16_t i = 0; i < 50; i++)
+    {
+        for (uint16_t j = 0; j < 50; j++)
+        {
+            canvas.setPixel(i, j, graphics::packRGB565(255, 0, 0));
+        }
+    }
+
+    printf("PIXEL COLOR : %d %d %d\n", r, g, b);
 
     while (graphics::isRunning())
     {

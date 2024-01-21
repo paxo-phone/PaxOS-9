@@ -33,6 +33,16 @@ namespace graphics
         return m_sprite.height();
     }
 
+    uint16_t Surface::getPixel(const uint16_t x, const uint16_t y)
+    {
+        return m_sprite.readPixel(x, y);
+    }
+
+    void Surface::setPixel(const uint16_t x, const uint16_t y, const uint16_t value)
+    {
+        m_sprite.writePixel(x, y, value);
+    }
+
     void Surface::pushSurface(Surface *surface, const int16_t x, const int16_t y)
     {
         surface->m_sprite.pushSprite(
