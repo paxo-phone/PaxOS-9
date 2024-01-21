@@ -61,15 +61,13 @@ namespace storage {
     }
     
     std::string Path::str(void) const {
-        
-        std::cout << "tostring" << std::endl;
         std::string o = "";
 
         #ifdef ESP_PLATFORM // specific to esp32 file system
             o += MOUNT_POINT;
             o += "/";
         #else
-            o += "";
+            o += "./storage/";
         #endif
 
         for(uint16_t i = 0; i < m_steps.size(); i++) {
@@ -78,7 +76,6 @@ namespace storage {
                 o += SYSTEM_PATH_SEPARATOR;
         }
 
-        std::cout << "tostring" << std::endl;
         return o;
     }
 
@@ -165,22 +162,16 @@ namespace storage {
     }
 
     std::vector<std::string> Path::listdir(bool onlyDirs) const {
-        std::cout << "2" << std::endl;
         std::vector<std::string> list;
-            std::cout << "dir: " << std::endl;
-        std::cout << "3" << std::endl;
 
         #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
             std::filesystem::path dirPath = this->str();
-
-        std::cout << "4" << std::endl;
 
             if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath)) {
                 std::cerr << "Error: The directory does not exist or is not a valid directory." << std::endl;
                 return {};
             }
 
-        std::cout << "5" << std::endl;
 
             for (const auto &entry : std::filesystem::directory_iterator(dirPath)) {
                 if (onlyDirs && !entry.is_directory())
@@ -189,7 +180,6 @@ namespace storage {
                 list.push_back(entry.path().filename().string());
             }
 
-        std::cout << "6" << std::endl;
         #endif
         #ifdef ESP_PLATFORM
             DIR* dir = opendir(this->str().c_str());
