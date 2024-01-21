@@ -165,4 +165,51 @@ namespace graphics
             drawText(text, static_cast<int16_t>(x + w * 0.5 - textWidth * 0.5), y);
         }
     }
+
+    void Surface::blur(uint8_t radius)
+    {
+        // Copy
+        auto copy = lgfx::LGFX_Sprite();
+        copy.createSprite(getWidth(), getHeight());
+
+        // Apply blur effect
+        for (uint16_t x = radius; x < getWidth() - radius; x++)
+        {
+            for (uint16_t y = radius; y < getHeight() - radius; y++)
+            {
+                uint64_t sumR = 0;
+                uint64_t sumG = 0;
+                uint64_t sumB = 0;
+
+                const uint8_t blurSize = pow((radius * 2 + 1), 2);
+
+                // Read nearby pixel values
+                for (uint8_t i = 0; i <= blurSize; i++)
+                {
+                    const uint8_t dx = i % (radius * 2 + 1);
+                    const uint8_t dy = i / (radius * 2 + 1);
+
+                    const uint16_t color = m_sprite.readPixel(x + dx, y + dy);
+
+                    uint8_t r, g, b;
+                    unpackRGB565(color, &r, &g, &b);
+
+                    sumR += r;
+                    sumG += g;
+                    sumB += b;
+                }
+
+                sumR /= blurSize;
+                sumG /= blurSize;
+                sumB /= blurSize;
+
+                uint16_t color = packRGB565(sumR, sumG, sumB);
+
+                copy.writePixel(x, y, color);
+            }
+        }
+
+        // Update the Surface
+        copy.pushSprite(&m_sprite, 0, 0);
+    }
 } // graphics

@@ -29,6 +29,10 @@ extern "C" void app_main()
     const auto wallpaper = graphics::Image("resources/images/wallpaper_2.png");
     canvas.drawImage(wallpaper, 0, 0);
 
+    // Blur the wallpaper
+    // WARNING : Not optimized
+    canvas.blur(10);
+
     // Draw status bar
     canvas.setColor(40, 40, 40);
     canvas.fillRect(0, 0, 320, 20);
