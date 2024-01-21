@@ -7,6 +7,8 @@
 
 #include <graphics.hpp>
 
+#include "color.hpp"
+
 namespace graphics
 {
     Surface::Surface(const uint16_t width, const uint16_t height)
@@ -52,6 +54,10 @@ namespace graphics
 
     void Surface::setColor(const uint8_t r, const uint8_t g, const uint8_t b)
     {
+        m_r = r;
+        m_g = g;
+        m_b = b;
+
         m_sprite.setColor(r, g, b);
     }
 
@@ -72,6 +78,28 @@ namespace graphics
             y / graphics::getRenderScale(),
             w / graphics::getRenderScale(),
             h / graphics::getRenderScale()
+        );
+    }
+
+    void Surface::fillRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r)
+    {
+        m_sprite.fillSmoothRoundRect(
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale(),
+            w / graphics::getRenderScale(),
+            h / graphics::getRenderScale(),
+            r
+        );
+    }
+
+    void Surface::drawRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r)
+    {
+        m_sprite.drawRoundRect(
+            x / graphics::getRenderScale(),
+            y / graphics::getRenderScale(),
+            w / graphics::getRenderScale(),
+            h / graphics::getRenderScale(),
+            r
         );
     }
 
@@ -101,4 +129,16 @@ namespace graphics
         }
     }
 
+    void Surface::setTextScale(const uint8_t scale)
+    {
+        // Even if LovyanGFX supports "floating point scaling"
+        // we don't use it, because half-pixels are not a thing yet
+        m_sprite.setTextSize(scale);
+    }
+
+    void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
+    {
+        m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
+        m_sprite.drawString(text.c_str(), x, y);
+    }
 } // graphics

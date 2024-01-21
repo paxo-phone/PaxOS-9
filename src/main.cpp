@@ -22,9 +22,15 @@ extern "C" void app_main()
 
     auto canvas = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
 
-    const auto image = graphics::Image("resources/images/logo.bmp");
+    canvas.setColor(60, 60, 60);
+    canvas.fillRect(0, 0, 320, 20);
 
-    canvas.drawImage(image, 0, 0);
+    canvas.setColor(255, 255, 255);
+    canvas.setTextScale(2);
+    canvas.drawText("Hello World !", 0, 2);
+
+    canvas.setColor(60, 60, 60);
+    canvas.fillRoundRect(20, 400, 280, 60, 30);
 
     while (graphics::isRunning())
     {

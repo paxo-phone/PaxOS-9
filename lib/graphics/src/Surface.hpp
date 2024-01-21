@@ -21,6 +21,10 @@ namespace graphics
     private:
         lgfx::LGFX_Sprite m_sprite;
 
+        uint8_t m_r;
+        uint8_t m_g;
+        uint8_t m_b;
+
     public:
         Surface(uint16_t width, uint16_t height);
         ~Surface();
@@ -38,9 +42,15 @@ namespace graphics
         void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
         void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
 
+        void fillRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r);
+        void drawRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r);
+
         void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
         void drawImage(const Image& image, int16_t x, int16_t y);
+
+        void setTextScale(uint8_t scale);
+        void drawText(const std::string& text, int16_t x, int16_t y);
     };
 } // graphics
 
