@@ -10,6 +10,7 @@
 #include <memory>
 
 // TODO: Replace this with "storage"
+// TODO : Use "Path"
 uint64_t getFileSize(const char *filename)
 {
     auto inputStream = std::ifstream(filename, std::ios::ate | std::ios::binary);
@@ -18,6 +19,7 @@ uint64_t getFileSize(const char *filename)
 }
 
 // TODO: Replace this with "storage"
+// TODO : Use "Path"
 std::shared_ptr<uint8_t[]> getFileData(const char *filename)
 {
     const size_t filesize = getFileSize(filename);
@@ -36,6 +38,7 @@ std::shared_ptr<uint8_t[]> getFileData(const char *filename)
 }
 
 namespace graphics {
+    // TODO : Use "Path"
     Image::Image(const std::string& filename)
     {
         const size_t fileSize = getFileSize(filename.c_str());
