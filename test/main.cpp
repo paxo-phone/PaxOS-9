@@ -12,6 +12,8 @@
 #include "imgdec/imgdec_test_png.cpp"
 #include "imgdec/imgdec_test_jpg.cpp"
 
+#include "storage/storage_test.cpp"
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
