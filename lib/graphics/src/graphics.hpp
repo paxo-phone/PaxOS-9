@@ -15,21 +15,40 @@ namespace graphics
 {
     class Surface;
 
-    constexpr uint16_t screenWidth = 320;
-    constexpr uint16_t screenHeight = 480;
+    constexpr uint16_t getScreenWidth()
+    {
+        return 320;
+    }
+
+    constexpr uint16_t getScreenHeight()
+    {
+        return 480;
+    }
 
     void init();
-    void close();
+
+    constexpr int getRenderScale()
+    {
+        // SDL2 does not support scaling
+#ifdef ESP_PLATFORM
+        return 2; // Change this value
+#else
+        return 1; // Don't change this value
+#endif
+    }
 
     bool isRunning();
+
+    void renderSurface(const Surface *surface);
+
+    void flip();
+
+    void getTouchPos(int16_t *x, int16_t *y);
+    bool isTouched();
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());
 #endif
-
-    void setColor(uint8_t r, uint8_t g, uint8_t b);
-
-    void fillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
 }
 
 #endif //GRAPHICS_HPP

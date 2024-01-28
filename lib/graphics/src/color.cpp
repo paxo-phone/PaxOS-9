@@ -18,12 +18,17 @@ uint16_t graphics::packRGB565(const uint8_t r, const uint8_t g, const uint8_t b)
 
 void graphics::unpackRGB565(const uint16_t rgb, uint8_t* r, uint8_t* g, uint8_t* b)
 {
-    *r = (rgb >> 11) & 0x1F;
-    *r = (*r * 255) / 31; // Scale back to 8 bits
+    // *r = (rgb >> 11) & 0x1F;
+    // *r = (*r * 255) / 31; // Scale back to 8 bits
+    //
+    // *g = (rgb >> 5) & 0x1F;
+    // *g = (*g * 255) / 63; // Scale back to 8 bits
+    //
+    // *b = rgb & 0x1F;
+    // *b = (*b * 255) / 31; // Scale back to 8 bits
 
-    *g = (rgb >> 5) & 0x1F;
-    *g = (*g * 255) / 63; // Scale back to 8 bits
-
-    *b = rgb & 0x1F;
-    *b = (*b * 255) / 31; // Scale back to 8 bits
+    // https://forum.arduino.cc/t/help-converting-rgb565-to-rgb888/275681
+    *r = ((((rgb >> 11) & 0x1F) * 527) + 23) >> 6;
+    *g = ((((rgb >> 5) & 0x3F) * 259) + 33) >> 6;
+    *b = (((rgb & 0x1F) * 527) + 23) >> 6;
 }

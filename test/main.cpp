@@ -7,6 +7,11 @@
 
 #include "i18n/test.cpp"
 
+#include "imgdec/imgdec_test_utils.cpp"
+#include "imgdec/imgdec_test_bmp.cpp"
+#include "imgdec/imgdec_test_png.cpp"
+#include "imgdec/imgdec_test_jpg.cpp"
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

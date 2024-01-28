@@ -7,7 +7,7 @@ class Widget
 {
     public:
     Widget();
-    ~Widget();
+    virtual ~Widget();
 
     void renderAll();
     virtual void render() = 0;
