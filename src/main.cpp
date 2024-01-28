@@ -4,138 +4,81 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
-#include "esp_pm.h"
 
 #endif
 
 #include "graphics.hpp"
+#include "gui.hpp"
+#include "path.hpp"
+#include "filestream.hpp"
+#include <iostream>
 
-#include "Surface.hpp"
-#include "Image.hpp"
-#include "color.hpp"
+using namespace storage;
 
-#include "delay.hpp"
+void storageTest()
+{
+    if(storage::Path("/dir1").exists())
+        std::cout << "[ERROR] dir doesn't exists" << std::endl;
+    if(!storage::Path("/dir1").newdir())
+        std::cout << "[ERROR] creating dir" << std::endl;
+    if(!storage::Path("/dir1").exists())
+        std::cout << "[ERROR] dir exists" << std::endl;
+    if(!storage::Path("/dir1").isdir())
+        std::cout << "[ERROR] is dir for a dir" << std::endl;
+    if(storage::Path("/dir1").isfile())
+        std::cout << "[ERROR] is file for a dir" << std::endl;
+    
+    if(storage::Path("/dir1/test.txt").exists())
+        std::cout << "[ERROR] file doesn't exists" << std::endl;
+    if(!storage::Path("/dir1/test.txt").newfile())
+        std::cout << "[ERROR] creating file" << std::endl;
+    if(!storage::Path("/dir1/test.txt").isfile())
+        std::cout << "[ERROR] is file for a file" << std::endl;
+    if(storage::Path("/dir1/test.txt").isdir())
+        std::cout << "[ERROR] is dir for a file" << std::endl;
+
+    if(!storage::Path("/dir1/test.txt").rename(Path("/dir1/test2.txt")))
+        std::cout << "[ERROR] rename file" << std::endl;
+    if(!storage::Path("/dir1/test2.txt").exists())
+        std::cout << "[ERROR] file2 exist" << std::endl;
+    if(!storage::Path("/dir1/test2.txt").remove())
+        std::cout << "[ERROR] removing a file" << std::endl;
+    if(storage::Path("/dir1/test2.txt").exists())
+        std::cout << "[ERROR] file2 exist" << std::endl;
+    
+    if(!storage::Path("/dir1").remove())
+        std::cout << "[ERROR] removing dir" << std::endl;
+    if(storage::Path("/dir1").exists())
+        std::cout << "[ERROR] dir doesn't exists" << std::endl;
+
+    std::cout << "[INFO] Storage Benchmark Ended" << std::endl;
+}
 
 // ESP-IDF main
 extern "C" void app_main()
 {
+    storage::init();
+    storageTest();
+
+    storage::Path path("test.txt");
+    storage::FileStream stream(path.str(), storage::Mode::READ);
+    std::cout << "content: " << stream.read() << std::endl;
+
     graphics::init();
-
-    auto canvas = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
-
-    canvas.clear(0, 0, 0);
-
-    // Draw wallpaper
-    const auto wallpaper = graphics::Image("resources/images/wallpaper_2.png");
-    canvas.drawImage(wallpaper, 0, 0);
-
-    // Blur the wallpaper
-    // WARNING : Not optimized
-    canvas.blur(10);
-
-    // Draw status bar
-    canvas.setColor(40, 40, 40);
-    canvas.fillRect(0, 0, 320, 20);
-
-    // Draw time
-    canvas.setColor(255, 255, 255);
-    canvas.setTextScale(2);
-    canvas.drawTextCentered("13:38", 0, 3, 320);
-
-    // Draw apps
-    canvas.setColor(0, 0, 0);
-    int16_t appX;
-    int16_t appY = 36;
-    for (uint8_t i = 0; i < 4; i++)
-    {
-        appX = 8;
-
-        for (uint8_t j = 0; j < 4; j++)
-        {
-            canvas.fillRoundRect(appX, appY, 64, 64, 16);
-
-            appX += 80;
-        }
-
-        appY += 80;
-    }
-
-    // Draw dock
-    canvas.setColor(60, 60, 60);
-    canvas.fillRoundRect(8, 396, 304, 76, 20);
-
-    // Draw dock - Apps
-    canvas.setColor(0, 0, 0);
-    appX = 8 + 6;
-    for (uint8_t i = 0; i < 4; i++)
-    {
-        canvas.fillRoundRect(appX, 396 + 6, 64, 64, 16);
-        appX += 64 + 12;
-    }
-
-    // Markers
-    if (false)
-    {
-        // Draw markers
-        canvas.setColor(127, 0, 0);
-        canvas.drawLine(10, 0, 10, 480);
-        canvas.drawLine(310, 0, 310, 480);
-        canvas.drawLine(0, 20, 320, 20);
-
-        // Draw markers - App dock
-        canvas.drawLine(0, 400, 320, 400);
-        canvas.drawLine(0, 474, 320, 474);
-
-        // Draw markers - Apps
-        canvas.setColor(0, 0, 255);
-
-        // Draw markers - Apps - Rows
-        int16_t rowX = 8;
-        canvas.drawLine(rowX, 0, rowX, 480);
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            rowX += 64;
-            canvas.drawLine(rowX, 0, rowX, 480);
-            rowX += 16;
-            canvas.drawLine(rowX, 0, rowX, 480);
-        }
-
-        // Draw markers - Apps - Cols
-        int16_t colY = 36;
-        canvas.drawLine(0, colY, 320, colY);
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            colY += 64;
-            canvas.drawLine(0, colY, 320, colY);
-            colY += 16;
-            canvas.drawLine(0, colY, 320, colY);
-        }
-
-        // Draw preview text
-        canvas.setColor(200, 200, 200);
-        canvas.setTextScale(1);
-        canvas.drawText("PaxOS 9 (lib/graphics test)", 0, 2);
-    }
-
-    uint8_t r, g, b;
-    graphics::unpackRGB565(canvas.getPixel(160, 280), &r, &g, &b);
-
-    for (uint16_t i = 0; i < 50; i++)
-    {
-        for (uint16_t j = 0; j < 50; j++)
-        {
-            canvas.setPixel(i, j, graphics::packRGB565(255, 0, 0));
-        }
-    }
-
-    printf("PIXEL COLOR : %d %d %d\n", r, g, b);
+    graphics::setColor(255, 0, 0);
+    graphics::fillRect(0, 0, 64, 64);
 
     while (graphics::isRunning())
     {
-        graphics::renderSurface(&canvas);
-        graphics::flip();
+#ifdef ESP_PLATFORM
 
-        temp::delay(1);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+
+#else
+
+        SDL_Delay(1000);
+
+#endif
     }
 }
 
@@ -145,8 +88,6 @@ extern "C" void app_main()
 int main(int argc, char **argv)
 {
     graphics::SDLInit(app_main);
-
-    return 0;
 }
 
 #endif
