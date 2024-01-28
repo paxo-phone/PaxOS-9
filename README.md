@@ -4,12 +4,12 @@
 
 **PaxOS 9** est la dernière version du **PaxOS**, un système d'exploitation léger destiné aux PaxoPhones. 
 
-- [License](#license)
+- [Licence](#licence)
 - [Contact](#contact)
 - [En savoir plus](#see-more)
 - [Contributeurs](#contributors)
 
-# License
+# Licence
 Ce projet est distribué sous licence GPL-3.0.
 
 # Contact
