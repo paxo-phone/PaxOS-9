@@ -65,8 +65,6 @@ extern "C" void app_main()
     std::cout << "content: " << stream.read() << std::endl;
 
     graphics::init();
-    graphics::setColor(255, 0, 0);
-    graphics::fillRect(0, 0, 64, 64);
 
     while (graphics::isRunning())
     {
