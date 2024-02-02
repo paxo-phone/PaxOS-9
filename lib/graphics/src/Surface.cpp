@@ -6,12 +6,22 @@
 #include "Surface.hpp"
 
 #include <graphics.hpp>
+#include <iostream>
 
 #include "color.hpp"
+#include "fonts/Arial-12.h"
+#include "fonts/Arial-16.h"
+#include "fonts/Arial-24.h"
+#include "fonts/Arial-8.h"
 
 namespace graphics
 {
-    Surface::Surface(const uint16_t width, const uint16_t height)
+    Surface::Surface(const uint16_t width, const uint16_t height) :
+        m_r(255),
+        m_g(255),
+        m_b(255),
+        m_font(ARIAL),
+        m_fontSize(PT_12)
     {
         m_sprite.setColorDepth(16);
 
@@ -139,15 +149,44 @@ namespace graphics
         }
     }
 
+    void Surface::setFont(const EFont font)
+    {
+        m_font = font;
+    }
+
+    void Surface::setFontSize(const EFontSize fontSize)
+    {
+        m_fontSize = fontSize;
+    }
+
     void Surface::setTextScale(const uint8_t scale)
     {
         // Even if LovyanGFX supports "floating point scaling"
         // we don't use it, because half-pixels are not a thing yet
-        m_sprite.setTextSize(scale);
+        // m_sprite.setTextSize(scale);
+
+        // 12 is the default font size
+        if (scale == 1)
+        {
+            setFontSize(PT_12);
+        }
+        else
+        {
+            setFontSize(PT_24);
+        }
     }
 
     void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
     {
+        // Update font
+        if (m_font == ARIAL)
+        {
+            if (m_fontSize == PT_8) m_sprite.setFont(&Arial8ptFR);
+            if (m_fontSize == PT_12) m_sprite.setFont(&Arial12ptFR);
+            if (m_fontSize == PT_16) m_sprite.setFont(&Arial16ptFR);
+            if (m_fontSize == PT_24) m_sprite.setFont(&Arial24ptFR);
+        }
+
         m_sprite.setTextColor(packRGB565(m_r, m_g, m_b)); // Provide only the foreground color, background is transparent
         m_sprite.drawString(text.c_str(), x, y);
     }
