@@ -282,6 +282,16 @@ namespace graphics
         // Create a new text surface
         auto *textSurface = new Surface(textWidth, textHeight);
 
+        // Calculate the opposite of the text color (for the transparent background)
+        const uint8_t bgR = 255 - m_r;
+        const uint8_t bgG = 255 - m_g;
+        const uint8_t bgB = 255 - m_b;
+
+        // Set the background as transparent
+        textSurface->setTransparency(true);
+        textSurface->setTransparentColor(bgR, bgG, bgB);
+        textSurface->clear(bgR, bgG, bgB);
+
         // --- Debug ---
         textSurface->setColor(255, 0, 0);
         textSurface->drawRect(0, 0, textWidth, textHeight);
