@@ -20,6 +20,10 @@ namespace graphics
         m_r(255),
         m_g(255),
         m_b(255),
+        m_transparent(false),
+        m_tr(0),
+        m_tg(0),
+        m_tb(0),
         m_font(ARIAL),
         m_fontSize(PT_12)
     {
@@ -55,11 +59,23 @@ namespace graphics
 
     void Surface::pushSurface(Surface *surface, const int16_t x, const int16_t y)
     {
-        surface->m_sprite.pushSprite(
-            &m_sprite,
-            x / graphics::getRenderScale(),
-            y / graphics::getRenderScale()
-        );
+        if (surface->m_transparent)
+        {
+            surface->m_sprite.pushSprite(
+                &m_sprite,
+                x / graphics::getRenderScale(),
+                y / graphics::getRenderScale(),
+                packRGB565(surface->m_tr, surface->m_tg, surface->m_tb)
+            );
+        }
+        else
+        {
+            surface->m_sprite.pushSprite(
+                &m_sprite,
+                x / graphics::getRenderScale(),
+                y / graphics::getRenderScale()
+            );
+        }
     }
 
     void Surface::pushSurfaceWithScale(Surface* surface, const int16_t x, const int16_t y, const float scale)
@@ -69,14 +85,30 @@ namespace graphics
         // the x and y are the coordinates of the CENTER of the sprite
         // and not the top-left corner as in "pushSprite"
         // The calcs are working, PLEASE DON'T TOUCH THEM
-        surface->m_sprite.pushRotateZoomWithAA(
-            &m_sprite,
-            static_cast<float>(x) + static_cast<float>(surface->getWidth()) * scale * 0.5f,
-            static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f,
-            0,
-            scale,
-            scale
-        );
+
+        if (surface->m_transparent)
+        {
+            surface->m_sprite.pushRotateZoomWithAA(
+                &m_sprite,
+                static_cast<float>(x) + static_cast<float>(surface->getWidth()) * scale * 0.5f,
+                static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f,
+                0,
+                scale,
+                scale,
+                packRGB565(surface->m_tr, surface->m_tg, surface->m_tb)
+            );
+        }
+        else
+        {
+            surface->m_sprite.pushRotateZoomWithAA(
+                &m_sprite,
+                static_cast<float>(x) + static_cast<float>(surface->getWidth()) * scale * 0.5f,
+                static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f,
+                0,
+                scale,
+                scale
+            );
+        }
     }
 
     void Surface::clear(const uint8_t r, const uint8_t g, const uint8_t b)
@@ -96,6 +128,18 @@ namespace graphics
         m_b = b;
 
         m_sprite.setColor(r, g, b);
+    }
+
+    void Surface::setTransparency(const bool enabled)
+    {
+        m_transparent = enabled;
+    }
+
+    void Surface::setTransparentColor(const uint8_t r, const uint8_t g, const uint8_t b)
+    {
+        m_tr = r;
+        m_tg = g;
+        m_tb = b;
     }
 
     void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)

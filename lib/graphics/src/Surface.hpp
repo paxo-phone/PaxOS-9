@@ -26,6 +26,11 @@ namespace graphics
         uint8_t m_g;
         uint8_t m_b;
 
+        bool m_transparent;
+        uint8_t m_tr;
+        uint8_t m_tg;
+        uint8_t m_tb;
+
         EFont m_font;
         float m_fontSize;
 
@@ -46,6 +51,9 @@ namespace graphics
         void clear();
 
         void setColor(uint8_t r, uint8_t g, uint8_t b);
+
+        void setTransparency(bool enabled);
+        void setTransparentColor(uint8_t r, uint8_t g, uint8_t b);
 
         void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
         void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
