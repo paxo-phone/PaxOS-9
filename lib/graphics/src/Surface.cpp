@@ -176,19 +176,42 @@ namespace graphics
         }
     }
 
-    void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
+    const lgfx::GFXfont * getFont(const EFont font, const EFontSize fontSize)
     {
-        // Update font
-        if (m_font == ARIAL)
+        if (font == ARIAL)
         {
-            if (m_fontSize == PT_8) m_sprite.setFont(&Arial8ptFR);
-            if (m_fontSize == PT_12) m_sprite.setFont(&Arial12ptFR);
-            if (m_fontSize == PT_16) m_sprite.setFont(&Arial16ptFR);
-            if (m_fontSize == PT_24) m_sprite.setFont(&Arial24ptFR);
+            if (fontSize == PT_8) return &Arial8ptFR;
+            if (fontSize == PT_12) return &Arial12ptFR;
+            if (fontSize == PT_16) return &Arial16ptFR;
+            if (fontSize == PT_24) return &Arial24ptFR;
         }
 
-        m_sprite.setTextColor(packRGB565(m_r, m_g, m_b)); // Provide only the foreground color, background is transparent
-        m_sprite.drawString(text.c_str(), x, y);
+        return nullptr;
+    }
+
+    void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
+    {
+        // Get text size
+        const uint16_t textWidth = m_sprite.textWidth(text.c_str(), getFont(m_font, m_fontSize));
+        const uint16_t textHeight = m_sprite.fontHeight(getFont(m_font, m_fontSize));
+
+        // Create a new text surface
+        auto *textSurface = new Surface(textWidth, textHeight);
+
+        // --- Debug ---
+        textSurface->setColor(255, 0, 0);
+        textSurface->drawRect(0, 0, textWidth, textHeight);
+        // -- End ---
+
+        // Render the text on the text surface
+        textSurface->m_sprite.setFont(getFont(m_font, m_fontSize));
+        textSurface->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
+        textSurface->m_sprite.drawString(text.c_str(), 0, 0);
+
+        // Draw the text surface
+        pushSurface(textSurface, x, y);
+
+        delete textSurface;
     }
 
     void Surface::drawTextCentered(const std::string& text, const int16_t x, const int16_t y, const uint16_t w)

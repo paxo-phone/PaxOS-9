@@ -30,13 +30,17 @@ extern "C" void app_main()
         canvas.drawText("Hello World !", 16, 16);
 
         canvas.setFontSize(graphics::PT_12);
-        canvas.drawText("Hello World !", 16, 32);
+        canvas.drawText("Hello World !", 16, 64);
 
         canvas.setFontSize(graphics::PT_16);
-        canvas.drawText("Hello World !", 16, 48);
+        canvas.drawText("Hello World !", 16, 128);
+
+        // Set font size to 20 PX
+        //canvas.setFontSize(graphics::PT_16);
+        canvas.drawText("Hello World !", 16, 192);
 
         canvas.setFontSize(graphics::PT_24);
-        canvas.drawText("Hello World !", 16, 64);
+        canvas.drawText("Hello World !", 16, 256);
 
         graphics::renderSurface(&canvas);
 
