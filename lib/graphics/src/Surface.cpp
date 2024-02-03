@@ -171,7 +171,7 @@ namespace graphics
         m_font = font;
     }
 
-    void Surface::setFontSize(const EFontSize fontSize)
+    void Surface::setFontSize(const float fontSize)
     {
         m_fontSize = fontSize;
     }
@@ -208,9 +208,32 @@ namespace graphics
 
     void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
     {
+        // Get the correct font size
+        EFontSize fontSize;
+
+        if (m_fontSize <= 8)
+        {
+            fontSize = PT_8;
+        }
+        else if (m_fontSize <= 12)
+        {
+            fontSize = PT_12;
+        }
+        else if (m_fontSize <= 16)
+        {
+            fontSize = PT_16;
+        }
+        else
+        {
+            fontSize = PT_24;
+        }
+
+        // Get the correct scale
+        const float scale = m_fontSize / static_cast<float>(fontSize);
+
         // Get text size
-        const uint16_t textWidth = m_sprite.textWidth(text.c_str(), getFont(m_font, m_fontSize));
-        const uint16_t textHeight = m_sprite.fontHeight(getFont(m_font, m_fontSize));
+        const uint16_t textWidth = m_sprite.textWidth(text.c_str(), getFont(m_font, fontSize));
+        const uint16_t textHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
 
         // Create a new text surface
         auto *textSurface = new Surface(textWidth, textHeight);
@@ -221,12 +244,12 @@ namespace graphics
         // -- End ---
 
         // Render the text on the text surface
-        textSurface->m_sprite.setFont(getFont(m_font, m_fontSize));
+        textSurface->m_sprite.setFont(getFont(m_font, fontSize));
         textSurface->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
         textSurface->m_sprite.drawString(text.c_str(), 0, 0);
 
         // Draw the text surface
-        pushSurface(textSurface, x, y);
+        pushSurfaceWithScale(textSurface, x, y, scale);
 
         delete textSurface;
     }

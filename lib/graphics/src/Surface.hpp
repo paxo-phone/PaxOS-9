@@ -27,7 +27,7 @@ namespace graphics
         uint8_t m_b;
 
         EFont m_font;
-        EFontSize m_fontSize;
+        float m_fontSize;
 
     public:
         Surface(uint16_t width, uint16_t height);
@@ -58,7 +58,7 @@ namespace graphics
         void drawImage(const Image& image, int16_t x, int16_t y);
 
         void setFont(EFont font);
-        void setFontSize(EFontSize fontSize);
+        void setFontSize(float fontSize);
         [[deprecated("Please use : setFontSize")]]
         void setTextScale(uint8_t scale);
         void drawText(const std::string& text, int16_t x, int16_t y);

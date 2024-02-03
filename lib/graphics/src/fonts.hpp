@@ -14,10 +14,10 @@ namespace graphics
 
     enum EFontSize
     {
-        PT_8,
-        PT_12,
-        PT_16,
-        PT_24
+        PT_8 = 8,
+        PT_12 = 12,
+        PT_16 = 16,
+        PT_24 = 24
     };
 }
 
