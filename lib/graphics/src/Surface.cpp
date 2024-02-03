@@ -64,7 +64,19 @@ namespace graphics
 
     void Surface::pushSurfaceWithScale(Surface* surface, const int16_t x, const int16_t y, const float scale)
     {
-        surface->m_sprite.pushRotateZoomWithAA(&m_sprite, x, y, 0, scale, scale);
+        // LovyanGFX is very weird...
+        // When pushing with "pushRotateZoomWithAA",
+        // the x and y are the coordinates of the CENTER of the sprite
+        // and not the top-left corner as in "pushSprite"
+        // The calcs are working, PLEASE DON'T TOUCH THEM
+        surface->m_sprite.pushRotateZoomWithAA(
+            &m_sprite,
+            static_cast<float>(x) + static_cast<float>(surface->getWidth()) * scale * 0.5f,
+            static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f,
+            0,
+            scale,
+            scale
+        );
     }
 
     void Surface::clear(const uint8_t r, const uint8_t g, const uint8_t b)
