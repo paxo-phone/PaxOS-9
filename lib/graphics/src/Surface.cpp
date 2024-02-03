@@ -250,7 +250,9 @@ namespace graphics
         return nullptr;
     }
 
-    // void drawText(const std::string& text, const int16_t x, const int16_t y)
+    // Old version, with full text rendering
+    //
+    // void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
     // {
     //     // Get the correct font size
     //     EFontSize fontSize;
