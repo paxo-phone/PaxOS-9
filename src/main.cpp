@@ -29,6 +29,9 @@ extern "C" void app_main()
         canvas.setFontSize(8);
         canvas.drawText("Hello World !", 16, 16);
 
+        canvas.setFontSize(10);
+        canvas.drawText("Hello World !", 16, 32);
+
         canvas.setFontSize(12);
         canvas.drawText("Hello World !", 16, 64);
 
@@ -46,6 +49,9 @@ extern "C" void app_main()
 
         canvas.setFontSize(24);
         canvas.drawText("Hello World !", 16, 256);
+
+        canvas.setFontSize(28);
+        canvas.drawText("Hello World !", 16, 320);
 
         graphics::renderSurface(&canvas);
 
