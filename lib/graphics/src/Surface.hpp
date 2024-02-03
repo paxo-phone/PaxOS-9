@@ -40,6 +40,7 @@ namespace graphics
         void setPixel(uint16_t x, uint16_t y, uint16_t value);
 
         void pushSurface(Surface *surface, int16_t x, int16_t y);
+        void pushSurfaceWithScale(Surface *surface, int16_t x, int16_t y, float scale);
 
         void clear(uint8_t r, uint8_t g, uint8_t b);
         void clear();

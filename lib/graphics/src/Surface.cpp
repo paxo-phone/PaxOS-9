@@ -62,6 +62,11 @@ namespace graphics
         );
     }
 
+    void Surface::pushSurfaceWithScale(Surface* surface, const int16_t x, const int16_t y, const float scale)
+    {
+        surface->m_sprite.pushRotateZoomWithAA(&m_sprite, x, y, 0, scale, scale);
+    }
+
     void Surface::clear(const uint8_t r, const uint8_t g, const uint8_t b)
     {
         m_sprite.clear(lgfx::color565(r, g, b));
