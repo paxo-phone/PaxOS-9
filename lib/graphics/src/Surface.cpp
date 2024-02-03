@@ -292,11 +292,6 @@ namespace graphics
         textSurface->setTransparentColor(bgR, bgG, bgB);
         textSurface->clear(bgR, bgG, bgB);
 
-        // --- Debug ---
-        textSurface->setColor(255, 0, 0);
-        textSurface->drawRect(0, 0, textWidth, textHeight);
-        // -- End ---
-
         // Render the text on the text surface
         textSurface->m_sprite.setFont(getFont(m_font, fontSize));
         textSurface->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
