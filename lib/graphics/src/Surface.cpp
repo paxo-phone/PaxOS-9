@@ -250,52 +250,120 @@ namespace graphics
         return nullptr;
     }
 
+    // Old version, with full text rendering
+    //
+    // void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
+    // {
+    //     // Get the correct font size
+    //     EFontSize fontSize;
+    //
+    //     if (m_fontSize <= 8)
+    //     {
+    //         fontSize = PT_8;
+    //     }
+    //     else if (m_fontSize <= 12)
+    //     {
+    //         fontSize = PT_12;
+    //     }
+    //     else if (m_fontSize <= 16)
+    //     {
+    //         fontSize = PT_16;
+    //     }
+    //     else
+    //     {
+    //         fontSize = PT_24;
+    //     }
+    //
+    //     // Get the correct scale
+    //     const float scale = m_fontSize / static_cast<float>(fontSize);
+    //
+    //     // Get text size
+    //     const uint16_t textWidth = m_sprite.textWidth(text.c_str(), getFont(m_font, fontSize));
+    //     const uint16_t textHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
+    //
+    //     // Create a new text surface
+    //     auto *textSurface = new Surface(textWidth, textHeight);
+    //
+    //     // Calculate the opposite of the text color (for the transparent background)
+    //     const uint8_t bgR = 255 - m_r;
+    //     const uint8_t bgG = 255 - m_g;
+    //     const uint8_t bgB = 255 - m_b;
+    //
+    //     // Set the background as transparent
+    //     textSurface->setTransparency(true);
+    //     textSurface->setTransparentColor(bgR, bgG, bgB);
+    //     textSurface->clear(bgR, bgG, bgB);
+    //
+    //     // Render the text on the text surface
+    //     textSurface->m_sprite.setFont(getFont(m_font, fontSize));
+    //     textSurface->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
+    //     textSurface->m_sprite.drawString(text.c_str(), 0, 0);
+    //
+    //     // Draw the text surface
+    //     pushSurfaceWithScale(textSurface, x, y, scale);
+    //
+    //     delete textSurface;
+    // }
+
     void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
     {
         // Get the correct font size
         EFontSize fontSize;
 
-        if (m_fontSize <= 8)
-        {
-            fontSize = PT_8;
-        }
-        else if (m_fontSize <= 12)
-        {
-            fontSize = PT_12;
-        }
-        else if (m_fontSize <= 16)
-        {
-            fontSize = PT_16;
-        }
-        else
-        {
-            fontSize = PT_24;
-        }
+        if (m_fontSize <= 8) fontSize = PT_8;
+        else if (m_fontSize <= 12) fontSize = PT_12;
+        else if (m_fontSize <= 16) fontSize = PT_16;
+        else fontSize = PT_24;
 
         // Get the correct scale
         const float scale = m_fontSize / static_cast<float>(fontSize);
 
-        // Get text size
-        const uint16_t textWidth = m_sprite.textWidth(text.c_str(), getFont(m_font, fontSize));
-        const uint16_t textHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
+        // Get buffer size
+        const uint16_t bufferHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
+        const uint16_t bufferWidth = bufferHeight; // Maybe... wrong ?
 
-        // Create a new text surface
-        auto *textSurface = new Surface(textWidth, textHeight);
+        // Create buffer
+        auto *buffer = new Surface(bufferWidth, bufferHeight);
 
-        // --- Debug ---
-        textSurface->setColor(255, 0, 0);
-        textSurface->drawRect(0, 0, textWidth, textHeight);
-        // -- End ---
+        // Init the buffer
+        buffer->m_sprite.setFont(getFont(m_font, fontSize));
+        buffer->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
 
-        // Render the text on the text surface
-        textSurface->m_sprite.setFont(getFont(m_font, fontSize));
-        textSurface->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
-        textSurface->m_sprite.drawString(text.c_str(), 0, 0);
+        // Calculate the opposite of the text color (for the transparent background)
+        const uint8_t bgR = 255 - m_r;
+        const uint8_t bgG = 255 - m_g;
+        const uint8_t bgB = 255 - m_b;
 
-        // Draw the text surface
-        pushSurfaceWithScale(textSurface, x, y, scale);
+        // Set the background as transparent
+        buffer->setTransparency(true);
+        buffer->setTransparentColor(bgR, bgG, bgB);
+        buffer->clear(bgR, bgG, bgB);
 
-        delete textSurface;
+        // Init variables
+        float ox = 0; // X offset
+
+        // Draw text char by char
+        for (size_t i = 0; i < text.length(); i++)
+        {
+            // Reset buffer
+            buffer->clear(bgR, bgG, bgB);
+
+            // Get char
+            const char c = text[i];
+            const char *str = std::string(1, c).c_str(); // Bad trick I think
+
+            // Draw the char
+            buffer->m_sprite.drawString(str, 0, 0);
+
+            // Push the buffer
+            pushSurfaceWithScale(buffer, static_cast<int16_t>(static_cast<float>(x) + ox), y, scale);
+
+            // Update the offset
+            const uint16_t charWidth = m_sprite.textWidth(str, getFont(m_font, fontSize));
+            ox += static_cast<float>(charWidth) * scale;
+        }
+
+        delete buffer;
     }
 
     void Surface::drawTextCentered(const std::string& text, const int16_t x, const int16_t y, const uint16_t w)
