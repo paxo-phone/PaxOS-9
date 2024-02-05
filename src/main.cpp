@@ -26,20 +26,25 @@ extern "C" void app_main()
 
         canvas.setColor(255, 255, 255);
 
-        canvas.setFontSize(graphics::PT_8);
+        canvas.setFontSize(8);
         canvas.drawText("Hello World !", 16, 16);
 
-        canvas.setFontSize(graphics::PT_12);
+        canvas.setFontSize(12);
         canvas.drawText("Hello World !", 16, 64);
 
-        canvas.setFontSize(graphics::PT_16);
+        canvas.setFontSize(14);
+        canvas.drawText("Hello World !", 16, 96);
+
+        canvas.setFontSize(16);
         canvas.drawText("Hello World !", 16, 128);
 
-        // Set font size to 20 PX
-        //canvas.setFontSize(graphics::PT_16);
+        canvas.setFontSize(18);
+        canvas.drawText("Hello World !", 16, 164);
+
+        canvas.setFontSize(20);
         canvas.drawText("Hello World !", 16, 192);
 
-        canvas.setFontSize(graphics::PT_24);
+        canvas.setFontSize(24);
         canvas.drawText("Hello World !", 16, 256);
 
         graphics::renderSurface(&canvas);
