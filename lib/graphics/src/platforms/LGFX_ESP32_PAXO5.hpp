@@ -4,7 +4,7 @@
 
 #include <LovyanGFX.hpp>
 
-#define USE_TOUCH_CAPACITIVE
+#define USE_TOUCH_RESISTIVE
 
 class LGFX : public lgfx::LGFX_Device
 {
@@ -30,6 +30,8 @@ public:
       cfg.freq_read  = 16000000;
       cfg.spi_3wire  = true; // changed
       cfg.use_lock   = true;
+      cfg.dma_channel = 1;
+
       cfg.pin_sclk = 18;
       cfg.pin_mosi = 23;
       cfg.pin_dc   = 2;
@@ -53,7 +55,7 @@ public:
       cfg.offset_rotation  =     0; 
       cfg.dummy_read_pixel =     8; 
       cfg.dummy_read_bits  =     0;//1 
-      cfg.readable         =  true; 
+      cfg.readable         =  false; 
       cfg.invert           = false; 
       cfg.rgb_order        = false; 
       cfg.dlen_16bit       = false; 
@@ -98,9 +100,8 @@ public:
       auto cfg = _touch_instance.config();
       cfg.i2c_port = 1;
       cfg.i2c_addr = 0x38;
-      cfg.pin_sda  = 23;
-      cfg.pin_scl  = 32;  
-      _touch_instance.config(cfg);
+      cfg.pin_sda  = 13;
+      cfg.pin_scl  = 15;
       #endif
       
       _touch_instance.config(cfg);
