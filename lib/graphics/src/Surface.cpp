@@ -17,19 +17,16 @@
 namespace graphics
 {
     Surface::Surface(const uint16_t width, const uint16_t height) :
-        m_r(255),
-        m_g(255),
-        m_b(255),
+        m_color(0xFFFF),
         m_transparent(false),
-        m_tr(0),
-        m_tg(0),
-        m_tb(0),
+        m_transparent_color(0x0000),
         m_font(ARIAL),
         m_fontSize(PT_12)
     {
         m_sprite.setColorDepth(16);
+        m_sprite.setPsram(true);
 
-        m_sprite.createSprite(width / graphics::getRenderScale(), height / graphics::getRenderScale());
+        m_sprite.createSprite(width, height);
     }
 
     Surface::~Surface()
@@ -52,7 +49,7 @@ namespace graphics
         return m_sprite.readPixel(x, y);
     }
 
-    void Surface::setPixel(const uint16_t x, const uint16_t y, const uint16_t value)
+    void Surface::setPixel(const uint16_t x, const uint16_t y, const color_t value)
     {
         m_sprite.writePixel(x, y, value);
     }
@@ -63,17 +60,17 @@ namespace graphics
         {
             surface->m_sprite.pushSprite(
                 &m_sprite,
-                x / graphics::getRenderScale(),
-                y / graphics::getRenderScale(),
-                packRGB565(surface->m_tr, surface->m_tg, surface->m_tb)
+                x,
+                y,
+                m_transparent_color
             );
         }
         else
         {
             surface->m_sprite.pushSprite(
                 &m_sprite,
-                x / graphics::getRenderScale(),
-                y / graphics::getRenderScale()
+                x,
+                y
             );
         }
     }
@@ -95,7 +92,7 @@ namespace graphics
                 0,
                 scale,
                 scale,
-                packRGB565(surface->m_tr, surface->m_tg, surface->m_tb)
+                m_transparent_color
             );
         }
         else
@@ -111,9 +108,9 @@ namespace graphics
         }
     }
 
-    void Surface::clear(const uint8_t r, const uint8_t g, const uint8_t b)
+    void Surface::clear(const color_t color)
     {
-        m_sprite.clear(lgfx::color565(r, g, b));
+        m_sprite.clear(color);
     }
 
     void Surface::clear()
@@ -121,13 +118,9 @@ namespace graphics
         m_sprite.clear();
     }
 
-    void Surface::setColor(const uint8_t r, const uint8_t g, const uint8_t b)
+    void Surface::setColor(const color_t color)
     {
-        m_r = r;
-        m_g = g;
-        m_b = b;
-
-        m_sprite.setColor(r, g, b);
+        m_color = color;
     }
 
     void Surface::setTransparency(const bool enabled)
@@ -135,62 +128,39 @@ namespace graphics
         m_transparent = enabled;
     }
 
-    void Surface::setTransparentColor(const uint8_t r, const uint8_t g, const uint8_t b)
+    void Surface::setTransparentColor(const color_t color)
     {
-        m_tr = r;
-        m_tg = g;
-        m_tb = b;
+        m_transparent_color = color;
     }
 
-    void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
+    void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color)
     {
-        m_sprite.fillRect(
-            x / graphics::getRenderScale(),
-            y / graphics::getRenderScale(),
-            w / graphics::getRenderScale(),
-            h / graphics::getRenderScale()
-        );
+        m_sprite.fillRect(x, y, w, h, color);
     }
 
-    void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
+    void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color)
     {
-        m_sprite.drawRect(
-            x / graphics::getRenderScale(),
-            y / graphics::getRenderScale(),
-            w / graphics::getRenderScale(),
-            h / graphics::getRenderScale()
-        );
+        m_sprite.drawRect(x, y, w, h, color);
     }
 
-    void Surface::fillRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r)
+    void Surface::fillRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r, const color_t color)
     {
-        m_sprite.fillSmoothRoundRect(
-            x / graphics::getRenderScale(),
-            y / graphics::getRenderScale(),
-            w / graphics::getRenderScale(),
-            h / graphics::getRenderScale(),
-            r
-        );
+        m_sprite.fillSmoothRoundRect(x, y, w, h, r, color);
     }
 
-    void Surface::drawRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r)
+    void Surface::drawRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r, const color_t color)
     {
-        m_sprite.drawRoundRect(
-            x / graphics::getRenderScale(),
-            y / graphics::getRenderScale(),
-            w / graphics::getRenderScale(),
-            h / graphics::getRenderScale(),
-            r
-        );
+        m_sprite.drawRoundRect(x, y, w, h, r, color);
     }
 
-    void Surface::drawLine(const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2)
+    void Surface::drawLine(const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2, const color_t color)
     {
         m_sprite.drawLine(
-            x1 / graphics::getRenderScale(),
-            y1 / graphics::getRenderScale(),
-            x2 / graphics::getRenderScale(),
-            y2 / graphics::getRenderScale()
+            x1,
+            y1,
+            x2,
+            y2,
+            color
         );
     }
 
@@ -220,21 +190,9 @@ namespace graphics
         m_fontSize = fontSize;
     }
 
-    void Surface::setTextScale(const uint8_t scale)
+    void Surface::setTextColor(color_t color)
     {
-        // Even if LovyanGFX supports "floating point scaling"
-        // we don't use it, because half-pixels are not a thing yet
-        // m_sprite.setTextSize(scale);
-
-        // 12 is the default font size
-        if (scale == 1)
-        {
-            setFontSize(PT_12);
-        }
-        else
-        {
-            setFontSize(PT_24);
-        }
+        this->m_text_color = color;
     }
 
     const lgfx::GFXfont * getFont(const EFont font, const EFontSize fontSize)
@@ -249,61 +207,6 @@ namespace graphics
 
         return nullptr;
     }
-
-    // Old version, with full text rendering
-    //
-    // void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
-    // {
-    //     // Get the correct font size
-    //     EFontSize fontSize;
-    //
-    //     if (m_fontSize <= 8)
-    //     {
-    //         fontSize = PT_8;
-    //     }
-    //     else if (m_fontSize <= 12)
-    //     {
-    //         fontSize = PT_12;
-    //     }
-    //     else if (m_fontSize <= 16)
-    //     {
-    //         fontSize = PT_16;
-    //     }
-    //     else
-    //     {
-    //         fontSize = PT_24;
-    //     }
-    //
-    //     // Get the correct scale
-    //     const float scale = m_fontSize / static_cast<float>(fontSize);
-    //
-    //     // Get text size
-    //     const uint16_t textWidth = m_sprite.textWidth(text.c_str(), getFont(m_font, fontSize));
-    //     const uint16_t textHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
-    //
-    //     // Create a new text surface
-    //     auto *textSurface = new Surface(textWidth, textHeight);
-    //
-    //     // Calculate the opposite of the text color (for the transparent background)
-    //     const uint8_t bgR = 255 - m_r;
-    //     const uint8_t bgG = 255 - m_g;
-    //     const uint8_t bgB = 255 - m_b;
-    //
-    //     // Set the background as transparent
-    //     textSurface->setTransparency(true);
-    //     textSurface->setTransparentColor(bgR, bgG, bgB);
-    //     textSurface->clear(bgR, bgG, bgB);
-    //
-    //     // Render the text on the text surface
-    //     textSurface->m_sprite.setFont(getFont(m_font, fontSize));
-    //     textSurface->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
-    //     textSurface->m_sprite.drawString(text.c_str(), 0, 0);
-    //
-    //     // Draw the text surface
-    //     pushSurfaceWithScale(textSurface, x, y, scale);
-    //
-    //     delete textSurface;
-    // }
 
     void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
     {
@@ -327,17 +230,12 @@ namespace graphics
 
         // Init the buffer
         buffer->m_sprite.setFont(getFont(m_font, fontSize));
-        buffer->m_sprite.setTextColor(packRGB565(m_r, m_g, m_b));
-
-        // Calculate the opposite of the text color (for the transparent background)
-        const uint8_t bgR = 255 - m_r;
-        const uint8_t bgG = 255 - m_g;
-        const uint8_t bgB = 255 - m_b;
+        buffer->m_sprite.setTextColor(m_text_color);
+        std::cout << m_color << std::endl;
 
         // Set the background as transparent
         buffer->setTransparency(true);
-        buffer->setTransparentColor(bgR, bgG, bgB);
-        buffer->clear(bgR, bgG, bgB);
+        buffer->setTransparentColor(m_color);
 
         // Init variables
         float ox = 0; // X offset
@@ -346,7 +244,7 @@ namespace graphics
         for (size_t i = 0; i < text.length(); i++)
         {
             // Reset buffer
-            buffer->clear(bgR, bgG, bgB);
+            buffer->clear(m_color);
 
             // Get char
             const char c = text[i];

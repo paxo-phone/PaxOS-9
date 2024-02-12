@@ -122,23 +122,16 @@ void graphics::SDLInit(void (*appMain)())
 #endif
 
 // You should only use this function with a "Canvas" (Surface that is the size of the screen)
-void graphics::renderSurface(const Surface* surface)
+void graphics::showSurface(const Surface* surface, int x, int y)
 {
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
-    // SDL2 does not support "pushRotateZoom", weird...
-#ifdef ESP_PLATFORM
-    sprite.pushRotateZoom(lcd.get(), 0, static_cast<float>(getRenderScale()), static_cast<float>(getRenderScale()));
-#else
-    sprite.pushSprite(lcd.get(), 0, 0);
-#endif
+    sprite.pushSprite(lcd.get(), x, y);
 }
 
 void graphics::flip()
 {
-    lcd->endWrite(); // Push write data
     lcd->display();
-    lcd->startWrite(); // Keep the SPI bus busy ? Faster ?
 }
 
 void graphics::getTouchPos(int16_t* x, int16_t* y)
@@ -151,8 +144,8 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     if (tx < 0 || ty < 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
-        *x = INT16_MIN;
-        *y = INT16_MIN;
+        *x = -1;
+        *y = -1;
     }
     else
     {
@@ -168,5 +161,5 @@ bool graphics::isTouched()
 
     getTouchPos(&x, &y);
 
-    return x != INT16_MIN && y != INT16_MIN;
+    return x != -1 && y != -1;
 }

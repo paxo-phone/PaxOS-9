@@ -1,4 +1,5 @@
 #include "ElementBase.hpp"
+#include <graphics.hpp>
 
 #include "gui.hpp"
 
@@ -47,6 +48,7 @@ void gui::ElementBase::renderAll()
     if (!m_isRendered)
     {
         // initialiser le buffer ou le clear
+
         if (m_surface == nullptr)
         {
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
@@ -82,7 +84,7 @@ void gui::ElementBase::renderAll()
 
             // push le buffer local vers l'écran
             // TODO : Change position
-            gui::getRenderTarget()->pushSurface(m_surface.get(), m_x, m_y);
+            graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
 
             setChildrenDrawn();
         }
@@ -210,33 +212,49 @@ gui::ElementBase* gui::ElementBase::getParent() const
     return m_parent;
 }
 
-void gui::ElementBase::reloadAlone()
+void gui::ElementBase::addChild(gui::ElementBase* child)
 {
+    m_children.push_back(child);
+}
+
+void gui::ElementBase::localGraphicalUpdate()
+{
+    this->m_isDrawn = false;
+    this->m_isRendered = false;
+
+    if(m_parent != nullptr)
+        setParentNotRendered();
+}
+
+void gui::ElementBase::globalGraphicalUpdate()
+{
+    this->m_isDrawn = false;
+    this->m_isRendered = false;
+
+    if(this->m_parent != nullptr)
+        setParentNotDrawn();
+}
+
+void gui::ElementBase::setParentNotRendered()
+{
+    if(m_parent != nullptr)
+        setParentNotRendered();
+    
+    this->m_isRendered = false;
+}
+
+void gui::ElementBase::setParentNotDrawn()
+{
+    if(m_parent != nullptr)
+        setParentNotDrawn();
+
     this->m_isDrawn = false;
     this->m_isRendered = false;
 }
 
-void gui::ElementBase::reloadParent()
-{
-    // The is almost no difference with just reloading the parent ?
-    // Easier to understand, or rename this function something like :
-    // - "reloadFromParent()"
-    // - "reloadPushParent()"
-    // - ...
-
-    this->m_isDrawn = false;
-    if(this->m_parent != nullptr)
-    {
-        this->m_parent->m_isRendered = false;
-    }
-}
-
 void gui::ElementBase::setChildrenDrawn()
 {
-    // What the fuck ?!
-    // You are not updating anything in this loop
-    // You are just making a recursive call chain,
-    // but not updating any value during this call chain...
+    m_isDrawn = true;
 
     for (int i = 0; i < m_children.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
     {

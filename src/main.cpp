@@ -13,47 +13,22 @@
 #include "filestream.hpp"
 #include <iostream>
 
+using namespace gui::elements;
+
 // ESP-IDF main
 extern "C" void app_main()
 {
     graphics::init();
 
-    auto canvas = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
+    Window win;
+    Box* box = new Box(100, 100, 100, 100);
+    box->setBackgroundColor(0x1234);
+
+    win.addChild(box);
 
     while (graphics::isRunning())
     {
-        canvas.clear(0, 0, 0);
-
-        canvas.setColor(255, 255, 255);
-
-        canvas.setFontSize(8);
-        canvas.drawText("8, Hello World !", 16, 16);
-
-        canvas.setFontSize(10);
-        canvas.drawText("10, Hello World !", 16, 32);
-
-        canvas.setFontSize(12);
-        canvas.drawText("12, Hello World !", 16, 64);
-
-        canvas.setFontSize(14);
-        canvas.drawText("14, Hello World !", 16, 96);
-
-        canvas.setFontSize(16);
-        canvas.drawText("16, Hello World !", 16, 128);
-
-        canvas.setFontSize(18);
-        canvas.drawText("18, Hello World !", 16, 164);
-
-        canvas.setFontSize(20);
-        canvas.drawText("20, Hello World !", 16, 192);
-
-        canvas.setFontSize(24);
-        canvas.drawText("24, Hello World !", 16, 256);
-
-        canvas.setFontSize(28);
-        canvas.drawText("28, Hello World !", 16, 320);
-
-        graphics::renderSurface(&canvas);
+        win.updateAll();
 
 #ifdef ESP_PLATFORM
 
@@ -61,7 +36,7 @@ extern "C" void app_main()
 
 #else
 
-        SDL_Delay(1000);
+        SDL_Delay(10000);
 
 #endif
     }

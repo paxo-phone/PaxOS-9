@@ -7,11 +7,12 @@
 #define COLOR_HPP
 
 #include <cstdint>
+typedef uint16_t color_t;
 
 namespace graphics
 {
-    uint16_t packRGB565(uint8_t r, uint8_t g, uint8_t b);
-    void unpackRGB565(uint16_t rgb, uint8_t *r, uint8_t *g, uint8_t *b);
+    color_t packRGB565(uint8_t r, uint8_t g, uint8_t b);
+    void unpackRGB565(color_t rgb, uint8_t *r, uint8_t *g, uint8_t *b);
 }
 
 #endif //COLOR_HPP

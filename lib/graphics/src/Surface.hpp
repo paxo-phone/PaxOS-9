@@ -12,27 +12,24 @@
 
 #include "Image.hpp"
 #include "fonts.hpp"
+#include "color.hpp"
 
 namespace graphics
 {
     class Surface
     {
-        friend void renderSurface(const Surface *surface);
+        friend void showSurface(const Surface *surface);
 
     public:
         lgfx::LGFX_Sprite m_sprite;
 
-        uint8_t m_r;
-        uint8_t m_g;
-        uint8_t m_b;
-
+        color_t m_color;
         bool m_transparent;
-        uint8_t m_tr;
-        uint8_t m_tg;
-        uint8_t m_tb;
+        color_t m_transparent_color;
 
         EFont m_font;
         float m_fontSize;
+        color_t m_text_color;
 
     public:
         Surface(uint16_t width, uint16_t height);
@@ -42,33 +39,33 @@ namespace graphics
         [[nodiscard]] uint16_t getHeight() const;
 
         uint16_t getPixel(uint16_t x, uint16_t y);
-        void setPixel(uint16_t x, uint16_t y, uint16_t value);
+        void setPixel(uint16_t x, uint16_t y, color_t value);
 
         void pushSurface(Surface *surface, int16_t x, int16_t y);
         void pushSurfaceWithScale(Surface *surface, int16_t x, int16_t y, float scale);
 
-        void clear(uint8_t r, uint8_t g, uint8_t b);
+        void clear(color_t color);
         void clear();
 
-        void setColor(uint8_t r, uint8_t g, uint8_t b);
+        void setColor(const color_t color);
 
         void setTransparency(bool enabled);
-        void setTransparentColor(uint8_t r, uint8_t g, uint8_t b);
+        void setTransparentColor(color_t color);
 
-        void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
-        void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h);
+        void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
+        void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
 
-        void fillRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r);
-        void drawRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r);
+        void fillRoundRect(             int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
+        void fillRoundRectWithBorder(   int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, uint16_t size, color_t backgroundColor, color_t color);
+        void drawRoundRect(             int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
 
-        void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
+        void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
         void drawImage(const Image& image, int16_t x, int16_t y);
 
         void setFont(EFont font);
         void setFontSize(float fontSize);
-        [[deprecated("Please use : setFontSize")]]
-        void setTextScale(uint8_t scale);
+        void setTextColor(const color_t textColor);
         void drawText(const std::string& text, int16_t x, int16_t y);
         void drawTextCentered(const std::string& text, int16_t x, int16_t y, uint16_t w = -1);
 
