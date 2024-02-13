@@ -21,7 +21,7 @@ namespace gui::elements {
 
     void Box::render()
     {
-        m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
+        m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, m_borderRadius, m_borderSize, m_backgroundColor, m_borderColor);
     }
 
 } // gui::elements

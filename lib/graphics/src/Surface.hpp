@@ -55,22 +55,24 @@ namespace graphics
         void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
         void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
 
-        void fillRoundRect(             int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
-        void fillRoundRectWithBorder(   int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, uint16_t size, color_t backgroundColor, color_t color);
-        void drawRoundRect(             int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
+        void fillRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
+        void fillRoundRectWithBorder(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs, uint16_t Backcolor, uint16_t Bordercolor);
+        void drawRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
 
         void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
-        void drawImage(const Image& image, int16_t x, int16_t y);
+        void drawImage(const Image &image, int16_t x, int16_t y);
 
         void setFont(EFont font);
         void setFontSize(float fontSize);
         void setTextColor(const color_t textColor);
-        void drawText(const std::string& text, int16_t x, int16_t y);
-        void drawTextCentered(const std::string& text, int16_t x, int16_t y, uint16_t w = -1);
+        uint16_t getTextWidth(std::string text);
+        uint16_t getTextHeight() const;
+        void drawText(const std::string &text, int16_t x, int16_t y);
+        void drawTextCentered(const std::string &text, int16_t x, int16_t y, uint16_t w = -1);
 
         void blur(uint8_t radius);
     };
 } // graphics
 
-#endif //SURFACE_HPP
+#endif // SURFACE_HPP

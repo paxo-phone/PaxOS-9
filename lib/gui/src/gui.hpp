@@ -5,5 +5,6 @@
 
 #include "elements/Box.hpp"
 #include "elements/Window.hpp"
+#include "elements/Label.hpp"
 
 #endif

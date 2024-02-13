@@ -16,12 +16,11 @@
 
 namespace graphics
 {
-    Surface::Surface(const uint16_t width, const uint16_t height) :
-        m_color(0xFFFF),
-        m_transparent(false),
-        m_transparent_color(0x0000),
-        m_font(ARIAL),
-        m_fontSize(PT_12)
+    Surface::Surface(const uint16_t width, const uint16_t height) : m_color(0xFFFF),
+                                                                    m_transparent(false),
+                                                                    m_transparent_color(0x0000),
+                                                                    m_font(ARIAL),
+                                                                    m_fontSize(PT_12)
     {
         m_sprite.setColorDepth(16);
         m_sprite.setPsram(true);
@@ -62,20 +61,18 @@ namespace graphics
                 &m_sprite,
                 x,
                 y,
-                m_transparent_color
-            );
+                m_transparent_color);
         }
         else
         {
             surface->m_sprite.pushSprite(
                 &m_sprite,
                 x,
-                y
-            );
+                y);
         }
     }
 
-    void Surface::pushSurfaceWithScale(Surface* surface, const int16_t x, const int16_t y, const float scale)
+    void Surface::pushSurfaceWithScale(Surface *surface, const int16_t x, const int16_t y, const float scale)
     {
         // LovyanGFX is very weird...
         // When pushing with "pushRotateZoomWithAA",
@@ -92,8 +89,8 @@ namespace graphics
                 0,
                 scale,
                 scale,
-                m_transparent_color
-            );
+                m_transparent_color);
+            std::cout << "transparent: " << m_transparent_color << std::endl;
         }
         else
         {
@@ -103,8 +100,7 @@ namespace graphics
                 static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f,
                 0,
                 scale,
-                scale
-            );
+                scale);
         }
     }
 
@@ -148,6 +144,12 @@ namespace graphics
         m_sprite.fillSmoothRoundRect(x, y, w, h, r, color);
     }
 
+    void Surface::fillRoundRectWithBorder(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs, uint16_t Backcolor, uint16_t Bordercolor)
+    {
+        m_sprite.fillSmoothRoundRect(x, y, w, h, r, Bordercolor);
+        m_sprite.fillSmoothRoundRect(x + bs, y + bs, w - 2 * bs, h - 2 * bs, r - bs, Backcolor);
+    }
+
     void Surface::drawRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r, const color_t color)
     {
         m_sprite.drawRoundRect(x, y, w, h, r, color);
@@ -160,22 +162,21 @@ namespace graphics
             y1,
             x2,
             y2,
-            color
-        );
+            color);
     }
 
-    void Surface::drawImage(const Image& image, const int16_t x, const int16_t y)
+    void Surface::drawImage(const Image &image, const int16_t x, const int16_t y)
     {
         switch (image.getType())
         {
         case BMP:
-            m_sprite.drawBmp(image.getData(), image.getSize(), x, y, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            m_sprite.drawBmp(image.getData(), image.getSize(), x, y, static_cast<int16_t>(image.getWidth()), static_cast<int16_t>(image.getHeight()));
             break;
         case PNG:
-            m_sprite.drawPng(image.getData(), image.getSize(), x, y, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            m_sprite.drawPng(image.getData(), image.getSize(), x, y, static_cast<int16_t>(image.getWidth()), static_cast<int16_t>(image.getHeight()));
             break;
         case JPG:
-            m_sprite.drawJpg(image.getData(), image.getSize(), x, y, static_cast<int32_t>(image.getWidth()), static_cast<int32_t>(image.getHeight()));
+            m_sprite.drawJpg(image.getData(), image.getSize(), x, y, static_cast<int16_t>(image.getWidth()), static_cast<int16_t>(image.getHeight()));
             break;
         }
     }
@@ -195,35 +196,82 @@ namespace graphics
         this->m_text_color = color;
     }
 
-    const lgfx::GFXfont * getFont(const EFont font, const EFontSize fontSize)
+    const lgfx::GFXfont *getFont(const EFont font, const EFontSize fontSize)
     {
         if (font == ARIAL)
         {
-            if (fontSize == PT_8) return &Arial8ptFR;
-            if (fontSize == PT_12) return &Arial12ptFR;
-            if (fontSize == PT_16) return &Arial16ptFR;
-            if (fontSize == PT_24) return &Arial24ptFR;
+            if (fontSize == PT_8)
+                return &Arial8ptFR;
+            if (fontSize == PT_12)
+                return &Arial12ptFR;
+            if (fontSize == PT_16)
+                return &Arial16ptFR;
+            if (fontSize == PT_24)
+                return &Arial24ptFR;
         }
 
         return nullptr;
     }
 
-    void Surface::drawText(const std::string& text, const int16_t x, const int16_t y)
+    uint16_t Surface::getTextWidth(std::string text)
+    {
+        EFontSize fontSize;
+
+        if (m_fontSize <= 8)
+            fontSize = PT_8;
+        else if (m_fontSize <= 12)
+            fontSize = PT_12;
+        else if (m_fontSize <= 16)
+            fontSize = PT_16;
+        else
+            fontSize = PT_24;
+
+        const float scale = m_fontSize / static_cast<float>(fontSize);
+
+        this->m_sprite.setFont(getFont(m_font, fontSize));
+        std::cout << "fontSize:" << this->m_sprite.textWidth(text.c_str()) << std::endl;
+
+        return (float) scale * this->m_sprite.textWidth(text.c_str());
+    }
+
+    uint16_t Surface::getTextHeight() const
+    {
+        EFontSize fontSize;
+
+        if (m_fontSize <= 8)
+            fontSize = PT_8;
+        else if (m_fontSize <= 12)
+            fontSize = PT_12;
+        else if (m_fontSize <= 16)
+            fontSize = PT_16;
+        else
+            fontSize = PT_24;
+
+        const float scale = m_fontSize / static_cast<float>(fontSize);
+
+        return (float) scale * m_sprite.fontHeight(getFont(m_font, fontSize));
+    }
+
+    void Surface::drawText(const std::string &text, const int16_t x, const int16_t y)
     {
         // Get the correct font size
         EFontSize fontSize;
 
-        if (m_fontSize <= 8) fontSize = PT_8;
-        else if (m_fontSize <= 12) fontSize = PT_12;
-        else if (m_fontSize <= 16) fontSize = PT_16;
-        else fontSize = PT_24;
+        if (m_fontSize <= 8)
+            fontSize = PT_8;
+        else if (m_fontSize <= 12)
+            fontSize = PT_12;
+        else if (m_fontSize <= 16)
+            fontSize = PT_16;
+        else
+            fontSize = PT_24;
 
         // Get the correct scale
         const float scale = m_fontSize / static_cast<float>(fontSize);
 
         // Get buffer size
         const uint16_t bufferHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
-        const uint16_t bufferWidth = bufferHeight; // Maybe... wrong ?
+        const uint16_t bufferWidth = bufferHeight;
 
         // Create buffer
         auto *buffer = new Surface(bufferWidth, bufferHeight);
@@ -231,7 +279,6 @@ namespace graphics
         // Init the buffer
         buffer->m_sprite.setFont(getFont(m_font, fontSize));
         buffer->m_sprite.setTextColor(m_text_color);
-        std::cout << m_color << std::endl;
 
         // Set the background as transparent
         buffer->setTransparency(true);
@@ -264,7 +311,7 @@ namespace graphics
         delete buffer;
     }
 
-    void Surface::drawTextCentered(const std::string& text, const int16_t x, const int16_t y, const uint16_t w)
+    void Surface::drawTextCentered(const std::string &text, const int16_t x, const int16_t y, const uint16_t w)
     {
         const uint16_t textWidth = m_sprite.textWidth(text.c_str());
 

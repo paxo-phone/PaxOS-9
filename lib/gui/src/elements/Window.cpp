@@ -15,6 +15,7 @@ namespace gui::elements {
         m_y = 0;
         m_width = 320;
         m_height = 480;
+        m_backgroundColor = COLOR_WHITE;
     }
 
     Window::~Window() = default;
