@@ -51,7 +51,7 @@ namespace graphics {
         switch (imageData.type)
         {
         case imgdec::ERROR:
-            throw std::exception();
+            // throw std::exception();
         case imgdec::BMP:
             m_type = BMP;
             break;

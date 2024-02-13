@@ -9,7 +9,7 @@
 
 #ifdef ESP_PLATFORM
 
-#include "platforms/LGFX_ESP32_PAXO5.hpp"
+#include "platforms/LGFX_ESP32.hpp"
 
 #else
 
