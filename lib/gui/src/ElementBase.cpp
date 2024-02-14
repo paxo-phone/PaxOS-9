@@ -55,11 +55,11 @@ void gui::ElementBase::renderAll()
         if (m_surface == nullptr)
         {
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
-            m_surface->clear(COLOR_LIGHT);
+            //m_surface->clear(COLOR_WHITE);
         }
         else
         {
-            m_surface->clear(COLOR_LIGHT);
+            //m_surface->clear(COLOR_WHITE);
         }
 
         render();
@@ -95,6 +95,8 @@ void gui::ElementBase::renderAll()
 
 bool gui::ElementBase::updateAll()
 {
+    if(m_widgetPressed == this)
+        std::cout << "Pressed: parent? " << int(m_parent!=nullptr) << std::endl;
     if (m_parent == nullptr)
     {
         // todo: update events
@@ -108,7 +110,9 @@ bool gui::ElementBase::updateAll()
     for (auto child : m_children)
     {
         if (child->updateAll())
+        {
             return true; // if child had an event, ignore local events
+        }
     }
 
     return update();
@@ -120,6 +124,8 @@ bool gui::ElementBase::update()
 
     if (!m_hasEvents)
         return false;
+
+    widgetUpdate();
 
     if (m_widgetPressed != nullptr && m_widgetPressed != this)
         return false;
@@ -140,6 +146,10 @@ bool gui::ElementBase::update()
 
                 return true;
             }
+        }
+        else if (m_pressedState == PressedState::NOT_PRESSED)
+        {
+            return false;
         }
 
         // scroll

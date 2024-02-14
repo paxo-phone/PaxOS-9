@@ -14,11 +14,13 @@
 #include "fonts/Arial-24.h"
 #include "fonts/Arial-8.h"
 
+#include "Encoder/decodeutf8.hpp"
+
 namespace graphics
 {
     Surface::Surface(const uint16_t width, const uint16_t height) : m_color(0xFFFF),
                                                                     m_transparent(false),
-                                                                    m_transparent_color(0x0000),
+                                                                    m_transparent_color(0xFFFF),
                                                                     m_font(ARIAL),
                                                                     m_fontSize(PT_12)
     {
@@ -90,7 +92,6 @@ namespace graphics
                 scale,
                 scale,
                 m_transparent_color);
-            std::cout << "transparent: " << m_transparent_color << std::endl;
         }
         else
         {
@@ -165,7 +166,7 @@ namespace graphics
             color);
     }
 
-    void Surface::drawImage(const Image &image, const int16_t x, const int16_t y)
+    void Surface::drawImage(const SImage &image, const int16_t x, const int16_t y)
     {
         switch (image.getType())
         {
@@ -217,57 +218,57 @@ namespace graphics
     {
         EFontSize fontSize;
 
-        if (m_fontSize <= 8)
+        if (m_fontSize < 18)
             fontSize = PT_8;
-        else if (m_fontSize <= 12)
+        else if (m_fontSize < 27)
             fontSize = PT_12;
-        else if (m_fontSize <= 16)
+        else if (m_fontSize < 35)
             fontSize = PT_16;
         else
             fontSize = PT_24;
 
-        const float scale = m_fontSize / static_cast<float>(fontSize);
+        const float scale = m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
         this->m_sprite.setFont(getFont(m_font, fontSize));
-        std::cout << "fontSize:" << this->m_sprite.textWidth(text.c_str()) << std::endl;
 
-        return (float) scale * this->m_sprite.textWidth(text.c_str());
+        return (float) scale * this->m_sprite.textWidth(decodeString(text).c_str());
     }
 
     uint16_t Surface::getTextHeight() const
     {
         EFontSize fontSize;
 
-        if (m_fontSize <= 8)
+        if (m_fontSize < 18)
             fontSize = PT_8;
-        else if (m_fontSize <= 12)
+        else if (m_fontSize < 27)
             fontSize = PT_12;
-        else if (m_fontSize <= 16)
+        else if (m_fontSize < 35)
             fontSize = PT_16;
         else
             fontSize = PT_24;
 
-        const float scale = m_fontSize / static_cast<float>(fontSize);
+        const float scale = m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
         return (float) scale * m_sprite.fontHeight(getFont(m_font, fontSize));
     }
 
-    void Surface::drawText(const std::string &text, const int16_t x, const int16_t y)
+    void Surface::drawText(std::string &otext, const int16_t x, const int16_t y)
     {
+        std::string text = decodeString(otext);
         // Get the correct font size
         EFontSize fontSize;
 
-        if (m_fontSize <= 8)
+        if (m_fontSize < 18)
             fontSize = PT_8;
-        else if (m_fontSize <= 12)
+        else if (m_fontSize < 27)
             fontSize = PT_12;
-        else if (m_fontSize <= 16)
+        else if (m_fontSize < 35)
             fontSize = PT_16;
         else
             fontSize = PT_24;
 
         // Get the correct scale
-        const float scale = m_fontSize / static_cast<float>(fontSize);
+        const float scale = m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
         // Get buffer size
         const uint16_t bufferHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
@@ -311,7 +312,7 @@ namespace graphics
         delete buffer;
     }
 
-    void Surface::drawTextCentered(const std::string &text, const int16_t x, const int16_t y, const uint16_t w)
+    void Surface::drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w)
     {
         const uint16_t textWidth = m_sprite.textWidth(text.c_str());
 

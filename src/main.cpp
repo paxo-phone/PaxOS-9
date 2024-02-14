@@ -21,22 +21,20 @@ extern "C" void app_main()
     graphics::init();
 
     Window win;
-    Label* label = new Label(100, 100, 200, 200);
-    label->setBackgroundColor(COLOR_ERROR);
-    label->setTextColor(COLOR_SUCCESS);
-    label->setHorizontalAlignment(Label::Alignement::CENTER);
-    label->setVerticalAlignment(Label::Alignement::DOWN);
-    label->setText("coucou c'est un super truc intéréssant de voir tout ça hehe nanana");
+    Input* in = new Input(35, 35, 0, 0);
+    in->setTitle("Prénom:");
+    in->setPlaceHolder("palce holder");
 
-    win.addChild(label);
+    win.addChild(in);
 
     while (graphics::isRunning())
     {
         win.updateAll();
-        //box->setX(box->getX() + 20);
-        if(label->isTouched())
+
+        if(in->isTouched())
         {
-            label->setX(label->getX() + 20);
+            //in->setX(in->getX() + 20);
+            in->setText("C'est Gabriel");
         }
 
 #ifdef ESP_PLATFORM

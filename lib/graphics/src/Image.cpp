@@ -39,7 +39,7 @@ std::shared_ptr<uint8_t[]> getFileData(const char *filename)
 
 namespace graphics {
     // TODO : Use "Path"
-    Image::Image(const std::string& filename)
+    SImage::SImage(const std::string& filename)
     {
         const size_t fileSize = getFileSize(filename.c_str());
 
@@ -67,29 +67,29 @@ namespace graphics {
         m_height = imageData.heigth;
     }
 
-    Image::~Image() = default;
+    SImage::~SImage() = default;
 
-    ImageType Image::getType() const
+    ImageType SImage::getType() const
     {
         return m_type;
     }
 
-    uint32_t Image::getWidth() const
+    uint32_t SImage::getWidth() const
     {
         return m_width;
     }
 
-    uint32_t Image::getHeight() const
+    uint32_t SImage::getHeight() const
     {
         return m_height;
     }
 
-    uint32_t Image::getSize() const
+    uint32_t SImage::getSize() const
     {
         return m_size;
     }
 
-    uint8_t * Image::getData() const
+    uint8_t * SImage::getData() const
     {
         return m_data.get();
     }

@@ -20,6 +20,7 @@ namespace gui
 
         bool updateAll();
         bool update();
+        virtual void widgetUpdate() {};
 
         void setX(uint16_t x);
         void setY(uint16_t y);
@@ -121,7 +122,7 @@ namespace gui
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
 
-    private:
+    protected:
         void localGraphicalUpdate();
         void globalGraphicalUpdate();
         void setParentNotRendered();

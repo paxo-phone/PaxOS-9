@@ -49,6 +49,4 @@ namespace storage {
 
 }
 
-
-
 #endif /* PATH_HPP */

@@ -5,6 +5,10 @@
 
 #define LINE_SPACING 2
 
+#define LABEL_SMALL 16
+#define LABEL_MEDIUM 24
+#define LABEL_BIG 36
+
 namespace gui::elements
 {
     class Label final : public ElementBase
@@ -44,4 +48,4 @@ namespace gui::elements
     };
 } // gui::elements
 
-#endif //BOX_HPP
+#endif //LABEL_HPP

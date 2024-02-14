@@ -16,6 +16,8 @@
 
 namespace graphics
 {
+    class SImage;
+    
     class Surface
     {
         friend void showSurface(const Surface *surface);
@@ -61,15 +63,15 @@ namespace graphics
 
         void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
-        void drawImage(const Image &image, int16_t x, int16_t y);
+        void drawImage(const SImage &image, int16_t x, int16_t y);
 
         void setFont(EFont font);
         void setFontSize(float fontSize);
         void setTextColor(const color_t textColor);
         uint16_t getTextWidth(std::string text);
         uint16_t getTextHeight() const;
-        void drawText(const std::string &text, int16_t x, int16_t y);
-        void drawTextCentered(const std::string &text, int16_t x, int16_t y, uint16_t w = -1);
+        void drawText(std::string &text, int16_t x, int16_t y);
+        void drawTextCentered(std::string &text, int16_t x, int16_t y, uint16_t w = -1);
 
         void blur(uint8_t radius);
     };

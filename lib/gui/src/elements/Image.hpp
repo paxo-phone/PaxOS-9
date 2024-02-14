@@ -1,0 +1,24 @@
+#ifndef IMAGE_HPP
+#define IMAGE_HPP
+
+#include "../ElementBase.hpp"
+#include <path.hpp>
+
+namespace gui::elements
+{
+    class Image final : public ElementBase
+    {
+    public:
+        Image(storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+        ~Image() override;
+
+        void render() override;
+
+        void load();
+
+    private:
+        storage::Path m_path;
+    };
+} // gui::elements
+
+#endif //BOX_HPP

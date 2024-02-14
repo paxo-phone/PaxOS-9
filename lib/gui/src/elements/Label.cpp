@@ -11,7 +11,8 @@
 
 namespace gui::elements {
     Label::Label(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
-        : m_text(""),
+        : ElementBase(),
+        m_text(""),
         m_fontSize(18),
         m_textColor(COLOR_DARK),
         m_textVerticalAlignment(UP),
@@ -27,10 +28,12 @@ namespace gui::elements {
 
     void Label::render()
     {
+        m_surface->clear(COLOR_WHITE);
         m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, m_borderRadius, m_borderSize, m_backgroundColor, m_borderColor);
 
         m_surface->setTextColor((this->m_textColor == 0)?(1):(this->m_textColor));
         m_surface->setColor(this->m_backgroundColor);
+        m_surface->setFontSize(this->m_fontSize);
 
         std::vector<std::string> lines = parse();
 
@@ -68,9 +71,6 @@ namespace gui::elements {
                 break;
             };
 
-            std::cout << "================================================================" << std::endl;
-            std::cout << "\"" + lines[i] + "\" " << x << " " << y << std::endl;
-
             m_surface->drawText(lines[i], x, y);
         }
     }
@@ -78,6 +78,7 @@ namespace gui::elements {
     void Label::setText(const std::string& text)
     {
         this->m_text = text;
+        localGraphicalUpdate();
     }
 
     std::string Label::getText() const
@@ -88,6 +89,7 @@ namespace gui::elements {
     void Label::setTextColor(color_t color)
     {
         this->m_textColor = color;
+        localGraphicalUpdate();
     }
 
     std::vector<std::string> Label::parse(void)
@@ -96,7 +98,6 @@ namespace gui::elements {
         std::string currentLine = "";
 
         for (char c : m_text) {
-            std::cout << m_surface->getTextWidth(currentLine + c) << " " << getUsableWidth() << std::endl;
             if (c == '\n') {
                 lines.push_back(currentLine);
                 currentLine = "";
@@ -147,9 +148,15 @@ namespace gui::elements {
     {
         this->m_textHorizontalAlignment = alignment;
     }
-    
+
     void Label::setVerticalAlignment(Alignement alignment)
     {
         this->m_textVerticalAlignment = alignment;
+    }
+
+    void Label::setFontSize(uint16_t fontSize)
+    {
+        this->m_fontSize = fontSize;
+        localGraphicalUpdate();
     }
 } // gui::elements
