@@ -15,66 +15,88 @@ namespace gui
         ElementBase();
         virtual ~ElementBase();
 
-        virtual void render() = 0;
         void renderAll();
+        virtual void render() = 0;
 
-        bool updateAll();
-        bool update();
-        virtual void widgetUpdate() {};
+        void updateAll();
+        void update();
 
         void setX(uint16_t x);
         void setY(uint16_t y);
         void setWidth(uint16_t width);
         void setHeight(uint16_t height);
 
-        uint16_t getX() const;
-        uint16_t getY() const;
-        uint16_t getWidth() const;
-        uint16_t getHeight() const;
+        [[nodiscard]] uint16_t getX() const;
+        [[nodiscard]] uint16_t getY() const;
+        [[nodiscard]] uint16_t getWidth() const;
+        [[nodiscard]] uint16_t getHeight() const;
 
-        uint16_t getAbsoluteX() const;
-        uint16_t getAbsoluteY() const;
+        [[nodiscard]] uint16_t getAbsoluteX() const;
+        [[nodiscard]] uint16_t getAbsoluteY() const;
 
         void setBackgroundColor(color_t color);
         void setBorderColor(color_t color);
 
-        void setRadius(uint16_t r);
-        uint16_t getRadius() const;
+        [[nodiscard]] color_t getBackgroundColor() const;
+        [[nodiscard]] color_t getBorderColor() const;
 
-        void setBorderSize(uint16_t size);
-        uint16_t getBorderSize() const;
+        virtual void onClick()
+        {
+        }
 
-        color_t getBackgroundColor() const;
-        color_t getBorderColor() const;
-
-        bool isTouched(); // retourne si le widget a été pressé puis relaché (nb, l'appel de la fonction annule m'état précédent)
-        bool isFocused(); // retourne si le doigt est sur le widget
-
-        virtual void onClick() {}
-        virtual void onLongClick() {}
+        virtual void onLongClick()
+        {
+        }
 
         /**
-         * \brief When the widget is no longer considered as touched even if the finger is still on the screen
-         */
-        virtual void onReleased() {}
+        * \brief When the widget in released correctly (Finger isn't leaving touch area)
+        */
+        virtual void onReleased()
+        {
+        }
 
         /**
-         * \brief When finger leave the screen
-         */
-        virtual void onNotClicked() {}
+        * \brief When finger leave the widget's touch area
+        */
+        virtual void onNotClicked()
+        {
+        }
 
-        virtual void onScroll() {}
+        virtual void onScroll()
+        {
+        }
 
         void enable();
         void disable();
 
         /**
-         * \brief Get the highest parent widget in the hierachy
-         * \return the highest parent in the hierarchy
-         */
-        ElementBase *getMaster();
-        ElementBase *getParent() const;
-        void addChild(ElementBase *child);
+        * \brief Get the highest parent widget in the hierachy
+        * \return the highest parent in the hierarchy
+        */
+        ElementBase* getMaster();
+
+        /**
+        * \brief Get the parent of this widget
+        * \return the parent of this widget
+        */
+        [[nodiscard]] ElementBase* getParent() const;
+
+        /**
+        * Update the widget
+        * \brief Deprecated, please use "Widget::reload()"
+        */
+        [[deprecated]] void reloadAlone(); // mise a jour locale
+
+        /**
+        * Update "itself" but on the parent side ?
+        * \brief Deprecated, please use "Widget::getParent()::reload()"
+        */
+        [[deprecated]] void reloadParent();
+
+        /**
+        * \brief Error 404 : Documentation not found
+        */
+        void setChildrenDrawn(); // les enfants sont update sur l'écran
 
     protected:
         // variables générales
@@ -87,8 +109,8 @@ namespace gui
         uint16_t m_borderSize;
         uint16_t m_borderRadius;
 
-        ElementBase *m_parent;
-        std::vector<ElementBase *> m_children;
+        ElementBase* m_parent;
+        std::vector<ElementBase*> m_children;
 
         // variables sur les mouvements
         bool m_verticalScrollEnabled;
@@ -99,11 +121,11 @@ namespace gui
 
         // variables de rendu
         bool m_isEnabled;
-        bool m_hasEvents; // si l'objet est réactif aux events tactiles
+
 
         bool m_isRendered; // si le buffer est a jour
-        bool m_isDrawn;    // si le widget est bien a jour sur l'écran
-        static ElementBase *masterOfRender;
+        bool m_isDrawn; // si le widget est bien a jour sur l'écran
+        static ElementBase* masterOfRender;
 
         // variables sur les events
         enum PressedState
@@ -115,19 +137,11 @@ namespace gui
         };
 
         PressedState m_pressedState;
+        bool m_isScrolling;
 
-        static ElementBase *m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
-        static int16_t originTouchX, originTouchY;
-        static int16_t touchX, touchY;
+        static ElementBase* m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
-
-    protected:
-        void localGraphicalUpdate();
-        void globalGraphicalUpdate();
-        void setParentNotRendered();
-        void setParentNotDrawn();
-        void setChildrenDrawn();
     };
 }
 

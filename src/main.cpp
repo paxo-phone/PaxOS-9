@@ -8,42 +8,33 @@
 #endif
 
 #include "graphics.hpp"
-#include "gui.hpp"
-#include "path.hpp"
-#include "filestream.hpp"
-#include <iostream>
-
-using namespace gui::elements;
+#include "Surface.hpp"
 
 // ESP-IDF main
 extern "C" void app_main()
 {
     graphics::init();
 
-    Window win;
-    Input* in = new Input(35, 35, 0, 0);
-    in->setTitle("Prénom:");
-    in->setPlaceHolder("palce holder");
+    auto canvas = graphics::Surface(graphics::getScreenWidth(), graphics::getScreenHeight());
 
-    win.addChild(in);
+    auto box = graphics::Surface(64, 64);
+    box.clear(255, 0, 0);
+
+    canvas.pushSurface(&box, 0, 0);
+
+    graphics::renderSurface(&canvas);
 
     while (graphics::isRunning())
     {
-        win.updateAll();
 
-        if(in->isTouched())
-        {
-            //in->setX(in->getX() + 20);
-            in->setText("C'est Gabriel");
-        }
 
 #ifdef ESP_PLATFORM
 
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(1000));
 
 #else
 
-        SDL_Delay(10);
+        SDL_Delay(1000);
 
 #endif
     }

@@ -39,7 +39,7 @@ std::shared_ptr<uint8_t[]> getFileData(const char *filename)
 
 namespace graphics {
     // TODO : Use "Path"
-    SImage::SImage(const std::string& filename)
+    Image::Image(const std::string& filename)
     {
         const size_t fileSize = getFileSize(filename.c_str());
 
@@ -51,7 +51,7 @@ namespace graphics {
         switch (imageData.type)
         {
         case imgdec::ERROR:
-            throw std::exception();
+            // throw std::exception();
         case imgdec::BMP:
             m_type = BMP;
             break;
@@ -67,29 +67,29 @@ namespace graphics {
         m_height = imageData.heigth;
     }
 
-    SImage::~SImage() = default;
+    Image::~Image() = default;
 
-    ImageType SImage::getType() const
+    ImageType Image::getType() const
     {
         return m_type;
     }
 
-    uint32_t SImage::getWidth() const
+    uint32_t Image::getWidth() const
     {
         return m_width;
     }
 
-    uint32_t SImage::getHeight() const
+    uint32_t Image::getHeight() const
     {
         return m_height;
     }
 
-    uint32_t SImage::getSize() const
+    uint32_t Image::getSize() const
     {
         return m_size;
     }
 
-    uint8_t * SImage::getData() const
+    uint8_t * Image::getData() const
     {
         return m_data.get();
     }

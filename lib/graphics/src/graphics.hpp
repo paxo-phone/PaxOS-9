@@ -39,7 +39,7 @@ namespace graphics
 
     bool isRunning();
 
-    void showSurface(const Surface *surface, int x = 0, int y = 0);
+    void renderSurface(const Surface *surface);
 
     void flip();
 

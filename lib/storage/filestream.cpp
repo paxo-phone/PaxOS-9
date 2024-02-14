@@ -83,33 +83,24 @@ namespace storage {
             
             std::string line;
             while( std::getline(m_stream, line) )
-            {
-                text += line;
-                if(line.back() != '\n')
-                    text+="\n";
-            }
+                text += line + '\n';
 
             return text;
         #endif
         #ifdef ESP_PLATFORM
-            char line[1024]; // Taille maximale d'une ligne
+            std::string text = "";
+            char buffer[1024];
 
             if (m_file == NULL) {
                 return "";
             }
 
-            std::string output;
+            while (fgets(buffer, sizeof(buffer), m_file) != NULL) {
 
-            while (fgets(line, sizeof(line), m_file) != NULL) {
-                std::string line_str(line);
-                if (!line_str.empty() && line_str.back() != '\n') {
-                    line_str.push_back('\n');
-                }
-                output += line_str;
+                text += std::string(buffer);
             }
-            
-            return output;
 
+            return text;
         #endif
     }
 
@@ -180,7 +171,7 @@ namespace storage {
                 return;
             }
 
-            fprintf(m_file, "%s", str.c_str());
+            fprintf(m_file, str.c_str());
         #endif
     }
 
