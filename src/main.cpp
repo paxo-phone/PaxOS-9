@@ -19,6 +19,7 @@ using namespace gui::elements;
 extern "C" void app_main()
 {
     graphics::init();
+    graphics::setScreenOrientation(graphics::LANDSCAPE);
 
     Window win;
     Input* in = new Input(35, 35, 0, 0);

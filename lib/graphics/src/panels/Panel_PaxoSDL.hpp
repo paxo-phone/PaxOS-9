@@ -9,7 +9,8 @@
 
 class Panel_PaxoSDL final : public lgfx::Panel_sdl
 {
-
+public:
+    void setWindowSize(uint16_t width, uint16_t height);
 };
 
 #endif //PANEL_PAXOSDL_HPP

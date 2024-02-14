@@ -121,7 +121,7 @@ static int SDLUpdate(void *data)
 
 void graphics::SDLInit(void (*appMain)())
 {
-    lgfx::Panel_sdl::setup();
+    Panel_PaxoSDL::setup();
 
     SDLUpdateData updateData
     {
@@ -138,14 +138,14 @@ void graphics::SDLInit(void (*appMain)())
         exit(1);
     }
 
-    while (lgfx::Panel_sdl::loop() == 0)
+    while (Panel_PaxoSDL::loop() == 0)
     {};
 
     running = false;
 
     SDL_WaitThread(thread, nullptr);
 
-    lgfx::Panel_sdl::close();
+    Panel_PaxoSDL::close();
 }
 
 #endif
@@ -200,13 +200,21 @@ graphics::EScreenOrientation graphics::getScreenOrientation()
 
 void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
 {
+    // Update the screen orientation (and the screen size)
     // Maybe use another name for the parameter ?
     // Or store it in another place ?
     ::screenOrientation = screenOrientation;
 
 #ifdef ESP_PLATFORM
-    printf("Nope !");
+    // I don't know how to use it...
+    // lcd->setRotation(...);
 #else
-    auto *panel = reinterpret_cast<lgfx::Panel_sdl *>(lcd->getPanel());
+    printf("New size : %d, %d", getScreenWidth(), getScreenHeight());
+
+    // Get panel
+    auto *panel = reinterpret_cast<Panel_PaxoSDL *>(lcd->getPanel());
+
+    // Set window size with the new size
+    panel->setWindowSize(getScreenWidth(), getScreenHeight());
 #endif
 }
