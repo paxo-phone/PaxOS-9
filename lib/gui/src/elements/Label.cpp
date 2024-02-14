@@ -37,7 +37,7 @@ namespace gui::elements {
 
         std::vector<std::string> lines = parse();
 
-        for (uint i = 0; i < lines.size(); i++)
+        for (size_t i = 0; i < lines.size(); i++)
         {
             int x;
             switch (m_textHorizontalAlignment)
