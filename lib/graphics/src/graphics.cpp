@@ -13,8 +13,9 @@
 
 #else
 
-#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
-#include "LGFX_AUTODETECT.hpp"
+#include "panels/Panel_PaxoSDL.hpp"
+#include "LovyanGFX.hpp"
+#include "platforms/LGFX_PaxoSDL.hpp"
 
 #include "LovyanGFX.hpp"
 
@@ -25,6 +26,8 @@ namespace
     bool running;
 
     std::shared_ptr<LGFX> lcd;
+
+    graphics::EScreenOrientation screenOrientation;
 }
 
 void graphics::init()
@@ -67,6 +70,32 @@ void graphics::init()
 
     lcd->setTouchCalibrate(calibrationData);
 #endif
+}
+
+uint16_t graphics::getScreenWidth()
+{
+    switch (screenOrientation)
+    {
+    case graphics::PORTRAIT:
+        return 320;
+    case graphics::LANDSCAPE:
+        return 480;
+    }
+
+    return -1;
+}
+
+uint16_t graphics::getScreenHeight()
+{
+    switch (screenOrientation)
+    {
+    case graphics::PORTRAIT:
+        return 480;
+    case graphics::LANDSCAPE:
+        return 320;
+    }
+
+    return -1;
 }
 
 bool graphics::isRunning()
@@ -162,4 +191,22 @@ bool graphics::isTouched()
     getTouchPos(&x, &y);
 
     return x != -1 && y != -1;
+}
+
+graphics::EScreenOrientation graphics::getScreenOrientation()
+{
+    return screenOrientation;
+}
+
+void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
+{
+    // Maybe use another name for the parameter ?
+    // Or store it in another place ?
+    ::screenOrientation = screenOrientation;
+
+#ifdef ESP_PLATFORM
+    printf("Nope !");
+#else
+    auto *panel = reinterpret_cast<lgfx::Panel_sdl *>(lcd->getPanel());
+#endif
 }

@@ -13,19 +13,18 @@
 
 namespace graphics
 {
+    enum EScreenOrientation
+    {
+        PORTRAIT,
+        LANDSCAPE
+    };
+
     class Surface;
 
-    constexpr uint16_t getScreenWidth()
-    {
-        return 320;
-    }
-
-    constexpr uint16_t getScreenHeight()
-    {
-        return 480;
-    }
-
     void init();
+
+    uint16_t getScreenWidth();
+    uint16_t getScreenHeight();
 
     constexpr int getRenderScale()
     {
@@ -45,6 +44,9 @@ namespace graphics
 
     void getTouchPos(int16_t *x, int16_t *y);
     bool isTouched();
+
+    EScreenOrientation getScreenOrientation();
+    void setScreenOrientation(EScreenOrientation screenOrientation);
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());
