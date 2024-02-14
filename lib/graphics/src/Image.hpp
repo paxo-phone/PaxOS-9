@@ -2,8 +2,8 @@
 // Created by Charles on 20/01/2024.
 //
 
-#ifndef IMAGE_HPP
-#define IMAGE_HPP
+#ifndef SIMAGE_HPP
+#define SIMAGE_HPP
 
 #include <cstdint>
 #include <memory>
@@ -18,7 +18,7 @@ namespace graphics
         JPG
     };
 
-    class Image
+    class SImage
     {
     private:
         ImageType m_type;
@@ -30,8 +30,8 @@ namespace graphics
         std::shared_ptr<uint8_t[]> m_data;
 
     public:
-        explicit Image(const std::string& filename);
-        ~Image();
+        explicit SImage(const std::string& filename);
+        ~SImage();
 
         [[nodiscard]] ImageType getType() const;
 
@@ -43,4 +43,4 @@ namespace graphics
     };
 } // graphics
 
-#endif //IMAGE_HPP
+#endif //SIMAGE_HPP
