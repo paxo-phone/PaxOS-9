@@ -206,8 +206,17 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
     ::screenOrientation = screenOrientation;
 
 #ifdef ESP_PLATFORM
-    // I don't know how to use it...
-    // lcd->setRotation(...);
+    // TODO : Test it, obviously
+
+    switch (screenOrientation)
+    {
+    case PORTRAIT:
+        lcd->setRotation(0);
+        return;
+    case LANDSCAPE:
+        lcd->setRotation(1);
+        return;
+    }
 #else
 
 #endif
