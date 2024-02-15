@@ -155,7 +155,26 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 {
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
+#ifdef ESP_PLATFORM
     sprite.pushSprite(lcd.get(), x, y);
+#else
+    switch (screenOrientation)
+    {
+    case PORTRAIT:
+        sprite.pushSprite(lcd.get(), x, y);
+        return;;
+    case LANDSCAPE:
+        // Simulator "setRotation"
+
+        auto buffer = Surface(getScreenWidth(), getScreenHeight());
+        buffer.fillRect(0, 0, getScreenWidth(), getScreenHeight(), 0);
+
+        buffer.pushSurface(const_cast<Surface *>(surface), 0, 0);
+        buffer.m_sprite.pushRotateZoomWithAA(lcd.get(), 160, 240, 90, 1, 1);
+
+        return;
+    }
+#endif
 }
 
 void graphics::flip()
