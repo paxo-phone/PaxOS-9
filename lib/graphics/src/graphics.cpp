@@ -122,6 +122,7 @@ static int SDLUpdate(void *data)
 void graphics::SDLInit(void (*appMain)())
 {
     Panel_PaxoSDL::setup();
+    Panel_PaxoSDL::loop(); // Ensure to create the window before creating a new thread
 
     SDLUpdateData updateData
     {
