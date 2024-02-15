@@ -5,6 +5,7 @@
 
 #include "graphics.hpp"
 
+#include <iostream>
 #include <Surface.hpp>
 
 #ifdef ESP_PLATFORM
@@ -124,6 +125,18 @@ void graphics::SDLInit(void (*appMain)())
 // You should only use this function with a "Canvas" (Surface that is the size of the screen)
 void graphics::showSurface(const Surface* surface, int x, int y)
 {
+    if (x != 0 || y != 0)
+    {
+        std::cerr << "---------------------------------------------------------------------------------------------------------------------" << std::endl;
+        std::cerr << "                                                 Warning !                                                           " << std::endl;
+        std::cerr << "                                                                                                                     " << std::endl;
+        std::cerr << ">>> You are using 'graphics::showSurface(...)' with a non-zero 'x' and/or 'y' value.                              <<<" << std::endl;
+        std::cerr << ">>> This is deprecated and will be removed.                                                                       <<<" << std::endl;
+        std::cerr << ">>> Please push to a 'graphics::Surface' before pushing to the screen.                                            <<<" << std::endl;
+        std::cerr << ">>> By using a 'graphics::Surface' before pusing to the screen, you are also enabling double buffering rendering. <<<" << std::endl;
+        std::cerr << "---------------------------------------------------------------------------------------------------------------------" << std::endl;
+    }
+
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
     sprite.pushSprite(lcd.get(), x, y);
