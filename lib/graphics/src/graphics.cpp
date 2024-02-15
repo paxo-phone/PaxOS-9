@@ -13,9 +13,8 @@
 
 #else
 
-#include "panels/Panel_PaxoSDL.hpp"
-#include "LovyanGFX.hpp"
-#include "platforms/LGFX_PaxoSDL.hpp"
+#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
+#include "LGFX_AUTODETECT.hpp"
 
 #include "LovyanGFX.hpp"
 
@@ -121,8 +120,8 @@ static int SDLUpdate(void *data)
 
 void graphics::SDLInit(void (*appMain)())
 {
-    Panel_PaxoSDL::setup();
-    Panel_PaxoSDL::loop(); // Ensure to create the window before creating a new thread
+    lgfx::Panel_sdl::setup();
+    // lgfx::Panel_sdl::loop(); // Ensure to create the window before creating a new thread
 
     SDLUpdateData updateData
     {
@@ -139,14 +138,14 @@ void graphics::SDLInit(void (*appMain)())
         exit(1);
     }
 
-    while (Panel_PaxoSDL::loop() == 0)
+    while (lgfx::Panel_sdl::loop() == 0)
     {};
 
     running = false;
 
     SDL_WaitThread(thread, nullptr);
 
-    Panel_PaxoSDL::close();
+    lgfx::Panel_sdl::close();
 }
 
 #endif
@@ -210,12 +209,6 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
     // I don't know how to use it...
     // lcd->setRotation(...);
 #else
-    printf("New size : %d, %d", getScreenWidth(), getScreenHeight());
 
-    // Get panel
-    auto *panel = reinterpret_cast<Panel_PaxoSDL *>(lcd->getPanel());
-
-    // Set window size with the new size
-    panel->setWindowSize(getScreenWidth(), getScreenHeight());
 #endif
 }
