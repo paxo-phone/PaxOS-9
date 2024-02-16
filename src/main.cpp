@@ -38,10 +38,8 @@ extern "C" void app_main()
     win.addChild(list);
 
     Button* button = new Button(35, 394, 250, 38);
-    Label* label = new Label(0, 0, 100, 18);
-    label->setText("Supprimer");
-    button->setLabel(label);
-    button->format();
+    button->setText("bonjour");
+    button->setIcon(storage::Path("icon.png"));
 
     //win.addChild(label);
 

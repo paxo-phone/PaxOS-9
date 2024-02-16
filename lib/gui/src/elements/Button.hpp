@@ -2,6 +2,7 @@
 #define BUTTON_HPP
 
 #include "../ElementBase.hpp"
+#include <filestream.hpp>
 
 #include "Label.hpp"
 #include "Image.hpp"
@@ -20,8 +21,8 @@ namespace gui::elements
         void format(); // recalculer les coordonées et tailles des sous widgets
         void render() override;
 
-        void setLabel(Label* label);
-        void setImage(Image* image);
+        void setText(std::string text);
+        void setIcon(storage::Path path);
 
         void setTheme(bool value);
 
