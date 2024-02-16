@@ -32,5 +32,7 @@ namespace gui::elements
         this->m_height = i.getHeight();
         m_surface->clear(COLOR_WHITE);
         m_surface->drawImage(i, 0, 0);
+
+        localGraphicalUpdate();
     }
 }

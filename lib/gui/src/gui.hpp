@@ -8,5 +8,8 @@
 #include "elements/Label.hpp"
 #include "elements/Input.hpp"
 #include "elements/Image.hpp"
+#include "elements/Switch.hpp"
+#include "elements/List.hpp"
+#include "elements/Button.hpp"
 
 #endif

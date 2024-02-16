@@ -159,4 +159,12 @@ namespace gui::elements {
         this->m_fontSize = fontSize;
         localGraphicalUpdate();
     }
+
+    uint16_t Label::getTextWidth()
+    {
+        if(m_surface == nullptr)
+            m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
+        m_surface->setFontSize(this->m_fontSize);
+        return m_surface->getTextWidth(m_text);
+    }
 } // gui::elements

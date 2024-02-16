@@ -23,9 +23,29 @@ extern "C" void app_main()
     Window win;
     Input* in = new Input(35, 35, 0, 0);
     in->setTitle("Prénom:");
-    in->setPlaceHolder("palce holder");
+    in->setPlaceHolder("écrire ici");
 
     win.addChild(in);
+
+    /*Switch* sw1 = new Switch(10, 100);
+    Switch* sw2 = new Switch(10, 150);
+    sw2->setState(true);*/
+
+    VerticalList* list = new VerticalList(40, 200, 40, 300);
+    for (uint16_t i = 0; i < 3; i++)
+        list->add(new Switch(0, 0));
+
+    win.addChild(list);
+
+    Button* button = new Button(35, 394, 250, 38);
+    Label* label = new Label(0, 0, 100, 18);
+    label->setText("Supprimer");
+    button->setLabel(label);
+    button->format();
+
+    //win.addChild(label);
+
+    win.addChild(button);
 
     while (graphics::isRunning())
     {
@@ -36,6 +56,14 @@ extern "C" void app_main()
             //in->setX(in->getX() + 20);
             in->setText("C'est Gabriel");
         }
+
+        /*if(sw1->isTouched())
+        {
+            if(sw1->getState())
+                in->enable();
+            else
+                in->disable();
+        }*/
 
 #ifdef ESP_PLATFORM
 
