@@ -14,8 +14,12 @@ If you are using CLion, please use the [CLion Instructions](#clion-instructions)
 
 _(If you are on Windows, skip this step)_
 
+
 ```shell
+# for linux
 sudo apt-get install libsdl2-dev
+# for macos using homebrew
+brew install sdl2
 ```
 
 ## Clone the repository
@@ -41,6 +45,9 @@ pio run -e windows
 
 # Build for Linux
 pio run -e linux
+
+# Build for MacOS
+pio run -e macos
 ```
 
 ## Run on ESP32
