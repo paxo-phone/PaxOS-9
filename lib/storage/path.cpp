@@ -52,12 +52,20 @@ namespace storage {
         parse(raw);
     }
 
+    Path::Path(const Path& other) {
+        this->assign(other);
+    }
+
     void Path::join(const Path& other) {
         for(uint16_t i = 0; i < other.m_steps.size(); i++) {
             m_steps.push_back(other.m_steps[i]);
         }
         
         simplify();
+    }
+
+    void Path::join(const std::string& other) {
+        this->join(Path(other));
     }
     
     std::string Path::str(void) const {
@@ -93,6 +101,10 @@ namespace storage {
         return o;
     }
 
+    Path Path::operator/(const std::string& other) const {
+        return ((*this) / Path(other));
+    }
+
     Path& Path::operator/=(const Path& other) {
         for(uint16_t i = 0; i < other.m_steps.size(); i++) {
             m_steps.push_back(other.m_steps[i]);
@@ -102,13 +114,25 @@ namespace storage {
         return (*this);
     }
 
+    Path& Path::operator/=(const std::string& other) {
+        return ((*this) /= Path(other));
+    }
+
     Path& Path::operator=(const Path& other) {
         this->assign(other);
         return (*this);
     }
 
+    Path& Path::operator=(const std::string& other) {
+        return ((*this) = Path(other));
+    }
+
     void Path::assign(const Path& other) {
         m_steps = other.m_steps;
+    }
+
+    void Path::assign(const std::string& other) {
+        this->assign(Path(other));
     }
 
     void Path::clear(void) {
