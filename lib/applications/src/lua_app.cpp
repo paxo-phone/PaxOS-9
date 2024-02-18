@@ -8,8 +8,7 @@ namespace app {
                     const json& manifest ) : App(location, manifest)
     {
         if ( ! manifest["entryPoint"].empty() )  {
-            storage::Path relativeEntryPoint ( manifest["entryPoint"] );
-            this->entryPoint.assign(location / relativeEntryPoint);
+            this->entryPoint.assign(location / manifest["entryPoint"]);
         }
     }
         

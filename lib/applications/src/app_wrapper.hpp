@@ -39,7 +39,7 @@ namespace app {
             void readManifest(void) {
 
                 /* get raw data from the manifest */
-                storage::Path manifestPath = this->location / storage::Path("manifest.json");
+                storage::Path manifestPath = this->location / "manifest.json";
                 if(manifestPath.isfile()) {
                     storage::FileStream manifestStream (manifestPath.str(), storage::READ);
                     std::string manifestRaw = manifestStream.read();
