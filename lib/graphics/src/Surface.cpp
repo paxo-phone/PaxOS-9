@@ -33,6 +33,8 @@ namespace graphics
         m_sprite.setPsram(true);
 
         m_sprite.createSprite(width, height);
+        if(m_sprite.getBuffer() == nullptr)
+            std::cout << "ERROR" << std::endl;
     }
 
     Surface::~Surface()

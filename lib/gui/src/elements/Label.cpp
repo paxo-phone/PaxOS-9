@@ -40,7 +40,7 @@ namespace gui::elements {
         for (size_t i = 0; i < lines.size(); i++)
         {
             int x;
-            switch (m_textHorizontalAlignment)
+            switch (int(m_textHorizontalAlignment))
             {
                 case Alignement::LEFT:
                     x = getRadius()/2 + getBorderSize();
@@ -54,7 +54,7 @@ namespace gui::elements {
             };
 
             int y;
-            switch (m_textVerticalAlignment)
+            switch (int(m_textVerticalAlignment))
             {
                 case Alignement::UP:
                     y = getRadius()/2 + getBorderSize() + (m_surface->getTextHeight() + LINE_SPACING) * i;

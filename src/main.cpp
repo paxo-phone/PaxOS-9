@@ -15,9 +15,13 @@
 
 using namespace gui::elements;
 
-// ESP-IDF main
-extern "C" void app_main()
+void loop(){}
+
+void setup()
 {
+    pinMode(14, OUTPUT);
+    digitalWrite(14, 1);
+    
     graphics::init();
 
     Window win;

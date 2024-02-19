@@ -15,14 +15,21 @@ uint64_t getFileSize(const char *filename)
 {
     auto inputStream = std::ifstream(filename, std::ios::ate | std::ios::binary);
 
+    if(!inputStream)
+        return 0;
     return inputStream.tellg();
 }
-
+#include <iostream>
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
 std::shared_ptr<uint8_t[]> getFileData(const char *filename)
 {
     const size_t filesize = getFileSize(filename);
+
+    std::cout << "File size: " << filesize << std::endl;
+
+    if(filesize == 0)
+        return std::shared_ptr<uint8_t[]>();
 
     auto data = std::shared_ptr<uint8_t[]>(new uint8_t[filesize]);
 
@@ -44,7 +51,9 @@ namespace graphics {
         const size_t fileSize = getFileSize(filename.c_str());
 
         m_size = fileSize;
-        m_data = getFileData(filename.c_str());;
+        if(fileSize == 0)
+            return;
+        m_data = getFileData(filename.c_str());
 
         const imgdec::IMGData imageData = imgdec::decodeHeader(m_data.get());
 

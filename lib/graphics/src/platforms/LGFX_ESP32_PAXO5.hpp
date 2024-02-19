@@ -30,8 +30,6 @@ public:
       cfg.freq_read  = 16000000;
       cfg.spi_3wire  = true; // changed
       cfg.use_lock   = true;
-      cfg.dma_channel = 1;
-
       cfg.pin_sclk = 18;
       cfg.pin_mosi = 23;
       cfg.pin_dc   = 2;
@@ -55,7 +53,7 @@ public:
       cfg.offset_rotation  =     0; 
       cfg.dummy_read_pixel =     8; 
       cfg.dummy_read_bits  =     0;//1 
-      cfg.readable         =  false; 
+      cfg.readable         =  true; 
       cfg.invert           = false; 
       cfg.rgb_order        = false; 
       cfg.dlen_16bit       = false; 

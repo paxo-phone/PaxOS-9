@@ -43,10 +43,10 @@ void graphics::init()
 #endif
 
     lcd->init();
-    lcd->setBrightness(0xFF);
+    lcd->setBrightness(0xFF/3);
     lcd->setColorDepth(16);
     lcd->setTextColor(TFT_WHITE);
-    lcd->fillScreen(TFT_BLACK);
+    lcd->fillScreen(TFT_RED);
 
     lcd->startWrite(); // Keep the SPI Bus busy ?
 
@@ -55,7 +55,7 @@ void graphics::init()
     // lcd->calibrateTouch(calibrationData, TFT_MAGENTA, TFT_BLACK);
 
     // Please do a real calibration thing... (see above)
-    uint16_t calibrationData[] = {
+    /*uint16_t calibrationData[] = {
         390,
         170,
         350,
@@ -66,7 +66,7 @@ void graphics::init()
         3950
     };
 
-    lcd->setTouchCalibrate(calibrationData);
+    lcd->setTouchCalibrate(calibrationData);*/
 #endif
 }
 
