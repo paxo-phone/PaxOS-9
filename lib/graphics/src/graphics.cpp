@@ -45,7 +45,6 @@ void graphics::init()
     // We need to create a "landscape buffer" used as a screen.
     // Because LovyanGFX as a weird color glitch when using "setRotation()".
     // But, by using a temporary buffer, the glitch doesn't appear.
-    // TODO : Free memory
     landscapeBuffer = std::make_shared<Surface>(getScreenWidth(), getScreenHeight());
 
 #endif
