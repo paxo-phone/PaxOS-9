@@ -27,6 +27,7 @@ namespace
     std::shared_ptr<LGFX> lcd;
 
     graphics::EScreenOrientation screenOrientation;
+    std::shared_ptr<graphics::Surface> landscapeBuffer;
 }
 
 void graphics::init()
@@ -40,6 +41,12 @@ void graphics::init()
 #else
 
     lcd = std::make_shared<LGFX>(getScreenWidth(), getScreenHeight());
+
+    // We need to create a "landscape buffer" used as a screen.
+    // Because LovyanGFX as a weird color glitch when using "setRotation()".
+    // But, by using a temporary buffer, the glitch doesn't appear.
+    // TODO : Free memory
+    landscapeBuffer = std::make_shared<Surface>(getScreenWidth(), getScreenHeight());
 
 #endif
 
@@ -158,28 +165,21 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 #ifdef ESP_PLATFORM
     sprite.pushSprite(lcd.get(), x, y);
 #else
-    switch (screenOrientation)
+    if (screenOrientation == LANDSCAPE)
     {
-    case PORTRAIT:
+        landscapeBuffer->pushSurface(const_cast<Surface *>(surface), static_cast<int16_t>(x), static_cast<int16_t>(y));
+        landscapeBuffer->m_sprite.pushSprite(lcd.get(), 0, 0);
+    }
+    else
+    {
         sprite.pushSprite(lcd.get(), x, y);
-        return;;
-    case LANDSCAPE:
-        // Simulator "setRotation"
-
-        auto buffer = Surface(getScreenWidth(), getScreenHeight());
-        buffer.fillRect(0, 0, getScreenWidth(), getScreenHeight(), 0);
-
-        buffer.pushSurface(const_cast<Surface *>(surface), 0, 0);
-        buffer.m_sprite.pushRotateZoomWithAA(lcd.get(), 160, 240, 90, 1, 1);
-
-        return;
     }
 #endif
 }
 
 void graphics::flip()
 {
-    lcd->display();
+    // lcd->display();
 }
 
 void graphics::getTouchPos(int16_t* x, int16_t* y)
@@ -224,19 +224,13 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
     // Or store it in another place ?
     ::screenOrientation = screenOrientation;
 
-#ifdef ESP_PLATFORM
-    // TODO : Test it, obviously
-
     switch (screenOrientation)
     {
     case PORTRAIT:
         lcd->setRotation(0);
-        return;
+        break;
     case LANDSCAPE:
         lcd->setRotation(1);
-        return;
+        break;
     }
-#else
-
-#endif
 }
