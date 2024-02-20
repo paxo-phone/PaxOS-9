@@ -12,5 +12,6 @@
 #include "elements/Checkbox.hpp"
 #include "elements/List.hpp"
 #include "elements/Button.hpp"
+#include "elements/Radio.hpp"
 
 #endif

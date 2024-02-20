@@ -31,10 +31,12 @@ extern "C" void app_main()
     Switch* sw2 = new Switch(10, 150);
     sw2->setState(true);*/
 
-    VerticalList* list = new VerticalList(40, 200, 40, 300);
+    VerticalList* list = new VerticalList(40, 100, 40, 300);
     for (uint16_t i = 0; i < 3; i++)
         list->add(new Switch(0, 0));
     list->add(new Checkbox(0, 0));
+    list->add(new Radio(0, 0));
+
 
     win.addChild(list);
 
