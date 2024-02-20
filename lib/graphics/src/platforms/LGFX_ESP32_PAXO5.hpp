@@ -4,7 +4,7 @@
 
 #include <LovyanGFX.hpp>
 
-#define USE_TOUCH_RESISTIVE
+#define USE_TOUCH_CAPACITIVE
 
 class LGFX : public lgfx::LGFX_Device
 {

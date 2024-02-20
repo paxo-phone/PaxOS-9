@@ -48,8 +48,6 @@ void graphics::init()
     lcd->setTextColor(TFT_WHITE);
     lcd->fillScreen(TFT_RED);
 
-    lcd->startWrite(); // Keep the SPI Bus busy ?
-
 #ifdef ESP_PLATFORM
     // uint16_t calibrationData[8];
     // lcd->calibrateTouch(calibrationData, TFT_MAGENTA, TFT_BLACK);
@@ -153,8 +151,11 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     int16_t ty;
 
     lcd->getTouch(&tx, &ty);
+    ty = ty * 480 / 700;
 
-    if (tx < 0 || ty < 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
+    std::cout << tx << " " << ty << std::endl;
+
+    if (tx <= 0 || ty <= 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
         *x = -1;

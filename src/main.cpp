@@ -19,9 +19,10 @@ void loop(){}
 
 void setup()
 {
+    psramInit();
     pinMode(14, OUTPUT);
     digitalWrite(14, 1);
-    
+
     graphics::init();
 
     Window win;
