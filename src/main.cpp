@@ -34,6 +34,7 @@ extern "C" void app_main()
     VerticalList* list = new VerticalList(40, 200, 40, 300);
     for (uint16_t i = 0; i < 3; i++)
         list->add(new Switch(0, 0));
+    list->add(new Checkbox(0, 0));
 
     win.addChild(list);
 
