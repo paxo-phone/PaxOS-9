@@ -8,6 +8,7 @@
 #endif
 
 #include "graphics.hpp"
+#include "hardware.hpp"
 #include "gui.hpp"
 #include "path.hpp"
 #include "filestream.hpp"
@@ -19,10 +20,9 @@ void loop(){}
 
 void setup()
 {
-    psramInit();
-    pinMode(14, OUTPUT);
-    digitalWrite(14, 1);
-
+    hardware::init();
+    hardware::setScreenPower(true);
+    
     graphics::init();
 
     Window win;
@@ -85,7 +85,7 @@ void setup()
 // Native main
 int main(int argc, char **argv)
 {
-    graphics::SDLInit(app_main);
+    graphics::SDLInit(setup);
 }
 
 #endif

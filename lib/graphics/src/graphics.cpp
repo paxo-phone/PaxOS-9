@@ -123,7 +123,7 @@ void graphics::SDLInit(void (*appMain)())
 // You should only use this function with a "Canvas" (Surface that is the size of the screen)
 void graphics::showSurface(const Surface* surface, int x, int y)
 {
-    if (x != 0 || y != 0)
+    /*if (x != 0 || y != 0)
     {
         std::cerr << "---------------------------------------------------------------------------------------------------------------------" << std::endl;
         std::cerr << "                                                 Warning !                                                           " << std::endl;
@@ -133,7 +133,7 @@ void graphics::showSurface(const Surface* surface, int x, int y)
         std::cerr << ">>> Please push to a 'graphics::Surface' before pushing to the screen.                                            <<<" << std::endl;
         std::cerr << ">>> By using a 'graphics::Surface' before pusing to the screen, you are also enabling double buffering rendering. <<<" << std::endl;
         std::cerr << "---------------------------------------------------------------------------------------------------------------------" << std::endl;
-    }
+    }*/
 
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
@@ -151,9 +151,9 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     int16_t ty;
 
     lcd->getTouch(&tx, &ty);
-    ty = ty * 480 / 700;
-
-    std::cout << tx << " " << ty << std::endl;
+    #ifdef ESP_PLATFORM // with capacitive touch?
+        ty = ty * 480 / 700;
+    #endif
 
     if (tx <= 0 || ty <= 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
     {
