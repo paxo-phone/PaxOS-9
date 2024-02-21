@@ -18,7 +18,10 @@ namespace gui::elements
         this->m_backgroundColor = COLOR_WHITE;
         this->m_borderRadius = 17;
 
-        m_theme = BUTTON_BLACK;
+        m_theme = BUTTON_WHITE;
+
+        this->m_label = nullptr;
+        this->m_image = nullptr;
     }
 
     Button::~Button() = default;
@@ -44,11 +47,13 @@ namespace gui::elements
 
         if(m_image != nullptr)
             m_image->setX(getWidth()/2 - w/2);
+
         if(m_label != nullptr)
         {
-            m_label->setX(getWidth()/2 - w/2 + space + ((m_image != nullptr) ? (m_image->getX() + m_image->getWidth()) : 0));
+            m_label->setX(space + ((m_image != nullptr) ? (m_image->getX() + m_image->getWidth()) : getWidth()/2 - w/2));
             m_label->setY(10);
             m_label->setWidth(m_label->getTextWidth());
+            m_label->setHeight(18);
             m_label->setFontSize(LABEL_SMALL);
 
             if(m_theme)
@@ -76,16 +81,26 @@ namespace gui::elements
         }
     }
 
-    void Button::setLabel(Label* label)
+    void Button::setText(std::string text)
     {
-        this->m_label = label;
-        addChild(m_label);
+        if(m_label == nullptr)
+        {
+            m_label = new Label(0, 0, 0, 0);
+            addChild(m_label);
+        }
+        this->m_label->setText(text);
+        format();
     }
 
-    void Button::setImage(Image* image)
+    void Button::setIcon(storage::Path path)
     {
-        this->m_image = image;
-        addChild(m_image);
+        if(m_image == nullptr)
+        {
+            m_image = new Image(path, 0, 10, 20, 20);
+            m_image->load();
+            addChild(m_image);
+            format();
+        }
     }
 
     void Button::setTheme(bool value)

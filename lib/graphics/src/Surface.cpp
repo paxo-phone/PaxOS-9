@@ -14,6 +14,11 @@
 #include "fonts/Arial-24.h"
 #include "fonts/Arial-8.h"
 
+#include "fonts/ArialBold-12.h"
+#include "fonts/ArialBold-16.h"
+#include "fonts/ArialBold-24.h"
+#include "fonts/ArialBold-8.h"
+
 #include "Encoder/decodeutf8.hpp"
 
 namespace graphics
@@ -28,6 +33,8 @@ namespace graphics
         m_sprite.setPsram(true);
 
         m_sprite.createSprite(width, height);
+        if(m_sprite.getBuffer() == nullptr)
+            std::cout << "ERROR" << std::endl;
     }
 
     Surface::~Surface()
@@ -202,9 +209,9 @@ namespace graphics
         if (font == ARIAL)
         {
             if (fontSize == PT_8)
-                return &Arial8ptFR;
+                return &ArialBold8ptFR;
             if (fontSize == PT_12)
-                return &Arial12ptFR;
+                return &ArialBold12ptFR;
             if (fontSize == PT_16)
                 return &Arial16ptFR;
             if (fontSize == PT_24)

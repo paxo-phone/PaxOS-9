@@ -133,8 +133,8 @@ bool gui::ElementBase::update()
     // check if the finger is currently on the widget
     if (touchX != -1 && touchY != -1)
     {
-        if (getAbsoluteX() < touchX && touchX < getAbsoluteX() + getWidth() && // l'objet est touché
-            getAbsoluteY() < touchY && touchY < getAbsoluteY() + getHeight())
+        if (getAbsoluteX()-10 < touchX && touchX < getAbsoluteX() + getWidth() +10 && // l'objet est touché
+            getAbsoluteY()-10 < touchY && touchY < getAbsoluteY() + getHeight() +10)
         {
             if (m_widgetPressed == nullptr && m_pressedState == PressedState::NOT_PRESSED) // l'objet est touché pour la première fois
             {
@@ -165,6 +165,12 @@ bool gui::ElementBase::update()
             return true;
         }
     }
+    else
+    {
+        originTouchX = -1;
+        originTouchY = -1;
+    }
+
     if (touchX == -1 && touchY == -1 && m_widgetPressed == this && m_pressedState != PressedState::RELEASED)
     {
         if (m_pressedState == PressedState::PRESSED)

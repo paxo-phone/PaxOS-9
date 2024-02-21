@@ -43,19 +43,17 @@ void graphics::init()
 #endif
 
     lcd->init();
-    lcd->setBrightness(0xFF);
+    lcd->setBrightness(0xFF/3);
     lcd->setColorDepth(16);
     lcd->setTextColor(TFT_WHITE);
-    lcd->fillScreen(TFT_BLACK);
-
-    lcd->startWrite(); // Keep the SPI Bus busy ?
+    lcd->fillScreen(TFT_RED);
 
 #ifdef ESP_PLATFORM
     // uint16_t calibrationData[8];
     // lcd->calibrateTouch(calibrationData, TFT_MAGENTA, TFT_BLACK);
 
     // Please do a real calibration thing... (see above)
-    uint16_t calibrationData[] = {
+    /*uint16_t calibrationData[] = {
         390,
         170,
         350,
@@ -66,7 +64,7 @@ void graphics::init()
         3950
     };
 
-    lcd->setTouchCalibrate(calibrationData);
+    lcd->setTouchCalibrate(calibrationData);*/
 #endif
 }
 
@@ -125,7 +123,7 @@ void graphics::SDLInit(void (*appMain)())
 // You should only use this function with a "Canvas" (Surface that is the size of the screen)
 void graphics::showSurface(const Surface* surface, int x, int y)
 {
-    if (x != 0 || y != 0)
+    /*if (x != 0 || y != 0)
     {
         std::cerr << "---------------------------------------------------------------------------------------------------------------------" << std::endl;
         std::cerr << "                                                 Warning !                                                           " << std::endl;
@@ -135,7 +133,7 @@ void graphics::showSurface(const Surface* surface, int x, int y)
         std::cerr << ">>> Please push to a 'graphics::Surface' before pushing to the screen.                                            <<<" << std::endl;
         std::cerr << ">>> By using a 'graphics::Surface' before pusing to the screen, you are also enabling double buffering rendering. <<<" << std::endl;
         std::cerr << "---------------------------------------------------------------------------------------------------------------------" << std::endl;
-    }
+    }*/
 
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
@@ -153,8 +151,11 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     int16_t ty;
 
     lcd->getTouch(&tx, &ty);
+    #ifdef ESP_PLATFORM // with capacitive touch?
+        ty = ty * 480 / 700;
+    #endif
 
-    if (tx < 0 || ty < 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
+    if (tx <= 0 || ty <= 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
         *x = -1;

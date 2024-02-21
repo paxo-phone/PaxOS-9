@@ -8,6 +8,7 @@
 #endif
 
 #include "graphics.hpp"
+#include "hardware.hpp"
 #include "gui.hpp"
 #include "path.hpp"
 #include "filestream.hpp"
@@ -15,9 +16,13 @@
 
 using namespace gui::elements;
 
-// ESP-IDF main
-extern "C" void app_main()
+void loop(){}
+
+void setup()
 {
+    hardware::init();
+    hardware::setScreenPower(true);
+    
     graphics::init();
 
     Window win;
@@ -41,10 +46,8 @@ extern "C" void app_main()
     win.addChild(list);
 
     Button* button = new Button(35, 394, 250, 38);
-    Label* label = new Label(0, 0, 100, 18);
-    label->setText("Supprimer");
-    button->setLabel(label);
-    button->format();
+    button->setText("bonjour");
+    button->setIcon(storage::Path("icon.png"));
 
     //win.addChild(label);
 
@@ -85,7 +88,7 @@ extern "C" void app_main()
 // Native main
 int main(int argc, char **argv)
 {
-    graphics::SDLInit(app_main);
+    graphics::SDLInit(setup);
 }
 
 #endif
