@@ -42,7 +42,7 @@ public:
     {
       auto cfg = _panel_instance.config();
 
-      cfg.pin_cs           =    5;
+      cfg.pin_cs           =    13;
       cfg.pin_rst          =    -1;
       cfg.pin_busy         =    -1;
 
@@ -67,7 +67,7 @@ public:
     {
       auto cfg = _light_instance.config();
 
-      cfg.pin_bl = 25;
+      cfg.pin_bl = 5;
       cfg.invert = true;
       cfg.freq   = 44100;
       cfg.pwm_channel = 0;
@@ -98,8 +98,8 @@ public:
       auto cfg = _touch_instance.config();
       cfg.i2c_port = 1;
       cfg.i2c_addr = 0x38;
-      cfg.pin_sda  = 13;
-      cfg.pin_scl  = 15;
+      cfg.pin_sda  = 21;
+      cfg.pin_scl  = 22;
       #endif
       
       _touch_instance.config(cfg);
