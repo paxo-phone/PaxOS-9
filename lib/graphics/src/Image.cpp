@@ -7,53 +7,50 @@
 #include "imgdec.hpp"
 
 #include <fstream>
+#include <path.hpp>
+#include <filestream.hpp>
 #include <memory>
 
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
-uint64_t getFileSize(const char *filename)
+uint64_t getFileSize(storage::Path& path)
 {
-    auto inputStream = std::ifstream(filename, std::ios::ate | std::ios::binary);
-
-    if(!inputStream)
-        return 0;
-    return inputStream.tellg();
+   return 0;
 }
 #include <iostream>
+
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
-std::shared_ptr<uint8_t[]> getFileData(const char *filename)
+std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
 {
-    const size_t filesize = getFileSize(filename);
+    auto data = std::shared_ptr<uint8_t[]>(new uint8_t[30]);    // just for headers
 
-    std::cout << "File size: " << filesize << std::endl;
+    storage::FileStream stream(path.str(), storage::Mode::READ);
 
-    if(filesize == 0)
-        return std::shared_ptr<uint8_t[]>();
-
-    auto data = std::shared_ptr<uint8_t[]>(new uint8_t[filesize]);
-
-    auto inputStream = std::ifstream(filename, std::ios::binary);
+    if(!stream.isopen())
+    {
+        std::cout << "Error: " << path.str() << std::endl;
+        return data;
+    }
 
     size_t i = 0;
-    while (i < filesize)
+    while (i < 30)
     {
-        data.get()[i++] = inputStream.get();
+        data.get()[i++] = stream.readchar();
     }
 
     return data;
 }
 
 namespace graphics {
-    // TODO : Use "Path"
-    SImage::SImage(const std::string& filename)
+    SImage::SImage(storage::Path& path)
     {
-        const size_t fileSize = getFileSize(filename.c_str());
+        this->m_path = path;
 
-        m_size = fileSize;
-        if(fileSize == 0)
+        if(!path.isfile())
             return;
-        m_data = getFileData(filename.c_str());
+
+        m_data = getFileData(path);
 
         const imgdec::IMGData imageData = imgdec::decodeHeader(m_data.get());
 
@@ -101,6 +98,11 @@ namespace graphics {
     uint8_t * SImage::getData() const
     {
         return m_data.get();
+    }
+
+    storage::Path SImage::getPath() const
+    {
+        return this->m_path;
     }
 
 } // graphics

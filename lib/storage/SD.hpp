@@ -10,7 +10,7 @@
 // you will get a linkage error
 extern "C"
 {
-#include "SD.h"
+#include "SDm.h"
 }
 
 #endif //SD_HPP

@@ -31,6 +31,13 @@ void setup()
     MyClass a;
     hardware::init();
     hardware::setScreenPower(true);
+    storage::init();
+
+    std::vector<std::string> files = storage::Path("/").listdir();
+    for (auto file : files)
+    {
+        std::cout << file << std::endl;
+    }
     
     graphics::init();
     

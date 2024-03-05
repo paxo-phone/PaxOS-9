@@ -1,6 +1,6 @@
 #ifdef ESP_PLATFORM
 
-#include "SD.h"
+#include "SDm.h"
 
 #include <string.h>
 #include <sys/unistd.h>
@@ -21,17 +21,10 @@ bool SD_init (void) {
 
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
 
-#ifdef PLATFORM_ESP32DEV
-    int gpio_miso = 19;
-    int gpio_mosi = 23;
-    int gpio_sck = 18;
-    int gpio_cs = 5;
-#else
     int gpio_miso = 19;
     int gpio_mosi = 23;
     int gpio_sck = 18;
     int gpio_cs = 4;
-#endif
 
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = gpio_cs;
