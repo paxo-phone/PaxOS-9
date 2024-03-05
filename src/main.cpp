@@ -12,18 +12,29 @@
 #include "gui.hpp"
 #include "path.hpp"
 #include "filestream.hpp"
+#include "threads.hpp"
 #include <iostream>
 
 using namespace gui::elements;
 
 void loop(){}
 
+class MyClass {
+public:
+  void myFunction() {
+    std::cout << "Fonction membre appelée !" << std::endl;
+  }
+};
+
 void setup()
 {
+    MyClass a;
     hardware::init();
     hardware::setScreenPower(true);
     
     graphics::init();
+    
+    ThreadManager::init();
 
     Window win;
     Input* in = new Input(35, 35, 0, 0);
@@ -31,6 +42,8 @@ void setup()
     in->setPlaceHolder("écrire ici");
 
     win.addChild(in);
+
+    eventHandlerBack.setTimeout(new Callback<>(std::function<void()>(std::bind(&MyClass::myFunction, &a))), 5000);
 
     /*Switch* sw1 = new Switch(10, 100);
     Switch* sw2 = new Switch(10, 150);
@@ -56,6 +69,7 @@ void setup()
     while (graphics::isRunning())
     {
         win.updateAll();
+        
 
         if(in->isTouched())
         {
