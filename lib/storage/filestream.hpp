@@ -3,70 +3,67 @@
 
 #include <string>
 
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
-    #include <fstream>
-#endif
+#include <fstream>
+
 #ifdef ESP_PLATFORM
-    #include "SD.h"
+#include "SD.h"
 #endif
 
-namespace storage {
-    
-    enum Mode {
+namespace storage
+{
+
+    enum Mode
+    {
         READ,
         WRITE,
         APPEND
     };
 
-    class FileStream {
+    class FileStream
+    {
 
-        public:
+    public:
+        FileStream();
 
-            FileStream();
+        FileStream(const std::string &path,
+                   Mode mode,
+                   bool erase = false);
 
-            FileStream(const std::string& path, 
-                       Mode mode, 
-                       bool erase = false);
+        ~FileStream();
 
-            ~FileStream();
-            
-            void open(const std::string& path, 
-                      Mode mode, 
-                      bool erase = false);
+        void open(const std::string &path,
+                  Mode mode,
+                  bool erase = false);
 
-            void close(void);
+        void close(void);
 
-            std::string read(void);
-            std::string readline(void);
-            std::string readword(void);
-            char readchar(void);
+        std::string read(void);
+        std::string readline(void);
+        std::string readword(void);
+        char readchar(void);
 
-            void write(const std::string& str);
-            void write(const char c);
+        void write(const std::string &str);
+        void write(const char c);
 
-            bool isopen(void) const;
+        bool isopen(void) const;
 
-            friend FileStream& operator<<(FileStream& stream, 
-                                          const std::string& text);
+        long size(void);
 
-            friend FileStream& operator>>(FileStream& stream, 
-                                          std::string& buff);
+        friend FileStream &operator<<(FileStream &stream,
+                                      const std::string &text);
 
-        private:
+        friend FileStream &operator>>(FileStream &stream,
+                                      std::string &buff);
 
-            #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
-                std::fstream m_stream;
-            #endif
-            #ifdef ESP_PLATFORM
-                FILE *m_file = nullptr;
-            #endif
+    private:
+        std::fstream m_stream;
     };
 
-    FileStream& operator<<(FileStream& stream, 
-                           const std::string& text);
+    FileStream &operator<<(FileStream &stream,
+                           const std::string &text);
 
-    FileStream& operator>>(FileStream& stream, 
-                           const std::string& buff);
+    FileStream &operator>>(FileStream &stream,
+                           const std::string &buff);
 }
 
 #endif /* FILE_STREAM_HPP */

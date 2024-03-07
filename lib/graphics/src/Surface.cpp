@@ -7,6 +7,7 @@
 
 #include <graphics.hpp>
 #include <path.hpp>
+#include <filestream.hpp>
 #include <iostream>
 
 #ifdef ESP_PLATFORM
@@ -181,22 +182,18 @@ namespace graphics
 
     void Surface::drawImage(const SImage &image, const int16_t x, const int16_t y)
     {
-        #ifdef ESP_PLATFORM            
+        #ifdef ESP_PLATFORM
             switch (image.getType()) // image size with right format
             {
                 case BMP:
-                    m_sprite.drawBmpFile(image.getPath().str().c_str(), 0, 0);
+                    m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y);
                 break;
                 case PNG:
-                    m_sprite.drawPngFile(image.getPath().str().c_str(), 0, 0);
+                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y);
                 break;
                 case JPG:
-                    m_sprite.drawJpgFile(image.getPath().str().c_str(), 0, 0);
+                    m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y);
                 break;
-                m_sprite.drawPngFile("icon.png", 0, 0);
-                m_sprite.drawPngFile("/icon.png", 0, 0);
-                m_sprite.drawPngFile("/sd/icon.png", 0, 0);
-                m_sprite.drawPngFile("/sdcard/icon.png", 0, 0);
             };
             
         #else

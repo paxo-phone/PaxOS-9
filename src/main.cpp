@@ -31,15 +31,9 @@ void setup()
     MyClass a;
     hardware::init();
     hardware::setScreenPower(true);
+    graphics::init();
     storage::init();
 
-    std::vector<std::string> files = storage::Path("/").listdir();
-    for (auto file : files)
-    {
-        std::cout << file << std::endl;
-    }
-    
-    graphics::init();
     
     ThreadManager::init();
 
@@ -52,10 +46,6 @@ void setup()
 
     eventHandlerBack.setTimeout(new Callback<>(std::function<void()>(std::bind(&MyClass::myFunction, &a))), 5000);
 
-    /*Switch* sw1 = new Switch(10, 100);
-    Switch* sw2 = new Switch(10, 150);
-    sw2->setState(true);*/
-
     VerticalList* list = new VerticalList(40, 100, 40, 300);
     for (uint16_t i = 0; i < 3; i++)
         list->add(new Switch(0, 0));
@@ -67,7 +57,7 @@ void setup()
 
     Button* button = new Button(35, 394, 250, 38);
     button->setText("bonjour");
-    button->setIcon(storage::Path("icon.png"));
+    button->setIcon(storage::Path("/icon.png"));
 
     //win.addChild(label);
 
@@ -80,17 +70,8 @@ void setup()
 
         if(in->isTouched())
         {
-            //in->setX(in->getX() + 20);
             in->setText("C'est Gabriel");
         }
-
-        /*if(sw1->isTouched())
-        {
-            if(sw1->getState())
-                in->enable();
-            else
-                in->disable();
-        }*/
 
 #ifdef ESP_PLATFORM
 

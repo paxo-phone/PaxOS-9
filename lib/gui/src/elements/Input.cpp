@@ -18,7 +18,7 @@ namespace gui::elements {
         m_text->setTextColor(COLOR_GREY);
         this->addChild(m_text);
 
-        m_clear = new Image(storage::Path("icon.png"), 231, 20, 18, 18);
+        m_clear = new Image(storage::Path("/icon.png"), 231, 20, 18, 18);
         m_clear->load();
         this->addChild(m_clear);
     }
