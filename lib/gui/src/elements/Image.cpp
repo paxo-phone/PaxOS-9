@@ -27,13 +27,13 @@ namespace gui::elements
 
     void Image::load()
     {
-        graphics::SImage i = graphics::SImage(this->m_path.str());
+        graphics::SImage i = graphics::SImage(this->m_path);
         
         m_surface = std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight());
         this->m_width = i.getWidth();
         this->m_height = i.getHeight();
         m_surface->clear(m_backgroundColor);
-        m_surface->drawImage(i, 0, 0);
+        m_surface->drawImage(i, 0, 0);/**/
 
         localGraphicalUpdate();
     }

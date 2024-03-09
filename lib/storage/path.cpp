@@ -8,10 +8,18 @@
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
     #include <filesystem>
     #include <fstream>
+#else
+    #include <Arduino.h>
+    #include <SD.h>
+    #include <stdbool.h>
+    #include <dirent.h> // for Dir and Files
+    #include <sys/stat.h>   // to check files
 #endif
 
 #include "path.hpp"
-#include "SD.hpp"
+
+
+#define MOUNT_POINT "/sd"
 
 
 #define PATH_SEPARATOR '/'
@@ -31,7 +39,7 @@ bool storage::init()
 
     for (int i = 0; i < 4; i++)
     {
-        if(SD_init())
+        if(SD.begin(4))
             return true;
     }
 
