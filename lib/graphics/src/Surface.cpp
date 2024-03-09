@@ -6,13 +6,25 @@
 #include "Surface.hpp"
 
 #include <graphics.hpp>
+#include <path.hpp>
+#include <filestream.hpp>
 #include <iostream>
+
+#ifdef ESP_PLATFORM
+#include <Arduino.h>
+#include <SD.h>
+#endif
 
 #include "color.hpp"
 #include "fonts/Arial-12.h"
 #include "fonts/Arial-16.h"
 #include "fonts/Arial-24.h"
 #include "fonts/Arial-8.h"
+
+#include "fonts/ArialBold-12.h"
+#include "fonts/ArialBold-16.h"
+#include "fonts/ArialBold-24.h"
+#include "fonts/ArialBold-8.h"
 
 #include "Encoder/decodeutf8.hpp"
 
@@ -28,6 +40,8 @@ namespace graphics
         m_sprite.setPsram(true);
 
         m_sprite.createSprite(width, height);
+        if(m_sprite.getBuffer() == nullptr)
+            std::cout << "ERROR" << std::endl;
     }
 
     Surface::~Surface()
@@ -168,18 +182,36 @@ namespace graphics
 
     void Surface::drawImage(const SImage &image, const int16_t x, const int16_t y)
     {
-        switch (image.getType())
-        {
-        case BMP:
-            m_sprite.drawBmp(image.getData(), image.getSize(), x, y, static_cast<int16_t>(image.getWidth()), static_cast<int16_t>(image.getHeight()));
-            break;
-        case PNG:
-            m_sprite.drawPng(image.getData(), image.getSize(), x, y, static_cast<int16_t>(image.getWidth()), static_cast<int16_t>(image.getHeight()));
-            break;
-        case JPG:
-            m_sprite.drawJpg(image.getData(), image.getSize(), x, y, static_cast<int16_t>(image.getWidth()), static_cast<int16_t>(image.getHeight()));
-            break;
-        }
+        #ifdef ESP_PLATFORM
+            switch (image.getType()) // image size with right format
+            {
+                case BMP:
+                    m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y);
+                break;
+                case PNG:
+                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y);
+                break;
+                case JPG:
+                    m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y);
+                break;
+            };
+            
+        #else
+            lgfx::FileWrapper file;
+
+            switch (image.getType())
+            {
+                case BMP:
+                    m_sprite.drawBmpFile(&file, image.getPath().str().c_str(), x, y);
+                break;
+                case PNG:
+                    m_sprite.drawPngFile(&file, image.getPath().str().c_str(), x, y);
+                break;
+                case JPG:
+                    m_sprite.drawJpgFile(&file, image.getPath().str().c_str(), x, y);
+                break;
+            };
+        #endif
     }
 
     void Surface::setFont(const EFont font)
@@ -202,9 +234,9 @@ namespace graphics
         if (font == ARIAL)
         {
             if (fontSize == PT_8)
-                return &Arial8ptFR;
+                return &ArialBold8ptFR;
             if (fontSize == PT_12)
-                return &Arial12ptFR;
+                return &ArialBold12ptFR;
             if (fontSize == PT_16)
                 return &Arial16ptFR;
             if (fontSize == PT_24)

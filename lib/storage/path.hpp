@@ -12,14 +12,23 @@ namespace storage {
 
             Path(void);
             Path(const std::string& raw);
+            Path(const Path& other);
 
             void join(const Path& other);
+            void join(const std::string& other);
             
             Path operator/(const Path& other) const;
+            Path operator/(const std::string& other) const;
             
             Path& operator/=(const Path& other);
+            Path& operator/=(const std::string& other);
+
             Path& operator=(const Path& other);
+            Path& operator=(const std::string& other);
+
             void assign(const Path& other);
+            void assign(const std::string& other);
+
             void clear(void);
 
 

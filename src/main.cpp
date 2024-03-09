@@ -8,33 +8,68 @@
 #endif
 
 #include "graphics.hpp"
+#include "hardware.hpp"
 #include "gui.hpp"
 #include "path.hpp"
 #include "filestream.hpp"
+#include "threads.hpp"
 #include <iostream>
 
 using namespace gui::elements;
 
-// ESP-IDF main
-extern "C" void app_main()
+void loop(){}
+
+class MyClass {
+public:
+  void myFunction() {
+    std::cout << "Fonction membre appelée !" << std::endl;
+  }
+};
+
+void setup()
 {
+    MyClass a;
+    hardware::init();
+    hardware::setScreenPower(true);
     graphics::init();
-    graphics::setScreenOrientation(graphics::LANDSCAPE);
+    storage::init();
+
+    
+    ThreadManager::init();
 
     Window win;
     Input* in = new Input(35, 35, 0, 0);
     in->setTitle("Prénom:");
-    in->setPlaceHolder("palce holder");
+    in->setPlaceHolder("écrire ici");
 
     win.addChild(in);
+
+    eventHandlerBack.setTimeout(new Callback<>(std::function<void()>(std::bind(&MyClass::myFunction, &a))), 5000);
+
+    VerticalList* list = new VerticalList(40, 100, 40, 300);
+    for (uint16_t i = 0; i < 3; i++)
+        list->add(new Switch(0, 0));
+    list->add(new Checkbox(0, 0));
+    list->add(new Radio(0, 0));
+
+
+    win.addChild(list);
+
+    Button* button = new Button(35, 394, 250, 38);
+    button->setText("bonjour");
+    button->setIcon(storage::Path("/icon.png"));
+
+    //win.addChild(label);
+
+    win.addChild(button);
 
     while (graphics::isRunning())
     {
         win.updateAll();
+        
 
         if(in->isTouched())
         {
-            //in->setX(in->getX() + 20);
             in->setText("C'est Gabriel");
         }
 
@@ -55,7 +90,7 @@ extern "C" void app_main()
 // Native main
 int main(int argc, char **argv)
 {
-    graphics::SDLInit(app_main);
+    graphics::SDLInit(setup);
 }
 
 #endif

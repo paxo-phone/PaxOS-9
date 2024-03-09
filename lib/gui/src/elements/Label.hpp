@@ -35,6 +35,8 @@ namespace gui::elements
         void setHorizontalAlignment(Alignement alignment);
         void setVerticalAlignment(Alignement alignment);
 
+        uint16_t getTextWidth();
+
     private:
         std::vector<std::string> parse(void);
         uint16_t getUsableWidth(void); // retourne la largeur réelle maximale utilisée par le texte (sans les bordure etc...)

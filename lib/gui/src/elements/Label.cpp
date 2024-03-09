@@ -40,7 +40,7 @@ namespace gui::elements {
         for (size_t i = 0; i < lines.size(); i++)
         {
             int x;
-            switch (m_textHorizontalAlignment)
+            switch (int(m_textHorizontalAlignment))
             {
                 case Alignement::LEFT:
                     x = getRadius()/2 + getBorderSize();
@@ -54,7 +54,7 @@ namespace gui::elements {
             };
 
             int y;
-            switch (m_textVerticalAlignment)
+            switch (int(m_textVerticalAlignment))
             {
                 case Alignement::UP:
                     y = getRadius()/2 + getBorderSize() + (m_surface->getTextHeight() + LINE_SPACING) * i;
@@ -158,5 +158,13 @@ namespace gui::elements {
     {
         this->m_fontSize = fontSize;
         localGraphicalUpdate();
+    }
+
+    uint16_t Label::getTextWidth()
+    {
+        if(m_surface == nullptr)
+            m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
+        m_surface->setFontSize(this->m_fontSize);
+        return m_surface->getTextWidth(m_text);
     }
 } // gui::elements

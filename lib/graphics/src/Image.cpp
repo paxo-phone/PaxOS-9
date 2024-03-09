@@ -7,44 +7,50 @@
 #include "imgdec.hpp"
 
 #include <fstream>
+#include <path.hpp>
+#include <filestream.hpp>
 #include <memory>
 
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
-uint64_t getFileSize(const char *filename)
+uint64_t getFileSize(storage::Path& path)
 {
-    auto inputStream = std::ifstream(filename, std::ios::ate | std::ios::binary);
-
-    return inputStream.tellg();
+   return 0;
 }
+#include <iostream>
 
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
-std::shared_ptr<uint8_t[]> getFileData(const char *filename)
+std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
 {
-    const size_t filesize = getFileSize(filename);
+    auto data = std::shared_ptr<uint8_t[]>(new uint8_t[30]);    // just for headers
 
-    auto data = std::shared_ptr<uint8_t[]>(new uint8_t[filesize]);
+    storage::FileStream stream(path.str(), storage::Mode::READ);
 
-    auto inputStream = std::ifstream(filename, std::ios::binary);
+    if(!stream.isopen())
+    {
+        std::cout << "Error: " << path.str() << std::endl;
+        return data;
+    }
 
     size_t i = 0;
-    while (i < filesize)
+    while (i < 30)
     {
-        data.get()[i++] = inputStream.get();
+        data.get()[i++] = stream.readchar();
     }
 
     return data;
 }
 
 namespace graphics {
-    // TODO : Use "Path"
-    SImage::SImage(const std::string& filename)
+    SImage::SImage(storage::Path& path)
     {
-        const size_t fileSize = getFileSize(filename.c_str());
+        this->m_path = path;
 
-        m_size = fileSize;
-        m_data = getFileData(filename.c_str());;
+        if(!path.isfile())
+            return;
+
+        m_data = getFileData(path);
 
         const imgdec::IMGData imageData = imgdec::decodeHeader(m_data.get());
 
@@ -92,6 +98,11 @@ namespace graphics {
     uint8_t * SImage::getData() const
     {
         return m_data.get();
+    }
+
+    storage::Path SImage::getPath() const
+    {
+        return this->m_path;
     }
 
 } // graphics

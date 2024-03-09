@@ -9,7 +9,7 @@ namespace gui::elements
     class Image final : public ElementBase
     {
     public:
-        Image(storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+        Image(storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height, color_t backgroundColor = COLOR_WHITE);
         ~Image() override;
 
         void render() override;
@@ -18,6 +18,7 @@ namespace gui::elements
 
     private:
         storage::Path m_path;
+        color_t m_backgroundColor;
     };
 } // gui::elements
 
