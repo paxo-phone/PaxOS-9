@@ -1,5 +1,5 @@
-#ifndef LUA_APP 
-#define LUA_APP 
+#ifndef LUA_APP_RUN 
+#define LUA_APP_RUN 
 
 #include "app.hpp"
 #include "path.hpp"
@@ -22,4 +22,4 @@ namespace app {
 
 }
 
-#endif /* LUA_APP */
+#endif /* LUA_APP_RUN */

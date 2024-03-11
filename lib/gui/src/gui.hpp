@@ -14,4 +14,6 @@
 #include "elements/Button.hpp"
 #include "elements/Radio.hpp"
 
+using namespace gui::elements;
+
 #endif

@@ -13,6 +13,7 @@
 #include "path.hpp"
 #include "filestream.hpp"
 #include "threads.hpp"
+#include "lua_file.hpp"
 #include <iostream>
 
 using namespace gui::elements;
@@ -37,7 +38,10 @@ void setup()
     
     ThreadManager::init();
 
-    Window win;
+    LuaFile lua(storage::Path("/app.lua"));
+    lua.run();
+
+    gui::elements::Window win;
     Input* in = new Input(35, 35, 0, 0);
     in->setTitle("Prénom:");
     in->setPlaceHolder("écrire ici");

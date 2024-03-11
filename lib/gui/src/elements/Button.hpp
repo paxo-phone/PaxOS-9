@@ -24,6 +24,8 @@ namespace gui::elements
         void setText(std::string text);
         void setIcon(storage::Path path);
 
+        std::string getText();
+
         void setTheme(bool value);
 
     private:

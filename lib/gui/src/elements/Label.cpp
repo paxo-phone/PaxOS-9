@@ -167,4 +167,10 @@ namespace gui::elements {
         m_surface->setFontSize(this->m_fontSize);
         return m_surface->getTextWidth(m_text);
     }
+
+    uint16_t Label::getTextHeight()
+    {
+        std::vector<std::string> lines = parse();
+        return getRadius() + getBorderSize()*2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+    }
 } // gui::elements

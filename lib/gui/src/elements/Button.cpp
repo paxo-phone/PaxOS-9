@@ -103,6 +103,14 @@ namespace gui::elements
         }
     }
 
+    std::string Button::getText()
+    {
+        if(m_label == nullptr)
+            return "";
+        else
+            return m_label->getText();
+    }
+
     void Button::setTheme(bool value)
     {
         this->m_theme = value;
