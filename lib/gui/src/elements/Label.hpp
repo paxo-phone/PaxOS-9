@@ -36,6 +36,7 @@ namespace gui::elements
         void setVerticalAlignment(Alignement alignment);
 
         uint16_t getTextWidth();
+        uint16_t getTextHeight();
 
     private:
         std::vector<std::string> parse(void);

@@ -54,14 +54,14 @@ namespace gui
         virtual void onLongClick() {}
 
         /**
-         * \brief When the widget is no longer considered as touched even if the finger is still on the screen
+         * \brief When finger leave the widget ans is considered as released
          */
         virtual void onReleased() {}
 
+        
         /**
-         * \brief When finger leave the screen
-         */
-        virtual void onNotClicked() {}
+         * \brief When the widget is no longer considered as touched even if the finger is still on the screen
+         */virtual void onNotClicked() {}
 
         virtual void onScroll() {}
 

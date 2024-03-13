@@ -47,12 +47,12 @@ namespace storage {
             
             bool rename (const Path& to);
 
+            std::vector<std::string> m_steps;
         private:
 
             void parse(const std::string& raw);
             void simplify(void);
 
-            std::vector<std::string> m_steps ; 
     };
 
 

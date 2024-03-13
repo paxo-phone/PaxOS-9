@@ -1,12 +1,12 @@
 #include "Input.hpp"
 
 namespace gui::elements {
-    Input::Input(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+    Input::Input(uint16_t x, uint16_t y)
     {
         m_x = x;
         m_y = y;
-        m_width = 250;
-        m_height = 46;
+        m_width = INPUT_WIDTH;
+        m_height = INPUT_HEIGHT;
 
         m_title = new Label(0, 0, 250, 18);
         m_title->setFontSize(16);

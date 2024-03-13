@@ -6,12 +6,15 @@
 #include "Label.hpp"
 #include "Image.hpp"
 
+#define INPUT_WIDTH 250
+#define INPUT_HEIGHT 46
+
 namespace gui::elements
 {
     class Input final : public ElementBase
     {
-    public:        
-        Input(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+    public:
+        Input(uint16_t x, uint16_t y);
         ~Input() override;
 
         enum Alignement {
