@@ -30,8 +30,13 @@ namespace gui::elements {
     void Keyboard::onReleased()
     {
         int16_t touchX, touchY;
-        getLastTouchPos(&touchX, &touchY);
+        getLastTouchPosRel(&touchX, &touchY);
 
-        m_surface->drawRoundRect(touchX, touchY, 10, 10, 10, graphics::packRGB565(255, 0, 0));
+        std::cout << touchX << ", " << touchY << std::endl;
+
+        m_surface->drawRoundRect(static_cast<int16_t>(touchX - 5), static_cast<int16_t>(touchY - 5), 10, 10, 10, graphics::packRGB565(255, 0, 0));
+
+        // Mark dirty
+        m_isDrawn = false;
     }
 } // gui::elements
