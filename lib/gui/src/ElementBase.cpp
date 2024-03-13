@@ -145,8 +145,8 @@ bool gui::ElementBase::update()
                 originTouchY = touchY;
 
                 // Store the last touch position
-                m_lastTouchX = originTouchX;
-                m_lastTouchY = originTouchY;
+                m_lastTouchX = touchX;
+                m_lastTouchY = touchY;
 
                 return true;
             }
