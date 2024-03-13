@@ -38,7 +38,7 @@ pio project init
 
 ```shell
 # Build for ESP32
-pio run -e esp32
+pio run -e esp32dev
 
 # Build for Windows
 pio run -e windows
