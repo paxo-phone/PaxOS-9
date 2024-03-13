@@ -26,6 +26,9 @@ namespace
     bool running;
 
     std::shared_ptr<LGFX> lcd;
+
+    graphics::EScreenOrientation screenOrientation;
+    std::shared_ptr<graphics::Surface> landscapeBuffer;
 }
 
 void graphics::init()
@@ -39,6 +42,11 @@ void graphics::init()
 #else
 
     lcd = std::make_shared<LGFX>(getScreenWidth(), getScreenHeight());
+
+    // We need to create a "landscape buffer" used as a screen.
+    // Because LovyanGFX as a weird color glitch when using "setRotation()".
+    // But, by using a temporary buffer, the glitch doesn't appear.
+    landscapeBuffer = std::make_shared<Surface>(getScreenWidth(), getScreenHeight());
 
 #endif
 
@@ -68,6 +76,32 @@ void graphics::init()
 #endif
 }
 
+uint16_t graphics::getScreenWidth()
+{
+    switch (screenOrientation)
+    {
+    case graphics::PORTRAIT:
+        return 320;
+    case graphics::LANDSCAPE:
+        return 480;
+    }
+
+    return -1;
+}
+
+uint16_t graphics::getScreenHeight()
+{
+    switch (screenOrientation)
+    {
+    case graphics::PORTRAIT:
+        return 480;
+    case graphics::LANDSCAPE:
+        return 320;
+    }
+
+    return -1;
+}
+
 bool graphics::isRunning()
 {
     return running;
@@ -92,6 +126,7 @@ static int SDLUpdate(void *data)
 void graphics::SDLInit(void (*appMain)())
 {
     lgfx::Panel_sdl::setup();
+    // lgfx::Panel_sdl::loop(); // Ensure to create the window before creating a new thread
 
     SDLUpdateData updateData
     {
@@ -137,12 +172,24 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
+#ifdef ESP_PLATFORM
     sprite.pushSprite(lcd.get(), x, y);
+#else
+    if (screenOrientation == LANDSCAPE)
+    {
+        landscapeBuffer->pushSurface(const_cast<Surface *>(surface), static_cast<int16_t>(x), static_cast<int16_t>(y));
+        landscapeBuffer->m_sprite.pushSprite(lcd.get(), 0, 0);
+    }
+    else
+    {
+        sprite.pushSprite(lcd.get(), x, y);
+    }
+#endif
 }
 
 void graphics::flip()
 {
-    lcd->display();
+    // lcd->display();
 }
 
 void graphics::getTouchPos(int16_t* x, int16_t* y)
@@ -176,4 +223,27 @@ bool graphics::isTouched()
     getTouchPos(&x, &y);
 
     return x != -1 && y != -1;
+}
+
+graphics::EScreenOrientation graphics::getScreenOrientation()
+{
+    return screenOrientation;
+}
+
+void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
+{
+    // Update the screen orientation (and the screen size)
+    // Maybe use another name for the parameter ?
+    // Or store it in another place ?
+    ::screenOrientation = screenOrientation;
+
+    switch (screenOrientation)
+    {
+    case PORTRAIT:
+        lcd->setRotation(0);
+        break;
+    case LANDSCAPE:
+        lcd->setRotation(1);
+        break;
+    }
 }
