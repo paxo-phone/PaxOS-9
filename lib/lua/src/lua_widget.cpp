@@ -1,6 +1,6 @@
 #include "lua_widget.hpp"
 
-void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent, int x, int y, int width, int height)
+void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 {
     widget = obj;
     parent->addChild(this);

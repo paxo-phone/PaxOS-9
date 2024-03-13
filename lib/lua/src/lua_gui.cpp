@@ -32,15 +32,39 @@ LuaLabel* LuaGui::label(LuaWidget* parent, int x, int y, int width, int height)
     return w;
 }
 
-LuaInput* LuaGui::input(LuaWidget* parent, int x, int y, int width, int height)
+LuaInput* LuaGui::input(LuaWidget* parent, int x, int y)
 {
-    LuaInput* w = new LuaInput(parent, x, y, width, height);
+    LuaInput* w = new LuaInput(parent, x, y);
     return w;
 }
 
 LuaButton* LuaGui::button(LuaWidget* parent, int x, int y, int width, int height)
 {
     LuaButton* w = new LuaButton(parent, x, y, width, height);
+    return w;
+}
+
+LuaVerticalList* LuaGui::verticalList(LuaWidget* parent, int x, int y, int width, int height)
+{
+    LuaVerticalList* w = new LuaVerticalList(parent, x, y, width, height);
+    return w;
+}
+
+LuaHorizontalList* LuaGui::horizontalList(LuaWidget* parent, int x, int y, int width, int height)
+{
+    LuaHorizontalList* w = new LuaHorizontalList(parent, x, y, width, height);
+    return w;
+}
+
+LuaSwitch* LuaGui::switchb(LuaWidget* parent, int x, int y)
+{
+    LuaSwitch* w = new LuaSwitch(parent, x, y);
+    return w;
+}
+
+LuaRadio* LuaGui::radio(LuaWidget* parent, int x, int y)
+{
+    LuaRadio* w = new LuaRadio(parent, x, y);
     return w;
 }
 

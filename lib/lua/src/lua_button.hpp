@@ -1,6 +1,8 @@
 #ifndef LUA_BUTTON_MODULE
 #define LUA_BUTTON_MODULE
 
+#include <path.hpp>
+
 #include "lua_widget.hpp"
 
 class LuaButton : public LuaWidget
@@ -8,11 +10,10 @@ class LuaButton : public LuaWidget
     public:
     LuaButton(LuaWidget* parent, int x, int y, int width, int height);
     void setText(const std::string& text){ widget->setText(text); }
-    std::string getText(){ return widget->getText(); }                           // I WAS HERE
-    //void setFontSize(int fontSize){ widget->setFontSize(fontSize); }
-    //int getTextHeight(){ return widget->getTextHeight(); }
-    //void setVerticalAlignment(int alignment){ widget->setVerticalAlignment(alignment); }
-    //void setHorizontalAlignment(int alignment){ widget->setHorizontalAlignment(alignment); }
+    std::string getText(){ return widget->getText(); }
+    void setIcon(const std::string &path){ widget->setIcon(storage::Path(path)); }
+    void setTheme(bool theme){ widget->setTheme(theme); }
+    void format(){ widget->format(); }
 
     Button* widget = nullptr;
 };

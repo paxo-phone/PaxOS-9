@@ -8,6 +8,9 @@
 #include "lua_input.hpp"
 #include "lua_button.hpp"
 #include "lua_window.hpp"
+#include "lua_list.hpp"
+#include "lua_switch.hpp"
+#include "lua_radio.hpp"
 
 class LuaFile;
 
@@ -18,8 +21,12 @@ class LuaGui
     LuaBox* box(LuaWidget* parent, int x, int y, int width, int height);
     LuaImage* image(LuaWidget* parent, storage::Path path, int x, int y, int width, int height);
     LuaLabel* label(LuaWidget* parent, int x, int y, int width, int height);
-    LuaInput* input(LuaWidget* parent, int x, int y, int width, int height);
+    LuaInput* input(LuaWidget* parent, int x, int y);
     LuaButton* button(LuaWidget* parent, int x, int y, int width, int height);
+    LuaVerticalList* verticalList(LuaWidget* parent, int x, int y, int width, int height);
+    LuaHorizontalList* horizontalList(LuaWidget* parent, int x, int y, int width, int height);
+    LuaSwitch* switchb(LuaWidget* parent, int x, int y);
+    LuaRadio* radio(LuaWidget* parent, int x, int y);
     LuaWindow* window();
 
     void update();

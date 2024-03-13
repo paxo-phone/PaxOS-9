@@ -7,14 +7,13 @@
 class LuaInput : public LuaWidget
 {
     public:
-    LuaInput(LuaWidget* parent, int x, int y, int width, int height);
+    LuaInput(LuaWidget* parent, int x, int y);
     void setText(const std::string& text){ widget->setText(text); }
+    void setPlaceHolder(const std::string& text){ widget->setPlaceHolder(text); }
+    void setTitle(const std::string& text){ widget->setTitle(text); }
+
     std::string getText(){ return widget->getText(); }
-    //void setFontSize(int fontSize){ widget->setFontSize(fontSize); }
-    //int getTextHeight(){ return widget->getTextHeight(); }
     void onChange(sol::function func){ onChangeFunc = func;}
-    //void setVerticalAlignment(int alignment){ widget->setVerticalAlignment(alignment); }
-    //void setHorizontalAlignment(int alignment){ widget->setHorizontalAlignment(alignment); }
 
     Input* widget = nullptr;
     sol::function onChangeFunc;

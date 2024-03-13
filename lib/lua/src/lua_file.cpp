@@ -129,6 +129,8 @@ void LuaFile::run()
             "input", &LuaGui::input,
             "button", &LuaGui::button,
             "window", &LuaGui::window,
+            "switch", &LuaGui::switchb,
+            "radio", &LuaGui::radio,
             "setWindow", &LuaGui::setMainWindow
         );
 
@@ -145,7 +147,6 @@ void LuaFile::run()
             "getWidth", &LuaWidget::getWidth,
             "getHeight", &LuaWidget::getHeight,
             "setMainColor", &LuaWidget::setBackgroundColor,
-            //"getColor", &LuaWidget::getColor,
             "enable", &LuaWidget::enable,
             "disable", &LuaWidget::disable,
             "isTouched", &LuaWidget::isTouched,
@@ -163,8 +164,7 @@ void LuaFile::run()
             "getText", &LuaLabel::getText,
             "setFontSize", &LuaLabel::setFontSize,
             "getTextHeight", &LuaLabel::getTextHeight,
-            //"setBold", &LuaLabel::setBold,
-            //"setItalic", &LuaLabel::setItalic,
+            "getTextWidth", &LuaLabel::getTextWidth,
             "setVerticalAlignment", &LuaLabel::setVerticalAlignment,
             "setHorizontalAlignment", &LuaLabel::setHorizontalAlignment,
             sol::base_classes, sol::bases<LuaWidget>());
@@ -172,20 +172,26 @@ void LuaFile::run()
         lua.new_usertype<LuaInput>("LuaInput",
             "setText", &LuaInput::setText,
             "getText", &LuaInput::getText,
-            //"setFontSize", &LuaInput::setFontSize,
-            //"getTextHeight", &LuaInput::getTextHeight,
-            "onChange", &LuaInput::onChange,
-            //"setVerticalAlignment", &LuaInput::setVerticalAlignment,
-            //"setHorizontalAlignment", &LuaInput::setHorizontalAlignment,
+            "setPlaceHolder", &LuaInput::setPlaceHolder,
+            "setTitle", &LuaInput::setTitle,
             sol::base_classes, sol::bases<LuaWidget>());
         
         lua.new_usertype<LuaButton>("LuaButton",
             "setText", &LuaButton::setText,
             "getText", &LuaButton::getText,
-            //"setFontSize", &LuaButton::setFontSize,
-            //"getTextHeight", &LuaButton::getTextHeight,
-            //"setVerticalAlignment", &LuaButton::setVerticalAlignment,
-            //"setHorizontalAlignment", &LuaButton::setHorizontalAlignment,
+            "setIcon", &LuaButton::setIcon,
+            "setTheme", &LuaButton::setTheme,
+            "format", &LuaButton::format,
+            sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.new_usertype<LuaSwitch>("LuaSwitch",
+            "setState", &LuaSwitch::setState,
+            "getState", &LuaSwitch::getState,
+            sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.new_usertype<LuaRadio>("LuaRadio",
+            "setState", &LuaRadio::setState,
+            "getState", &LuaRadio::getState,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);

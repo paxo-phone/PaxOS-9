@@ -2,6 +2,7 @@
 #include <graphics.hpp>
 
 #include "gui.hpp"
+#include <threads.hpp>
 
 #include <iostream>
 
@@ -95,11 +96,12 @@ void gui::ElementBase::renderAll()
     }
 }
 
+
 bool gui::ElementBase::updateAll()
 {
     if (m_parent == nullptr)
     {
-        // todo: update events
+        eventHandlerApp.update();
 
         graphics::getTouchPos(&touchX, &touchY);
     }

@@ -7,7 +7,7 @@
 class LuaWidget
 {
     public:
-    void init(gui::ElementBase* obj, LuaWidget* parent, int x, int y, int width, int height);
+    void init(gui::ElementBase* obj, LuaWidget* parent);
     void init(gui::ElementBase* obj) {widget = obj;}
     ~LuaWidget();
 
