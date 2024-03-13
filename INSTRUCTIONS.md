@@ -62,6 +62,21 @@ pio run -t upload -e esp32dev
 pio test -e test
 ```
 
+## Troubleshooting
+
+### macOS
+- If no program is launching at the end of the build when calling `pio run -e macos`, try to run the executable using `.pio/build/macos/program`.
+- If you get an error similar to
+  ```
+  dyld[xxxxx]: Library not loaded: @rpath/libSDL2-2.0.0.dylib
+  Referenced from: <xxxxxx> /Users/username/PaxOS-9/.pio/build/macos/program
+  Reason: no LC_RPATH's found
+  zsh: abort      .pio/build/macos/program
+  ```
+  1. Get the location of SDL's dynamic library by executing `brew info sdl2`, you should get a path similar to `/opt/homebrew/Cellar/sdl2/2.28.5`
+  2. Run `ls {the path you got from the last command}/lib/libSDL2-2.0.0.dylib`. If you get the exact same path as an output you're ready to go. Otherwise install SDL as described above in this document and retry the procedure.
+  3. Re-run the command by adding `DYLD_LIBRARY_PATH="{the path you got from step 1}/lib/"` as a prefix before the command like this `DYLD_LIBRARY_PATH="{the path you got from step 1}/lib/ .pio/build/macos/program`
+
 # CLion Instructions
 
 ## Install dependencies
