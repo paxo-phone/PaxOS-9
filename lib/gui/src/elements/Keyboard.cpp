@@ -24,12 +24,14 @@ namespace gui::elements {
 
     void Keyboard::render()
     {
-        m_surface->clear(COLOR_WHITE);
-        m_surface->fillRect(0, 0, m_width, m_height, graphics::packRGB565(0, 0, 255));
+
     }
 
     void Keyboard::onReleased()
     {
-        std::cout << "KEYBOARD CLICK !" << touchX << touchX << std::endl;
+        int16_t touchX, touchY;
+        getLastTouchPos(&touchX, &touchY);
+
+        m_surface->drawRoundRect(touchX, touchY, 10, 10, 10, graphics::packRGB565(255, 0, 0));
     }
 } // gui::elements
