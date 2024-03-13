@@ -66,7 +66,13 @@ void setup()
 
     //win.addChild(label);
 
+    // Create new keyboard
+    auto keyboard = new Keyboard();
+
     win.addChild(button);
+
+    // Add keyboard
+    win.addChild(keyboard);
 
     while (graphics::isRunning())
     {
