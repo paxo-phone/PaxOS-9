@@ -121,7 +121,8 @@ namespace gui
         static int16_t touchX, touchY;
 
         int16_t m_lastTouchX, m_lastTouchY;
-        void getLastTouchPos(int16_t* x, int16_t* y) const;
+        void getLastTouchPosAbs(int16_t* x, int16_t* y) const;
+        void getLastTouchPosRel(int16_t* x, int16_t* y) const;
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
 
