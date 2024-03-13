@@ -1,4 +1,5 @@
 #include "threads.hpp"
+#include "delay.hpp"
 
 #ifndef THREAD_HANDLER
     #define THREAD_HANDLER
@@ -44,10 +45,8 @@ void ThreadManager::background_thread(void* arg)
 {
     while (true)
     {
-        eventHandlerBack.update();
-        #ifdef ESP_PLATFORM
-        vTaskDelay(1);
-        #endif
+      eventHandlerBack.update();
+      PaxOS_Delay(1);
     }
 }
 
@@ -55,9 +54,7 @@ void ThreadManager::simcom_thread(void* arg)
 {
     while (true)
     {
-        #ifdef ESP_PLATFORM
-        vTaskDelay(1);
-        #endif
+      PaxOS_Delay(1);
     }
 }
 
