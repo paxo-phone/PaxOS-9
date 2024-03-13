@@ -5,7 +5,7 @@ function run()
     i=gui:input(win, 35, 35, 0, 0)
     i:setText("this is text")
 
-    b=gui:switch(win,35, 100)
+    b=gui:checkbox(win,35, 100)
     b:setState(true)
 
     b:onClick(function ()

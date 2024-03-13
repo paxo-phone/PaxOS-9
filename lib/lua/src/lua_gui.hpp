@@ -11,6 +11,7 @@
 #include "lua_list.hpp"
 #include "lua_switch.hpp"
 #include "lua_radio.hpp"
+#include "lua_checkbox.hpp"
 
 class LuaFile;
 
@@ -25,6 +26,7 @@ class LuaGui
     LuaButton* button(LuaWidget* parent, int x, int y, int width, int height);
     LuaVerticalList* verticalList(LuaWidget* parent, int x, int y, int width, int height);
     LuaHorizontalList* horizontalList(LuaWidget* parent, int x, int y, int width, int height);
+    LuaCheckbox* checkbox(LuaWidget* parent, int x, int y);
     LuaSwitch* switchb(LuaWidget* parent, int x, int y);
     LuaRadio* radio(LuaWidget* parent, int x, int y);
     LuaWindow* window();

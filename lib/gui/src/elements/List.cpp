@@ -21,7 +21,6 @@ namespace gui::elements
 
     void VerticalList::add(ElementBase* widget)
     {
-        widget->setX(0);
         widget->setY( (m_children.size() != 0) ? (m_children[m_children.size()-1]->getY() + m_children[m_children.size()-1]->getHeight() + m_lineSpace) : (0));
         this->addChild(widget);
         this->setHeight(widget->getY()+widget->getHeight());
@@ -51,7 +50,6 @@ namespace gui::elements
     void HorizontalList::add(ElementBase* widget)
     {
         widget->setX((m_children.size() != 0) ? (m_children[m_children.size()-1]->getX() + m_children[m_children.size()-1]->getWidth() + m_lineSpace) : (0));
-        widget->setY(0);
         this->addChild(widget);
         this->setWidth(widget->getX()+widget->getWidth());
     }

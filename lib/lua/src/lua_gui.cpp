@@ -68,6 +68,13 @@ LuaRadio* LuaGui::radio(LuaWidget* parent, int x, int y)
     return w;
 }
 
+
+LuaCheckbox* LuaGui::checkbox(LuaWidget* parent, int x, int y)
+{
+    LuaCheckbox* w = new LuaCheckbox(parent, x, y);
+    return w;
+}
+
 LuaWindow* LuaGui::window()
 {
     return new LuaWindow();

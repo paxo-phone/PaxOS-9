@@ -131,6 +131,9 @@ void LuaFile::run()
             "window", &LuaGui::window,
             "switch", &LuaGui::switchb,
             "radio", &LuaGui::radio,
+            "vlist", &LuaGui::verticalList,
+            "hlist", &LuaGui::horizontalList,
+            "checkbox", &LuaGui::checkbox,
             "setWindow", &LuaGui::setMainWindow
         );
 
@@ -192,6 +195,19 @@ void LuaFile::run()
         lua.new_usertype<LuaRadio>("LuaRadio",
             "setState", &LuaRadio::setState,
             "getState", &LuaRadio::getState,
+            sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.new_usertype<LuaCheckbox>("LuaCheckbox",
+            "setState", &LuaCheckbox::setState,
+            "getState", &LuaCheckbox::getState,
+            sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.new_usertype<LuaVerticalList>("LuaVList",
+            "add", &LuaVerticalList::add,
+            sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.new_usertype<LuaHorizontalList>("LuaHList",
+            "add", &LuaHorizontalList::add,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);

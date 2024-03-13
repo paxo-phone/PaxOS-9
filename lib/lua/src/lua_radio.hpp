@@ -10,10 +10,8 @@ class LuaRadio : public LuaWidget
     
     void setState(bool state) { widget->setState(state); }
     bool getState() { return widget->getState(); }
-    void onChange(sol::function func){ onChangeFunc = func; }
 
     Radio* widget = nullptr;
-    sol::function onChangeFunc;
 };
 
 #endif
