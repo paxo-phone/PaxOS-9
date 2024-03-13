@@ -13,8 +13,8 @@ namespace gui::elements {
     {
         m_x = 0;
         m_y = 0;
-        m_width = 320;
-        m_height = 480;
+        m_width = graphics::getScreenWidth();
+        m_height = graphics::getScreenHeight();
         m_backgroundColor = COLOR_WHITE;
     }
 
