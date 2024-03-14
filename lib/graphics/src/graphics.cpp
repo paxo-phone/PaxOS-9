@@ -148,7 +148,7 @@ void graphics::SDLInit(void (*appMain)())
 
     running = false;
 
-    SDL_WaitThread(thread, nullptr);
+    // SDL_WaitThread(thread, nullptr);
 
     lgfx::Panel_sdl::close();
 }
