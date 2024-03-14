@@ -15,6 +15,4 @@
 #include "elements/Radio.hpp"
 #include "elements/Keyboard.hpp"
 
-using namespace gui::elements;
-
 #endif
