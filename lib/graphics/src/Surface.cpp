@@ -189,7 +189,6 @@ namespace graphics
                     m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y);
                 break;
                 case PNG:
-                std::cout << "drawPngFile: " + std::string((m_sprite.getBuffer() != nullptr)?("Ok"):("nullptr")) << std::endl;
                     m_sprite.drawPngFile(image.getPath().str().c_str(), x, y);
                 break;
                 case JPG:
