@@ -276,7 +276,10 @@ namespace GSM
 
         while (true)
         {
+            #ifdef ESP_PLATFORM
             delay(100);
+            #endif
+            
             download();
 
             process();
