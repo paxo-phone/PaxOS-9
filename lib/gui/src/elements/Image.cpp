@@ -33,7 +33,8 @@ namespace gui::elements
         this->m_width = i.getWidth();
         this->m_height = i.getHeight();
         m_surface->clear(m_backgroundColor);
-        m_surface->drawImage(i, 0, 0);/**/
+
+        m_surface->drawImage(i, 0, 0);
 
         localGraphicalUpdate();
     }

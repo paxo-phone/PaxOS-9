@@ -56,14 +56,31 @@ LuaFile::~LuaFile()
     // libérer les ressources (events, etc)
 }
 
+void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
+    if (nsize == 0) {
+        // Free the block
+        if (ptr != NULL) {
+            free(ptr);
+        }
+        return NULL;
+    } else {
+        // Allocate or resize the block
+        #ifdef ESP32
+            return ps_realloc(ptr, nsize);
+        #else
+            return realloc(ptr, nsize);
+        #endif
+    }
+}
+
 void LuaFile::run()
 {
+    lua_setallocf(lua.lua_state(), custom_allocator, NULL);
+
     // Charger le fichier lua
     storage::FileStream file(filename.str(), storage::READ);
     std::string code = file.read();
     file.close();
-
-    std::cout << code << std::endl;
 
     // Charger le module dans l'environnement Lua
     lua.open_libraries(sol::lib::base);
@@ -71,7 +88,6 @@ void LuaFile::run()
     lua.open_libraries(sol::lib::table);
     lua.open_libraries(sol::lib::string);
 
-    std::cout << 1 << std::endl;
 
     // Lire la configuration
     storage::FileStream file2((directory / "conf.txt").str(), storage::READ);
@@ -234,6 +250,18 @@ void LuaFile::run()
         lua["time"] = &lua_time;
     }
 
+    if(perms.acces_gsm)
+    {
+        sol::table luaGSM = lua.create_table();
+
+        luaGSM["newMessage"] = &LuaGSM::newMessage;
+        luaGSM["newCall"] = &LuaGSM::newCall;
+        luaGSM["getNumber"] = &LuaGSM::getNumber;
+        luaGSM["getCallState"] = &LuaGSM::getCallState;
+
+        lua["gsm"] = luaGSM;
+    }
+
     /*if(perms.acces_web)
     {
         lua.new_usertype<LuaNetwork>("network",
@@ -248,8 +276,6 @@ void LuaFile::run()
             sol::meta_function::garbage_collect, sol::destructor([](LuaHttpClient& obj) { obj.~LuaHttpClient(); })
         );
     }*/
-
-    std::cout << 2 << std::endl;
 
     try
     {

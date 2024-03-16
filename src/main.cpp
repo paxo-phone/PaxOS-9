@@ -29,13 +29,12 @@ public:
 
 void setup()
 {
-    MyClass a;
     hardware::init();
     hardware::setScreenPower(true);
     graphics::init();
     storage::init();
 
-    graphics::setScreenOrientation(graphics::LANDSCAPE);
+    graphics::setScreenOrientation(graphics::PORTRAIT);
 
     ThreadManager::init();
 
@@ -48,8 +47,6 @@ void setup()
     in->setPlaceHolder("écrire ici");
 
     win.addChild(in);
-
-    eventHandlerBack.setTimeout(new Callback<>(std::function<void()>(std::bind(&MyClass::myFunction, &a))), 5000);
 
     VerticalList* list = new VerticalList(40, 100, 40, 300);
     for (uint16_t i = 0; i < 3; i++)

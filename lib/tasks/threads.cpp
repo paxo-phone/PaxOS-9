@@ -52,10 +52,7 @@ void ThreadManager::background_thread(void* arg)
 
 void ThreadManager::simcom_thread(void* arg)
 {
-    while (true)
-    {
-      PaxOS_Delay(1);
-    }
+    GSM::run();
 }
 
 void ThreadManager::app_thread(){}
