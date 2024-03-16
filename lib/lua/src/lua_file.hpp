@@ -12,7 +12,6 @@
 #include "lua_hardware.hpp"
 #include "lua_events.hpp"
 #include "lua_storage.hpp"
-#include "lua_gsm.hpp"
 
 
 /*class LuaHttpClient
@@ -48,7 +47,6 @@ struct Permissions
     bool acces_time = true;
     bool acces_web_paxo = true;
     bool acces_web = true;
-    bool acces_gsm = true;
 };
 
 class LuaFile
