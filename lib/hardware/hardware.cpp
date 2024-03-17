@@ -11,7 +11,7 @@ void hardware::init()
 
     psramInit();
     pinMode(PIN_SCREEN_POWER, OUTPUT);
-    pinMode(PIN_SCREEN_POWER, OUTPUT);
+    pinMode(PIN_VIBRATOR, OUTPUT);
     pinMode(PIN_HOME_BUTTON, INPUT_PULLUP);
     setVibrator(false);
 

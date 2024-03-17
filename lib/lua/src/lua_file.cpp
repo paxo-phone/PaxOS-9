@@ -5,6 +5,7 @@
 #include <path.hpp>
 #include <hardware.hpp>
 #include <threads.hpp>
+#include <json.hpp>
 
 
 /*
@@ -41,13 +42,14 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
     return std::make_shared<LuaHttpClient>(lua);
 }*/
 
-LuaFile::LuaFile(storage::Path filename)
+LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     :lua_gui(this),
     lua_storage(this),
     lua_time(this)/*,
     lua_network(this)*/
 {
     this->filename = filename;
+    this->manifest = manifest;
     this->directory = filename / storage::Path("..");
 }
 
@@ -90,13 +92,25 @@ void LuaFile::run()
 
 
     // Lire la configuration
-    storage::FileStream file2((directory / "conf.txt").str(), storage::READ);
+    storage::FileStream file2(manifest.str(), storage::READ);
     std::string conf = file2.read();
     file2.close();
 
-    // en fonction de la configuration, choisir les permissions
+    std::cout << "conf: " << conf << std::endl;
 
-    // perms....
+    nlohmann::json confJson = nlohmann::json::parse(conf);
+
+    // en fonction de la configuration, choisir les permissions
+    perms.acces_files = confJson["acces_files"] == "true";
+    perms.acces_files_root = confJson["acces_files_root"] == "true";
+    perms.acces_gsm = confJson["acces_gsm"] == "true";
+    perms.acces_gui = confJson["acces_gui"] == "true";
+    perms.acces_hardware = confJson["acces_hardware"] == "true";
+    perms.acces_time = confJson["acces_time"] == "true";
+    perms.acces_web = confJson["acces_web"] == "true";
+    perms.acces_web_paxo = confJson["acces_web_paxo"] == "true";
+
+    confJson.clear();
 
     // en fonction des permissions, charger certains modules
 
@@ -291,6 +305,24 @@ void LuaFile::run()
     catch (const sol::error& e)
     {
         std::cerr << "Erreur Lua : " << e.what() << std::endl;
-        return;
+
+        gui::elements::Window win;
+        Label *label = new Label(0, 0, 320, 400);
+        
+        label->setText(e.what());
+        win.addChild(label);
+        
+        Button *btn = new Button(35, 420, 250, 38);
+        btn->setText("Quitter");
+        win.addChild(btn);
+
+        while (true)
+        {
+            win.updateAll();
+            if(btn->isTouched())
+            {
+                return;
+            }
+        }
     }
 }

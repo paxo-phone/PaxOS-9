@@ -14,18 +14,23 @@
 #include "filestream.hpp"
 #include "threads.hpp"
 #include "lua_file.hpp"
+#include "gsm.hpp"
+#include "app.hpp"
 #include <iostream>
 
 using namespace gui::elements;
 
 void loop(){}
 
-class MyClass {
-public:
-  void myFunction() {
-    std::cout << "Fonction membre appelée !" << std::endl;
-  }
-};
+void ringingVibrator()
+{
+    #ifdef ESP_PLATFORM
+    if(GSM::state.callState == GSM::CallState::RINGING)
+    {
+        hardware::setVibrator(true); delay(100); hardware::setVibrator(false);
+    }
+    #endif
+}
 
 void setup()
 {
@@ -38,7 +43,21 @@ void setup()
 
     ThreadManager::init();
 
-    LuaFile lua(storage::Path("/app.lua"));
+    #ifdef ESP_PLATFORM
+    eventHandlerBack.setInterval(
+        new Callback<>(&ringingVibrator),
+        300
+    );
+    #endif
+
+    app::init();
+    for (auto a : app::appList)
+    {
+        std::cout << a.name << ";" << a.path.str() << std::endl;
+    }
+    app::runApp(app::appList[0].path);
+
+    /*LuaFile lua(storage::Path("/app.lua"));
     lua.run();
 
     gui::elements::Window win;
@@ -63,17 +82,17 @@ void setup()
 
     //win.addChild(label);
 
-    win.addChild(button);
+    win.addChild(button);*/
 
     while (graphics::isRunning())
     {
-        win.updateAll();
+        /*win.updateAll();
         
 
         if(in->isTouched())
         {
             in->setText("C'est Gabriel");
-        }
+        }*/
 
 #ifdef ESP_PLATFORM
 

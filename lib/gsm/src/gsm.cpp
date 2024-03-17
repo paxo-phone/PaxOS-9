@@ -161,6 +161,9 @@ namespace GSM
 
     void onRinging()
     {
+        if(state.callState == CallState::RINGING)
+            return;
+
         std::string defaultNumber = "unknown";
 
         int clccIndex = data.find("+CLCC:");
@@ -279,7 +282,7 @@ namespace GSM
             #ifdef ESP_PLATFORM
             delay(100);
             #endif
-            
+
             download();
 
             process();
