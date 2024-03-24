@@ -18,6 +18,17 @@ namespace gui::elements
         void render() override;
         void onReleased() override;
 
+    private:
+        std::string m_buffer;
+
+        char **m_currentLayout;
+
+        char **m_layoutLowercase;
+        char **m_layoutUppercase;
+        char **m_layoutNumbers;
+
+        uint8_t m_caps;
+
         void drawKeys();
         void drawKeyRow(int16_t y, uint8_t count, char* keys);
         void drawKey(int16_t x, int16_t y, uint16_t w, char key);
@@ -31,10 +42,7 @@ namespace gui::elements
 
         void drawInputBox();
 
-    private:
-        std::string buffer;
-
-        char **keys;
+        void markDirty();
     };
 } // gui::elements
 

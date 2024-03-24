@@ -8,6 +8,7 @@
 #include <graphics.hpp>
 #include <Surface.hpp>
 
+// 0x0_ => Control chars
 constexpr char KEY_NULL = 0x00;
 constexpr char KEY_EXIT = 0x01;
 
@@ -18,8 +19,16 @@ constexpr char KEY_BACKSPACE = 0x11;
 // 0x2_ => Modifiers
 constexpr char KEY_CAPS = 0x20;
 
-// 0x3_ => Keyboard Categories
-constexpr char KEY_CATEGORY_NUMBERS = 0x30;
+// -0x1_ => Keyboard Layouts
+constexpr char KEY_LAYOUT_STANDARD = -0x10; // Lowercase or Uppercase, based on context
+constexpr char KEY_LAYOUT_LOWERCASE = -0x11;
+constexpr char KEY_LAYOUT_UPPERCASE = -0x12;
+constexpr char KEY_LAYOUT_NUMBERS = -0x13;
+
+// Caps
+constexpr uint8_t CAPS_NONE = 0;
+constexpr uint8_t CAPS_ONCE = 1;
+constexpr uint8_t CAPS_LOCK = 2;
 
 namespace gui::elements {
     Keyboard::Keyboard()
@@ -32,17 +41,35 @@ namespace gui::elements {
 
         m_hasEvents = true;
 
-        keys = new char*[4];
-        keys[0] = new char[]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
-        keys[1] = new char[]{'q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'};
-        keys[2] = new char[]{KEY_CAPS, 'w', 'x', 'c', 'v', 'b', 'n', '\'', KEY_BACKSPACE};
-        keys[3] = new char[]{KEY_CATEGORY_NUMBERS, KEY_SPACE, KEY_EXIT};
+        m_caps = CAPS_NONE;
+
+        m_layoutLowercase = new char*[4];
+        m_layoutLowercase[0] = new char[]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
+        m_layoutLowercase[1] = new char[]{'q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'};
+        m_layoutLowercase[2] = new char[]{KEY_CAPS, 'w', 'x', 'c', 'v', 'b', 'n', '\'', KEY_BACKSPACE};
+        m_layoutLowercase[3] = new char[]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
+
+        m_layoutUppercase = new char*[4];
+        m_layoutUppercase[0] = new char[]{'A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'};
+        m_layoutUppercase[1] = new char[]{'Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'};
+        m_layoutUppercase[2] = new char[]{KEY_CAPS, 'W', 'X', 'C', 'V', 'B', 'N', '\'', KEY_BACKSPACE};
+        m_layoutUppercase[3] = new char[]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
+
+        m_layoutNumbers = new char*[4];
+        m_layoutNumbers[0] = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+        m_layoutNumbers[1] = new char[]{'+', '-', '*', '/', '(', ')', '[', ']', '<', '>'};
+        m_layoutNumbers[2] = new char[]{KEY_CAPS, '_', ',', '.', ':', ';', '!', '?', KEY_BACKSPACE};
+        m_layoutNumbers[3] = new char[]{KEY_LAYOUT_STANDARD, KEY_SPACE, KEY_EXIT};
+
+        m_currentLayout = m_layoutLowercase;
     }
 
     Keyboard::~Keyboard() = default;
 
     void Keyboard::render()
     {
+        std::cout << "HE+GPiao)pgiaeg" << std::endl;
+
         // Input box
         drawInputBox();
 
@@ -70,9 +97,6 @@ namespace gui::elements {
         //     color
         // );
 
-        // Mark dirty
-        // m_isDrawn = false;
-
         const char pressedKey = getKey(touchX, touchY);
         if (pressedKey == KEY_NULL)
         {
@@ -84,9 +108,10 @@ namespace gui::elements {
 
     void Keyboard::drawKeys()
     {
-        drawKeyRow(140, 10, keys[0]);
-        drawKeyRow(180, 10, keys[1]);
-        drawKeyRow(220, 9, keys[2]);
+        // Draw every keys
+        drawKeyRow(140, 10, m_currentLayout[0]);
+        drawKeyRow(180, 10, m_currentLayout[1]);
+        drawKeyRow(220, 9, m_currentLayout[2]);
         drawLastRow(30, 260);
     }
 
@@ -183,7 +208,7 @@ namespace gui::elements {
             }
         }
 
-        return keys[row][column];
+        return m_currentLayout[row][column];
     }
 
     uint8_t Keyboard::getKeyCol(const int16_t x, const uint8_t keyCount)
@@ -213,28 +238,59 @@ namespace gui::elements {
         switch (key)
         {
         case KEY_NULL:
-            break;
+            return;
         case KEY_EXIT:
-            break;
+            return;
         case KEY_SPACE:
-            buffer += " ";
+            m_buffer += " ";
             break;
         case KEY_BACKSPACE:
+            if (!m_buffer.empty())
+            {
+                m_buffer.pop_back();
+            }
             break;
         case KEY_CAPS:
-            break;
-        case KEY_CATEGORY_NUMBERS:
-            break;
+            if (m_caps == CAPS_NONE)
+            {
+                m_currentLayout = m_layoutUppercase;
+                m_caps = CAPS_ONCE;
+
+                markDirty();
+            }
+            else if (m_caps == CAPS_ONCE)
+            {
+                m_currentLayout = m_layoutUppercase;
+                m_caps = CAPS_LOCK;
+
+                markDirty();
+            } else if (m_caps == CAPS_LOCK)
+            {
+                m_currentLayout = m_layoutLowercase;
+                m_caps = CAPS_NONE;
+
+                markDirty();
+            }
+            return; // QUIT
+        case KEY_LAYOUT_NUMBERS:
+            return;
         default:
-            buffer += std::string(1, key);
+            m_buffer += std::string(1, key);
             break;
         }
 
         // Redraw input box
-        drawInputBox();
+        // drawInputBox(); <= Useless, because "markDirty" redraws it
+
+        // Disable caps if not locked
+        if (m_caps == CAPS_ONCE)
+        {
+            m_currentLayout = m_layoutLowercase;
+            m_caps = CAPS_NONE;
+        }
 
         // Mark dirty
-        m_isDrawn = false;
+        markDirty();
     }
 
     void Keyboard::drawInputBox()
@@ -245,6 +301,12 @@ namespace gui::elements {
         m_surface->setFont(graphics::ARIAL);
         m_surface->setFontSize(24);
         m_surface->setTextColor(graphics::packRGB565(0, 0, 0));
-        m_surface->drawText(buffer, 30, 30);
+        m_surface->drawText(m_buffer, 30, 30);
+    }
+
+    void Keyboard::markDirty()
+    {
+        m_isDrawn = false;
+        m_isRendered = false;
     }
 } // gui::elements
