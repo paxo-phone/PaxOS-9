@@ -153,6 +153,10 @@ bool gui::ElementBase::update()
                 originTouchX = touchX; // sauvegarder les coordonnées du premier point (pour le scroll)
                 originTouchY = touchY;
 
+                // Store the last touch position
+                m_lastTouchX = touchX;
+                m_lastTouchY = touchY;
+
                 return true;
             }
         }
@@ -397,4 +401,30 @@ void gui::ElementBase::setChildrenDrawn()
         if (m_children[i] != nullptr)
             m_children[i]->setChildrenDrawn();
     }
+}
+
+/**
+ * "Returns" the <b>absolute</b> last touched position.
+ * @param x The pointer to assign the x value to.
+ * @param y The pointer to assign the y value to.
+ * @see gui::ElementBase::getLastTouchPosRel
+ * @see {gui}
+ */
+void gui::ElementBase::getLastTouchPosAbs(int16_t* x, int16_t* y) const
+{
+    *x = m_lastTouchX;
+    *y = m_lastTouchY;
+}
+
+/**
+ * "Returns" the <b>relative</b> last touched position.
+ * @param x The pointer to assign the x value to.
+ * @param y The pointer to assign the y value to.
+ * @see gui::ElementBase::getLastTouchPos
+ * @see {gui}
+ */
+void gui::ElementBase::getLastTouchPosRel(int16_t* x, int16_t* y) const
+{
+    *x = m_lastTouchX - getAbsoluteX();
+    *y = m_lastTouchY - getAbsoluteY();
 }
