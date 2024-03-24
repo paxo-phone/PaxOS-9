@@ -104,6 +104,7 @@ namespace gui
         bool m_isRendered; // si le buffer est a jour
         bool m_isDrawn;    // si le widget est bien a jour sur l'écran
         static ElementBase *masterOfRender;
+        static ElementBase *mainWindow;
 
         // variables sur les events
         enum PressedState

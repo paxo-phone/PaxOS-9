@@ -9,6 +9,7 @@ namespace hardware
 
     void setScreenPower(bool power);
     void setVibrator(bool state);
+    bool getHomeButton();
 };
 
 #endif

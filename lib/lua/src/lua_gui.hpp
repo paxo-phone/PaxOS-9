@@ -19,6 +19,7 @@ class LuaGui
 {
     public:
     LuaGui(LuaFile* lua);
+    ~LuaGui();
     LuaBox* box(LuaWidget* parent, int x, int y, int width, int height);
     LuaImage* image(LuaWidget* parent, storage::Path path, int x, int y, int width, int height);
     LuaLabel* label(LuaWidget* parent, int x, int y, int width, int height);
@@ -36,6 +37,7 @@ class LuaGui
     void setMainWindow(LuaWindow* window) {this->mainWindow = window; }
     LuaWindow* mainWindow = nullptr;
     LuaFile* lua = nullptr;
+    std::vector<LuaWidget*> widgets;
 };
 
 #endif

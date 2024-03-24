@@ -16,6 +16,11 @@ namespace GSM
     std::vector<Message> messages;
     State state;
 
+    namespace ExternalEvents
+    {
+        std::function<void (void)> onIncommingCall;
+    }
+
     void init()
     {
 #ifdef ESP_PLATFORM
@@ -43,6 +48,13 @@ namespace GSM
                 return;
             }
         }
+#endif
+    }
+
+    void reInit()
+    {
+#ifdef ESP_PLATFORM
+        gsm.begin(9600, SERIAL_8N1, RX, TX);
 #endif
     }
 
@@ -186,6 +198,9 @@ namespace GSM
 
         clearFrom("RING", "\"\"");
         std::cout << "Number is calling: \"" << state.callingNumber << "\"" << std::endl;
+
+        if(ExternalEvents::onIncommingCall)
+            ExternalEvents::onIncommingCall();
     }
 
     void onHangOff()
@@ -256,16 +271,61 @@ namespace GSM
 
     void sendCall(const std::string &number)
     {
-        if(send("ATD" + number + ";", "ATD").find("OK") != std::string::npos)
+        std::cout << "Calling " << number << std::endl;
+        if(send("ATD" + number + ";", "OK", 2000).find("OK") != std::string::npos)
         {
+            std::cout << "Call Success!" << std::endl;
             state.callState = CallState::CALLING;
             state.callingNumber = number;
+        }
+        else
+        {
+            std::cout << "Call Error!" << std::endl;
+            state.callFailure = true;
         }
     }
 
     void newCall(std::string number)
     {
+        std::cout << "new call " << number << std::endl;
         requests.push_back({std::bind(&GSM::sendCall, number), priority::high});
+    }
+
+    void endCall()
+    {
+        requests.push_back({[](){ GSM::send("AT+CHUP", "OK"); GSM::state.callState=GSM::NOT_CALLING; }, priority::high});
+    }
+
+    void acceptCall()
+    {
+        requests.push_back({[](){ GSM::send("ATA", "OK"); }, priority::high});
+    }
+
+    void rejectCall()
+    {
+        endCall();
+    }
+
+    float getVoltage()
+    {
+        std::string answer = send("AT+CBC", "OK");
+
+        int start = answer.find("+CBC: ") + 6;
+        int end = answer.find("V", start);
+
+        if(start == std::string::npos || end == std::string::npos)
+            return 0;
+
+        std::string voltage_str = answer.substr(start, end - start);
+
+        try
+        {
+            return std::stof(voltage_str);
+        }
+        catch (std::exception)
+        {
+            return 0;
+        }
     }
 
     void run()
@@ -275,7 +335,7 @@ namespace GSM
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});
         keys.push_back({"VOICE CALL: END", &GSM::onHangOff});
-        keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::NOT_CALLING; }});
+        keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
 
         while (true)
         {

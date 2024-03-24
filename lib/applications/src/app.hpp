@@ -23,7 +23,11 @@ namespace app
 
     extern std::vector<App> appList;
 
+    extern bool request;
+    extern App requestingApp;
+
     void init();
     bool askPerm(App &app);
     void runApp(storage::Path path);
+    void runApp(App app);
 };

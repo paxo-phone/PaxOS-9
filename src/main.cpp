@@ -4,6 +4,7 @@
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include <esp_system.h>
 
 #endif
 
@@ -32,8 +33,9 @@ void ringingVibrator()
     #endif
 }
 
+
 void setup()
-{
+{    
     hardware::init();
     hardware::setScreenPower(true);
     graphics::init();
@@ -43,11 +45,34 @@ void setup()
 
     ThreadManager::init();
 
+    GSM::ExternalEvents::onIncommingCall = []()
+    {
+        app::App call;
+        call.auth = true;
+        call.name = "phone";
+        call.manifest = storage::Path("/sys_apps/root.json");
+        call.path = storage::Path("/sys_apps/call.lua");
+
+        app::requestingApp = call;
+        app::request = true;
+    };
+
     #ifdef ESP_PLATFORM
     eventHandlerBack.setInterval(
         new Callback<>(&ringingVibrator),
         300
     );
+
+    eventHandlerApp.setInterval(
+        new Callback<>([]()
+        {
+            float v = GSM::getVoltage();
+            if(v==0) return;
+            storage::FileStream newPermCopy(storage::Path("/batt.log").str(), storage::Mode::APPEND);
+            newPermCopy.write(std::to_string(millis()) + "; " + std::to_string(GSM::getVoltage()) + "\n");
+            newPermCopy.close();
+        }),
+        60000);
     #endif
 
     app::init();
@@ -55,45 +80,46 @@ void setup()
     {
         std::cout << a.name << ";" << a.path.str() << std::endl;
     }
-    app::runApp(app::appList[0].path);
 
-    /*LuaFile lua(storage::Path("/app.lua"));
-    lua.run();
+    while (true)
+    {
+        #ifdef ESP_PLATFORM
+        for (uint16_t i = 0; i < 0xFF/3; i++)
+        {
+            graphics::setBrightness(i);
+            delay(2);
+        }
+        #endif
 
-    gui::elements::Window win;
-    Input* in = new Input(35, 35);
-    in->setTitle("Prénom:");
-    in->setPlaceHolder("écrire ici");
+        app::runApp(app::appList[0].path);
 
-    win.addChild(in);
+        #ifdef ESP_PLATFORM
+        for (uint16_t i = 0xFF/3; i > 0; i--)
+        {
+            graphics::setBrightness(i);
+            delay(2);
+        }
+        
+        graphics::setBrightness(0);
+        setCpuFrequencyMhz(20);
+        GSM::reInit();
+        //hardware::setScreenPower(false);
+        #endif
 
-    VerticalList* list = new VerticalList(40, 100, 40, 300);
-    for (uint16_t i = 0; i < 3; i++)
-        list->add(new Switch(0, 0));
-    list->add(new Checkbox(0, 0));
-    list->add(new Radio(0, 0));
-
-
-    win.addChild(list);
-
-    Button* button = new Button(35, 394, 250, 38);
-    button->setText("bonjour");
-    button->setIcon(storage::Path("/icon.png"));
-
-    //win.addChild(label);
-
-    win.addChild(button);*/
+        while (hardware::getHomeButton());
+        while (!hardware::getHomeButton())
+        {
+            eventHandlerApp.update();
+        }
+        
+        #ifdef ESP_PLATFORM
+        setCpuFrequencyMhz(240);
+        GSM::reInit();
+        #endif
+    }
 
     while (graphics::isRunning())
     {
-        /*win.updateAll();
-        
-
-        if(in->isTouched())
-        {
-            in->setText("C'est Gabriel");
-        }*/
-
 #ifdef ESP_PLATFORM
 
         vTaskDelay(pdMS_TO_TICKS(10));

@@ -4,6 +4,9 @@ namespace app
 {
     std::vector<App> appList;
 
+    bool request;
+    App requestingApp;
+
     void init()
     {
         std::vector<std::string> dirs = storage::Path(APP_DIR).listdir();
@@ -89,5 +92,11 @@ namespace app
         }
 
         std::cout << "Error: no such app" << std::endl;
+    }
+
+    void runApp(App app)
+    {
+        LuaFile luaApp(app.path, app.manifest);
+        luaApp.run();
     }
 };

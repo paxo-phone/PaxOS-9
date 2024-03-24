@@ -11,6 +11,7 @@
 
 #include <cstdint>
 
+
 namespace graphics
 {
     enum EScreenOrientation
@@ -22,9 +23,12 @@ namespace graphics
     class Surface;
 
     void init();
+    void reInit();
 
     uint16_t getScreenWidth();
     uint16_t getScreenHeight();
+
+    void setBrightness(uint16_t value);
 
     constexpr int getRenderScale()
     {

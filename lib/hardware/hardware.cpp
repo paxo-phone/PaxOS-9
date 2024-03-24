@@ -35,3 +35,14 @@ void hardware::setVibrator(bool state)
 
     #endif
 }
+
+bool hardware::getHomeButton()
+{
+    #ifdef ESP_PLATFORM
+
+    return !digitalRead(PIN_HOME_BUTTON);
+
+    #endif
+
+    return false;
+}
