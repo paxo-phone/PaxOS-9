@@ -5,6 +5,8 @@
 #include <path.hpp>
 #include <hardware.hpp>
 #include <threads.hpp>
+#include <json.hpp>
+#include <app.hpp>
 
 
 /*
@@ -41,13 +43,14 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
     return std::make_shared<LuaHttpClient>(lua);
 }*/
 
-LuaFile::LuaFile(storage::Path filename)
+LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     :lua_gui(this),
     lua_storage(this),
     lua_time(this)/*,
     lua_network(this)*/
 {
     this->filename = filename;
+    this->manifest = manifest;
     this->directory = filename / storage::Path("..");
 }
 
@@ -90,13 +93,31 @@ void LuaFile::run()
 
 
     // Lire la configuration
-    storage::FileStream file2((directory / "conf.txt").str(), storage::READ);
+    storage::FileStream file2(manifest.str(), storage::READ);
     std::string conf = file2.read();
     file2.close();
 
-    // en fonction de la configuration, choisir les permissions
+    if(conf.empty())
+    {
+        std::cout << "no file: " << manifest.str() << std::endl;
+        return;
+    }
 
-    // perms....
+    //std::cout << "conf: " << conf << std::endl;
+
+    nlohmann::json confJson = nlohmann::json::parse(conf);
+
+    // en fonction de la configuration, choisir les permissions
+    perms.acces_files = confJson["acces_files"] == "true";
+    perms.acces_files_root = confJson["acces_files_root"] == "true";
+    perms.acces_gsm = confJson["acces_gsm"] == "true";
+    perms.acces_gui = confJson["acces_gui"] == "true";
+    perms.acces_hardware = confJson["acces_hardware"] == "true";
+    perms.acces_time = confJson["acces_time"] == "true";
+    perms.acces_web = confJson["acces_web"] == "true";
+    perms.acces_web_paxo = confJson["acces_web_paxo"] == "true";
+
+    confJson.clear();
 
     // en fonction des permissions, charger certains modules
 
@@ -172,6 +193,14 @@ void LuaFile::run()
             "onClick", &LuaWidget::onClick
         );
 
+        lua.new_usertype<LuaWindow>("LuaWindow",
+            sol::constructors<LuaWindow(*)()>(), // Empty constructor
+            sol::base_classes, sol::bases<LuaWidget>(),
+            
+            sol::meta_function::garbage_collect,
+            sol::destructor(LuaWindow::delete_LuaWindow)
+        );
+
         lua.new_usertype<LuaBox>("LuaBox",
             sol::base_classes, sol::bases<LuaWidget>());
 
@@ -186,6 +215,7 @@ void LuaFile::run()
             "getTextWidth", &LuaLabel::getTextWidth,
             "setVerticalAlignment", &LuaLabel::setVerticalAlignment,
             "setHorizontalAlignment", &LuaLabel::setHorizontalAlignment,
+            "setTextColor", &LuaLabel::setTextColor,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaInput>("LuaInput",
@@ -232,8 +262,13 @@ void LuaFile::run()
         lua.set("UP_ALIGNMENT", Label::Alignement::UP);
         lua.set("DOWN_ALIGNMENT", Label::Alignement::DOWN);
 
-        lua.new_usertype<LuaWindow>("LuaWindow",
-            sol::base_classes, sol::bases<LuaWidget>());
+        lua.set("COLOR_DARK", COLOR_DARK);
+        lua.set("COLOR_LIGHT", COLOR_LIGHT);
+        lua.set("COLOR_WHITE", COLOR_WHITE);
+        lua.set("COLOR_SUCCESS", COLOR_SUCCESS);
+        lua.set("COLOR_WARNING", COLOR_WARNING);
+        lua.set("COLOR_ERROR", COLOR_ERROR);
+        lua.set("COLOR_GREY", COLOR_GREY);
     }
 
     if(perms.acces_time)
@@ -256,6 +291,9 @@ void LuaFile::run()
 
         luaGSM["newMessage"] = &LuaGSM::newMessage;
         luaGSM["newCall"] = &LuaGSM::newCall;
+        luaGSM["endCall"] = &LuaGSM::endCall;
+        luaGSM["acceptCall"] = &LuaGSM::acceptCall;
+        luaGSM["rejectCall"] = &LuaGSM::rejectCall;
         luaGSM["getNumber"] = &LuaGSM::getNumber;
         luaGSM["getCallState"] = &LuaGSM::getCallState;
 
@@ -282,15 +320,40 @@ void LuaFile::run()
         lua.script(code, sol::script_throw_on_error);
         lua.script("run()", sol::script_throw_on_error);
 
-        while (/*!home_button::isPressed() && */lua_gui.mainWindow != nullptr)
+        while (!hardware::getHomeButton() && lua_gui.mainWindow != nullptr)
         {
             lua_gui.update();
             lua_time.update();
+
+            if (app::request)
+            {
+                app::request = false;
+                app::runApp(app::requestingApp);
+            }
         }
+
     }
     catch (const sol::error& e)
     {
         std::cerr << "Erreur Lua : " << e.what() << std::endl;
-        return;
+
+        gui::elements::Window win;
+        Label *label = new Label(0, 0, 320, 400);
+        
+        label->setText(e.what());
+        win.addChild(label);
+        
+        Button *btn = new Button(35, 420, 250, 38);
+        btn->setText("Quitter");
+        win.addChild(btn);
+
+        while (!hardware::getHomeButton())
+        {
+            win.updateAll();
+            if(btn->isTouched())
+            {
+                return;
+            }
+        }
     }
 }

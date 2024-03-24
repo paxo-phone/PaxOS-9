@@ -36,10 +36,11 @@ void EventHandler::update()
     // Handle timeouts
     auto now = milliseconds();
     for (auto it = timeouts.begin(); it != timeouts.end();) {
-        if (now  >= (*it)->timeout) {
-            (*it)->callback->call();
-            delete (*it);
+        if (now >= (*it)->timeout) {
+            auto* timeout = *it;
             it = timeouts.erase(it);
+            timeout->callback->call();
+            delete timeout;
         } else {
             ++it;
         }
@@ -119,7 +120,9 @@ uint32_t EventHandler::findAvailableId() {
             if(interval->id == nextId)
                 found = false;
         }
+
+        nextId++;
     }
 
-    return nextId;
+    return nextId-1;
 }

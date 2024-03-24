@@ -54,13 +54,14 @@ struct Permissions
 class LuaFile
 {
     public:
-    LuaFile(storage::Path filename);
+    LuaFile(storage::Path filename, storage::Path manifest);
     ~LuaFile();
 
     void run();
 
     Permissions perms;
     storage::Path directory;
+    storage::Path manifest;
 
     sol::state lua;
 

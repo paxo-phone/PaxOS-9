@@ -9,6 +9,7 @@
 // TODO : Remove this, the user need to define its widget for the screen itself.
 gui::ElementBase *gui::ElementBase::m_widgetPressed = nullptr;
 gui::ElementBase *gui::ElementBase::masterOfRender = nullptr;
+gui::ElementBase *gui::ElementBase::mainWindow = nullptr;
 int16_t gui::ElementBase::touchX, gui::ElementBase::touchY = -1;
 int16_t gui::ElementBase::originTouchX, gui::ElementBase::originTouchY = -1;
 
@@ -101,6 +102,11 @@ bool gui::ElementBase::updateAll()
 {
     if (m_parent == nullptr)
     {
+        if(mainWindow != this)
+        {
+            mainWindow = this;
+            this->m_isDrawn = false;
+        }
         eventHandlerApp.update();
 
         graphics::getTouchPos(&touchX, &touchY);
@@ -124,10 +130,11 @@ bool gui::ElementBase::update()
 {
     // algorithme de mise a jour des interactions tactiles
 
+    widgetUpdate();
+
     if (!m_hasEvents)
         return false;
 
-    widgetUpdate();
 
     if (m_widgetPressed != nullptr && m_widgetPressed != this)
         return false;

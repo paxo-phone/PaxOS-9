@@ -38,6 +38,7 @@ namespace GSM
     struct State
     {
         CallState callState = NOT_CALLING;
+        bool callFailure = false;
         std::string callingNumber = "";
     };
 
@@ -47,6 +48,11 @@ namespace GSM
         std::string message;
     };
 
+    namespace ExternalEvents
+    {
+        extern std::function<void (void)> onIncommingCall;
+    }
+
     extern std::string data;
     extern std::vector<Request> requests;
     extern std::vector<Key> keys;
@@ -55,6 +61,7 @@ namespace GSM
     extern State state;
 
     void init();
+    void reInit();
     void download(uint64_t timeout = 50);
     std::string send(const std::string &message, const std::string &answerKey, uint64_t timeout = 200);
     void process();
@@ -63,6 +70,10 @@ namespace GSM
 
     void newMessage(std::string number, std::string message);
     void newCall(std::string number);
+    void endCall();
+    void acceptCall();
+    void rejectCall();
+    float getVoltage();
 };
 
 #endif
