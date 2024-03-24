@@ -77,7 +77,7 @@ namespace graphics
                 &m_sprite,
                 x,
                 y,
-                m_transparent_color);
+                surface->m_transparent_color);
         }
         else
         {
@@ -105,7 +105,7 @@ namespace graphics
                 0,
                 scale,
                 scale,
-                m_transparent_color);
+                surface->m_transparent_color);
         }
         else
         {
