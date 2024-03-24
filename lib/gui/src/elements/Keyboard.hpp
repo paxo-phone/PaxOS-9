@@ -18,6 +18,12 @@ namespace gui::elements
         void render() override;
         void onReleased() override;
 
+        /**
+         * Returns the content of the keyboard's input AND CLEARS IT.
+         * @return the content of the keyboard's input
+         */
+        std::string getText();
+
     private:
         std::string m_buffer;
 
@@ -28,6 +34,12 @@ namespace gui::elements
         char **m_layoutNumbers;
 
         uint8_t m_caps;
+
+        std::unique_ptr<graphics::SImage> m_capsIcon0;
+        std::unique_ptr<graphics::SImage> m_capsIcon1;
+        std::unique_ptr<graphics::SImage> m_capsIcon2;
+
+        std::unique_ptr<graphics::SImage> m_backspaceIcon;
 
         void drawKeys();
         void drawKeyRow(int16_t y, uint8_t count, char* keys);

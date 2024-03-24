@@ -39,9 +39,23 @@ namespace gui::elements {
         m_x = 0;
         m_y = 0;
 
+        m_backgroundColor = graphics::packRGB565(255, 255, 255);
+
         m_hasEvents = true;
 
         m_caps = CAPS_NONE;
+
+        auto thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_0.png");
+        m_capsIcon0 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
+
+        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_1.png");
+        m_capsIcon1 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
+
+        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_2.png");
+        m_capsIcon2 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
+
+        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/backspace_icon.png");
+        m_backspaceIcon = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
 
         m_layoutLowercase = new char*[4];
         m_layoutLowercase[0] = new char[]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
@@ -68,13 +82,13 @@ namespace gui::elements {
 
     void Keyboard::render()
     {
-        std::cout << "HE+GPiao)pgiaeg" << std::endl;
+        m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
 
         // Input box
         drawInputBox();
 
         // Keyboard box
-        m_surface->fillRect(30, 140, 420, 160, graphics::packRGB565(255, 255, 255));
+        // m_surface->fillRect(30, 140, 420, 160, graphics::packRGB565(255, 255, 255));
 
         // Draw keys
         drawKeys();
@@ -106,6 +120,15 @@ namespace gui::elements {
         processKey(pressedKey);
     }
 
+    std::string Keyboard::getText()
+    {
+        const std::string output = m_buffer;
+
+        m_buffer = "";
+
+        return output;
+    }
+
     void Keyboard::drawKeys()
     {
         // Draw every keys
@@ -132,17 +155,56 @@ namespace gui::elements {
 
     void Keyboard::drawKey(const int16_t x, const int16_t y, const uint16_t w, char key)
     {
+        if (key == KEY_CAPS)
+        {
+            if (m_caps == CAPS_NONE)
+            {
+                m_surface->drawImage(*m_capsIcon0, static_cast<int16_t>(x + 3), y);
+            }
+            else if (m_caps == CAPS_ONCE)
+            {
+                m_surface->drawImage(*m_capsIcon1, static_cast<int16_t>(x + 3), y);
+            }
+            else
+            {
+                m_surface->drawImage(*m_capsIcon2, static_cast<int16_t>(x + 3), y);
+            }
+
+            return;
+        }
+        else if (key == KEY_BACKSPACE)
+        {
+            m_surface->drawImage(*m_backspaceIcon, static_cast<int16_t>(x + 3), y);
+        }
+
         std::string keyString = std::string(1, key);
 
-        m_surface->drawRect(x, y, w, 40, graphics::packRGB565(0, 0, 0));
+        // m_surface->drawRect(x, y, w, 40, graphics::packRGB565(0, 0, 0));
         m_surface->drawTextCentered(keyString, x, static_cast<int16_t>(y + 4), w);
     }
 
     void Keyboard::drawLastRow(const int16_t x, const int16_t y)
     {
-        m_surface->drawRect(x, y, 50, 40, graphics::packRGB565(0, 0, 0));
-        m_surface->drawRect(static_cast<int16_t>(x + 50), y, 320, 40, graphics::packRGB565(0, 0, 0));
-        m_surface->drawRect(static_cast<int16_t>(x + 370), y, 50, 40, graphics::packRGB565(0, 0, 0));
+        // m_surface->drawRect(x, y, 50, 40, graphics::packRGB565(0, 0, 0));
+        // m_surface->drawRect(static_cast<int16_t>(x + 50), y, 320, 40, graphics::packRGB565(0, 0, 0));
+        // m_surface->drawRect(static_cast<int16_t>(x + 370), y, 50, 40, graphics::packRGB565(0, 0, 0));
+
+        std::string thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow;
+
+        if (m_currentLayout == m_layoutNumbers)
+        {
+            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "ABC";
+        }
+        else
+        {
+            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "123";
+        }
+        m_surface->drawTextCentered(
+            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow,
+            static_cast<int16_t>(x),
+            static_cast<int16_t>(y + 5),
+            50
+        );
 
         m_surface->fillRect(
             static_cast<int16_t>(x + 100),
@@ -150,6 +212,14 @@ namespace gui::elements {
             220,
             2,
             graphics::packRGB565(0, 0, 0)
+        );
+
+        thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "retour";
+        m_surface->drawTextCentered(
+            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow,
+            static_cast<int16_t>(x + 350),
+            static_cast<int16_t>(y + 5),
+            50
         );
     }
 
@@ -240,6 +310,8 @@ namespace gui::elements {
         case KEY_NULL:
             return;
         case KEY_EXIT:
+            std::cout << "KEYBOARD EXIT" << std::endl;
+
             return;
         case KEY_SPACE:
             m_buffer += " ";
@@ -273,21 +345,38 @@ namespace gui::elements {
             }
             return; // QUIT
         case KEY_LAYOUT_NUMBERS:
+            m_currentLayout = m_layoutNumbers;
+            markDirty();
+
+            return;
+        case KEY_LAYOUT_STANDARD:
+            if (m_caps == CAPS_NONE)
+            {
+                m_currentLayout = m_layoutLowercase;
+                markDirty();
+            }
+            else
+            {
+                m_currentLayout = m_layoutUppercase;
+                markDirty();
+            }
+
             return;
         default:
             m_buffer += std::string(1, key);
+
+            // Disable caps if not locked
+            if (m_caps == CAPS_ONCE)
+            {
+                m_currentLayout = m_layoutLowercase;
+                m_caps = CAPS_NONE;
+            }
+
             break;
         }
 
         // Redraw input box
         // drawInputBox(); <= Useless, because "markDirty" redraws it
-
-        // Disable caps if not locked
-        if (m_caps == CAPS_ONCE)
-        {
-            m_currentLayout = m_layoutLowercase;
-            m_caps = CAPS_NONE;
-        }
 
         // Mark dirty
         markDirty();
@@ -295,7 +384,7 @@ namespace gui::elements {
 
     void Keyboard::drawInputBox()
     {
-        m_surface->fillRect(30, 30, 420, 100, graphics::packRGB565(255, 255, 255));
+        // m_surface->fillRect(30, 30, 420, 100, graphics::packRGB565(255, 255, 255));
 
         // Draw text
         m_surface->setFont(graphics::ARIAL);
