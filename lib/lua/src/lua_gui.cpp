@@ -111,6 +111,25 @@ LuaWindow* LuaGui::window()
     return win;
 }
 
+void LuaGui::del(LuaWidget* widget)
+{
+    LuaWidget* parent = widget->parent;
+
+    parent->children.erase(std::remove_if(parent->children.begin(), parent->children.end(), [&](LuaWidget* obj) {
+        return obj == widget;
+    }), parent->children.end());
+
+    widget->widget->m_parent->m_children.erase(std::remove_if(widget->widget->m_parent->m_children.begin(), widget->widget->m_parent->m_children.end(), [&](gui::ElementBase* obj) {
+        return obj == widget->widget;
+    }), widget->widget->m_parent->m_children.end());
+
+    widgets.erase(std::remove_if(widgets.begin(), widgets.end(), [&](LuaWidget* obj) {
+        return obj == widget;
+    }), widgets.end());
+
+    delete widget;
+}
+
 void LuaGui::update()
 {
     if(mainWindow != nullptr)

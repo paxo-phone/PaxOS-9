@@ -59,6 +59,7 @@ namespace GSM
     extern std::vector<Message> messages;   // received messages
     extern std::vector<Message> pendingMessages;    // messages pending
     extern State state;
+    extern uint16_t seconds, minutes, hours, days, months, years;
 
     void init();
     void reInit();
@@ -74,6 +75,7 @@ namespace GSM
     void acceptCall();
     void rejectCall();
     float getVoltage();
+    void getHour();
 };
 
 #endif

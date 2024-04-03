@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <Surface.hpp>
+#include <threads.hpp>
 
 #ifdef ESP_PLATFORM
 
@@ -174,10 +175,24 @@ void graphics::flip()
 
 void graphics::getTouchPos(int16_t* x, int16_t* y)
 {
+    static uint64_t lastUpdate = millis();
+    static int16_t otx = 0;
+    static int16_t oty = 0;
+
+    if(lastUpdate + 50 > millis())
+    {
+        *x = otx;
+        *y = oty;
+
+        return;
+    }
+
     int16_t tx;
     int16_t ty;
 
+    std::cout << "touch -> " << std::endl;
     lcd->getTouch(&tx, &ty);
+    std::cout << " -> Ok" << std::endl;
     //std::cout << "state: " << lcd->getTouch(&tx, &ty) << " ty: " << ty * 480 / 700 << "connected: " << int(ty<-1 || ty> 480 * 480 / 700) << std::endl;
     #ifdef ESP_PLATFORM // with capacitive touch?
         ty = ty * 480 / 700;
@@ -186,14 +201,17 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     if (tx <= 0 || ty <= 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
-        *x = -1;
-        *y = -1;
+        otx = -1;
+        oty = -1;
     }
     else
     {
-        *x = tx;
-        *y = ty;
+        otx = tx;
+        oty = ty;
     }
+
+    *x = otx;
+    *y = oty;
 }
 
 bool graphics::isTouched()

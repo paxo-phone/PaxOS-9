@@ -171,6 +171,7 @@ void LuaFile::run()
             "vlist", &LuaGui::verticalList,
             "hlist", &LuaGui::horizontalList,
             "checkbox", &LuaGui::checkbox,
+            "del", &LuaGui::del,
             "setWindow", &LuaGui::setMainWindow
         );
 
@@ -332,6 +333,10 @@ void LuaFile::run()
             }
         }
 
+        // si la fonction quit est définie l'appeler avant de fermer l'app
+        if (lua["quit"].get<sol::function>()) {
+            lua.script("quit()", sol::script_throw_on_error);
+        }
     }
     catch (const sol::error& e)
     {

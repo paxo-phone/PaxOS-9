@@ -32,6 +32,8 @@ class LuaGui
     LuaRadio* radio(LuaWidget* parent, int x, int y);
     LuaWindow* window();
 
+    void del(LuaWidget* widget);
+
     void update();
 
     void setMainWindow(LuaWindow* window) {this->mainWindow = window; }

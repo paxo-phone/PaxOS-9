@@ -1,4 +1,5 @@
 #include "gsm.hpp"
+#include "../../tasks/src/threads.hpp"
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
@@ -15,6 +16,7 @@ namespace GSM
     std::vector<Key> keys;
     std::vector<Message> messages;
     State state;
+    uint16_t seconds, minutes, hours, days, months, years = 0;
 
     namespace ExternalEvents
     {
@@ -33,8 +35,6 @@ namespace GSM
         while (true)
         {
             gsm.begin(115200, SERIAL_8N1, RX, TX);
-            gsm.println("AT+IPR=9600\r");   // configure baud rate to 9600
-            gsm.begin(9600, SERIAL_8N1, RX, TX);
 
             while(gsm.available())
                 gsm.read();
@@ -54,7 +54,7 @@ namespace GSM
     void reInit()
     {
 #ifdef ESP_PLATFORM
-        gsm.begin(9600, SERIAL_8N1, RX, TX);
+        gsm.begin(115200, SERIAL_8N1, RX, TX);
 #endif
     }
 
@@ -293,7 +293,7 @@ namespace GSM
 
     void endCall()
     {
-        requests.push_back({[](){ GSM::send("AT+CHUP", "OK"); GSM::state.callState=GSM::NOT_CALLING; }, priority::high});
+        requests.push_back({[](){ GSM::send("AT+CHUP", "OK"); }, priority::high});
     }
 
     void acceptCall()
@@ -328,14 +328,40 @@ namespace GSM
         }
     }
 
+    void updateHour()
+    {
+        std::string h = send("AT+CCLK?", "+CCLK:");
+
+        if(h.find("\"") == std::string::npos)
+        {
+            return;
+        }
+
+        std::string data2 = h.substr(h.find("\"") + 1, h.find_last_of("\"") - 1 - h.find("\"") - 1);
+        years = atoi(data2.substr(0, 2).c_str());
+        months = atoi(data2.substr(3, 5-3).c_str());
+        days = atoi(data2.substr(6, 8-6).c_str());
+        hours = atoi(data2.substr(9, 11-9).c_str());
+        minutes = atoi(data2.substr(12, 14-12).c_str());
+        seconds = atoi(data2.substr(15, 17-15).c_str());
+    }
+
+    void getHour()
+    {
+        requests.push_back({std::bind(&GSM::updateHour), priority::low});
+    }
+
     void run()
     {
         init();
+
+        //eventHandlerBack.setTimeout(new Callback);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});
         keys.push_back({"VOICE CALL: END", &GSM::onHangOff});
         keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
+
 
         while (true)
         {

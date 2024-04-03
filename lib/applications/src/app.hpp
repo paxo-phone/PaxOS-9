@@ -1,4 +1,5 @@
-
+#ifndef APPS_HPP
+#define APPS_HPP
 
 #include <vector>
 #include <path.hpp>
@@ -31,3 +32,7 @@ namespace app
     void runApp(storage::Path path);
     void runApp(App app);
 };
+
+#include <launcher.hpp>
+
+#endif

@@ -62,17 +62,6 @@ void setup()
         new Callback<>(&ringingVibrator),
         300
     );
-
-    eventHandlerApp.setInterval(
-        new Callback<>([]()
-        {
-            float v = GSM::getVoltage();
-            if(v==0) return;
-            storage::FileStream newPermCopy(storage::Path("/batt.log").str(), storage::Mode::APPEND);
-            newPermCopy.write(std::to_string(millis()) + "; " + std::to_string(GSM::getVoltage()) + "\n");
-            newPermCopy.close();
-        }),
-        60000);
     #endif
 
     app::init();
@@ -91,7 +80,15 @@ void setup()
         }
         #endif
 
-        app::runApp(app::appList[0].path);
+        int l = 0;
+        while (l!=-1)
+        {
+            l = launcher();
+            if(l!=-1)
+                app::runApp(app::appList[l].path);
+
+            while (hardware::getHomeButton());
+        }
 
         #ifdef ESP_PLATFORM
         for (uint16_t i = 0xFF/3; i > 0; i--)

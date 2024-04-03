@@ -1,0 +1,10 @@
+{
+    "acces_files": "true",
+    "acces_files_root": "true",
+    "acces_gsm": "true",
+    "acces_gui": "true",
+    "acces_hardware": "true",
+    "acces_time": "true",
+    "acces_web": "true",
+    "acces_web_paxo": "true"
+}

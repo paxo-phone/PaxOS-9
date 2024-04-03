@@ -76,6 +76,9 @@ namespace gui
         ElementBase *getParent() const;
         void addChild(ElementBase *child);
 
+        ElementBase *m_parent;
+        std::vector<ElementBase *> m_children;
+
     protected:
         // variables générales
         uint16_t m_x, m_y;
@@ -87,8 +90,6 @@ namespace gui
         uint16_t m_borderSize;
         uint16_t m_borderRadius;
 
-        ElementBase *m_parent;
-        std::vector<ElementBase *> m_children;
 
         // variables sur les mouvements
         bool m_verticalScrollEnabled;
