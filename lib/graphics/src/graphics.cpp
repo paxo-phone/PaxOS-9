@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <Surface.hpp>
+#include <threads.hpp>
 
 #ifdef ESP_PLATFORM
 

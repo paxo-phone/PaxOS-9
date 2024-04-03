@@ -92,12 +92,10 @@ LuaTimeInterval::~LuaTimeInterval()
 
 LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::function func, uint32_t timeout)
 {
-    std::cout << "LuaTimeTimeout::LuaTimeTimeout..." << std::endl;
     this->lua = lua;
     this->func = func;
     this->timeout = timeout;
     this->id = eventHandlerApp.setTimeout(new Callback<>(std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))), timeout);
-    std::cout << "LuaTimeTimeout::LuaTimeTimeout end" << std::endl;
 }
 
 int LuaTimeTimeout::getId()
@@ -173,6 +171,6 @@ LuaTime::~LuaTime()
 {
     for (int i = 0; i < intervals.size(); i++)
         delete intervals[i];
-    for (int i = 0; i < intervals.size(); i++)
+    for (int i = 0; i < timeouts.size(); i++)
         delete timeouts[i];
 }

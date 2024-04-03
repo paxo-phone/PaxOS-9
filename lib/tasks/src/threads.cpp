@@ -1,5 +1,6 @@
 #include "threads.hpp"
 #include "delay.hpp"
+#include <clock.hpp>
 
 #ifndef THREAD_HANDLER
     #define THREAD_HANDLER

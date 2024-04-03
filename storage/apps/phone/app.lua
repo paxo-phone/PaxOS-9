@@ -12,6 +12,10 @@ function checkHangOn()
     end
 end
 
+function quit()
+    gsm:endCall()
+end
+
 function callPage()
     print("call page")
     if win2 ~= nil then

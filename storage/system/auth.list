@@ -1,1 +1,3 @@
 ./storage/apps/app1/app.lua
+./storage/apps/phone/app.lua
+./storage/apps/test/app.lua

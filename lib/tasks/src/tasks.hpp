@@ -5,12 +5,10 @@
 #include <functional>
 #include <vector>
 #include <algorithm>
-#include <chrono>
 #include <iostream>
 #include <tuple>
+#include "../../hardware/hardware.hpp"
 #include "invoke.hpp"
-
-uint64_t milliseconds();
 
 class Function
 {
@@ -91,7 +89,7 @@ public:
     {
         this->callback = ca;
         this->interval = interval;
-        this->lastTrigger = milliseconds();
+        this->lastTrigger = millis();
         this->id = id;
     }
 
