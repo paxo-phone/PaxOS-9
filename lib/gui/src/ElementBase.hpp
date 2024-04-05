@@ -76,6 +76,9 @@ namespace gui
         ElementBase *getParent() const;
         void addChild(ElementBase *child);
 
+        ElementBase *m_parent;
+        std::vector<ElementBase *> m_children;
+
     protected:
         // variables générales
         uint16_t m_x, m_y;
@@ -87,8 +90,6 @@ namespace gui
         uint16_t m_borderSize;
         uint16_t m_borderRadius;
 
-        ElementBase *m_parent;
-        std::vector<ElementBase *> m_children;
 
         // variables sur les mouvements
         bool m_verticalScrollEnabled;
@@ -104,6 +105,7 @@ namespace gui
         bool m_isRendered; // si le buffer est a jour
         bool m_isDrawn;    // si le widget est bien a jour sur l'écran
         static ElementBase *masterOfRender;
+        static ElementBase *mainWindow;
 
         // variables sur les events
         enum PressedState

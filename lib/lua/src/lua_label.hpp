@@ -19,6 +19,8 @@ class LuaLabel : public LuaWidget
     void setVerticalAlignment(Label::Alignement alignment){ widget->setVerticalAlignment(alignment); }
     void setHorizontalAlignment(Label::Alignement alignment){ widget->setHorizontalAlignment(alignment); }
 
+    void setTextColor(color_t color){ widget->setTextColor(color); }
+
     Label* widget = nullptr;
 };
 

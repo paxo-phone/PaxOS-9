@@ -171,6 +171,6 @@ LuaTime::~LuaTime()
 {
     for (int i = 0; i < intervals.size(); i++)
         delete intervals[i];
-    for (int i = 0; i < intervals.size(); i++)
+    for (int i = 0; i < timeouts.size(); i++)
         delete timeouts[i];
 }

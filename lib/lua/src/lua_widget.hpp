@@ -32,12 +32,12 @@ class LuaWidget
     void update();
 
     gui::ElementBase* widget = nullptr;
+    LuaWidget* parent = nullptr;
+    std::vector<LuaWidget*> children;
     
     private:
     void addChild(LuaWidget* child){this->children.push_back(child); child->parent = this;}
 
-    LuaWidget* parent = nullptr;
-    std::vector<LuaWidget*> children;
     sol::function onClickFunc;
     sol::function onScrollUpFunc;
     sol::function onScrollDownFunc;

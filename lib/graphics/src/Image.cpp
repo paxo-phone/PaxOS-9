@@ -39,6 +39,8 @@ std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
         data.get()[i++] = stream.readchar();
     }
 
+    stream.close();
+
     return data;
 }
 

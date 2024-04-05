@@ -195,6 +195,7 @@ namespace graphics
                     m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y);
                 break;
                 case PNG:
+                std::cout << "drawPngFile: " + std::string((m_sprite.getBuffer() != nullptr)?("Ok"):("nullptr")) << std::endl;
                     m_sprite.drawPngFile(image.getPath().str().c_str(), x, y);
                 break;
                 case JPG:
@@ -313,6 +314,7 @@ namespace graphics
         const uint16_t bufferWidth = bufferHeight;
 
         // Create buffer
+        // FIXME : Probably can optimize it with a LovyanGFX direct sprite
         auto *buffer = new Surface(bufferWidth, bufferHeight);
 
         // Init the buffer
@@ -320,6 +322,8 @@ namespace graphics
         buffer->m_sprite.setTextColor(m_text_color);
 
         // Set the background as transparent
+        // FIXME : Using "m_color" as the transparency color can cause issues
+        // Example : if your color is the same as your text color
         buffer->setTransparency(true);
         buffer->setTransparentColor(m_color);
 
