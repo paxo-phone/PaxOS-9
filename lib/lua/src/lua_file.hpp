@@ -13,6 +13,7 @@
 #include "lua_events.hpp"
 #include "lua_storage.hpp"
 #include "lua_gsm.hpp"
+#include "lua_json.hpp"
 
 
 /*class LuaHttpClient
