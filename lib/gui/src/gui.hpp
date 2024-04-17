@@ -13,6 +13,7 @@
 #include "elements/List.hpp"
 #include "elements/Button.hpp"
 #include "elements/Radio.hpp"
+#include "elements/Keyboard.hpp"
 
 using namespace gui::elements;
 

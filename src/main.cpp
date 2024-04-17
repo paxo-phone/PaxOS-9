@@ -134,6 +134,7 @@ void setup()
 // Native main
 int main(int argc, char **argv)
 {
+    std::cout << "WTF BRO" << std::endl;
     graphics::SDLInit(setup);
 }
 
