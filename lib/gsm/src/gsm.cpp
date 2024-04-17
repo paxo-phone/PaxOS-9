@@ -355,7 +355,9 @@ namespace GSM
     {
         init();
 
-        //eventHandlerBack.setTimeout(new Callback);
+        requests.push_back({[](){ send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
+
+        eventHandlerBack.setInterval(new Callback<>(&GSM::getHour), 15000);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});

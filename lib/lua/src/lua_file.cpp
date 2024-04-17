@@ -100,7 +100,7 @@ void LuaFile::run()
 
     if(!nlohmann::json::accept(conf))
     {
-        errors = "Les permissions de l'app ne sont pas définies ou invalides";
+        errors = "Les permissions de l'app ne sont pas définies ou sont invalides";
     }
     else{
         nlohmann::json confJson = nlohmann::json::parse(conf);
