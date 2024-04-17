@@ -58,22 +58,22 @@ namespace gui::elements {
         m_backspaceIcon = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
 
         m_layoutLowercase = new char*[4];
-        m_layoutLowercase[0] = new char[]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
-        m_layoutLowercase[1] = new char[]{'q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'};
-        m_layoutLowercase[2] = new char[]{KEY_CAPS, 'w', 'x', 'c', 'v', 'b', 'n', '\'', KEY_BACKSPACE};
-        m_layoutLowercase[3] = new char[]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
+        m_layoutLowercase[0] = new char[10]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
+        m_layoutLowercase[1] = new char[10]{'q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'};
+        m_layoutLowercase[2] = new char[9]{KEY_CAPS, 'w', 'x', 'c', 'v', 'b', 'n', '\'', KEY_BACKSPACE};
+        m_layoutLowercase[3] = new char[3]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
 
         m_layoutUppercase = new char*[4];
-        m_layoutUppercase[0] = new char[]{'A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'};
-        m_layoutUppercase[1] = new char[]{'Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'};
-        m_layoutUppercase[2] = new char[]{KEY_CAPS, 'W', 'X', 'C', 'V', 'B', 'N', '\'', KEY_BACKSPACE};
-        m_layoutUppercase[3] = new char[]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
+        m_layoutUppercase[0] = new char[10]{'A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'};
+        m_layoutUppercase[1] = new char[10]{'Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'};
+        m_layoutUppercase[2] = new char[9]{KEY_CAPS, 'W', 'X', 'C', 'V', 'B', 'N', '\'', KEY_BACKSPACE};
+        m_layoutUppercase[3] = new char[3]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
 
         m_layoutNumbers = new char*[4];
-        m_layoutNumbers[0] = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-        m_layoutNumbers[1] = new char[]{'+', '-', '*', '/', '(', ')', '[', ']', '<', '>'};
-        m_layoutNumbers[2] = new char[]{KEY_CAPS, '_', ',', '.', ':', ';', '!', '?', KEY_BACKSPACE};
-        m_layoutNumbers[3] = new char[]{KEY_LAYOUT_STANDARD, KEY_SPACE, KEY_EXIT};
+        m_layoutNumbers[0] = new char[10]{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+        m_layoutNumbers[1] = new char[10]{'+', '-', '*', '/', '(', ')', '[', ']', '<', '>'};
+        m_layoutNumbers[2] = new char[9]{KEY_CAPS, '_', ',', '.', ':', ';', '!', '?', KEY_BACKSPACE};
+        m_layoutNumbers[3] = new char[3]{KEY_LAYOUT_STANDARD, KEY_SPACE, KEY_EXIT};
 
         m_currentLayout = m_layoutLowercase;
     }

@@ -199,7 +199,10 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
 
     lcd->getTouch(&tx, &ty);
     #ifdef ESP_PLATFORM // with capacitive touch?
-        ty = ty * 480 / 700;
+        if(screenOrientation == 0)
+            ty = ty * 480 / 700;
+        else
+            tx = (float) (tx - 50) * 5.5 / 7.6; // * 27 / 37 fait augmenter le nombre, pourquoi??
     #endif
 
     if (tx <= 0 || ty <= 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
@@ -213,6 +216,8 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
         *x = tx;
         *y = ty;
     }
+
+    std::cout << *x << "x" << *y << std::endl;
 }
 
 bool graphics::isTouched()
