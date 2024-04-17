@@ -1,5 +1,7 @@
 #include "Input.hpp"
 
+#include <iostream>
+
 namespace gui::elements {
     Input::Input(uint16_t x, uint16_t y)
     {
@@ -41,13 +43,13 @@ namespace gui::elements {
     {
         if(text.length() != 0)
         {
-            m_hasText = false;
+            m_hasText = true;
             m_text->setText(text);
             m_text->setTextColor(COLOR_DARK);
         }
         else
         {
-            m_hasText = true;
+            m_hasText = false;
             m_text->setText(m_placeHolder);
             m_text->setTextColor(COLOR_GREY);
         }

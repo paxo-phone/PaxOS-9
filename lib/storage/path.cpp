@@ -34,10 +34,11 @@ bool storage::init()
 {
 #ifdef ESP_PLATFORM
 
-    for (int i = 0; i < 4; i++)
+    while(true)
     {
         if (SD.begin(4))
             return true;
+        std::cout << "Error storage initialization" << std::endl;
     }
 
     // Show error message on the screen?

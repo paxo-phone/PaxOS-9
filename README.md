@@ -10,11 +10,11 @@
 - [Contributeurs](#contributors)
 
 # Licence
-Ce projet est distribué sous licence GPL-3.0.
+Ce projet est distribué sous licence AGPL-3.0.
 
 # Contact
 
-Vous pouvez nous contacter via notre [site internet](https://www.paxo.fr) ou notre [serveur discord](https://discord.com/invite/MpqbWr3pUG).
+Vous pouvez nous contacter via notre [site internet](https://www.paxo.fr) ou notre [serveur Discord](https://discord.com/invite/MpqbWr3pUG).
 
 # En savoir plus 
 

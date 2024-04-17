@@ -3,6 +3,8 @@
 
 #include "tasks.hpp"
 
+#include <gsm.hpp>
+
 extern EventHandler eventHandlerBack;
 extern EventHandler eventHandlerApp;
 

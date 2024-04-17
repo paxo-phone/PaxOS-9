@@ -1,5 +1,6 @@
 #include "threads.hpp"
 #include "delay.hpp"
+#include <clock.hpp>
 
 #ifndef THREAD_HANDLER
     #define THREAD_HANDLER
@@ -52,10 +53,7 @@ void ThreadManager::background_thread(void* arg)
 
 void ThreadManager::simcom_thread(void* arg)
 {
-    while (true)
-    {
-      PaxOS_Delay(1);
-    }
+    GSM::run();
 }
 
 void ThreadManager::app_thread(){}

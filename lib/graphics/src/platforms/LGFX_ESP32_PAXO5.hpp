@@ -28,10 +28,12 @@ public:
       cfg.spi_mode = 0;
       cfg.freq_write = 40000000;
       cfg.freq_read  = 16000000;
-      cfg.spi_3wire  = true; // changed
+      cfg.spi_3wire  = false;
       cfg.use_lock   = true;
+      cfg.dma_channel = SPI_DMA_CH_AUTO;
       cfg.pin_sclk = 18;
       cfg.pin_mosi = 23;
+      cfg.pin_miso = -1;
       cfg.pin_dc   = 2;
      
      
@@ -53,7 +55,7 @@ public:
       cfg.offset_rotation  =     0; 
       cfg.dummy_read_pixel =     8; 
       cfg.dummy_read_bits  =     0;//1 
-      cfg.readable         =  true; 
+      cfg.readable         =  false;
       cfg.invert           = false; 
       cfg.rgb_order        = false; 
       cfg.dlen_16bit       = false; 

@@ -1,9 +1,5 @@
 #include "tasks.hpp"
-
-uint64_t milliseconds()
-{
-    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-}
+#include <clock.hpp>
 
 EventHandler::~EventHandler()
 {
@@ -34,12 +30,13 @@ void EventHandler::update()
     }
 
     // Handle timeouts
-    auto now = milliseconds();
+    auto now = millis();
     for (auto it = timeouts.begin(); it != timeouts.end();) {
-        if (now  >= (*it)->timeout) {
-            (*it)->callback->call();
-            delete (*it);
+        if (now >= (*it)->timeout) {
+            auto* timeout = *it;
             it = timeouts.erase(it);
+            timeout->callback->call();
+            delete timeout;
         } else {
             ++it;
         }
@@ -70,7 +67,7 @@ void EventHandler::removeEventListener(uint32_t id) {
 
 uint32_t EventHandler::setTimeout(Function* callback, uint64_t timeout) {
     uint32_t id = findAvailableId();
-    timeouts.push_back(new Timeout(callback, milliseconds() + timeout, id));
+    timeouts.push_back(new Timeout(callback, millis() + timeout, id));
     return id;
 }
 
@@ -119,7 +116,9 @@ uint32_t EventHandler::findAvailableId() {
             if(interval->id == nextId)
                 found = false;
         }
+
+        nextId++;
     }
 
-    return nextId;
+    return nextId-1;
 }

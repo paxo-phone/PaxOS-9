@@ -1,30 +1,38 @@
-#ifndef APP_HPP
-#define APP_HPP
+#ifndef APPS_HPP
+#define APPS_HPP
 
-#include "path.hpp"
-#include "json.hpp"
+#include <vector>
+#include <path.hpp>
+#include <filestream.hpp>
+#include <lua_file.hpp>
+#include <gui.hpp>
+#include <hardware.hpp>
 
-using json = nlohmann::json;
+#define APP_DIR "/apps"
+#define PERMS_DIR "/system"
 
-namespace app {
-    
-    class App {
 
-        public:
-
-            App( const storage::Path& location, 
-                 const json& manifest ) 
-            {}
-            
-            ~App() {}
-
-            virtual void start(void) = 0;
-            virtual void quit(void) {}
-
-        private:
-
+namespace app
+{
+    struct App
+    {
+        std::string name;
+        storage::Path path;
+        storage::Path manifest;
+        bool auth;
     };
 
-}
+    extern std::vector<App> appList;
 
-#endif /* APP_HPP */
+    extern bool request;
+    extern App requestingApp;
+
+    void init();
+    bool askPerm(App &app);
+    void runApp(storage::Path path);
+    void runApp(App app);
+};
+
+#include <launcher.hpp>
+
+#endif
