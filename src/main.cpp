@@ -41,7 +41,7 @@ void setup()
     graphics::init();
     storage::init();
 
-    graphics::setScreenOrientation(graphics::LANDSCAPE);
+    graphics::setScreenOrientation(graphics::PORTRAIT);
 
     ThreadManager::init();
 
