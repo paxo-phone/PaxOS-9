@@ -141,7 +141,7 @@ void graphics::SDLInit(void (*appMain)())
 
     running = false;
 
-    SDL_WaitThread(thread, nullptr);
+    // SDL_WaitThread(thread, nullptr);
 
     lgfx::Panel_sdl::close();
 }
@@ -190,13 +190,15 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     int16_t tx;
     int16_t ty;
 
-    #ifdef ESP_PLATFORM
-        std::cout << "touch -> " << std::endl;
-        lcd->getTouch(&tx, &ty);
-        std::cout << " -> Ok" << std::endl;
-        ty = ty * 480 / 700;
-    #else
-        lcd->getTouch(&tx, &ty);
+    std::cout << "touch -> " << std::endl;
+    lcd->getTouch(&tx, &ty);
+    std::cout << " -> Ok" << std::endl;
+    //std::cout << "state: " << lcd->getTouch(&tx, &ty) << " ty: " << ty * 480 / 700 << "connected: " << int(ty<-1 || ty> 480 * 480 / 700) << std::endl;
+    #ifdef ESP_PLATFORM // with capacitive touch?
+        if(screenOrientation == 0)
+            ty = ty * 480 / 700;
+        else
+            tx = (float) (tx - 50) * 5.5 / 7.6; // * 27 / 37 fait augmenter le nombre, pourquoi??
     #endif
 
     if (tx <= 0 || ty <= 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())

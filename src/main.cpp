@@ -41,7 +41,7 @@ void setup()
     graphics::init();
     storage::init();
 
-    graphics::setScreenOrientation(graphics::PORTRAIT);
+    graphics::setScreenOrientation(graphics::LANDSCAPE);
 
     ThreadManager::init();
 
@@ -134,6 +134,7 @@ void setup()
 // Native main
 int main(int argc, char **argv)
 {
+    std::cout << "WTF BRO" << std::endl;
     graphics::SDLInit(setup);
 }
 

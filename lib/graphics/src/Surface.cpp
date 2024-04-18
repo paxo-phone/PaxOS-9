@@ -41,7 +41,13 @@ namespace graphics
 
         m_sprite.createSprite(width, height);
         if(m_sprite.getBuffer() == nullptr)
-            std::cout << "ERROR" << std::endl;
+        {
+            std::cerr << "[Error] Unable to allocate a new surface (" << width << " x " << height << ")" << std::endl;
+        }
+        else
+        {
+            std::cout << "[Debug] Allocated a new surface (" << width << " x " << height << ")" << std::endl;
+        }
     }
 
     Surface::~Surface()
