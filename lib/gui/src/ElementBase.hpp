@@ -127,7 +127,7 @@ namespace gui
         void getLastTouchPosRel(int16_t* x, int16_t* y) const;
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
-
+        std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr
     protected:
         void localGraphicalUpdate();
         void globalGraphicalUpdate();

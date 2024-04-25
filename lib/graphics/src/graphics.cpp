@@ -190,9 +190,9 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
     int16_t tx;
     int16_t ty;
 
-    std::cout << "touch -> " << std::endl;
+    //std::cout << "touch -> " << std::endl;
     lcd->getTouch(&tx, &ty);
-    std::cout << " -> Ok" << std::endl;
+    //std::cout << " -> Ok" << std::endl;
     //std::cout << "state: " << lcd->getTouch(&tx, &ty) << " ty: " << ty * 480 / 700 << "connected: " << int(ty<-1 || ty> 480 * 480 / 700) << std::endl;
     #ifdef ESP_PLATFORM // with capacitive touch?
         if(screenOrientation == 0)

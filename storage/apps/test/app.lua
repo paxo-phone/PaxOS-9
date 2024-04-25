@@ -22,5 +22,34 @@ function run()
     todo_label:setFontSize(15)
     todo_label:setText(json_obj:get() .. "\n" .. str_time)
 
+
+    -- Canvas tests
+    setPixel_canvas = gui:canvas(win, 5, 215, 25, 25)
+    setPixel_canvas:setPixel(12, 12, COLOR_WARNING)
+
+    drawRect_canvas = gui:canvas(win, 35, 215, 25, 25)
+    drawRect_canvas:drawRect(5, 5, 15, 15, COLOR_WARNING)
+
+    fillRect_canvas = gui:canvas(win, 65, 215, 25, 25)
+    fillRect_canvas:fillRect(5, 5, 15, 15, COLOR_WARNING)
+
+    drawCircle_canvas = gui:canvas(win, 95, 215, 25, 25)
+    drawCircle_canvas:drawCircle(12, 12, 10, COLOR_WARNING)
+
+    fillCircle_canvas = gui:canvas(win, 125, 215, 25, 25)
+    fillCircle_canvas:fillCircle(12, 12, 10, COLOR_WARNING)
+
+    drawRoundRect_canvas = gui:canvas(win, 155, 215, 25, 25)
+    drawRoundRect_canvas:drawRoundRect(5, 5, 15, 15, 3, COLOR_WARNING)
+
+    fillRoundRect_canvas = gui:canvas(win, 185, 215, 25, 25)
+    fillRoundRect_canvas:fillRoundRect(5, 5, 15, 15, 3, COLOR_WARNING)
+
+    drawPolygon_canvas = gui:canvas(win, 215, 215, 25, 25)
+    drawPolygon_canvas:drawPolygon({{4, 4}, {4, 18}, {18, 18}}, COLOR_WARNING)
+
+    fillConvexPolygon_canvas = gui:canvas(win, 245, 215, 25, 25)
+    fillConvexPolygon_canvas:fillPolygon({{4, 4}, {4, 18}, {18, 18}}, COLOR_WARNING)
+
     gui:setWindow(win)
 end

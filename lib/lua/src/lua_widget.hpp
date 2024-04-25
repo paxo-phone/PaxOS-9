@@ -3,6 +3,7 @@
 
 #include <gui.hpp>
 #include "SOL2/sol.hpp"
+#include "SOL2/sol_helper.hpp"
 
 class LuaWidget
 {
