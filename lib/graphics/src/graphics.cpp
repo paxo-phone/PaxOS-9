@@ -34,7 +34,23 @@ namespace
 
 void graphics::setBrightness(uint16_t value)
 {
-    lcd->setBrightness(value);
+    #ifdef ESP_PLATFORM
+    static uint16_t oldValue = 0;
+
+    for (uint16_t i = oldValue; i < value; i++)
+    {
+        lcd->setBrightness(i);
+        delay(2);
+    }
+
+    for (int16_t i = oldValue; i >= value && i!=-1; i--)
+    {
+        lcd->setBrightness(i);
+        delay(2);
+    }
+
+    oldValue = value;
+    #endif
 }
 
 void graphics::init()

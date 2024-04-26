@@ -73,11 +73,7 @@ void setup()
     while (true)
     {
         #ifdef ESP_PLATFORM
-        for (uint16_t i = 0; i < 0xFF/3; i++)
-        {
-            graphics::setBrightness(i);
-            delay(2);
-        }
+        graphics::setBrightness(0xFF/3);
         #endif
 
         int l = 0;
@@ -90,18 +86,9 @@ void setup()
             while (hardware::getHomeButton());
         }
 
-        #ifdef ESP_PLATFORM
-        for (uint16_t i = 0xFF/3; i > 0; i--)
-        {
-            graphics::setBrightness(i);
-            delay(2);
-        }
-        
         graphics::setBrightness(0);
-        setCpuFrequencyMhz(20);
-        GSM::reInit();
-        //hardware::setScreenPower(false);
-        #endif
+        StandbyMode::savePower();
+
 
         while (hardware::getHomeButton());
         while (!hardware::getHomeButton())
@@ -109,10 +96,7 @@ void setup()
             eventHandlerApp.update();
         }
         
-        #ifdef ESP_PLATFORM
-        setCpuFrequencyMhz(240);
-        GSM::reInit();
-        #endif
+        StandbyMode::restorePower();
     }
 
     while (graphics::isRunning())
