@@ -357,6 +357,15 @@ void gui::ElementBase::addChild(gui::ElementBase *child)
     child->m_parent = this;
 }
 
+std::shared_ptr<graphics::Surface> gui::ElementBase::getAndSetSurface()
+{
+    if (this->m_surface == nullptr)
+    {
+        this->m_surface = std::make_shared<graphics::Surface>(this->m_width, this->m_height);
+    }
+    return this->m_surface;
+}
+
 void gui::ElementBase::localGraphicalUpdate()
 {
     this->m_isDrawn = false;
