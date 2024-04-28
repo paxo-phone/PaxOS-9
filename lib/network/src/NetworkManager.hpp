@@ -3,6 +3,7 @@
 
 #include <string>
 #include <shared_mutex>
+#include <memory>
 
 namespace network
 {

@@ -203,7 +203,7 @@ int launcher()
             getTask->resume();
             #endif
 
-            network::URLRequest advancedGETRequest = network::URLRequest(network::URL("https://fneifneiofnoefwefiwenf.requestcatcher.com/test"));
+            network::URLRequest advancedGETRequest = network::URLRequest(network::URL("https://azerpoiu.requestcatcher.com/test"));
             advancedGETRequest.httpHeaderFields.insert(std::pair<std::string, std::string>("Custom-Header", "Hello world!"));
             network::URLSessionDataTask* advancedGetTask = network::URLSession::defaultInstance.get()->dataTaskWithRequest(advancedGETRequest, [](const std::string& data)
             {
@@ -213,7 +213,7 @@ int launcher()
             });
             advancedGetTask->resume();
 
-            network::URLRequest advancedPOSTRequest = network::URLRequest(network::URL("https://fneifneiofnoefwefiwenf.requestcatcher.com/test"));
+            network::URLRequest advancedPOSTRequest = network::URLRequest(network::URL("https://azerpoiu.requestcatcher.com/test"));
             advancedPOSTRequest.method = network::URLRequest::HTTPMethod::POST;
             advancedPOSTRequest.httpBody = "Hello world!";
             advancedPOSTRequest.httpHeaderFields.insert(std::pair<std::string, std::string>("Custom-Header", "Hello world!"));
