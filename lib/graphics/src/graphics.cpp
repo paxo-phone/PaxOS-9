@@ -195,13 +195,14 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
 {
     *x = touchX;
     *y = touchY;
-    std::cout << "touch -> " << touchX << std::endl;
 }
 
 void graphics::touchUpdate()
 {
     bool state = lcd->getTouch(&touchX, &touchY);
-    std::cout << int(state) << std::endl;
+    #ifdef ESP_PLATFORM
+    std::cout << int(state) << std::endl; // important je sais pas pourquoi: sinon le tactile se coupe au bout d'un moment...
+    #endif
 
     if(!state)
     {

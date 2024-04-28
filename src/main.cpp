@@ -64,11 +64,6 @@ void setup()
     );
     #endif
 
-    /*eventHandlerBack.setInterval(
-        new Callback<>([]() { graphics::touchUpdate(); }),
-        20
-    );*/
-
     app::init();
 
     while (true)
