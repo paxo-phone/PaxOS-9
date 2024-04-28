@@ -31,6 +31,7 @@ class LuaWidget
     void onScrollLeft(sol::function func){onScrollLeftFunc = func;}
 
     void update();
+    virtual void specificUpdate(){};
 
     gui::ElementBase* widget = nullptr;
     LuaWidget* parent = nullptr;

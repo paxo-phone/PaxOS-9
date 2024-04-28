@@ -25599,7 +25599,7 @@ namespace sol {
 				return *this;
 			}
 			{
-				sol::protected_function_result next_results = m_next_function_ref(m_table_ref, stack_reference(m_L, m_key_index));
+				sol::function_result next_results = m_next_function_ref(m_table_ref, stack_reference(m_L, m_key_index));
 				if (!next_results.valid()) {
 					// TODO: abort, or throw an error?
 					m_clear();

@@ -6,6 +6,23 @@
 #include <string>
 #include <threads.hpp>
 
+extern const char *daysOfWeek[7];
+extern const char *daysOfMonth[12];
+
+#define f_Date(annee, mois) ( ((mois) <= 2) ? ((annee) - 1) : (annee) )
+#define g_Date(mois) ( ((mois) <= 2) ? ((mois) + 13) : ((mois) + 1) )
+
+struct Date
+{
+    int jour;
+    int mois;
+    long int annee;
+};
+
+#define myCalculOfDay(d) (1461 * f_Date(d.annee, d.mois) / 4 + 153 * g_Date(d.mois) / 5 + d.jour)
+#define myWhatDay(d_) ( (myCalculOfDay(d_) - 621049) % 7 )
+
+
 namespace GSM
 {
     enum priority

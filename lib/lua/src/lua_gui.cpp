@@ -35,7 +35,7 @@ LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height)
 
 LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height)
 {
-    LuaCanvas* w = new LuaCanvas(parent, x, y, width, height);
+    LuaCanvas* w = new LuaCanvas(parent, x, y, width, height, this->lua);
     widgets.push_back(w);
     return w;
 }

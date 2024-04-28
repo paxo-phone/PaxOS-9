@@ -64,11 +64,12 @@ void setup()
     );
     #endif
 
+    /*eventHandlerBack.setInterval(
+        new Callback<>([]() { graphics::touchUpdate(); }),
+        20
+    );*/
+
     app::init();
-    for (auto a : app::appList)
-    {
-        std::cout << a.name << ";" << a.path.str() << std::endl;
-    }
 
     while (true)
     {
@@ -98,19 +99,6 @@ void setup()
         
         StandbyMode::restorePower();
     }
-
-    while (graphics::isRunning())
-    {
-#ifdef ESP_PLATFORM
-
-        vTaskDelay(pdMS_TO_TICKS(10));
-
-#else
-
-        SDL_Delay(10);
-
-#endif
-    }
 }
 
 #ifndef ESP_PLATFORM
@@ -118,7 +106,6 @@ void setup()
 // Native main
 int main(int argc, char **argv)
 {
-    std::cout << "WTF BRO" << std::endl;
     graphics::SDLInit(setup);
 }
 

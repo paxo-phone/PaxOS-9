@@ -26,6 +26,8 @@ void LuaWidget::update()
     if(this->widget->getParent() == nullptr)
         this->widget->updateAll();
 
+    specificUpdate();
+
     if(onClickFunc && this->widget->isTouched())
     {
         std::cout << "onClickFunc" << std::endl;

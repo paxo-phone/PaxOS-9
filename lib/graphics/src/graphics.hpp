@@ -47,6 +47,7 @@ namespace graphics
     void flip();
 
     void getTouchPos(int16_t *x, int16_t *y);
+    void touchUpdate();
     bool isTouched();
 
     EScreenOrientation getScreenOrientation();

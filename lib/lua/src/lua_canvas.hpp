@@ -3,10 +3,12 @@
 
 #include "lua_widget.hpp"
 
+class LuaFile;
+
 class LuaCanvas : public LuaWidget
 {
     public:
-    LuaCanvas(LuaWidget* parent, int x, int y, int width, int height);
+    LuaCanvas(LuaWidget* parent, int x, int y, int width, int height, LuaFile* lua);
 
     void setPixel(int16_t x, int16_t y, color_t color) { widget->setPixel(x, y, color); }
 
@@ -38,7 +40,15 @@ class LuaCanvas : public LuaWidget
     
     void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color) { widget->drawLine(x1, y1, x2, y2, color); }
 
+    void onTouch(sol::function function) { this->onTouchFunc = function; }
+
+    sol::table getTouch();
+    void specificUpdate();
+    
+    LuaFile* lua = nullptr;
     gui::elements::Canvas* widget = nullptr;
+
+    sol::function onTouchFunc;
 };
 
 #endif // LUA_CANVAS_MODULE

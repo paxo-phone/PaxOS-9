@@ -243,6 +243,8 @@ void LuaFile::run()
                 "drawPolygon", &LuaCanvas::drawPolygon,
                 "fillPolygon", &LuaCanvas::fillPolygon,
                 "drawLine", &LuaCanvas::drawLine,
+                "getTouch", &LuaCanvas::getTouch,
+                "onTouch", &LuaCanvas::onTouch,
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.new_usertype<LuaImage>("LuaImage",
