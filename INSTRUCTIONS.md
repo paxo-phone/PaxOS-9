@@ -73,6 +73,7 @@ pio test -e test
   Reason: no LC_RPATH's found
   zsh: abort      .pio/build/macos/program
   ```
+  Try to do ```DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" .pio/build/macos/program``` and if it still doesn't work then do
   1. Get the location of SDL's dynamic library by executing `brew info sdl2`, you should get a path similar to `/opt/homebrew/Cellar/sdl2/2.28.5`
   2. Run `ls {the path you got from the last command}/lib/libSDL2-2.0.0.dylib`. If you get the exact same path as an output you're ready to go. Otherwise install SDL as described above in this document and retry the procedure.
   3. Re-run the command by adding `DYLD_LIBRARY_PATH="{the path you got from step 1}/lib/"` as a prefix before the command like this `DYLD_LIBRARY_PATH="{the path you got from step 1}/lib/ .pio/build/macos/program`
