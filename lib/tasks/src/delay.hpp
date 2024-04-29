@@ -1,11 +1,8 @@
-#pragma once
+#ifndef DELAY_PAXO
+#define DELAY_PAXO
 
-#include <LovyanGFX.hpp>
+#include <stdint.h>
 
-inline void PaxOS_Delay(int64_t ms) {
-  #ifdef ESP_PLATFORM
-    vTaskDelay(pdMS_TO_TICKS(ms));
-  #else
-    SDL_Delay(ms);
-  #endif
-}
+void PaxOS_Delay(int64_t ms);
+
+#endif

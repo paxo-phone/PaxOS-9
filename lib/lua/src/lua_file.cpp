@@ -187,6 +187,7 @@ void LuaFile::run()
         {
             lua.new_usertype<LuaGui>("gui",
                 "box", &LuaGui::box,
+                "canvas", &LuaGui::canvas,
                 "image", &LuaGui::image,
                 "label", &LuaGui::label,
                 "input", &LuaGui::input,
@@ -229,6 +230,21 @@ void LuaFile::run()
             );
 
             lua.new_usertype<LuaBox>("LuaBox",
+                sol::base_classes, sol::bases<LuaWidget>());
+
+            lua.new_usertype<LuaCanvas>("LuaCanvas",
+                "setPixel", &LuaCanvas::setPixel,
+                "drawRect", &LuaCanvas::drawRect,
+                "fillRect", &LuaCanvas::fillRect,
+                "drawCircle", &LuaCanvas::drawCircle,
+                "fillCircle", &LuaCanvas::fillCircle,
+                "drawRoundRect", &LuaCanvas::drawRoundRect,
+                "fillRoundRect", &LuaCanvas::fillRoundRect,
+                "drawPolygon", &LuaCanvas::drawPolygon,
+                "fillPolygon", &LuaCanvas::fillPolygon,
+                "drawLine", &LuaCanvas::drawLine,
+                "getTouch", &LuaCanvas::getTouch,
+                "onTouch", &LuaCanvas::onTouch,
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.new_usertype<LuaImage>("LuaImage",

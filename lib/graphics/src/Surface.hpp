@@ -57,6 +57,9 @@ namespace graphics
         void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
         void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
 
+        void drawCircle(int16_t x, int16_t y, uint16_t r, color_t color);
+        void fillCircle(int16_t x, int16_t y, uint16_t r, color_t color);
+
         void fillRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
         void fillRoundRectWithBorder(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs, uint16_t Backcolor, uint16_t Bordercolor);
         void drawRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);

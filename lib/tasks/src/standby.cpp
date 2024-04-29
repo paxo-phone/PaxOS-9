@@ -1,6 +1,7 @@
 #include "standby.hpp"
 
 #include <threads.hpp>
+#include <LovyanGFX.hpp>
 
 #ifdef ESP_PLATFORM
 
@@ -15,12 +16,24 @@
 namespace StandbyMode
 {
     uint64_t lastTrigger = millis();
+    uint64_t lastPowerTrigger = millis();
     uint64_t sleepTime = 30000;
     bool enabled = false;
+    bool powerMode = true; // false is low, true is high
 
     void trigger()
     {
         lastTrigger = millis();
+    }
+
+    void triggerPower()
+    {
+        lastPowerTrigger = millis();
+
+        if(powerMode == false)
+        {
+            restorePower();
+        }
     }
 
     void update()
@@ -28,6 +41,14 @@ namespace StandbyMode
         if (millis() - lastTrigger > 1000)
         {
             enabled = true;
+        }
+
+        if (millis() - lastPowerTrigger > 5000)
+        {
+            if(powerMode == true)
+            {
+                savePower();
+            }
         }
     }
 
@@ -57,6 +78,7 @@ namespace StandbyMode
         #ifdef ESP_PLATFORM
         setCpuFrequencyMhz(20);
         GSM::reInit();
+        powerMode = false;
         #endif
     }
 
@@ -65,12 +87,14 @@ namespace StandbyMode
         #ifdef ESP_PLATFORM
         setCpuFrequencyMhz(240);
         GSM::reInit();
+        powerMode = true;
         #endif
     }
 
     void wait()
     {
-        #ifdef ESP_PLATFORM
+        update();
+
         static uint64_t timer = millis();
 
         uint64_t dt = millis() - timer;
@@ -79,10 +103,13 @@ namespace StandbyMode
         {
             uint64_t tw = 50 - dt;
 
+        #ifdef ESP_PLATFORM
             vTaskDelay(pdMS_TO_TICKS(tw));
+        #else
+            SDL_Delay(tw);
+        #endif
         }
 
         timer = millis();
-        #endif
     }
 }

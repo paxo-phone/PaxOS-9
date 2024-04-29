@@ -52,6 +52,7 @@ void gui::ElementBase::renderAll()
 
     if (!m_isRendered)
     {
+        StandbyMode::triggerPower();
         // initialiser le buffer ou le clear
         if(m_surface != nullptr && (m_surface->getWidth() != this->getWidth() || m_surface->getHeight() != this->getHeight()))
             m_surface = nullptr;
@@ -79,6 +80,7 @@ void gui::ElementBase::renderAll()
 
     if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
     {
+        StandbyMode::triggerPower();
         if (m_parent != nullptr && m_parent->m_isDrawn == false) // le parent demande le rendu
         {
             // push le buffer local vers le buffer du parent
@@ -102,13 +104,14 @@ bool gui::ElementBase::updateAll()
 {
     if (m_parent == nullptr)
     {
+        StandbyMode::wait();
         if(mainWindow != this)
         {
             mainWindow = this;
             this->m_isDrawn = false;
         }
         eventHandlerApp.update();
-
+        graphics::touchUpdate();
         graphics::getTouchPos(&touchX, &touchY);
     }
 
@@ -142,6 +145,7 @@ bool gui::ElementBase::update()
     // check if the finger is currently on the widget
     if (touchX != -1 && touchY != -1)
     {
+        StandbyMode::triggerPower();
         if (getAbsoluteX()-10 < touchX && touchX < getAbsoluteX() + getWidth() +10 && // l'objet est touché
             getAbsoluteY()-10 < touchY && touchY < getAbsoluteY() + getHeight() +10)
         {
@@ -311,8 +315,13 @@ bool gui::ElementBase::isTouched()
     return false;
 }
 
-bool gui::ElementBase::isFocused()
+bool gui::ElementBase::isFocused(bool forced)
 {
+    if(forced)
+    {
+        return (touchX != -1 && touchY != -1 && getAbsoluteX()-10 < touchX && touchX < getAbsoluteX() + getWidth() +10 && // l'objet est touché
+            getAbsoluteY()-10 < touchY && touchY < getAbsoluteY() + getHeight() +10);
+    }
     m_hasEvents = true;
     return m_pressedState == PressedState::PRESSED;
 }
@@ -355,6 +364,15 @@ void gui::ElementBase::addChild(gui::ElementBase *child)
 {
     m_children.push_back(child);
     child->m_parent = this;
+}
+
+std::shared_ptr<graphics::Surface> gui::ElementBase::getAndSetSurface()
+{
+    if (this->m_surface == nullptr)
+    {
+        this->m_surface = std::make_shared<graphics::Surface>(this->m_width, this->m_height);
+    }
+    return this->m_surface;
 }
 
 void gui::ElementBase::localGraphicalUpdate()

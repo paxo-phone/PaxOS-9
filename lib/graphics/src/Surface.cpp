@@ -150,14 +150,24 @@ namespace graphics
         m_transparent_color = color;
     }
 
+    void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color)
+    {
+        m_sprite.drawRect(x, y, w, h, color);
+    }
+
     void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color)
     {
         m_sprite.fillRect(x, y, w, h, color);
     }
 
-    void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color)
+    void Surface::drawCircle(int16_t x, int16_t y, uint16_t r, color_t color)
     {
-        m_sprite.drawRect(x, y, w, h, color);
+        this->m_sprite.drawCircle(x, y, r, color);
+    }
+
+    void Surface::fillCircle(int16_t x, int16_t y, uint16_t r, color_t color)
+    {
+        this->m_sprite.fillCircle(x, y, r, color);
     }
 
     void Surface::fillRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r, const color_t color)

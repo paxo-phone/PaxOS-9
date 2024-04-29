@@ -80,8 +80,19 @@ int LuaTimeInterval::getId()
 
 void LuaTimeInterval::call()
 {
-    if(func)
+    try {
+        if(func)
         func();
+    } catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Handle other standard exceptions
+        std::cerr << "Standard error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
+    }
 }
 
 LuaTimeInterval::~LuaTimeInterval()

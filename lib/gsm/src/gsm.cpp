@@ -1,5 +1,9 @@
 #include "gsm.hpp"
+#include <delay.hpp>
 #include "../../tasks/src/threads.hpp"
+
+const char *daysOfWeek[7] = { "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi" };
+const char *daysOfMonth[12] = { "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"};
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
@@ -47,6 +51,8 @@ namespace GSM
                 std::cout << "Connected" << std::endl;
                 return;
             }
+            else
+                std::cout << "Disconnected" << std::endl;
         }
 #endif
     }
@@ -330,25 +336,49 @@ namespace GSM
 
     void updateHour()
     {
-        std::string h = send("AT+CCLK?", "+CCLK:");
+        std::string data = send("AT+CCLK?", "+CCLK:");
 
-        if(h.find("\"") == std::string::npos)
-        {
+        std::cout << data << std::endl;
+
+        // Find the start and end positions of the date and time string
+        size_t start = data.find("\"");
+        if (start == std::string::npos) {
+            return;
+        }
+        start++;
+
+        size_t end = data.find("+");
+        if (end == std::string::npos) {
             return;
         }
 
-        std::string data2 = h.substr(h.find("\"") + 1, h.find_last_of("\"") - 1 - h.find("\"") - 1);
-        years = atoi(data2.substr(0, 2).c_str());
-        months = atoi(data2.substr(3, 5-3).c_str());
-        days = atoi(data2.substr(6, 8-6).c_str());
-        hours = atoi(data2.substr(9, 11-9).c_str());
-        minutes = atoi(data2.substr(12, 14-12).c_str());
-        seconds = atoi(data2.substr(15, 17-15).c_str());
+        // Extract the date and time string
+        std::string dateTime = data.substr(start, end - start);
+
+        // Extract the year, month, and day
+        try {
+            years = std::atoi(dateTime.substr(0, 2).c_str());
+            months = std::atoi(dateTime.substr(3, 2).c_str());
+            days = std::atoi(dateTime.substr(6, 2).c_str());
+        } catch (const std::invalid_argument&) {
+            return;
+        }
+
+        // Extract the hour, minute, and second
+        try {
+            hours = std::atoi(dateTime.substr(9, 2).c_str());
+            minutes = std::atoi(dateTime.substr(12, 2).c_str());
+            seconds = std::atoi(dateTime.substr(15, 2).c_str());
+        } catch (const std::invalid_argument&) {
+            return;
+        }
+
+        std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
 
     void getHour()
     {
-        requests.push_back({std::bind(&GSM::updateHour), priority::low});
+        requests.push_back({std::bind(&GSM::updateHour), priority::high});
     }
 
     void run()
@@ -357,7 +387,10 @@ namespace GSM
 
         requests.push_back({[](){ send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
 
-        eventHandlerBack.setInterval(new Callback<>(&GSM::getHour), 15000);
+        updateHour();
+
+        eventHandlerBack.setInterval(new Callback<>(&GSM::getHour), 5000);
+        //eventHandlerBack.setInterval(new Callback<>([](){if(send("AT", "AT").find("OK") == std::string::npos) init(); }), 15000);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});
@@ -367,9 +400,7 @@ namespace GSM
 
         while (true)
         {
-            #ifdef ESP_PLATFORM
-            delay(100);
-            #endif
+            PaxOS_Delay(50);
 
             download();
 

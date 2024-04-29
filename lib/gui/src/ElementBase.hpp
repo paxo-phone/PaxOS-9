@@ -48,7 +48,7 @@ namespace gui
         color_t getBorderColor() const;
 
         bool isTouched(); // retourne si le widget a été pressé puis relaché (nb, l'appel de la fonction annule m'état précédent)
-        bool isFocused(); // retourne si le doigt est sur le widget
+        bool isFocused(bool forced = false); // retourne si le doigt est sur le widget
 
         virtual void onClick() {}
         virtual void onLongClick() {}
@@ -78,6 +78,7 @@ namespace gui
 
         ElementBase *m_parent;
         std::vector<ElementBase *> m_children;
+        static int16_t touchX, touchY;
 
     protected:
         // variables générales
@@ -120,14 +121,13 @@ namespace gui
 
         static ElementBase *m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
         static int16_t originTouchX, originTouchY;
-        static int16_t touchX, touchY;
 
         int16_t m_lastTouchX, m_lastTouchY;
         void getLastTouchPosAbs(int16_t* x, int16_t* y) const;
         void getLastTouchPosRel(int16_t* x, int16_t* y) const;
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
-
+        std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr
     protected:
         void localGraphicalUpdate();
         void globalGraphicalUpdate();

@@ -15,9 +15,9 @@ namespace app
         std::string allowedFiles = stream.read();
         stream.close();
 
-
         for (auto dir : dirs)
         {
+            std::cout << (storage::Path(APP_DIR) / dir).str() << std::endl;
             if(allowedFiles.find((storage::Path(APP_DIR) / dir).str()) != std::string::npos)
             {
                 appList.push_back({dir, storage::Path(APP_DIR) / dir  / "app.lua", storage::Path(PERMS_DIR) / (dir + ".json"), true});
@@ -55,6 +55,7 @@ namespace app
                 streamP.close();
 
                 app.manifest = storage::Path(PERMS_DIR) / (app.name + ".json");
+                app.auth = true;
 
                 storage::FileStream newPermCopy(app.manifest.str(), storage::WRITE);
                 newPermCopy.write(data);

@@ -33,6 +33,13 @@ LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height)
     return w;
 }
 
+LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height)
+{
+    LuaCanvas* w = new LuaCanvas(parent, x, y, width, height, this->lua);
+    widgets.push_back(w);
+    return w;
+}
+
 LuaImage* LuaGui::image(LuaWidget* parent, storage::Path path, int x, int y, int width, int height)
 {
     // TODO: permissions relatives a l'app

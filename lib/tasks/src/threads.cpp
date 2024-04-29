@@ -47,7 +47,7 @@ void ThreadManager::background_thread(void* arg)
     while (true)
     {
       eventHandlerBack.update();
-      PaxOS_Delay(1);
+      PaxOS_Delay(50);
     }
 }
 

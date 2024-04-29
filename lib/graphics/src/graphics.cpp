@@ -30,6 +30,8 @@ namespace
 
     graphics::EScreenOrientation screenOrientation;
     std::shared_ptr<graphics::Surface> landscapeBuffer;
+
+    int16_t touchX = 0, touchY = 0;
 }
 
 void graphics::setBrightness(uint16_t value)
@@ -191,56 +193,42 @@ void graphics::flip()
 
 void graphics::getTouchPos(int16_t* x, int16_t* y)
 {
-    static uint64_t lastUpdate = millis();
-    static int16_t otx = 0;
-    static int16_t oty = 0;
+    *x = touchX;
+    *y = touchY;
+}
 
-    if(lastUpdate + 50 > millis())
+void graphics::touchUpdate()
+{
+    bool state = lcd->getTouch(&touchX, &touchY);
+    #ifdef ESP_PLATFORM
+    std::cout << int(state) << std::endl; // important je sais pas pourquoi: sinon le tactile se coupe au bout d'un moment...
+    #endif
+
+    if(!state)
     {
-        *x = otx;
-        *y = oty;
-
+        touchX = -1;
+        touchY = -1;
         return;
     }
 
-    int16_t tx;
-    int16_t ty;
-
-    std::cout << "touch -> " << std::endl;
-    lcd->getTouch(&tx, &ty);
-    std::cout << " -> Ok" << std::endl;
-    //std::cout << "state: " << lcd->getTouch(&tx, &ty) << " ty: " << ty * 480 / 700 << "connected: " << int(ty<-1 || ty> 480 * 480 / 700) << std::endl;
     #ifdef ESP_PLATFORM // with capacitive touch?
         if(screenOrientation == 0)
-            ty = ty * 480 / 700;
+            touchY = touchY * 480 / 700;
         else
-            tx = (float) (tx - 50) * 5.5 / 7.6; // * 27 / 37 fait augmenter le nombre, pourquoi??
+            touchX = (float) (touchX - 50) * 5.5 / 7.6;
     #endif
 
-    if (tx <= 0 || ty <= 0 || tx > graphics::getScreenWidth() || ty > graphics::getScreenHeight())
+    if (touchX <= 0 || touchY <= 0 || touchX > graphics::getScreenWidth() || touchY > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
-        otx = -1;
-        oty = -1;
+        touchX = -1;
+        touchY = -1;
     }
-    else
-    {
-        otx = tx;
-        oty = ty;
-    }
-
-    *x = otx;
-    *y = oty;
 }
 
 bool graphics::isTouched()
 {
-    int16_t x;
-    int16_t y;
-
-    getTouchPos(&x, &y);
-
-    return x != -1 && y != -1;
+    return touchX != -1 && touchY != -1;
 }
 
 graphics::EScreenOrientation graphics::getScreenOrientation()

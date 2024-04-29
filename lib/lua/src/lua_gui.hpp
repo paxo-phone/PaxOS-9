@@ -3,6 +3,7 @@
 
 #include "lua_widget.hpp"
 #include "lua_box.hpp"
+#include "lua_canvas.hpp"
 #include "lua_image.hpp"
 #include "lua_label.hpp"
 #include "lua_input.hpp"
@@ -21,6 +22,7 @@ class LuaGui
     LuaGui(LuaFile* lua);
     ~LuaGui();
     LuaBox* box(LuaWidget* parent, int x, int y, int width, int height);
+    LuaCanvas* canvas(LuaWidget* parent, int x, int y, int width, int height);
     LuaImage* image(LuaWidget* parent, storage::Path path, int x, int y, int width, int height);
     LuaLabel* label(LuaWidget* parent, int x, int y, int width, int height);
     LuaInput* input(LuaWidget* parent, int x, int y);
