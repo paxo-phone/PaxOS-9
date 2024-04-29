@@ -301,7 +301,7 @@ namespace graphics
         return (float) scale * m_sprite.fontHeight(getFont(m_font, fontSize));
     }
 
-    void Surface::drawText(std::string &otext, const int16_t x, const int16_t y)
+    void Surface::drawText(std::string &otext, int16_t x, int16_t y, std::optional<color_t> color)
     {
         std::string text = decodeString(otext);
         // Get the correct font size
@@ -329,7 +329,14 @@ namespace graphics
 
         // Init the buffer
         buffer->m_sprite.setFont(getFont(m_font, fontSize));
-        buffer->m_sprite.setTextColor(m_text_color);
+        if (color.has_value())
+        {
+            buffer->m_sprite.setTextColor(color.value());
+        }
+        else
+        {
+            buffer->m_sprite.setTextColor(m_text_color);
+        }
 
         // Set the background as transparent
         // FIXME : Using "m_color" as the transparency color can cause issues
@@ -364,18 +371,37 @@ namespace graphics
         delete buffer;
     }
 
-    void Surface::drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w)
+    void Surface::drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const bool horizontallyCentered, const bool verticallyCentered, const std::optional<color_t> color)
     {
         const uint16_t textWidth = m_sprite.textWidth(text.c_str());
-
-        if (w == -1)
+        int16_t textPositionX;
+        if (horizontallyCentered)
         {
-            drawText(text, static_cast<int16_t>(x + getScreenWidth() * 0.5 - textWidth * 0.5), y);
+            if (w == (uint16_t)-1)
+                textPositionX = x + (double)this->getWidth() * 0.5 - (double)textWidth * 0.5;
+            else
+                textPositionX = x + (double)w * 0.5 - (double)textWidth * 0.5;
         }
         else
         {
-            drawText(text, static_cast<int16_t>(x + w * 0.5 - textWidth * 0.5), y);
+            textPositionX = x;
         }
+
+        const uint16_t textHeight = this->getTextHeight(); // maybe it should take in account the bounding box height
+        int16_t textPositionY;
+        if (verticallyCentered)
+        {
+            if(h == (uint16_t)-1)
+                textPositionY = y + (double)this->getHeight() * 0.5 - (double)textHeight * 0.5;
+            else
+                textPositionY = y + (double)h * 0.5 - (double)textHeight * 0.5;
+        }
+        else
+        {
+            textPositionY = y;
+        }
+        
+        drawText(text, textPositionX, textPositionY, color);
     }
 
     void Surface::blur(uint8_t radius)

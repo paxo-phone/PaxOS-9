@@ -18,7 +18,7 @@ function drawSnake()
 end
 
 function drawFood()
-    drawRect_canvas:fillRect(int(food.x*factor), int(food.y*factor), 15, 15, COLOR_WARNING)
+    drawRect_canvas:fillRect(int(food.x*factor), int(food.y*factor), 15, 15, COLOR_ERROR)
 end
 
 function updateSnake()
