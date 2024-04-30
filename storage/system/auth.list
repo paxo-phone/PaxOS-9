@@ -2,3 +2,4 @@
 ./storage/apps/test/app.lua
 ./storage/apps/messages/app.lua
 ./storage/apps/snake/app.lua
+./storage/apps/contacts/app.lua

@@ -120,6 +120,15 @@ namespace GSM
         return "";
     }
 
+    void appendRequest(Request request)
+    {
+        // ask the other core to add a request
+        if(!request.function)
+            std::cout << "request.function is invalid -> can't run the new request" << std::endl;
+        else
+            eventHandlerBack.setTimeout(new Callback<>(std::bind([](Request r){GSM::requests.push_back(r);}, request)), 0);
+    }
+
     void process()
     {
 #ifdef ESP_PLATFORM
@@ -139,20 +148,20 @@ namespace GSM
     {
         for (uint8_t pr = priority::high; pr <= priority::low; pr++) // for each priority
         {
-            auto it = requests.begin();
-            while (it != requests.end())
+            auto it = 0;
+            while (it != requests.size())
             {
-                if (it->priority == pr)
+                if (requests[it].priority == pr)
                 {
-                    it->function();
-                    it = requests.erase(it);
+                    if(requests[it].function != nullptr)
+                        requests[it].function();
+                    requests[it].function = nullptr;
                 }
-                else
-                {
-                    ++it;
-                }
+                it++;
             }
         }
+
+        requests.clear();
     }
 
     void clearFrom(const std::string& from, const std::string& to)
@@ -272,7 +281,7 @@ namespace GSM
 
     void newMessage(std::string number, std::string message)
     {
-        requests.push_back({std::bind(&GSM::sendMessage, number, message), priority::normal});
+        appendRequest({std::bind(&GSM::sendMessage, number, message), priority::normal});
     }
 
     void sendCall(const std::string &number)
@@ -294,12 +303,12 @@ namespace GSM
     void newCall(std::string number)
     {
         std::cout << "new call " << number << std::endl;
-        requests.push_back({std::bind(&GSM::sendCall, number), priority::high});
+        appendRequest({std::bind(&GSM::sendCall, number), priority::high});
     }
 
     void endCall()
     {
-        requests.push_back({[](){ GSM::send("AT+CHUP", "OK"); }, priority::high});
+        appendRequest({[](){ GSM::send("AT+CHUP", "OK"); }, priority::high});
     }
 
     void acceptCall()

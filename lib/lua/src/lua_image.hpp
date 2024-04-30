@@ -6,7 +6,7 @@
 class LuaImage : public LuaWidget
 {
     public:
-    LuaImage(LuaWidget* parent, storage::Path path, int x, int y, int width, int height);
+    LuaImage(LuaWidget* parent, storage::Path path, int x, int y, int width, int height, color_t background = COLOR_WHITE);
 
     Image* widget = nullptr;
 };

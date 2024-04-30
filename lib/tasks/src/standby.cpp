@@ -13,6 +13,8 @@
 
 #endif
 
+#define TICKS_MS 20
+
 namespace StandbyMode
 {
     uint64_t lastTrigger = millis();
@@ -99,9 +101,9 @@ namespace StandbyMode
 
         uint64_t dt = millis() - timer;
 
-        if(dt < 50)
+        if(dt < TICKS_MS)
         {
-            uint64_t tw = 50 - dt;
+            uint64_t tw = TICKS_MS - dt;
 
         #ifdef ESP_PLATFORM
             vTaskDelay(pdMS_TO_TICKS(tw));
@@ -109,6 +111,10 @@ namespace StandbyMode
             SDL_Delay(tw);
         #endif
         }
+
+        #ifdef ESP_PLATFORM
+        std::cout << "CPU USAGE: " << int(100*(dt/TICKS_MS)) << "%" << std::endl;
+        #endif
 
         timer = millis();
     }

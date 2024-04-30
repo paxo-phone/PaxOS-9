@@ -3,15 +3,18 @@ import requests
 import zipfile
 import shutil
 
-
 Import("env")
 
 
 def SDL2_cleanup():
-    if os.path.exists("temp"):
-        if os.path.exists("temp\\SDL2.zip"):
-            os.remove("temp\\SDL2.zip")
-        os.remove("temp")
+    try:
+        if os.path.exists("temp"):
+            if os.path.exists("temp\\SDL2.zip"):
+                os.remove("temp\\SDL2.zip")
+            os.remove("temp")
+    except PermissionError:
+        print("Could not delete temp directory or the SDL2.zip file. Please delete them manually.")
+    
 
 
 def SDL2_download():

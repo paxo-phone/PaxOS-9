@@ -17,6 +17,7 @@
 #include "lua_file.hpp"
 #include "gsm.hpp"
 #include "app.hpp"
+#include "contacts.hpp"
 #include <iostream>
 
 using namespace gui::elements;
@@ -63,6 +64,16 @@ void setup()
         300
     );
     #endif
+
+    Contacts::load();
+    Contacts::editContact("Jane Doe", {"Jane Doe", "0612345678"});
+    Contacts::save();
+
+    std::vector<Contacts::contact> cc = Contacts::listContacts();
+    for(auto c : cc)
+    {
+        std::cout << c.name << " " << c.phone << std::endl;
+    }
 
     app::init();
 

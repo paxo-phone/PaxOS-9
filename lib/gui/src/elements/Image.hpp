@@ -14,7 +14,7 @@ namespace gui::elements
 
         void render() override;
 
-        void load();
+        void load(color_t background = COLOR_WHITE);
 
     private:
         storage::Path m_path;
