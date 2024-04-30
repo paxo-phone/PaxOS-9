@@ -3,10 +3,10 @@ name: PlatformIO
 on:
   push:
     branches: 
-        - '**'
+        - main
   pull_request:
     branches:
-        - '**'
+        - main
 
 jobs:
     espBuild:
