@@ -7,6 +7,7 @@
 #include <threads.hpp>
 #include <json.hpp>
 #include <app.hpp>
+#include <contacts.hpp>
 
 
 /*
@@ -188,7 +189,12 @@ void LuaFile::run()
             lua.new_usertype<LuaGui>("gui",
                 "box", &LuaGui::box,
                 "canvas", &LuaGui::canvas,
-                "image", &LuaGui::image,
+                "image", sol::overload(
+                    [](LuaGui* gui, LuaWidget* parent, std::string path, int x, int y, int width, int height) -> LuaImage* {
+                        return gui->image(parent, path, x, y, width, height, COLOR_WHITE);
+                    },
+                    &LuaGui::image
+                ),
                 "label", &LuaGui::label,
                 "input", &LuaGui::input,
                 "button", &LuaGui::button,
@@ -230,6 +236,7 @@ void LuaFile::run()
             );
 
             lua.new_usertype<LuaBox>("LuaBox",
+                "setRadius", &LuaBox::setRadius,
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.new_usertype<LuaCanvas>("LuaCanvas",
@@ -292,11 +299,11 @@ void LuaFile::run()
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.new_usertype<LuaVerticalList>("LuaVList",
-                "add", &LuaVerticalList::add,
+                //"add", &LuaVerticalList::add,
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.new_usertype<LuaHorizontalList>("LuaHList",
-                "add", &LuaHorizontalList::add,
+                //"add", &LuaHorizontalList::add,
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);
@@ -339,6 +346,18 @@ void LuaFile::run()
             luaGSM["rejectCall"] = &LuaGSM::rejectCall;
             luaGSM["getNumber"] = &LuaGSM::getNumber;
             luaGSM["getCallState"] = &LuaGSM::getCallState;
+
+            luaGSM["saveContacts"] = &Contacts::save;
+            luaGSM["listContacts"] = &Contacts::listContacts;
+            luaGSM["deleteContact"] = &Contacts::deleteContact;
+            luaGSM["editContact"] = &Contacts::editContact;
+            luaGSM["getContact"] = &Contacts::getContact;
+            luaGSM["getContactByNumber"] = &Contacts::getByNumber;
+
+            lua.new_usertype<Contacts::contact>("Contact",
+                "name", &Contacts::contact::name,
+                "phone", &Contacts::contact::phone
+            );
 
             lua["gsm"] = luaGSM;
         }

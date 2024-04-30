@@ -22,7 +22,8 @@ namespace LuaGSM
 
         while (GSM::state.callFailure == false && GSM::state.callState != GSM::CallState::CALLING)
         {
-            delay(10);
+            StandbyMode::wait();
+            std::cout << "Waiting for call" << std::endl;
         }
 
         GSM::state.callFailure = false;

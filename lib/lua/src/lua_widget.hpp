@@ -38,7 +38,11 @@ class LuaWidget
     std::vector<LuaWidget*> children;
     
     private:
-    void addChild(LuaWidget* child){this->children.push_back(child); child->parent = this;}
+    virtual void addChild(LuaWidget* child)
+    {
+        this->children.push_back(child); child->parent = this;
+        this->widget->addChild(child->widget);
+    }
 
     sol::function onClickFunc;
     sol::function onScrollUpFunc;

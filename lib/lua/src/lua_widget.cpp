@@ -4,7 +4,6 @@ void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 {
     widget = obj;
     parent->addChild(this);
-    parent->widget->addChild(this->widget);
 }
 
 LuaWidget::~LuaWidget()

@@ -40,15 +40,21 @@ LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height
     return w;
 }
 
-LuaImage* LuaGui::image(LuaWidget* parent, storage::Path path, int x, int y, int width, int height)
+LuaImage* LuaGui::image(LuaWidget* parent, std::string path, int x, int y, int width, int height, color_t background)
 {
-    // TODO: permissions relatives a l'app
+    storage::Path path_(path);
+
     if(!this->lua->perms.acces_files)
         return nullptr;
-    if(path.m_steps[0]=="/" && !this->lua->perms.acces_files_root)
+    if(path_.m_steps[0]=="/" && !this->lua->perms.acces_files_root)
         return nullptr;
     
-    LuaImage* w = new LuaImage(parent, path, x, y, width, height);
+    if(path_.m_steps[0]!="/")
+    {
+        path_ = this->lua->directory / path_;
+    }
+
+    LuaImage* w = new LuaImage(parent, path_, x, y, width, height, background);
     widgets.push_back(w);
 
     return w;
