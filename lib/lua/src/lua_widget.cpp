@@ -45,9 +45,7 @@ LuaWidget::~LuaWidget()
     
     if(rootOfDelete == this)
     {
-        std::cout << "Deleting... " << int(this->widget != nullptr) <<  std::endl;
         delete this->widget;
-        std::cout << "   OK" << std::endl;
         rootOfDelete = nullptr;
     }
         this->widget = nullptr;
@@ -57,9 +55,7 @@ void LuaWidget::update()
 {
     if(this->widget->getParent() == nullptr)
     {
-        std::cout << "Main object? " << this->widget->getHeight() << std::endl;
         this->widget->updateAll();
-        std::cout << "-------------- Main object? " << this->widget->getHeight() << std::endl;
     }
 
     specificUpdate();

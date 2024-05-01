@@ -88,6 +88,7 @@ int launcher()
             app::runApp(app::requestingApp);
         }
 
+        eventHandlerApp.update();
         win.updateAll();
     }
 

@@ -85,8 +85,6 @@ void gui::ElementBase::renderAll()
         {
             // push le buffer local vers le buffer du parent
             // TODO : Change position
-            std::cout << "\nx: " << this->getX() << " y: " << this->getY() << std::endl;
-            std::cout << "w: " << this->getWidth() << " h: " << this->getHeight() << std::endl;
             m_parent->m_surface->pushSurface(m_surface.get(), m_x, m_y);
         }
         else // le parent ne demande pas de rendu ou le parent n'existe pas
@@ -112,7 +110,7 @@ bool gui::ElementBase::updateAll()
             mainWindow = this;
             this->m_isDrawn = false;
         }
-        eventHandlerApp.update();
+
         graphics::touchUpdate();
         graphics::getTouchPos(&touchX, &touchY);
     }
