@@ -44,6 +44,8 @@ class LuaWidget
         this->widget->addChild(child->widget);
     }
 
+    static LuaWidget* rootOfDelete;
+
     sol::function onClickFunc;
     sol::function onScrollUpFunc;
     sol::function onScrollDownFunc;

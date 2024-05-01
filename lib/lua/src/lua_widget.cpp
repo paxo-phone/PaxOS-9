@@ -1,5 +1,7 @@
 #include "lua_widget.hpp"
 
+LuaWidget* LuaWidget::rootOfDelete = nullptr;
+
 void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 {
     widget = obj;
@@ -8,22 +10,57 @@ void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 
 LuaWidget::~LuaWidget()
 {
+    if(this->widget == nullptr)
+        return;
+    
+    if(rootOfDelete == nullptr)
+        rootOfDelete = this;
+
     for (LuaWidget* child : children)
     {
         delete child;
     }
 
-    if (this->widget->getParent() == nullptr)
+    if(rootOfDelete == this && this->parent != nullptr)
     {
-        delete this->widget;
-        this->widget = nullptr;
+        LuaWidget* widget = this;
+        gui::ElementBase* reWidget = widget->widget;
+
+        LuaWidget* parent = this->parent;
+        gui::ElementBase* reParent = parent->widget;
+        
+        parent->children.erase(std::remove_if(parent->children.begin(), parent->children.end(), // remove from abstract parent this
+                [&](LuaWidget* obj) {
+                    return obj == widget;
+                }
+            ), parent->children.end());
+
+        reParent->m_children.erase(std::remove_if(reParent->m_children.begin(), reParent->m_children.end(),   // remove from real parent the real widget
+                [&](gui::ElementBase* obj) {
+                    return obj == reWidget;
+                }
+            ), reParent->m_children.end());
     }
+
+    
+    if(rootOfDelete == this)
+    {
+        std::cout << "Deleting... " << int(this->widget != nullptr) <<  std::endl;
+        delete this->widget;
+        std::cout << "   OK" << std::endl;
+        rootOfDelete = nullptr;
+    }
+        this->widget = nullptr;
 }
 
 void LuaWidget::update()
 {
     if(this->widget->getParent() == nullptr)
+    {
+        std::cout << "Main object? " << this->widget->getHeight() << std::endl;
         this->widget->updateAll();
+        std::cout << "-------------- Main object? " << this->widget->getHeight() << std::endl;
+    }
 
     specificUpdate();
 

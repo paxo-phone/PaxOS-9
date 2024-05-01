@@ -2,6 +2,15 @@ function quit()
     gsm.saveContacts()
 end
 
+function update()
+    time:setTimeout(function ()
+        gui:del(win2)
+        gui:del(win)
+        print("update finished")
+        run()
+    end,100)
+end
+
 function openContact(contact)
     win2=gui:window()
 
@@ -9,17 +18,35 @@ function openContact(contact)
 
     local name = gui:label(win2, 53, 110, 210, 28)
     name:setFontSize(24)
-    name::setHorizontalAlignment(CENTER_ALIGNMENT)
+    name:setHorizontalAlignment(CENTER_ALIGNMENT)
     name:setText(contact.name)
+
+    local num = gui:label(win2, 53, 144, 210, 28)
+    num:setFontSize(24)
+    num:setHorizontalAlignment(CENTER_ALIGNMENT)
+    num:setTextColor(COLOR_GREY)
+    num:setText(contact.phone)
+
+    messages = gui:button(win2, 35, 244, 250, 38);
+    messages:setText("Messages")
+
+    messages = gui:button(win2, 35, 294, 250, 38);
+    messages:setText("Appeler")
+
+    messages = gui:button(win2, 35, 344, 250, 38);
+    messages:setText("Éditer")
+
+    messages = gui:button(win2, 35, 394, 250, 38);
+    messages:setText("Supprimer")
+    messages:onClick(function() gsm.deleteContact(contact.name) update() end)
 
     gui:setWindow(win2)
 end
 
 function run()
-    if win ~= nil then
-        gui:setWindow(win)
-        return
-    end
+    --if(win2~=nil) then
+    --    gui:del(win2)
+    --end
 
     contactList = gsm:listContacts()
 
