@@ -73,9 +73,34 @@ pio test -e test
   Reason: no LC_RPATH's found
   zsh: abort      .pio/build/macos/program
   ```
+  Try to do ```DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" .pio/build/macos/program``` and if it still doesn't work and you haven't installed SDL2 locally as decribed in the next bullet point (otherwise run ```DYLD_LIBRARY_PATH="`eval echo ~$USER`/sdl2/lib" .pio/build/macos/program```) do:
   1. Get the location of SDL's dynamic library by executing `brew info sdl2`, you should get a path similar to `/opt/homebrew/Cellar/sdl2/2.28.5`
   2. Run `ls {the path you got from the last command}/lib/libSDL2-2.0.0.dylib`. If you get the exact same path as an output you're ready to go. Otherwise install SDL as described above in this document and retry the procedure.
   3. Re-run the command by adding `DYLD_LIBRARY_PATH="{the path you got from step 1}/lib/"` as a prefix before the command like this `DYLD_LIBRARY_PATH="{the path you got from step 1}/lib/ .pio/build/macos/program`
+- When compiling the project using pio you might encounter an error where your shell can't find `pio` even if you installed it via the quick-setup. To fix that, execute `pio` directly from the binaries path that is located at `/Users/username/.platformio/penv/bin/pio`. If you have PaxOS9 installed directly in your home (i.e. `/Users/username/PaxOS9`), run pio via `../.platformio/penv/bin/pio`. To build for macOS it would give something similar this `../.platformio/penv/bin/pio run -e macos`.
+- If you get the `unknown platform` error when compiling, that probalby means that SDL2 is not installed where it should or even just not installed at all. If you have admin permissions for your machine run `brew install sdl2`. If you don't, then install SDL2 locally by following those steps:
+  1. Execute the following command (don't worry it won't hack into your computer)
+     ```
+     cd `eval echo ~$USER` && rm -rf sdl2-build && rm -rf sdl2 && mkdir sdl2 && git clone https://github.com/libsdl-org/SDL.git -b SDL2 sdl2-build && cd sdl2-build && mkdir build && cd build && ../configure --prefix=`eval echo ~$USER`/sdl2 && make -j`sysctl -n hw.ncpu` && make install && cd `eval echo ~$USER` && rm -rf sdl2-build && echo "Installed SDL at `eval echo ~$USER`/sdl2" && echo "\033[0;32mThe two lines to add to the macos target (\033[1;34mbuild_flags\033[0;32m) of the \033[1;34mplatform.ini\033[0;32m in your PaxOS9 directory are \033[1;33m-I`eval echo ~$USER`/sdl2/include\033[0;32m and \033[1;33m-L`eval echo ~$USER`/sdl2/lib\033[0;32m"
+     ```
+  2. Follow the instructions that the command gave you (add the two lines). The place where you should put the lines looks like this (the filename is called `platform.ini` and is present in the `PaxOS9` directory):
+     ```
+     [env:macos]
+      platform = native
+      lib_deps = 
+      	x
+      	x
+      	x
+      test_framework = googletest
+      build_flags = 
+      	x
+      	x
+      	x
+      	x
+      	-I/opt/homebrew/include/SDL2
+      	-L/opt/homebrew/lib
+      	-->PLACE THE LINES SEPARATED BY A NEW LINE HERE <--
+     ```
 
 # CLion Instructions
 
