@@ -85,7 +85,7 @@ int launcher()
         if (app::request)
         {
             app::request = false;
-            app::runApp(app::requestingApp);
+            app::runApp({app::requestingApp.app});
         }
 
         eventHandlerApp.update();

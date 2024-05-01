@@ -24,8 +24,11 @@ namespace gui::elements
          */
         std::string getText();
 
+        bool quitting() {return quit;}
+
     private:
         std::string m_buffer;
+        bool quit = false;
 
         char **m_currentLayout;
 

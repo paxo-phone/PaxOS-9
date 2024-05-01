@@ -5,7 +5,7 @@ namespace app
     std::vector<App> appList;
 
     bool request;
-    App requestingApp;
+    AppRequest requestingApp;
 
     void init()
     {
@@ -27,6 +27,19 @@ namespace app
                 appList.push_back({dir, storage::Path(APP_DIR) / dir  / "app.lua", storage::Path(APP_DIR) / dir / "manifest.json", false});
             }
         }
+    }
+
+    App getApp(std::string appName)
+    {
+        for (auto &app : appList)
+        {
+            if(app.name == appName)
+            {
+                return app;
+            }
+        }
+
+        return {"", storage::Path(), storage::Path(), false};
     }
 
     bool askPerm(App &app)
@@ -75,7 +88,7 @@ namespace app
                 {
                     std::cout << "Succes: running app" << std::endl;
                     LuaFile luaApp(path, app.manifest);
-                    luaApp.run();
+                    luaApp.run({"test et test"});
                 }
                 else
                 {
@@ -95,9 +108,9 @@ namespace app
         std::cout << "Error: no such app" << std::endl;
     }
 
-    void runApp(App app)
+    void runApp(AppRequest app)
     {
-        LuaFile luaApp(app.path, app.manifest);
+        LuaFile luaApp(app.app.path, app.app.manifest);
         luaApp.run();
     }
 };

@@ -1,4 +1,5 @@
 #include "lua_widget.hpp"
+#include "lua_gui.hpp"
 
 LuaWidget* LuaWidget::rootOfDelete = nullptr;
 
@@ -42,6 +43,11 @@ LuaWidget::~LuaWidget()
             ), reParent->m_children.end());
     }
 
+    gui->widgets.erase(std::remove_if(gui->widgets.begin(), gui->widgets.end(), // remove from abstract parent this
+                [&](LuaWidget* obj) {
+                    return obj == this;
+                }
+            ), gui->widgets.end());
     
     if(rootOfDelete == this)
     {

@@ -44,9 +44,8 @@ function openContact(contact)
 end
 
 function run()
-    --if(win2~=nil) then
-    --    gui:del(win2)
-    --end
+    --print("text" .. gui:keyboard("hello"))
+    print("app-> " .. tostring(launch("snake")))
 
     contactList = gsm:listContacts()
 

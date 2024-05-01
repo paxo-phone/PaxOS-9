@@ -1,5 +1,7 @@
 #include "lua_gui.hpp"
 
+#include <graphics.hpp>
+#include <threads.hpp>
 #include "lua_file.hpp"
 
 LuaGui::LuaGui(LuaFile* lua)
@@ -30,6 +32,7 @@ LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height)
 {
     LuaBox* w = new LuaBox(parent, x, y, width, height);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -37,6 +40,7 @@ LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height
 {
     LuaCanvas* w = new LuaCanvas(parent, x, y, width, height, this->lua);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -56,6 +60,7 @@ LuaImage* LuaGui::image(LuaWidget* parent, std::string path, int x, int y, int w
 
     LuaImage* w = new LuaImage(parent, path_, x, y, width, height, background);
     widgets.push_back(w);
+    w->gui = this;
 
     return w;
 }
@@ -64,6 +69,7 @@ LuaLabel* LuaGui::label(LuaWidget* parent, int x, int y, int width, int height)
 {
     LuaLabel* w = new LuaLabel(parent, x, y, width, height);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -71,6 +77,7 @@ LuaInput* LuaGui::input(LuaWidget* parent, int x, int y)
 {
     LuaInput* w = new LuaInput(parent, x, y);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -78,6 +85,7 @@ LuaButton* LuaGui::button(LuaWidget* parent, int x, int y, int width, int height
 {
     LuaButton* w = new LuaButton(parent, x, y, width, height);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -85,6 +93,7 @@ LuaVerticalList* LuaGui::verticalList(LuaWidget* parent, int x, int y, int width
 {
     LuaVerticalList* w = new LuaVerticalList(parent, x, y, width, height);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -92,6 +101,7 @@ LuaHorizontalList* LuaGui::horizontalList(LuaWidget* parent, int x, int y, int w
 {
     LuaHorizontalList* w = new LuaHorizontalList(parent, x, y, width, height);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -99,6 +109,7 @@ LuaSwitch* LuaGui::switchb(LuaWidget* parent, int x, int y)
 {
     LuaSwitch* w = new LuaSwitch(parent, x, y);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -106,6 +117,7 @@ LuaRadio* LuaGui::radio(LuaWidget* parent, int x, int y)
 {
     LuaRadio* w = new LuaRadio(parent, x, y);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -114,6 +126,7 @@ LuaCheckbox* LuaGui::checkbox(LuaWidget* parent, int x, int y)
 {
     LuaCheckbox* w = new LuaCheckbox(parent, x, y);
     widgets.push_back(w);
+    w->gui = this;
     return w;
 }
 
@@ -121,6 +134,7 @@ LuaWindow* LuaGui::window()
 {
     LuaWindow* win =  new LuaWindow();
     widgets.push_back(win);
+    win->gui = this;
     return win;
 }
 
@@ -138,4 +152,22 @@ void LuaGui::update()
     {
         mainWindow->update();
     }
+}
+
+std::string LuaGui::keyboard(std::string placeholder)
+{
+    gui::elements::Window win;
+    Keyboard key;
+
+    graphics::setScreenOrientation(graphics::LANDSCAPE);
+
+    while (!hardware::getHomeButton() && !key.quitting())
+    {
+        eventHandlerApp.update();
+        key.updateAll();
+    }
+
+    graphics::setScreenOrientation(graphics::PORTRAIT);
+
+    return key.getText();
 }

@@ -54,7 +54,8 @@ void setup()
         call.manifest = storage::Path("/sys_apps/root.json");
         call.path = storage::Path("/sys_apps/call.lua");
 
-        app::requestingApp = call;
+        app::requestingApp.app = call;
+        app::requestingApp.parameters = {};
         app::request = true;
     };
 

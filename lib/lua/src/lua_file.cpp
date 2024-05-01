@@ -77,7 +77,7 @@ void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
     }
 }
 
-void LuaFile::run()
+void LuaFile::run(std::vector<std::string> arg)
 {
     std::string errors = "";
 
@@ -205,7 +205,8 @@ void LuaFile::run()
                 "hlist", &LuaGui::horizontalList,
                 "checkbox", &LuaGui::checkbox,
                 "del", &LuaGui::del,
-                "setWindow", &LuaGui::setMainWindow
+                "setWindow", &LuaGui::setMainWindow,
+                "keyboard", &LuaGui::keyboard
             );
 
 
@@ -319,6 +320,31 @@ void LuaFile::run()
             lua.set("COLOR_WARNING", COLOR_WARNING);
             lua.set("COLOR_ERROR", COLOR_ERROR);
             lua.set("COLOR_GREY", COLOR_GREY);
+
+            lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
+                {
+                    app::AppRequest app = {app::getApp(name), arg};
+                    if(app.app.name.empty())
+                        return false;
+                    
+                    app::request = true;
+                    app::requestingApp = app;
+
+                    return true;
+                },
+                [&](std::string name)
+                {
+                    app::AppRequest app = {app::getApp(name), {}};
+                    if(app.app.name.empty())
+                        return false;
+                    
+                    app::request = true;
+                    app::requestingApp = app;
+
+                    return true;
+                }
+            )
+            );
         }
 
         if(perms.acces_time)
@@ -379,6 +405,7 @@ void LuaFile::run()
 
         try
         {
+            lua["arg"] = arg;
             lua.script(code, sol::script_throw_on_error);
             lua.script("run()", sol::script_throw_on_error);
 
@@ -395,9 +422,9 @@ void LuaFile::run()
             }
 
             // si la fonction quit est définie l'appeler avant de fermer l'app
-            /*if (lua["quit"].get<sol::function>()) {
+            if (lua["quit"].get<sol::function>()) {
                 lua.script("quit()", sol::script_throw_on_error);
-            }*/
+            }
         }
         catch (const sol::error& e)
         {

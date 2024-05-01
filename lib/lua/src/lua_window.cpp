@@ -9,7 +9,6 @@ LuaWindow::LuaWindow()
 }
 
 int LuaWindow::delete_LuaWindow(LuaWindow* window) {
-    std::cout << "delete_LuaWindow" << std::endl;
     delete window;
     return 0;
 }

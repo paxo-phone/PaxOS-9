@@ -22,15 +22,22 @@ namespace app
         bool auth;
     };
 
+    struct AppRequest
+    {
+        App app;
+        std::vector<std::string> parameters;
+    };
+
     extern std::vector<App> appList;
 
     extern bool request;
-    extern App requestingApp;
+    extern AppRequest requestingApp;
 
     void init();
+    App getApp(std::string appName);
     bool askPerm(App &app);
     void runApp(storage::Path path);
-    void runApp(App app);
+    void runApp(AppRequest app);
 };
 
 #include <launcher.hpp>
