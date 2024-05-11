@@ -1,6 +1,6 @@
 import os
 
-Import("env")
+import env
 
 run_actions = []
 copy_dependencies_actions = []
