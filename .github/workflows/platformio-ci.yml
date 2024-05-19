@@ -37,6 +37,17 @@ jobs:
 
           # We are unable to run tests on ESP32
 
+          - name: Move files into artifact directory
+            shell: bash
+            run: |
+              mkdir build
+              cp -r .pio/build/paxo-v5/firmware.bin build
+              cp -r .pio/build/paxo-v5/firmware.elf build
+              cp -r .pio/build/paxo-v5/firmware.map build
+              cp -r .pio/build/paxo-v5/bootloader.bin build
+              cp -r .pio/build/paxo-v5/partitions.bin build
+              cp -r storage build
+
           - name: Upload artifact
             uses: actions/upload-artifact@v4
             with:
@@ -80,16 +91,19 @@ jobs:
           - name: Run tests for Linux
             run: pio test -e linux --json-output-path linux-test-report.json --junit-output-path linux-test-report.xml
 
+          - name: Move files into artifact directory
+            shell: bash
+            run: |
+              mkdir build
+              cp -r .pio/build/linux/program build
+              cp -r storage build
+
           - name: Upload artifact
             uses: actions/upload-artifact@v4
             with:
               name: linux-build
               path: |
-                .pio/build/linux
-                !.pio/build/linux/lib*
-                !.pio/build/linux/src
-                !.pio/build/linux/idedata.json
-                storage
+                build
 
           - name: Upload test reports
             if: success() || failure()
@@ -132,16 +146,19 @@ jobs:
             - name: Run tests for macOS
               run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio test -e macos --json-output-path macos-test-report.json --junit-output-path macos-test-report.xml
 
+            - name: Move files into artifact directory
+              shell: bash
+              run: |
+                mkdir build
+                cp -r .pio/build/macos/program build
+                cp -r storage build
+
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
                 name: macos-build
                 path: |
-                  .pio/build/macos
-                  !.pio/build/macos/lib*
-                  !.pio/build/macos/src
-                  !.pio/build/macos/idedata.json
-                  storage
+                  build
 
             - name: Upload test reports
               if: success() || failure()
@@ -181,16 +198,20 @@ jobs:
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
+            - name: Move files into artifact directory
+              shell: bash
+              run: |
+                mkdir build
+                cp -r .pio/build/windows/program.exe build
+                cp -r .pio/build/windows/*.dll build
+                cp -r storage build
+
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
                 name: windows-build
                 path: |
-                  .pio/build/windows
-                  !.pio/build/windows/lib*
-                  !.pio/build/windows/src
-                  !.pio/build/windows/idedata.json
-                  storage
+                  build
 
             - name: Upload test reports
               if: success() || failure()
