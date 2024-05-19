@@ -92,6 +92,7 @@ jobs:
                 storage
 
           - name: Upload test reports
+            if: success() || failure()
             uses: actions/upload-artifact@v4
             with:
               name: linux-test-reports
@@ -143,6 +144,7 @@ jobs:
                   storage
 
             - name: Upload test reports
+              if: success() || failure()
               uses: actions/upload-artifact@v4
               with:
                 name: macos-test-reports
@@ -191,6 +193,7 @@ jobs:
                   storage
 
             - name: Upload test reports
+              if: success() || failure()
               uses: actions/upload-artifact@v4
               with:
                 name: windows-test-reports
