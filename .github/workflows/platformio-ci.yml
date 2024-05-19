@@ -1,4 +1,4 @@
-name: PlatformIO
+name: PlatformIO CI
 
 on:
   push:
