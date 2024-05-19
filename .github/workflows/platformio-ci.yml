@@ -129,7 +129,7 @@ jobs:
               run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio run -e macos
 
             - name: Run tests for macOS
-              run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio run -e macos --json-output-path macos-test-report.json --junit-output-path macos-test-report.xml
+              run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio test -e macos --json-output-path macos-test-report.json --junit-output-path macos-test-report.xml
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
