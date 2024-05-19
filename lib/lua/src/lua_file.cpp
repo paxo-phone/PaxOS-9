@@ -61,6 +61,7 @@ LuaFile::~LuaFile()
 }
 
 void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
+    //std::cout << "custom_allocator: " << nsize << std::endl;
     if (nsize == 0) {
         // Free the block
         if (ptr != NULL) {
@@ -324,6 +325,7 @@ void LuaFile::run(std::vector<std::string> arg)
             lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
                 {
                     app::AppRequest app = {app::getApp(name), arg};
+                    std::cout << "Arguments: " << arg.size() << std::endl;
                     if(app.app.name.empty())
                         return false;
                     
@@ -379,6 +381,7 @@ void LuaFile::run(std::vector<std::string> arg)
             luaGSM["editContact"] = &Contacts::editContact;
             luaGSM["getContact"] = &Contacts::getContact;
             luaGSM["getContactByNumber"] = &Contacts::getByNumber;
+            luaGSM["addContact"] = &Contacts::addContact;
 
             lua.new_usertype<Contacts::contact>("Contact",
                 "name", &Contacts::contact::name,
@@ -406,7 +409,9 @@ void LuaFile::run(std::vector<std::string> arg)
         try
         {
             lua["arg"] = arg;
-            lua.script(code, sol::script_throw_on_error);
+            if(arg.size())
+                std::cout << "ARGUMENTS!!" << arg[0] << std::endl;
+            lua.script(code, sol::script_throw_on_error);   code = "";
             lua.script("run()", sol::script_throw_on_error);
 
             while (!hardware::getHomeButton() && lua_gui.mainWindow != nullptr)
@@ -417,6 +422,8 @@ void LuaFile::run(std::vector<std::string> arg)
                 if (app::request)
                 {
                     app::request = false;
+                    /*for (auto item : lua_gui.widgets)
+                        item->widget->free();*/
                     app::runApp(app::requestingApp);
                 }
             }

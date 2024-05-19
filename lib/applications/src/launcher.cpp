@@ -35,6 +35,13 @@ int launcher()
     date->setFontSize(16);
     win.addChild(date);
 
+    Label *batt = new Label(269, 10, 40, 18);
+    batt->setText(std::to_string(GSM::getBatteryLevel()));    // hour
+    batt->setVerticalAlignment(Label::Alignement::CENTER);
+    batt->setHorizontalAlignment(Label::Alignement::CENTER);
+    batt->setFontSize(18);
+    win.addChild(batt);
+
     uint32_t evid = eventHandlerApp.setInterval(
         new Callback<>([&hour, &date]() { 
             static int min;

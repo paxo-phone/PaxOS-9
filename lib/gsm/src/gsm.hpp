@@ -77,6 +77,7 @@ namespace GSM
     extern std::vector<Message> pendingMessages;    // messages pending
     extern State state;
     extern uint16_t seconds, minutes, hours, days, months, years;
+    extern float voltage;
 
     void init();
     void reInit();
@@ -91,7 +92,7 @@ namespace GSM
     void endCall();
     void acceptCall();
     void rejectCall();
-    float getVoltage();
+    int getBatteryLevel();
     void getHour();
 };
 

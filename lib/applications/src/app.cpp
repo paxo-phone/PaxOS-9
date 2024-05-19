@@ -88,7 +88,7 @@ namespace app
                 {
                     std::cout << "Succes: running app" << std::endl;
                     LuaFile luaApp(path, app.manifest);
-                    luaApp.run({"test et test"});
+                    luaApp.run();
                 }
                 else
                 {
@@ -111,6 +111,6 @@ namespace app
     void runApp(AppRequest app)
     {
         LuaFile luaApp(app.app.path, app.app.manifest);
-        luaApp.run();
+        luaApp.run(app.parameters);
     }
 };

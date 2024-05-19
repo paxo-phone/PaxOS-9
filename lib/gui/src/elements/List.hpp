@@ -17,7 +17,12 @@ namespace gui::elements
 
         void setSpaceLine(uint16_t y);
 
+        void updateFocusedIndex();
+        void onScrollUp();
+        void onScrollDown();
+
     private:
+        int16_t m_focusedIndex = 0;
         uint16_t m_lineSpace = 0;
     };
 

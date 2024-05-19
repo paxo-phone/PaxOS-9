@@ -186,6 +186,16 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 #endif
 }
 
+void graphics::setWindow(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+{
+    lcd.get()->setWindow(x, y, width, height);
+}
+
+void graphics::setWindow()
+{
+    lcd.get()->setWindow(0, 0, getScreenWidth(), getScreenHeight());
+}
+
 void graphics::flip()
 {
     // lcd->display();

@@ -27,13 +27,13 @@ namespace gui
         void setWidth(uint16_t width);
         void setHeight(uint16_t height);
 
-        uint16_t getX() const;
-        uint16_t getY() const;
+        int16_t getX() const;
+        int16_t getY() const;
         uint16_t getWidth() const;
         uint16_t getHeight() const;
 
-        uint16_t getAbsoluteX() const;
-        uint16_t getAbsoluteY() const;
+        int16_t getAbsoluteX() const;
+        int16_t getAbsoluteY() const;
 
         void setBackgroundColor(color_t color);
         void setBorderColor(color_t color);
@@ -67,6 +67,7 @@ namespace gui
 
         void enable();
         void disable();
+        void free();    // free the buffers in the ram to allow more windows to work at the same time
 
         /**
          * \brief Get the highest parent widget in the hierachy
@@ -80,9 +81,9 @@ namespace gui
         std::vector<ElementBase *> m_children;
         static int16_t touchX, touchY;
 
+        uint16_t m_x, m_y;
     protected:
         // variables générales
-        uint16_t m_x, m_y;
         uint16_t m_width, m_height;
 
         color_t m_backgroundColor;
@@ -95,9 +96,10 @@ namespace gui
         // variables sur les mouvements
         bool m_verticalScrollEnabled;
         bool m_horizontalScrollEnabled;
+        static bool scrolling;
 
-        uint16_t m_verticalScroll;
-        uint16_t m_horizontalScroll;
+        int16_t m_verticalScroll = 0;
+        int16_t m_horizontalScroll = 0;
 
         // variables de rendu
         bool m_isEnabled;
@@ -126,6 +128,11 @@ namespace gui
         void getLastTouchPosAbs(int16_t* x, int16_t* y) const;
         void getLastTouchPosRel(int16_t* x, int16_t* y) const;
 
+        virtual void onScrollUp() {};
+        virtual void onScrollDown() {};
+        virtual void onScrollLeft() {};
+        virtual void onScrollRight() {};
+
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
         std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr
     protected:
@@ -134,6 +141,7 @@ namespace gui
         void setParentNotRendered();
         void setParentNotDrawn();
         void setChildrenDrawn();
+        void setChildrenNotDrawn();
     };
 }
 

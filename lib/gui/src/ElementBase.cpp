@@ -12,6 +12,7 @@ gui::ElementBase *gui::ElementBase::masterOfRender = nullptr;
 gui::ElementBase *gui::ElementBase::mainWindow = nullptr;
 int16_t gui::ElementBase::touchX, gui::ElementBase::touchY = -1;
 int16_t gui::ElementBase::originTouchX, gui::ElementBase::originTouchY = -1;
+bool gui::ElementBase::scrolling = false;
 
 gui::ElementBase::ElementBase() : m_x(0), m_y(0),
                                   m_width(0), m_height(0),
@@ -85,7 +86,7 @@ void gui::ElementBase::renderAll()
         {
             // push le buffer local vers le buffer du parent
             // TODO : Change position
-            m_parent->m_surface->pushSurface(m_surface.get(), m_x, m_y);
+            m_parent->m_surface->pushSurface(m_surface.get(), getX(), getY());
         }
         else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
@@ -93,7 +94,9 @@ void gui::ElementBase::renderAll()
 
             // push le buffer local vers l'écran
             // TODO : Change position
+            graphics::setWindow(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
             graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
+            graphics::setWindow();
             setChildrenDrawn();
         }
     }
@@ -152,6 +155,7 @@ bool gui::ElementBase::update()
             if (m_widgetPressed == nullptr && m_pressedState == PressedState::NOT_PRESSED) // l'objet est touché pour la première fois
             {
                 m_widgetPressed = this;
+
                 m_pressedState = PressedState::PRESSED;
 
                 originTouchX = touchX; // sauvegarder les coordonnées du premier point (pour le scroll)
@@ -170,16 +174,48 @@ bool gui::ElementBase::update()
         }
 
         // scroll
-        if (abs(originTouchX - touchX) > 5) // todo: ajout d'une constante de seuil
-        {
-            m_pressedState = PressedState::NOT_PRESSED;
-            return true;
-        }
 
-        if (abs(originTouchY - touchY) > 5)
+        if(abs(m_lastTouchX - touchX) > 5 || abs(m_lastTouchY - touchY) > 5)
         {
-            m_pressedState = PressedState::NOT_PRESSED;
-            return true;
+            /*std::cout << "Scroll: " << m_verticalScrollEnabled << std::endl;
+                    std::cout << "-: " << getHeight() << std::endl;*/
+            if(m_verticalScrollEnabled)
+            {
+                if (abs(m_lastTouchX - touchX) > 5) // todo: ajout d'une constante de seuil
+                {
+                    m_pressedState = PressedState::SLIDED;
+                    if(originTouchX < touchX)
+                        onScrollRight();
+                    else
+                        onScrollLeft();
+                }
+
+                if (abs(m_lastTouchY - touchY) > 5)
+                {
+                    //std::cout << "onScroll: " << m_verticalScroll << std::endl;
+                    m_pressedState = PressedState::SLIDED;
+                    if(m_lastTouchY < touchY)
+                        onScrollUp();
+                    else
+                        onScrollDown();
+                }
+
+                m_lastTouchX = touchX;
+                m_lastTouchY = touchY;
+                return true;
+            }
+            else
+            {
+                m_pressedState = PressedState::NOT_PRESSED;
+                if(m_parent != nullptr)
+                {
+                    m_widgetPressed = m_parent;
+                    m_parent->m_pressedState = PressedState::SLIDED;
+                    /*std::cout << "parent is now " << std::endl;*/
+                }
+                
+                return true;
+            }
         }
     }
     else
@@ -226,7 +262,7 @@ void gui::ElementBase::setHeight(uint16_t height)
     globalGraphicalUpdate();
 }
 
-uint16_t gui::ElementBase::getAbsoluteX() const
+int16_t gui::ElementBase::getAbsoluteX() const
 {
     if (m_parent == nullptr)
         return getX();
@@ -234,7 +270,7 @@ uint16_t gui::ElementBase::getAbsoluteX() const
     return m_parent->getAbsoluteX() + getX();
 }
 
-uint16_t gui::ElementBase::getAbsoluteY() const
+int16_t gui::ElementBase::getAbsoluteY() const
 {
     if (m_parent == nullptr)
         return getY();
@@ -242,13 +278,17 @@ uint16_t gui::ElementBase::getAbsoluteY() const
     return m_parent->getAbsoluteY() + getY();
 }
 
-uint16_t gui::ElementBase::getX() const
+int16_t gui::ElementBase::getX() const
 {
-    return m_x;
+    return (int) m_x/* + (m_parent!=nullptr)?(m_parent->m_horizontalScroll):(0)*/;
 }
 
-uint16_t gui::ElementBase::getY() const
+int16_t gui::ElementBase::getY() const
 {
+    if(m_parent!=nullptr)
+    {
+        return m_y - m_parent->m_verticalScroll;
+    }
     return m_y;
 }
 
@@ -421,6 +461,17 @@ void gui::ElementBase::setChildrenDrawn()
     }
 }
 
+void gui::ElementBase::setChildrenNotDrawn()
+{
+    m_isDrawn = false;
+
+    for (int i = 0; i < m_children.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
+    {
+        if (m_children[i] != nullptr)
+            m_children[i]->m_isDrawn = false;
+    }
+}
+
 /**
  * "Returns" the <b>absolute</b> last touched position.
  * @param x The pointer to assign the x value to.
@@ -445,4 +496,13 @@ void gui::ElementBase::getLastTouchPosRel(int16_t* x, int16_t* y) const
 {
     *x = m_lastTouchX - getAbsoluteX();
     *y = m_lastTouchY - getAbsoluteY();
+}
+
+void gui::ElementBase::free()
+{
+    m_surface.reset();
+    /*for (auto child : m_children)
+    {
+        child->free();
+    }*/
 }
