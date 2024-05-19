@@ -53,11 +53,7 @@ jobs:
             with:
               name: paxo-v5-build
               path: |
-                .pio/build/paxo-v5
-                !.pio/build/paxo-v5/lib*
-                !.pio/build/paxo-v5/src
-                !.pio/build/paxo-v5/idedata.json
-                storage
+                build
 
     linux_build_test_upload:
         runs-on: ubuntu-latest
