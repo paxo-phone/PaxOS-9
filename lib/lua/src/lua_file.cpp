@@ -250,6 +250,9 @@ void LuaFile::run()
                 "drawPolygon", &LuaCanvas::drawPolygon,
                 "fillPolygon", &LuaCanvas::fillPolygon,
                 "drawLine", &LuaCanvas::drawLine,
+                "drawText", &LuaCanvas::drawText,
+                "drawTextCentered", &LuaCanvas::drawTextCentered,
+                "drawTextCenteredInBounds", &LuaCanvas::drawTextCenteredInRect,
                 "getTouch", &LuaCanvas::getTouch,
                 "onTouch", &LuaCanvas::onTouch,
                 sol::base_classes, sol::bases<LuaWidget>());
@@ -319,6 +322,8 @@ void LuaFile::run()
             lua.set("COLOR_WARNING", COLOR_WARNING);
             lua.set("COLOR_ERROR", COLOR_ERROR);
             lua.set("COLOR_GREY", COLOR_GREY);
+
+            lua.set("AUTO", -1);
         }
 
         if(perms.acces_time)
