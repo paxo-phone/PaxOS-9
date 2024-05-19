@@ -9,7 +9,7 @@ on:
         - main
 
 jobs:
-    espBuild:
+    paxo_v5_build_test_upload:
         runs-on: ubuntu-latest
 
         steps:
@@ -48,7 +48,7 @@ jobs:
                 !.pio/build/paxo-v5/idedata.json
                 storage
 
-    linuxBuild:
+    linux_build_test_upload:
         runs-on: ubuntu-latest
 
         steps:
@@ -99,7 +99,7 @@ jobs:
                 linux-test-report.json
                 linux-test-report.xml
 
-    macOSBuild:
+    macos_build_test_upload:
         runs-on: macos-latest
 
         steps:
@@ -150,7 +150,7 @@ jobs:
                   macos-test-report.json
                   macos-test-report.xml
 
-    windowsBuild:
+    windows_build_test_upload:
         runs-on: windows-latest
 
         steps:
