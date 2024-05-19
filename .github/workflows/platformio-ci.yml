@@ -1,0 +1,199 @@
+name: PlatformIO
+
+on:
+  push:
+    branches: 
+        - main
+  pull_request:
+    branches:
+        - main
+
+jobs:
+    espBuild:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v3
+
+          - name: Cache dependencies
+            uses: actions/cache@v3
+            with:
+              path: |
+                ~/.cache/pip
+                ~/.platformio/.cache
+              key: ${{ runner.os }}-pio
+
+          - name: Setup Python
+            uses: actions/setup-python@v4
+            with:
+              python-version: '3.11'
+
+          - name: Install PlatformIO Core
+            run: pip install --upgrade platformio
+
+          - name: Build PlatformIO Project for Paxo ESP32
+            run: pio run -e paxo-v5
+
+          # We are unable to run tests on ESP32
+
+          - name: Upload artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: paxo-v5-build
+              path: |
+                .pio/build/paxo-v5
+                !.pio/build/paxo-v5/lib*
+                !.pio/build/paxo-v5/src
+                !.pio/build/paxo-v5/idedata.json
+                storage
+
+    linuxBuild:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v3
+
+          - name: Cache dependencies
+            uses: actions/cache@v3
+            with:
+              path: |
+                ~/.cache/pip
+                ~/.platformio/.cache
+              key: ${{ runner.os }}-pio
+
+          - name: Setup Python
+            uses: actions/setup-python@v4
+            with:
+              python-version: '3.11'
+
+          - name: Install PlatformIO Core
+            run: pip install --upgrade platformio
+
+          - name: Install SDL2
+            run: sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse" && sudo apt-get update -y -qq && sudo apt-get install libsdl2-dev
+
+          - name: Build PlatformIO Project for Linux
+            run: pio run -e linux
+
+          - name: Run tests for Linux
+            run: pio test -e linux --json-output-path linux-test-report.json --junit-output-path linux-test-report.xml
+
+          - name: Upload artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: linux-build
+              path: |
+                .pio/build/linux
+                !.pio/build/linux/lib*
+                !.pio/build/linux/src
+                !.pio/build/linux/idedata.json
+                storage
+
+          - name: Upload test reports
+            uses: actions/upload-artifact@v4
+            with:
+              name: linux-test-reports
+              path: |
+                linux-test-report.json
+                linux-test-report.xml
+
+    macOSBuild:
+        runs-on: macos-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                path: |
+                  ~/.cache/pip
+                  ~/.platformio/.cache
+                key: ${{ runner.os }}-pio
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install PlatformIO Core
+              run: pip install --upgrade platformio
+
+            - name: Install SDL2
+              run: brew install SDL2
+
+            - name: Build PlatformIO Project for macOS
+              run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio run -e macos
+
+            - name: Run tests for macOS
+              run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio run -e macos --json-output-path macos-test-report.json --junit-output-path macos-test-report.xml
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: macos-build
+                path: |
+                  .pio/build/macos
+                  !.pio/build/macos/lib*
+                  !.pio/build/macos/src
+                  !.pio/build/macos/idedata.json
+                  storage
+
+            - name: Upload test reports
+              uses: actions/upload-artifact@v4
+              with:
+                name: macos-test-reports
+                path: |
+                  macos-test-report.json
+                  macos-test-report.xml
+
+    windowsBuild:
+        runs-on: windows-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                path: |
+                  ~/.cache/pip
+                  ~/.platformio/.cache
+                key: ${{ runner.os }}-pio
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install PlatformIO Core
+              run: pip install --upgrade platformio
+
+            - name: Build PlatformIO Project for Windows
+              run: pio run -e windows
+
+            - name: Run tests for Windows
+              run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: windows-build
+                path: |
+                  .pio/build/windows
+                  !.pio/build/windows/lib*
+                  !.pio/build/windows/src
+                  !.pio/build/windows/idedata.json
+                  storage
+
+            - name: Upload test reports
+              uses: actions/upload-artifact@v4
+              with:
+                name: windows-test-reports
+                path: |
+                  windows-test-report.json
+                  windows-test-report.xml
