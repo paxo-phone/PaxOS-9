@@ -30,86 +30,51 @@ namespace network {
         }
 
         this->state = State::Running;
+        if (this->curlHandle == nullptr)
+        {
+            this->state = State::Cancelled;
+            return;
+        }
+        switch (this->request.method)
+        {
+            case URLRequest::HTTPMethod::GET:
+                curl_easy_setopt(this->curlHandle, CURLOPT_HTTPGET, 1L);
+                break;
+            case URLRequest::HTTPMethod::POST:
+                curl_easy_setopt(this->curlHandle, CURLOPT_POSTFIELDSIZE, this->request.httpBody.length());
+                curl_easy_setopt(this->curlHandle, CURLOPT_POSTFIELDS, this->request.httpBody.c_str());
+                break;
+            default:
+                throw std::runtime_error("Unsupported HTTP method");
+        }
+        curl_easy_setopt(this->curlHandle, CURLOPT_URL, this->request.url.absoluteString.c_str());
+        curl_easy_setopt(this->curlHandle, CURLOPT_WRITEFUNCTION, this->WriteCallback);
+        curl_easy_setopt(this->curlHandle, CURLOPT_WRITEDATA, &this->responseData);
+        curl_easy_setopt(this->curlHandle, CURLOPT_TIMEOUT_MS, this->request.timeoutInterval);
 
-        #ifdef ESP32
-            this->httpClient.begin(this->request.url.absoluteString.c_str());
-            this->httpClient.setTimeout(this->request.timeoutInterval);
-            
-            for (const std::pair<const std::string, std::string>& header : this->request.httpHeaderFields)
-            {
-                this->httpClient.addHeader(header.first.c_str(), header.second.c_str());
-            }
+        struct progress_s data = {this, 0}; /* pass struct to callback  */
 
-            int httpCode;
+        curl_easy_setopt(this->curlHandle, CURLOPT_XFERINFODATA, &data);
+        curl_easy_setopt(this->curlHandle, CURLOPT_XFERINFOFUNCTION, this->progress_callback);
 
-            switch (this->request.method)
-            {
-                case URLRequest::HTTPMethod::GET:
-                    httpCode = this->httpClient.GET();
-                    break;
-                case URLRequest::HTTPMethod::POST:
-                    httpCode = this->httpClient.POST(this->request.httpBody.c_str());
-                    break;
-                default:
-                    throw std::runtime_error("Unsupported HTTP method");
-            }
+        curl_easy_setopt(this->curlHandle, CURLOPT_NOPROGRESS, 0L);
 
-            if (httpCode == HTTP_CODE_OK) 
-            {
-                std::string payload = this->httpClient.getString().c_str();
-                this->responseData = payload;
-            } 
+        // set http headers
+        struct curl_slist* headers = nullptr;
+        for (const std::pair<const std::string, std::string>& header : this->request.httpHeaderFields)
+        {
+            headers = curl_slist_append(headers, (header.first + ": " + header.second).c_str());
+        }
+        curl_easy_setopt(this->curlHandle, CURLOPT_HTTPHEADER, headers);
 
-            this->httpClient.end();
-            this->state = State::Completed;
+        CURLcode res = curl_easy_perform(this->curlHandle);
 
-        #else
-            if (this->curlHandle == nullptr)
-            {
-                this->state = State::Cancelled;
-                return;
-            }
-            switch (this->request.method)
-            {
-                case URLRequest::HTTPMethod::GET:
-                    curl_easy_setopt(this->curlHandle, CURLOPT_HTTPGET, 1L);
-                    break;
-                case URLRequest::HTTPMethod::POST:
-                    curl_easy_setopt(this->curlHandle, CURLOPT_POSTFIELDSIZE, this->request.httpBody.length());
-                    curl_easy_setopt(this->curlHandle, CURLOPT_POSTFIELDS, this->request.httpBody.c_str());
-                    break;
-                default:
-                    throw std::runtime_error("Unsupported HTTP method");
-            }
-            curl_easy_setopt(this->curlHandle, CURLOPT_URL, this->request.url.absoluteString.c_str());
-            curl_easy_setopt(this->curlHandle, CURLOPT_WRITEFUNCTION, this->WriteCallback);
-            curl_easy_setopt(this->curlHandle, CURLOPT_WRITEDATA, &this->responseData);
-            curl_easy_setopt(this->curlHandle, CURLOPT_TIMEOUT_MS, this->request.timeoutInterval);
+        if (res != CURLE_OK) 
+        {
+            std::cerr << "cURL error: " << curl_easy_strerror(res) << std::endl;
+        }
 
-            struct progress_s data = {this, 0}; /* pass struct to callback  */
-
-            curl_easy_setopt(this->curlHandle, CURLOPT_XFERINFODATA, &data);
-            curl_easy_setopt(this->curlHandle, CURLOPT_XFERINFOFUNCTION, this->progress_callback);
-
-            curl_easy_setopt(this->curlHandle, CURLOPT_NOPROGRESS, 0L);
-
-            // set http headers
-            struct curl_slist* headers = nullptr;
-            for (const std::pair<const std::string, std::string>& header : this->request.httpHeaderFields)
-            {
-                headers = curl_slist_append(headers, (header.first + ": " + header.second).c_str());
-            }
-            curl_easy_setopt(this->curlHandle, CURLOPT_HTTPHEADER, headers);
-
-            CURLcode res = curl_easy_perform(this->curlHandle);
-
-            if (res != CURLE_OK) 
-            {
-                std::cerr << "cURL error: " << curl_easy_strerror(res) << std::endl;
-            }
-
-            this->state = State::Completed;
-        #endif
+        this->state = State::Completed;
 
         this->completionHandler(this->responseData);
     }
@@ -117,11 +82,7 @@ namespace network {
     void URLSessionDataTask::cancel() {
         if (this->state == State::Running)
         {
-            #ifdef ESP32
-                this->httpClient.end();
-            #else
-                curl_easy_cleanup(this->curlHandle);
-            #endif
+            curl_easy_cleanup(this->curlHandle);
         }
         this->state = State::Cancelled;
     }
@@ -129,17 +90,11 @@ namespace network {
     void URLSessionDataTask::pause() { // not working right now
         if (this->state == State::Running)
         {
-            #ifdef ESP32
-                this->httpClient.end(); // has to be replaced by something that pause the task and doesn't cancels it
-                this->state = State::Cancelled;
-            #else
-                curl_easy_pause(this->curlHandle, CURLPAUSE_ALL);
-                this->state = State::Paused;
-            #endif
+            curl_easy_pause(this->curlHandle, CURLPAUSE_ALL);
+            this->state = State::Paused;
         }
     }
 
-    #if !defined(ESP32)
     size_t URLSessionDataTask::WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output)
     {
         size_t total_size = size * nmemb;
@@ -183,5 +138,4 @@ namespace network {
         }                
         return 0; /* all is good */
     }
-    #endif
 }

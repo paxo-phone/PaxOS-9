@@ -6,12 +6,9 @@
 #include "CompletionHandler.hpp"
 #include "ProgressHandler.hpp"
 
-#ifdef ESP32
-    #include <HTTPClient.h>
-#else
-    #include <iostream>
-    #include <curl/curl.h>
-#endif
+#include <iostream>
+#include <curl/curl.h>
+
 
 namespace network {
     class URLSessionDataTask : public URLSessionTask {
@@ -38,9 +35,6 @@ namespace network {
 
             double uploadProgress = 0;
         private:
-            #if ESP32
-            HTTPClient httpClient;
-            #else
             CURL* curlHandle;
 
             static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output);
@@ -51,7 +45,6 @@ namespace network {
             };
             
             static size_t progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
-            #endif
     };
 }
 

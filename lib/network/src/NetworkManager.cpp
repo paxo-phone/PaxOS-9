@@ -2,10 +2,9 @@
 
 #ifdef ESP32
     #include <WiFi.h>
-#else
-    #include <iostream>
-    #include <curl/curl.h>
 #endif
+#include <iostream>
+#include <curl/curl.h>
 
 namespace network
 {
@@ -15,9 +14,8 @@ namespace network
     {
         #ifdef ESP32
             this->turnON();
-        #else
-            curl_global_init(CURL_GLOBAL_ALL);
         #endif
+        curl_global_init(CURL_GLOBAL_ALL);
     }
 
     const void NetworkManager::connect(const std::string& ssid)
@@ -58,16 +56,17 @@ namespace network
     const bool NetworkManager::isConnected()
     {
         #ifdef ESP32
-            return WiFi.status() == WL_CONNECTED;
-        #else
-            int pingExitCode = system("ping -c1 -s1 8.8.8.8 > /dev/null 2>&1"); // ping Google's DNS server and return the exit code
-            if (pingExitCode == 0)
-            {
-                return true;
-            } else
-            {
+            if (WiFi.status() != WL_CONNECTED)
                 return false;
-            }
         #endif
+        /*
+        int pingExitCode = system("ping -c1 -s1 8.8.8.8 > /dev/null 2>&1"); // ping Google's DNS server and return the exit code
+        if (pingExitCode == 0)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }*/
     }
 }
