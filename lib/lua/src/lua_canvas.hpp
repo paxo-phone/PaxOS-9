@@ -40,6 +40,12 @@ class LuaCanvas : public LuaWidget
     
     void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color) { widget->drawLine(x1, y1, x2, y2, color); }
 
+    void drawText(int16_t x, int16_t y, std::string text, color_t color) { widget->drawText(x, y, text, color); }
+
+    // w and h are the width and height of the text bounding box
+    void drawTextCentered(int16_t x, int16_t y, std::string text, color_t color, bool horizontallyCentered, bool verticallyCentered) { widget->drawTextCentered(x, y, text, color, horizontallyCentered, verticallyCentered); }
+    void drawTextCenteredInRect(int16_t x, int16_t y, uint16_t w, uint16_t h, std::string text, color_t color, bool horizontallyCentered, bool verticallyCentered) { widget->drawTextCenteredInRect(x, y, w, h, text, color, horizontallyCentered, verticallyCentered); }
+
     void onTouch(sol::function function) { this->onTouchFunc = function; }
 
     sol::table getTouch();

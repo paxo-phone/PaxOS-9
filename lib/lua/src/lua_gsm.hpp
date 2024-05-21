@@ -2,6 +2,7 @@
 #define GSM_LUA_MODULE
 
 #include <string>
+#include <cstdint>
 
 namespace LuaGSM
 {

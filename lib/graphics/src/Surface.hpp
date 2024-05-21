@@ -13,6 +13,7 @@
 #include "Image.hpp"
 #include "fonts.hpp"
 #include "color.hpp"
+#include <optional>
 
 namespace graphics
 {
@@ -73,8 +74,10 @@ namespace graphics
         void setTextColor(const color_t textColor);
         uint16_t getTextWidth(std::string text);
         uint16_t getTextHeight() const;
-        void drawText(std::string &text, int16_t x, int16_t y);
-        void drawTextCentered(std::string &text, int16_t x, int16_t y, uint16_t w = -1);
+        void drawText(std::string &otext, int16_t x, int16_t y, std::optional<color_t> color = std::nullopt);
+
+        // w and h are the width and height of the bounding box where the text will be centered
+        void drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w = -1, const uint16_t h = -1, const bool horizontallyCentered = true, const bool verticallyCentered = true, const std::optional<color_t> color = std::nullopt);
 
         void blur(uint8_t radius);
     };
