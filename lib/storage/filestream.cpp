@@ -9,10 +9,9 @@ namespace storage
     FileStream::FileStream() {}
 
     FileStream::FileStream(const std::string &path,
-                           Mode mode,
-                           bool erase)
+                           Mode mode)
     {
-        this->open(path, mode, erase);
+        this->open(path, mode);
     }
 
     FileStream::~FileStream()
@@ -21,24 +20,14 @@ namespace storage
     }
 
     void FileStream::open(const std::string &path,
-                          Mode mode,
-                          bool erase)
+                          Mode mode)
     {
         if (mode == READ)
-        {
             m_stream.open(path, std::ios::in | std::ios::binary);
-        }
-        else
-        { // if ( mode == WRITE )
-            if (erase)
-            {
+        else if(mode == WRITE)
                 m_stream.open(path, std::ios::out | std::ios::binary);
-            }
-            else
-            {
+        else if(mode == APPEND)
                 m_stream.open(path, std::ios::app | std::ios::binary);
-            }
-        }
     }
 
     void FileStream::close(void)

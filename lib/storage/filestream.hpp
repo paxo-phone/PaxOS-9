@@ -26,14 +26,12 @@ namespace storage
         FileStream();
 
         FileStream(const std::string &path,
-                   Mode mode,
-                   bool erase = false);
+                   Mode mode);
 
         ~FileStream();
 
         void open(const std::string &path,
-                  Mode mode,
-                  bool erase = false);
+                  Mode mode);
 
         void close(void);
 

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-LuaStorageFile::LuaStorageFile(storage::Path filename, bool mode)
+LuaStorageFile::LuaStorageFile(storage::Path filename, uint8_t mode)
 {
     std::cout << filename.str() << std::endl;
     this->filename = filename;
@@ -11,7 +11,12 @@ LuaStorageFile::LuaStorageFile(storage::Path filename, bool mode)
 
 void LuaStorageFile::open()
 {
-    file.open(filename.str(), (mode)?(storage::WRITE):(storage::READ));
+    if(mode == 0)
+        file.open(filename.str(), storage::READ);
+    else if(mode == 1)
+        file.open(filename.str(), storage::WRITE);
+    else if(mode == 2)
+        file.open(filename.str(), storage::APPEND);
 }
 
 void LuaStorageFile::close()

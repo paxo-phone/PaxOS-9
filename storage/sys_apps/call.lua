@@ -30,7 +30,7 @@ function callPage()
 
     hangOnB=gui:button(win2, 35, 394, 250, 38)
     hangOnB:setText("Raccrocher")
-    hangOnB:onClick(function() gsm:endCall() end)
+    --hangOnB:onClick(function() gsm:endCall() end)
 
     gui:setWindow(win2)
 end

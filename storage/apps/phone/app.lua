@@ -35,7 +35,7 @@ function callPage()
 
     hangOnB=gui:button(win2, 35, 394, 250, 38)
     hangOnB:setText("Raccrocher")
-    hangOnB:onClick(function() gsm:endCall() if(#arg == 1) then gui:setWindow(nil) end end)
+    --hangOnB:onClick(function() gsm:endCall() if(#arg == 1) then gui:setWindow(nil) end end)
     
     time:setTimeout(checkHangOn, 5000)
 

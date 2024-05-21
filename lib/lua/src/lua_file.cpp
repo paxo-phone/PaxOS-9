@@ -142,7 +142,7 @@ void LuaFile::run(std::vector<std::string> arg)
             );
 
             lua.new_usertype<LuaStorage>("storage",
-                "file", &LuaStorage::file,
+                "file", &LuaStorage::file,  // return a (new LuaStorageFile)
                 "mkdir", &LuaStorage::newDir,
                 "mvFile", &LuaStorage::renameFile,
                 "mvDir", &LuaStorage::renameDir,
@@ -152,6 +152,10 @@ void LuaFile::run(std::vector<std::string> arg)
                 "isFile", &LuaStorage::isFile,
                 "listDir", &LuaStorage::listDir
             );
+
+            lua.set("READ", 0);
+            lua.set("APPEND", 2);
+            lua.set("WRITE", 1);
             
             auto json_ud = lua.new_usertype<LuaJson>("Json",
                 "new", sol::constructors<LuaJson(std::string)>(),
