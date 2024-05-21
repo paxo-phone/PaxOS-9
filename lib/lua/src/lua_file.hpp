@@ -58,7 +58,7 @@ class LuaFile
     LuaFile(storage::Path filename, storage::Path manifest);
     ~LuaFile();
 
-    void run();
+    void run(std::vector<std::string> arg = {});
 
     Permissions perms;
     storage::Path directory;

@@ -5,6 +5,8 @@
 #include "SOL2/sol.hpp"
 #include "SOL2/sol_helper.hpp"
 
+class LuaGui;
+
 class LuaWidget
 {
     public:
@@ -36,6 +38,8 @@ class LuaWidget
     gui::ElementBase* widget = nullptr;
     LuaWidget* parent = nullptr;
     std::vector<LuaWidget*> children;
+
+    LuaGui* gui = nullptr;
     
     private:
     virtual void addChild(LuaWidget* child)
@@ -43,6 +47,8 @@ class LuaWidget
         this->children.push_back(child); child->parent = this;
         this->widget->addChild(child->widget);
     }
+
+    static LuaWidget* rootOfDelete;
 
     sol::function onClickFunc;
     sol::function onScrollUpFunc;

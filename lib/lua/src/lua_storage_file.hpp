@@ -3,11 +3,13 @@
 
 #include <path.hpp>
 #include <filestream.hpp>
+#include <SOL2/sol.hpp>
 
 class LuaStorageFile
 {
     public:
-    LuaStorageFile(storage::Path filename, bool mode = false);
+    LuaStorageFile(storage::Path filename, uint8_t mode = 0);
+    ~LuaStorageFile(){std::cout << "LuaStorageFile destruct" << std::endl;}
 
     void open();
     void close();
@@ -17,7 +19,7 @@ class LuaStorageFile
     std::string readAll();
 
     private:
-    bool mode;  // false->read;   true->write;
+    uint8_t mode;  // false->read;   true->write;
     storage::Path filename;
     storage::FileStream file;
 };

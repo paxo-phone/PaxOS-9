@@ -1,4 +1,7 @@
 #include "lua_widget.hpp"
+#include "lua_gui.hpp"
+
+LuaWidget* LuaWidget::rootOfDelete = nullptr;
 
 void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 {
@@ -8,22 +11,58 @@ void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 
 LuaWidget::~LuaWidget()
 {
+    if(this->widget == nullptr)
+        return;
+    
+    if(rootOfDelete == nullptr)
+        rootOfDelete = this;
+
     for (LuaWidget* child : children)
     {
         delete child;
     }
 
-    if (this->widget->getParent() == nullptr)
+    if(rootOfDelete == this && this->parent != nullptr)
+    {
+        LuaWidget* widget = this;
+        gui::ElementBase* reWidget = widget->widget;
+
+        LuaWidget* parent = this->parent;
+        gui::ElementBase* reParent = parent->widget;
+        
+        parent->children.erase(std::remove_if(parent->children.begin(), parent->children.end(), // remove from abstract parent this
+                [&](LuaWidget* obj) {
+                    return obj == widget;
+                }
+            ), parent->children.end());
+
+        reParent->m_children.erase(std::remove_if(reParent->m_children.begin(), reParent->m_children.end(),   // remove from real parent the real widget
+                [&](gui::ElementBase* obj) {
+                    return obj == reWidget;
+                }
+            ), reParent->m_children.end());
+    }
+
+    gui->widgets.erase(std::remove_if(gui->widgets.begin(), gui->widgets.end(), // remove from abstract parent this
+                [&](LuaWidget* obj) {
+                    return obj == this;
+                }
+            ), gui->widgets.end());
+    
+    if(rootOfDelete == this)
     {
         delete this->widget;
-        this->widget = nullptr;
+        rootOfDelete = nullptr;
     }
+        this->widget = nullptr;
 }
 
 void LuaWidget::update()
 {
     if(this->widget->getParent() == nullptr)
+    {
         this->widget->updateAll();
+    }
 
     specificUpdate();
 

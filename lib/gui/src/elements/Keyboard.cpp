@@ -33,8 +33,8 @@ constexpr uint8_t CAPS_LOCK = 2;
 namespace gui::elements {
     Keyboard::Keyboard()
     {
-        m_width = graphics::getScreenWidth();
-        m_height = graphics::getScreenHeight();
+        m_width = graphics::getScreenHeight();
+        m_height = graphics::getScreenWidth();
 
         m_x = 0;
         m_y = 0;
@@ -311,7 +311,7 @@ namespace gui::elements {
             return;
         case KEY_EXIT:
             std::cout << "KEYBOARD EXIT" << std::endl;
-
+            quit = true;
             return;
         case KEY_SPACE:
             m_buffer += " ";

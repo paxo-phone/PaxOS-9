@@ -65,11 +65,6 @@ namespace gui::elements
                 m_label->setTextColor(COLOR_WHITE-1);
                 m_label->setBackgroundColor(COLOR_DARK);
             }
-            
-            std::cout << "x: " << m_label->getX() << std::endl;
-            std::cout << "y: " << m_label->getY() << std::endl;
-            std::cout << "w: " << m_label->getWidth() << std::endl;
-            std::cout << "h: " << m_label->getHeight() << std::endl;
         }
 
         if(m_theme)

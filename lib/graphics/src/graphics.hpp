@@ -43,6 +43,8 @@ namespace graphics
     bool isRunning();
 
     void showSurface(const Surface *surface, int x = 0, int y = 0);
+    void setWindow(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+    void setWindow();
 
     void flip();
 

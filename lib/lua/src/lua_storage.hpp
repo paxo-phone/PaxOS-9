@@ -13,15 +13,15 @@ class LuaStorage
     public:
     LuaStorage(LuaFile* lua);
     
-    LuaStorageFile* file(storage::Path filename, bool mode);
-    bool newDir(storage::Path path);
-    bool renameFile(storage::Path oldpath, storage::Path newpath);
-    bool renameDir(storage::Path oldpath, storage::Path newpath);
-    bool deleteFile(storage::Path path);
-    bool deleteDir(storage::Path text);
-    bool isDir(storage::Path text);
-    bool isFile(storage::Path text);
-    std::vector<std::string> listDir(storage::Path path);
+    std::unique_ptr<LuaStorageFile> file(std::string filename, int mode);
+    bool newDir(std::string path);
+    bool renameFile(std::string oldpath, std::string newpath);
+    bool renameDir(std::string oldpath, std::string newpath);
+    bool deleteFile(std::string path);
+    bool deleteDir(std::string text);
+    bool isDir(std::string text);
+    bool isFile(std::string text);
+    std::vector<std::string> listDir(std::string path);
 
     bool legalPath(storage::Path path);
     storage::Path convertPath(storage::Path);

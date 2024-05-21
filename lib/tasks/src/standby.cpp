@@ -32,7 +32,7 @@ namespace StandbyMode
     {
         lastPowerTrigger = millis();
 
-        if(powerMode == false)
+        if(powerMode == false/* && enabled == false*/)
         {
             restorePower();
         }

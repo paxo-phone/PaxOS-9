@@ -51,7 +51,7 @@ namespace Contacts
 
         std::string file = json.dump();
 
-        storage::FileStream stream((Path(CONTACTS_LOCATION) / "list.json").str(), storage::Mode::WRITE, true);
+        storage::FileStream stream((Path(CONTACTS_LOCATION) / "list.json").str(), storage::Mode::WRITE);
         stream.write(file);
         stream.close();
     }

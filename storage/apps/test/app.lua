@@ -1,6 +1,13 @@
 function run()
     win = gui:window()
 
+    local f = storage:file("manifest.json",READ)
+    f:open()
+    print("file:") print(f)
+    print(f:readAll())
+    f:close()
+    f = nil
+
     local json_str = '{"name": {"age": 30, "city": "New York"}}'
     local json_obj = Json:new(json_str)
 

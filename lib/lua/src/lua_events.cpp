@@ -128,6 +128,8 @@ LuaTimeTimeout::~LuaTimeTimeout()
 
 void LuaTime::update()
 {
+    eventHandlerApp.update();
+    
     for (int it = 0; it < timeouts.size(); it++)
     {
         if (timeouts[it]->done)
