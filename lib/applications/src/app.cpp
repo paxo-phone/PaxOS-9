@@ -1,5 +1,7 @@
 #include "app.hpp"
 
+#include <json.hpp>
+
 namespace app
 {
     std::vector<App> appList;
@@ -9,23 +11,69 @@ namespace app
 
     void init()
     {
+        // Get all apps
         std::vector<std::string> dirs = storage::Path(APP_DIR).listdir();
 
+        // Get already authorized apps
         storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
         std::string allowedFiles = stream.read();
         stream.close();
 
+        // List apps
         for (auto dir : dirs)
         {
             std::cout << (storage::Path(APP_DIR) / dir).str() << std::endl;
-            if(allowedFiles.find((storage::Path(APP_DIR) / dir).str()) != std::string::npos)
+
+            const bool authorized = allowedFiles.find((storage::Path(APP_DIR) / dir).str()) != std::string::npos;
+            storage::Path appConfigFile;
+
+            // Check if app is already authorized
+            if (authorized)
             {
-                appList.push_back({dir, storage::Path(APP_DIR) / dir  / "app.lua", storage::Path(PERMS_DIR) / (dir + ".json"), true});
+                // If the app is already authorized
+                // The app config is cached in the permission directory
+
+                // NOTE : What's happening when updating the app's manifest ?
+
+                appConfigFile = storage::Path(PERMS_DIR) / (dir + ".json");
             }
             else
             {
-                appList.push_back({dir, storage::Path(APP_DIR) / dir  / "app.lua", storage::Path(APP_DIR) / dir / "manifest.json", false});
+                // If the app is not already authorized
+                // The app config is stored in the app's directory
+                appConfigFile = storage::Path(APP_DIR) / dir / "manifest.json";
             }
+
+            // Read the app's manifest
+            storage::FileStream file2(appConfigFile.str(), storage::READ);
+            std::string appConfigJSON = file2.read();
+            file2.close();
+
+            if (!nlohmann::json::accept(appConfigJSON))
+            {
+                std::cerr << "Invalid app config : " << (storage::Path(APP_DIR) / dir).str() << std::endl;
+                continue;
+            }
+
+            nlohmann::json appConfig = nlohmann::json::parse(appConfigJSON);
+
+            // Find display name
+            // Default is application's dir name
+            std::string appDisplayName = dir;
+
+            if (appConfig.contains("display_name"))
+            {
+                appDisplayName = appConfig["display_name"];
+            }
+
+            // Push the app
+            appList.push_back({
+                dir,
+                appDisplayName,
+                storage::Path(APP_DIR) / dir  / "app.lua",
+                appConfigFile,
+                authorized
+            });
         }
     }
 
@@ -39,7 +87,7 @@ namespace app
             }
         }
 
-        return {"", storage::Path(), storage::Path(), false};
+        return {"", "", storage::Path(), storage::Path(), false};
     }
 
     bool askPerm(App &app)

@@ -67,7 +67,7 @@ int launcher()
         box->addChild(img);
 
         Label* text = new Label(0, 46, 80, 34);
-        text->setText(app::appList[i].name);
+        text->setText(app::appList[i].displayName);
         text->setVerticalAlignment(Label::Alignement::CENTER);
         text->setHorizontalAlignment(Label::Alignement::CENTER);
         text->setFontSize(16);
