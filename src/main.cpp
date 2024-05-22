@@ -98,11 +98,11 @@ void setup()
         StandbyMode::savePower();
 
 
-        while (hardware::getHomeButton());
         while (!hardware::getHomeButton())
         {
             eventHandlerApp.update();
         }
+        while (hardware::getHomeButton());
         
         StandbyMode::restorePower();
     }
