@@ -420,10 +420,6 @@ void LuaFile::run(std::vector<std::string> arg)
 
             while (!hardware::getHomeButton() && lua_gui.mainWindow != nullptr)
             {
-                #if !defined(ESP_PLATFORM)
-                    if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_ESCAPE] || SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_Q])
-                        break;
-                #endif
                 lua_gui.update();
                 lua_time.update();
 
@@ -463,11 +459,6 @@ void LuaFile::run(std::vector<std::string> arg)
 
         while (!hardware::getHomeButton())
         {
-            #if !defined(ESP_PLATFORM)
-                if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_ESCAPE] || SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_Q])
-                    break;
-            #endif
-
             win.updateAll();
             if(btn->isTouched())
             {
