@@ -256,6 +256,9 @@ void LuaFile::run(std::vector<std::string> arg)
                 "drawPolygon", &LuaCanvas::drawPolygon,
                 "fillPolygon", &LuaCanvas::fillPolygon,
                 "drawLine", &LuaCanvas::drawLine,
+                "drawText", &LuaCanvas::drawText,
+                "drawTextCentered", &LuaCanvas::drawTextCentered,
+                "drawTextCenteredInBounds", &LuaCanvas::drawTextCenteredInRect,
                 "getTouch", &LuaCanvas::getTouch,
                 "onTouch", &LuaCanvas::onTouch,
                 sol::base_classes, sol::bases<LuaWidget>());

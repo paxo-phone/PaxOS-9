@@ -58,5 +58,15 @@ function run()
     fillConvexPolygon_canvas = gui:canvas(win, 245, 215, 25, 25)
     fillConvexPolygon_canvas:fillPolygon({{4, 4}, {4, 18}, {18, 18}}, COLOR_WARNING)
 
+    drawText_canvas = gui:canvas(win, 275, 215, 25, 25)
+    drawText_canvas:drawText(0, 0, "E", COLOR_WARNING)
+
+    drawTextCentered_canvas = gui:canvas(win, 5, 245, 25, 25)
+    drawTextCentered_canvas:drawTextCentered(0, 0, "E", COLOR_WARNING, true, true)
+
+    drawTextCenteredInBounds_canvas = gui:canvas(win, 35, 245, 50, 25)
+    drawTextCenteredInBounds_canvas:drawRect(0, 0, 40, 20, COLOR_WARNING)
+    drawTextCenteredInBounds_canvas:drawTextCenteredInBounds(0, 0, 40, 20, "E", COLOR_WARNING, true, true)
+
     gui:setWindow(win)
 end
