@@ -32,10 +32,10 @@ jobs:
           - name: Install PlatformIO Core
             run: pip install --upgrade platformio
 
+          # We are unable to run tests on ESP32
+
           - name: Build PlatformIO Project for Paxo ESP32
             run: pio run -e paxo-v5
-
-          # We are unable to run tests on ESP32
 
           - name: Move files into artifact directory
             shell: bash
@@ -81,11 +81,20 @@ jobs:
           - name: Install SDL2
             run: sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse" && sudo apt-get update -y -qq && sudo apt-get install libsdl2-dev
 
-          - name: Build PlatformIO Project for Linux
-            run: pio run -e linux
-
           - name: Run tests for Linux
             run: pio test -e linux --json-output-path linux-test-report.json --junit-output-path linux-test-report.xml
+
+          - name: Upload test reports
+            if: success() || failure()
+            uses: actions/upload-artifact@v4
+            with:
+              name: linux-test-reports
+              path: |
+                linux-test-report.json
+                linux-test-report.xml
+
+          - name: Build PlatformIO Project for Linux
+            run: pio run -e linux
 
           - name: Move files into artifact directory
             shell: bash
@@ -100,15 +109,6 @@ jobs:
               name: linux-build
               path: |
                 build
-
-          - name: Upload test reports
-            if: success() || failure()
-            uses: actions/upload-artifact@v4
-            with:
-              name: linux-test-reports
-              path: |
-                linux-test-report.json
-                linux-test-report.xml
 
     macos_build_test_upload:
         runs-on: macos-latest
@@ -136,11 +136,20 @@ jobs:
             - name: Install SDL2
               run: brew install SDL2
 
-            - name: Build PlatformIO Project for macOS
-              run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio run -e macos
-
             - name: Run tests for macOS
               run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio test -e macos --json-output-path macos-test-report.json --junit-output-path macos-test-report.xml
+
+            - name: Upload test reports
+              if: success() || failure()
+              uses: actions/upload-artifact@v4
+              with:
+                name: macos-test-reports
+                path: |
+                  macos-test-report.json
+                  macos-test-report.xml
+
+            - name: Build PlatformIO Project for macOS
+              run: DYLD_LIBRARY_PATH="`brew --prefix sdl2`/lib" pio run -e macos
 
             - name: Move files into artifact directory
               shell: bash
@@ -155,15 +164,6 @@ jobs:
                 name: macos-build
                 path: |
                   build
-
-            - name: Upload test reports
-              if: success() || failure()
-              uses: actions/upload-artifact@v4
-              with:
-                name: macos-test-reports
-                path: |
-                  macos-test-report.json
-                  macos-test-report.xml
 
     windows_build_test_upload:
         runs-on: windows-latest
@@ -188,11 +188,20 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
-            - name: Build PlatformIO Project for Windows
-              run: pio run -e windows
-
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
+
+            - name: Upload test reports
+              if: success() || failure()
+              uses: actions/upload-artifact@v4
+              with:
+                name: windows-test-reports
+                path: |
+                  windows-test-report.json
+                  windows-test-report.xml
+
+            - name: Build PlatformIO Project for Windows
+              run: pio run -e windows
 
             - name: Move files into artifact directory
               shell: bash
@@ -208,12 +217,3 @@ jobs:
                 name: windows-build
                 path: |
                   build
-
-            - name: Upload test reports
-              if: success() || failure()
-              uses: actions/upload-artifact@v4
-              with:
-                name: windows-test-reports
-                path: |
-                  windows-test-report.json
-                  windows-test-report.xml
