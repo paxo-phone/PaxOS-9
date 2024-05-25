@@ -6,6 +6,8 @@
 #define KEYBOARD_HPP
 
 #include "../ElementBase.hpp"
+#include "Box.hpp"
+#include "Image.hpp"
 
 namespace gui::elements
 {
@@ -38,11 +40,16 @@ namespace gui::elements
 
         uint8_t m_caps;
 
-        std::unique_ptr<graphics::SImage> m_capsIcon0;
-        std::unique_ptr<graphics::SImage> m_capsIcon1;
-        std::unique_ptr<graphics::SImage> m_capsIcon2;
+        Image* m_capsIcon0;
+        Image* m_capsIcon1;
+        Image* m_capsIcon2;
 
-        std::unique_ptr<graphics::SImage> m_backspaceIcon;
+        Image* m_backspaceIcon;
+
+        Box* m_capsBox;
+        Box* m_layoutBox;
+        Box* m_backspaceBox;
+        Box* m_exitBox;
 
         void drawKeys();
         void drawKeyRow(int16_t y, uint8_t count, char* keys);
