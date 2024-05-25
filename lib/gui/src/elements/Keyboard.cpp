@@ -8,6 +8,9 @@
 #include <graphics.hpp>
 #include <Surface.hpp>
 
+#include "Box.hpp"
+#include "Image.hpp"
+
 // 0x0_ => Control chars
 constexpr char KEY_NULL = 0x00;
 constexpr char KEY_EXIT = 0x01;
@@ -33,29 +36,24 @@ constexpr uint8_t CAPS_LOCK = 2;
 namespace gui::elements {
     Keyboard::Keyboard()
     {
-        m_width = graphics::getScreenHeight();
-        m_height = graphics::getScreenWidth();
+        if (graphics::getScreenOrientation() == graphics::LANDSCAPE) {
+            m_width = graphics::getScreenWidth();
+            m_height = graphics::getScreenHeight();
+        } else {
+            std::cerr << "[Warning] It seems that you are using the Keyboard element in potrait mode." << std::endl;
+
+            m_width = graphics::getScreenHeight();
+            m_height = graphics::getScreenWidth();
+        }
 
         m_x = 0;
         m_y = 0;
 
-        m_backgroundColor = graphics::packRGB565(255, 255, 255);
+        m_backgroundColor = graphics::packRGB565(255, 0, 0);
 
         m_hasEvents = true;
 
         m_caps = CAPS_NONE;
-
-        auto thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_0.png");
-        m_capsIcon0 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
-
-        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_1.png");
-        m_capsIcon1 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
-
-        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_2.png");
-        m_capsIcon2 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
-
-        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/backspace_icon.png");
-        m_backspaceIcon = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
 
         m_layoutLowercase = new char*[4];
         m_layoutLowercase[0] = new char[10]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
@@ -76,6 +74,32 @@ namespace gui::elements {
         m_layoutNumbers[3] = new char[3]{KEY_LAYOUT_STANDARD, KEY_SPACE, KEY_EXIT};
 
         m_currentLayout = m_layoutLowercase;
+
+        m_capsBox = new Box(30, 220, 47, 40);
+        m_layoutBox = new Box(30, 260, 50, 40);
+        m_backspaceBox = new Box(403, 220, 47, 40);
+        m_exitBox = new Box(400, 260, 50, 40);
+
+        m_capsIcon0 = new Image(storage::Path("system/keyboard/caps_icon_0.png"), 0, 0, 40, 40);
+        m_capsIcon1 = new Image(storage::Path("system/keyboard/caps_icon_1.png"), 0, 0, 40, 40);
+        m_capsIcon2 = new Image(storage::Path("system/keyboard/caps_icon_2.png"), 0, 0, 40, 40);
+
+        m_capsIcon0->load();
+        m_capsIcon1->load();
+        m_capsIcon2->load();
+
+        m_capsBox->setBackgroundColor(TFT_GREEN);
+        m_layoutBox->setBackgroundColor(TFT_GREEN);
+        m_backspaceBox->setBackgroundColor(TFT_GREEN);
+        m_exitBox->setBackgroundColor(TFT_GREEN);
+
+        m_capsIcon0->setBackgroundColor(graphics::packRGB565(0, 255, 255));
+        m_capsBox->addChild(m_capsIcon0);
+
+        addChild(m_capsBox);
+        addChild(m_layoutBox);
+        addChild(m_backspaceBox);
+        addChild(m_exitBox);
     }
 
     Keyboard::~Keyboard() = default;
@@ -136,6 +160,8 @@ namespace gui::elements {
         drawKeyRow(180, 10, m_currentLayout[1]);
         drawKeyRow(220, 9, m_currentLayout[2]);
         drawLastRow(30, 260);
+
+        m_surface->drawRect(0, 0, 1000, 10, TFT_GREEN);
     }
 
     void Keyboard::drawKeyRow(const int16_t y, const uint8_t count, char* keys)
@@ -157,37 +183,43 @@ namespace gui::elements {
     {
         if (key == KEY_CAPS)
         {
+            std::cout << "Caps : " << x << ", " << y << std::endl;
             if (m_caps == CAPS_NONE)
             {
-                m_surface->drawImage(*m_capsIcon0, static_cast<int16_t>(x + 3), y);
+                //m_surface->drawImage(*m_capsIcon0, static_cast<int16_t>(x + 3), y);
             }
             else if (m_caps == CAPS_ONCE)
             {
-                m_surface->drawImage(*m_capsIcon1, static_cast<int16_t>(x + 3), y);
+                //m_surface->drawImage(*m_capsIcon1, static_cast<int16_t>(x + 3), y);
             }
             else
             {
-                m_surface->drawImage(*m_capsIcon2, static_cast<int16_t>(x + 3), y);
+                //m_surface->drawImage(*m_capsIcon2, static_cast<int16_t>(x + 3), y);
             }
 
             return;
         }
-        else if (key == KEY_BACKSPACE)
+        if (key == KEY_BACKSPACE)
         {
-            m_surface->drawImage(*m_backspaceIcon, static_cast<int16_t>(x + 3), y);
+            std::cout << "Backspace : " << x << ", " << y << std::endl;
+            //m_surface->drawImage(*m_backspaceIcon, static_cast<int16_t>(x + 3), y);
+
+            return;
         }
 
-        std::string keyString = std::string(1, key);
+        auto keyString = std::string(1, key);
 
         // m_surface->drawRect(x, y, w, 40, graphics::packRGB565(0, 0, 0));
-        m_surface->drawTextCentered(keyString, x, static_cast<int16_t>(y + 4), w);
+        m_surface->drawTextCentered(keyString, x, y, w, 40);
     }
 
     void Keyboard::drawLastRow(const int16_t x, const int16_t y)
     {
-        // m_surface->drawRect(x, y, 50, 40, graphics::packRGB565(0, 0, 0));
-        // m_surface->drawRect(static_cast<int16_t>(x + 50), y, 320, 40, graphics::packRGB565(0, 0, 0));
-        // m_surface->drawRect(static_cast<int16_t>(x + 370), y, 50, 40, graphics::packRGB565(0, 0, 0));
+        std::cout << "Layout : " << x << ", " << y << std::endl;
+
+        m_surface->drawRect(x, y, 50, 40, graphics::packRGB565(0, 255, 0));
+        m_surface->drawRect(static_cast<int16_t>(x + 50), y, 320, 40, graphics::packRGB565(0, 255, 0));
+        m_surface->drawRect(static_cast<int16_t>(x + 370), y, 50, 40, graphics::packRGB565(0, 255, 0));
 
         std::string thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow;
 
@@ -201,7 +233,7 @@ namespace gui::elements {
         }
         m_surface->drawTextCentered(
             thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow,
-            static_cast<int16_t>(x),
+            x,
             static_cast<int16_t>(y + 5),
             50
         );
