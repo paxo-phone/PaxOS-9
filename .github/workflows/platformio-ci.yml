@@ -157,6 +157,7 @@ jobs:
                 mkdir build
                 cp -r .pio/build/macos/program build
                 cp -r storage build
+                chmod +x build/program
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
