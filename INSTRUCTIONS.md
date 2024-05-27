@@ -65,6 +65,7 @@ pio test -e test
 ## Troubleshooting
 
 ### macOS
+- If you get a popup saying that the program is from an unidentified developer, do `xattr -d com.apple.quarantine program` in the same directory as the `program`.
 - If no program is launching at the end of the build when calling `pio run -e macos`, try to run the executable using `.pio/build/macos/program`.
 - If you get an error similar to
   ```
