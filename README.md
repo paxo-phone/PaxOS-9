@@ -3,6 +3,7 @@
 ![logo](https://github.com/paxo-phone/PaxOS-9/assets/45568523/ddb3b517-605c-41b4-8c1e-c8e5d156431b)
 
 [![PlatformIO](https://github.com/paxo-phone/PaxOS-9/actions/workflows/platformio.yml/badge.svg)](https://github.com/paxo-phone/PaxOS-9/actions/workflows/platformio.yml)
+[![PlatformIO CI](https://github.com/paxo-phone/PaxOS-9/actions/workflows/platformio-ci.yml/badge.svg)](https://github.com/paxo-phone/PaxOS-9/actions/workflows/platformio-ci.yml)
 
 **PaxOS 9** est la dernière version du **PaxOS**, un système d'exploitation léger destiné aux PaxoPhones. 
 
