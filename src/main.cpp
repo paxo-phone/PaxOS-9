@@ -67,7 +67,7 @@ void mainLoop(void* data)
 }
 
 void setup()
-{    
+{
     hardware::init();
     hardware::setScreenPower(true);
     graphics::init();
@@ -97,9 +97,10 @@ void setup()
     );
     #endif
 
+    hardware::setVibrator(false);
+    GSM::endCall();
+
     Contacts::load();
-    Contacts::editContact("Jane Doe", {"Jane Doe", "0612345678"});
-    Contacts::save();
 
     std::vector<Contacts::contact> cc = Contacts::listContacts();
     for(auto c : cc)
