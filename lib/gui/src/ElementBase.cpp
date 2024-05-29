@@ -114,7 +114,6 @@ bool gui::ElementBase::updateAll()
             this->m_isDrawn = false;
         }
 
-        graphics::touchUpdate();
         graphics::getTouchPos(&touchX, &touchY);
     }
 
@@ -129,7 +128,10 @@ bool gui::ElementBase::updateAll()
         }
     }
 
-    return update();
+    bool returnV = update();
+    if(this->m_parent == nullptr)
+        graphics::touchIsRead();
+    return returnV;
 }
 
 bool gui::ElementBase::update()
@@ -146,7 +148,7 @@ bool gui::ElementBase::update()
         return false;
 
     // check if the finger is currently on the widget
-    if (touchX != -1 && touchY != -1)
+    if (graphics::isTouched())
     {
         StandbyMode::triggerPower();
         if (getAbsoluteX()-10 < touchX && touchX < getAbsoluteX() + getWidth() +10 && // l'objet est touché

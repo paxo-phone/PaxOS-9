@@ -419,16 +419,19 @@ namespace gui::elements {
                 {
                     m_currentLayout = LAYOUT_LOWERCASE;
                     m_caps = CAPS_NONE;
+                    localGraphicalUpdate();
                 }
 
                 break;
         }
 
+        //m_label->setText(m_buffer);
+
         // Redraw input box
-        // drawInputBox(); <= Useless, because "markDirty" redraws it
+         drawInputBox();// <= Useless, because "markDirty" redraws it
 
         // Mark dirty
-        markDirty();
+        //markDirty();
     }
 
     void Keyboard::drawInputBox() const
