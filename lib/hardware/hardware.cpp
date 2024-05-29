@@ -3,6 +3,12 @@
 
 #ifdef ESP_PLATFORM
     #include <Arduino.h>
+#else
+    #ifdef __linux__
+        #include <SDL2/SDL.h>
+    #else
+        #include <SDL_keyboard.h>
+    #endif
 #endif
 
 void hardware::init()
@@ -40,9 +46,11 @@ bool hardware::getHomeButton()
 {
     #ifdef ESP_PLATFORM
 
-    return !digitalRead(PIN_HOME_BUTTON);
+        return !digitalRead(PIN_HOME_BUTTON);
 
+    #else
+
+        return (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_ESCAPE] || SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_Q]);
+    
     #endif
-
-    return false;
 }
