@@ -7,6 +7,7 @@
 
 #include "../ElementBase.hpp"
 #include "Box.hpp"
+#include "Canvas.hpp"
 #include "Image.hpp"
 #include "Label.hpp"
 
@@ -52,6 +53,8 @@ namespace gui::elements
 
         uint8_t m_caps;
 
+        Canvas* m_keysCanvas;
+
         Image* m_capsIcon0;
         Image* m_capsIcon1;
         Image* m_capsIcon2;
@@ -71,7 +74,7 @@ namespace gui::elements
         void drawKeyRow(int16_t y, uint8_t count, const char* keys) const;
         void drawKey(int16_t x, int16_t y, uint16_t w, char key) const;
 
-        void drawLastRow(int16_t x, int16_t y) const;
+        void drawLastRow() const;
 
         char getKey(int16_t x, int16_t y) const;
 
@@ -80,8 +83,6 @@ namespace gui::elements
         void processKey(char key);
 
         void drawInputBox() const;
-
-        void markDirty();
 
         void updateCapsIcon() const;
         void updateLayoutIcon() const;

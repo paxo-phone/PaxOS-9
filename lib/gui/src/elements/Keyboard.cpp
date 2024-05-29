@@ -62,6 +62,9 @@ namespace gui::elements {
 
         m_caps = CAPS_NONE;
 
+        m_keysCanvas = new Canvas(30, 140, 420, 160);
+        addChild(m_keysCanvas);
+
         m_layoutLowercase = new char*[4];
         m_layoutLowercase[0] = new char[10]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
         m_layoutLowercase[1] = new char[10]{'q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'};
@@ -145,9 +148,6 @@ namespace gui::elements {
         // Input box
         drawInputBox();
 
-        // Keyboard box
-        // m_surface->fillRect(30, 140, 420, 160, graphics::packRGB565(255, 255, 255));
-
         // Draw keys
         drawKeys();
     }
@@ -158,7 +158,6 @@ namespace gui::elements {
             // Get touch position
             int16_t touchX, touchY;
             getLastTouchPosRel(&touchX, &touchY);
-
 
             const char pressedKey = getKey(touchX, touchY);
             if (pressedKey == KEY_NULL)
@@ -226,7 +225,7 @@ namespace gui::elements {
                 }
             }
 
-            markDirty();
+            drawKeys();
             updateLayoutIcon();
         }
     }
@@ -243,14 +242,13 @@ namespace gui::elements {
     void Keyboard::drawKeys() const
     {
         // Reset default settings
-        m_surface->setTextColor(graphics::packRGB565(0, 0, 0));
-        m_surface->setFontSize(24);
+        m_keysCanvas->fillRect(0, 0, m_keysCanvas->getWidth(), m_keysCanvas->getHeight(), graphics::packRGB565(255, 255, 255));
 
         // Draw every keys
-        drawKeyRow(140, 10, getLayoutCharMap()[0]);
-        drawKeyRow(180, 10, getLayoutCharMap()[1]);
-        drawKeyRow(220, 9, getLayoutCharMap()[2]);
-        drawLastRow(30, 260);
+        drawKeyRow(0, 10, getLayoutCharMap()[0]);
+        drawKeyRow(40, 10, getLayoutCharMap()[1]);
+        drawKeyRow(80, 9, getLayoutCharMap()[2]);
+        drawLastRow();
     }
 
     void Keyboard::drawKeyRow(const int16_t y, const uint8_t count, const char* keys) const
@@ -260,7 +258,7 @@ namespace gui::elements {
         for (uint16_t i = 0; i < count; i++)
         {
             drawKey(
-                static_cast<int16_t>(30 + static_cast<float>(i) * keyWidth),
+                static_cast<int16_t>(static_cast<float>(i) * keyWidth),
                 y,
                 static_cast<int16_t>(keyWidth),
                 keys[i]
@@ -272,47 +270,18 @@ namespace gui::elements {
     {
         auto keyString = std::string(1, key);
 
-        // m_surface->drawRect(x, y, w, 40, graphics::packRGB565(0, 0, 0));
-        m_surface->drawTextCentered(keyString, x, y, w, 40);
+        m_keysCanvas->drawTextCenteredInRect(x, y, w, 40, keyString, graphics::packRGB565(0, 0, 0));
     }
 
-    void Keyboard::drawLastRow(const int16_t x, const int16_t y) const
+    void Keyboard::drawLastRow() const
     {
-        // m_surface->drawRect(x, y, 80, 40, graphics::packRGB565(0, 255, 0));
-        // m_surface->drawRect(static_cast<int16_t>(x + 80), y, 260, 40, graphics::packRGB565(0, 255, 0));
-        /// m_surface->drawRect(static_cast<int16_t>(x + 340), y, 80, 40, graphics::packRGB565(0, 255, 0));
-
-        std::string thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow;
-
-        if (m_currentLayout == LAYOUT_NUMBERS)
-        {
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "ABC";
-        }
-        else
-        {
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "123";
-        }
-        m_surface->drawTextCentered(
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow,
-            x,
-            static_cast<int16_t>(y + 5),
-            50
-        );
-
-        m_surface->fillRect(
-            static_cast<int16_t>(x + 100),
-            static_cast<int16_t>(y + 30),
+        // Draw spacebar
+        m_keysCanvas->fillRect(
+            100,
+            150,
             220,
             2,
             graphics::packRGB565(0, 0, 0)
-        );
-
-        thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "retour";
-        m_surface->drawTextCentered(
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow,
-            static_cast<int16_t>(x + 350),
-            static_cast<int16_t>(y + 5),
-            50
         );
     }
 
@@ -419,27 +388,21 @@ namespace gui::elements {
                 {
                     m_currentLayout = LAYOUT_LOWERCASE;
                     m_caps = CAPS_NONE;
-                    localGraphicalUpdate();
+
+                    drawKeys();
+
+                    return;
                 }
 
                 break;
         }
 
-        //m_label->setText(m_buffer);
-
         // Redraw input box
-         drawInputBox();// <= Useless, because "markDirty" redraws it
-
-        // Mark dirty
-        //markDirty();
+        drawInputBox();// <= Useless, because "markDirty" redraws it
     }
 
     void Keyboard::drawInputBox() const
     {
-        // m_surface->fillRect(30, 30, 420, 100, graphics::packRGB565(255, 255, 255));
-
-        m_label->setText(m_buffer);
-
         if (m_buffer.empty())
         {
             if (m_placeholder.empty())
@@ -458,12 +421,6 @@ namespace gui::elements {
             m_label->setTextColor(graphics::packRGB565(0, 0, 0));
             m_label->setText(m_buffer);
         }
-    }
-
-    void Keyboard::markDirty()
-    {
-        m_isDrawn = false;
-        m_isRendered = false;
     }
 
     void Keyboard::updateCapsIcon() const
