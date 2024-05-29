@@ -4,7 +4,11 @@
 #ifdef ESP_PLATFORM
     #include <Arduino.h>
 #else
-    #include <SDL_keyboard.h>
+    #ifdef __linux__
+        #include <SDL2/SDL.h>
+    #else
+        #include <SDL2.h>
+    #endif
 #endif
 
 void hardware::init()
