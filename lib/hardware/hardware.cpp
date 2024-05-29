@@ -7,7 +7,7 @@
     #ifdef __linux__
         #include <SDL2/SDL.h>
     #else
-        #include <SDL2.h>
+        #include <SDL_keyboard.h>
     #endif
 #endif
 
