@@ -1,5 +1,4 @@
 #include "lua_gsm.hpp"
-
 #include "gsm.hpp"
 
 #ifdef ESP_PLATFORM
@@ -10,14 +9,14 @@ namespace LuaGSM
 {
     void newMessage(std::string number, std::string message)
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::newMessage(number, message);
-        #endif
+#endif
     }
 
     void newCall(std::string number)
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::newCall(number);
 
         while (GSM::state.callFailure == false && GSM::state.callState != GSM::CallState::CALLING)
@@ -27,28 +26,28 @@ namespace LuaGSM
         }
 
         GSM::state.callFailure = false;
-        #endif
+#endif
     }
 
     void endCall()
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::endCall();
-        #endif
+#endif
     }
 
     void acceptCall()
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::acceptCall();
-        #endif
+#endif
     }
 
     void rejectCall()
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::rejectCall();
-        #endif
+#endif
     }
 
     std::string getNumber()
@@ -60,4 +59,17 @@ namespace LuaGSM
     {
         return GSM::state.callState;
     }
-};
+
+    std::vector<GSM::Message> getMessages(const std::string &number)
+    {
+        std::vector<GSM::Message> result;
+        for (const auto &message : GSM::messages)
+        {
+            if (message.number == number)
+            {
+                result.push_back(message);
+            }
+        }
+        return result;
+    }
+}
