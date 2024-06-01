@@ -425,7 +425,14 @@ void LuaFile::run(std::vector<std::string> arg)
             {
                 lua_gui.update();
                 lua_time.update();
-                lua.collect_garbage();
+                try
+                {
+                    lua.collect_garbage();
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
 
                 if (app::request)
                 {

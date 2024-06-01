@@ -6,6 +6,7 @@
 #include <vector>
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
+#define SCROLL_STEP 20
 
 namespace gui
 {
@@ -116,15 +117,22 @@ namespace gui
             NOT_PRESSED,
             PRESSED,
             SLIDED,
-            RELEASED
+            RELEASED,
+            SCROLLX,
+            SCROLLY,
+            LOCKED
         };
 
         PressedState m_pressedState;
 
-        static ElementBase *m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
+        static PressedState globalPressedState;
+        static ElementBase *widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
         static int16_t originTouchX, originTouchY;
 
-        int16_t m_lastTouchX, m_lastTouchY;
+        ElementBase* getHigestXScrollableParent();
+        ElementBase* getHigestYScrollableParent();
+
+        static int16_t m_lastTouchX, m_lastTouchY;
         void getLastTouchPosAbs(int16_t* x, int16_t* y) const;
         void getLastTouchPosRel(int16_t* x, int16_t* y) const;
 

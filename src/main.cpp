@@ -56,7 +56,7 @@ void mainLoop(void* data)
         StandbyMode::savePower();
 
 
-        while (!hardware::getHomeButton())
+        while (!hardware::getHomeButton() && GSM::state.callState != GSM::CallState::RINGING)
         {
             eventHandlerApp.update();
         }
