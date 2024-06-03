@@ -74,8 +74,9 @@ namespace GSM
     extern std::string data;
     extern std::vector<Request> requests;
     extern std::vector<Key> keys;
-    extern std::vector<Message> messages;        // received messages
-    extern std::vector<Message> pendingMessages; // messages pending
+    // extern std::vector<Message> messages;        // received messages
+    // extern std::vector<Message> pendingMessages; // messages pending
+    extern std::vector<Message> messages;
     extern State state;
     extern uint16_t seconds, minutes, hours, days, months, years;
     extern float voltage;
@@ -97,6 +98,9 @@ namespace GSM
     void getHour();
     void resetCache();
     void createConversation(const std::string &filePath);
-};
+    std::string getCurrentTimestamp();
+    void clearFrom(const std::string &from, const std::string &to);
+    void appendRequest(Request request);
+}
 
-#endif
+#endif // GSM_HPP

@@ -1,5 +1,6 @@
 #include "lua_gsm.hpp"
 #include "gsm.hpp"
+#include "conversation.hpp"
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
@@ -60,16 +61,11 @@ namespace LuaGSM
         return GSM::state.callState;
     }
 
-    std::vector<GSM::Message> getMessages(const std::string &number)
+    std::vector<Conversations::Message> getMessages(const std::string &number)
     {
-        std::vector<GSM::Message> result;
-        for (const auto &message : GSM::messages)
-        {
-            if (message.number == number)
-            {
-                result.push_back(message);
-            }
-        }
-        return result;
+        Conversations::Conversation conv;
+        std::string convFilePath = std::string(MESSAGES_LOCATION) + "/" + number + ".json";
+        Conversations::loadConversation(convFilePath, conv);
+        return conv.messages;
     }
 }

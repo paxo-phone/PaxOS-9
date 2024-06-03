@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 #include "gsm.hpp"
+#include "conversation.hpp"
 
 namespace LuaGSM
 {
@@ -15,8 +16,7 @@ namespace LuaGSM
     void rejectCall();
     std::string getNumber();
     uint8_t getCallState();
-    std::vector<GSM::Message> getMessages(const std::string& number);
-
+    std::vector<Conversations::Message> getMessages(const std::string &number);
 };
 
 #endif

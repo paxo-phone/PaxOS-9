@@ -1,4 +1,9 @@
 #include "gsm.hpp"
+#include "contacts.hpp"
+#include "conversation.hpp"
+#include <path.hpp>
+#include <iostream>
+#include <ctime>
 #include <delay.hpp>
 #include "../../tasks/src/threads.hpp"
 
@@ -8,6 +13,7 @@ const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Ju
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
 #endif
+#include <delay.hpp>
 
 #define gsm Serial2
 #define RX 26
@@ -21,7 +27,6 @@ namespace GSM
     std::vector<Message> messages;
     State state;
     uint16_t seconds, minutes, hours, days, months, years = 0;
-    float voltage = 0;
 
     namespace ExternalEvents
     {
@@ -78,8 +83,6 @@ namespace GSM
                 data += gsm.read();
             }
         }
-        /*if (timer != 0)
-            std::cout << data << std::endl;*/
 #endif
     }
 
@@ -106,8 +109,7 @@ namespace GSM
             }
         }
 
-        // true stream
-        while (lastChar + timeout > millis() && answer.find("OK\13") == std::string::npos && answer.find("ERROR\13") == std::string::npos)
+        while (lastChar + timeout > millis() && (answer.find("OK\13") == std::string::npos && answer.find("ERROR\13") == std::string::npos))
         {
             if (gsm.available())
             {
@@ -128,7 +130,7 @@ namespace GSM
         if (!request.function)
             std::cout << "request.function is invalid -> can't run the new request" << std::endl;
         else
-            eventHandlerBack.setTimeout(new Callback<>(std::bind([](Request r){GSM::requests.push_back(r);}, request)), 0);
+            eventHandlerBack.setTimeout(new Callback<>(std::bind([](Request r){ GSM::requests.push_back(r); }, request)), 0);
     }
 
     void process()
@@ -148,7 +150,7 @@ namespace GSM
 
     void checkRequest()
     {
-        for (uint8_t pr = priority::high; pr <= priority::low; pr++) // for each priority
+        for (uint8_t pr = priority::high; pr <= priority::low; pr++)
         {
             auto it = 0;
             while (it != requests.size())
@@ -234,9 +236,17 @@ namespace GSM
         std::cout << "hanging off" << std::endl;
     }
 
+    std::string getCurrentTimestamp()
+    {
+        std::time_t now = std::time(nullptr);
+        char buf[20];
+        std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+        return std::string(buf);
+    }
+
     void onMessage()
     {
-        std::cout << data << std::endl;
+        std::cout << "onMessage data: " << data << std::endl;
         clearFrom("+CMTI:", "\n");
 
         send("AT+CMGF=1", "AT+CMGF=1", 1000);
@@ -270,8 +280,33 @@ namespace GSM
 
             message = str.substr(k + 2 + 1, str.find(0x0D, k + 1) - k);
 
+            // Vérifier si le numéro existe dans les contacts
+            auto contact = Contacts::getByNumber(number);
+            if (contact.name.empty())
+            {
+                std::cout << "Message from unknown number: " << number << std::endl;
+            }
+            else
+            {
+                std::cout << "Message from contact: " << contact.name << std::endl;
+            }
+
+            // Ajout du message à la conversation
+            Conversations::Conversation conv;
+            storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
+            if (std::filesystem::exists(convPath.str()))
+            {
+                Conversations::loadConversation(convPath.str(), conv);
+            }
+            else
+            {
+                conv.number = number;
+            }
+            conv.messages.push_back({message, true, getCurrentTimestamp()}); // true = message de l'autre
+            Conversations::saveConversation(convPath.str(), conv);
+
             messages.push_back({number, message, date});
-            std::cout << "messages: " << messages.size() << std::endl;
+            std::cout << "Message added to GSM::messages: " << message << std::endl;
 
             i = j + 1;
         }
@@ -284,8 +319,23 @@ namespace GSM
 
     void sendMessage(const std::string &number, const std::string &message)
     {
+        std::cout << "Sending message to: " << number << " with content: " << message << std::endl;
         send("AT+CMGS=\"" + number + "\"\r", ">");
         send(message + char(26), "OK");
+
+        // Ajout du message envoyé à la conversation
+        Conversations::Conversation conv;
+        storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
+        if (std::filesystem::exists(convPath.str()))
+        {
+            Conversations::loadConversation(convPath.str(), conv);
+        }
+        else
+        {
+            conv.number = number;
+        }
+        conv.messages.push_back({message, false, getCurrentTimestamp()}); // false = message de l'user
+        Conversations::saveConversation(convPath.str(), conv);
     }
 
     void newMessage(std::string number, std::string message)
@@ -318,14 +368,12 @@ namespace GSM
 
     void endCall()
     {
-        appendRequest({[]()
-                       { GSM::send("AT+CHUP", "OK"); }, priority::high});
+        appendRequest({[](){ GSM::send("AT+CHUP", "OK"); }, priority::high});
     }
 
     void acceptCall()
     {
-        requests.push_back({[]()
-                            { GSM::send("ATA", "OK"); }, priority::high});
+        requests.push_back({[](){ GSM::send("ATA", "OK"); }, priority::high});
     }
 
     void rejectCall()
@@ -408,7 +456,6 @@ namespace GSM
 
         std::cout << data << std::endl;
 
-        // Find the start and end positions of the date and time string
         size_t start = data.find("\"");
         if (start == std::string::npos)
         {
@@ -422,7 +469,6 @@ namespace GSM
             return;
         }
 
-        // Extract the date and time string
         std::string dateTime = data.substr(start, end - start);
 
         // Extract the year, month, and day
