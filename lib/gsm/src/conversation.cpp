@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cerrno>
 #include <cstring>
-#include <filesystem>
 
 namespace Conversations
 {
@@ -21,7 +20,6 @@ namespace Conversations
 
         storage::FileStream file;
         file.open(path.str(), storage::Mode::READ);
-        
         if (!file.isopen())
         {
             std::cerr << "Failed to open file: " << filePath << " Error: " << strerror(errno) << std::endl;
@@ -65,16 +63,19 @@ namespace Conversations
 
         // Create directory if it doesn't exist
         size_t lastSlashPos = filePath.find_last_of('/');
-
         if (lastSlashPos != std::string::npos)
         {
             std::string parentPath = filePath.substr(0, lastSlashPos);
-            std::filesystem::create_directories(parentPath);
+            storage::Path path(parentPath);
+            if (!path.exists())
+            {
+                std::string command = "mkdir -p " + parentPath;
+                system(command.c_str());
+            }
         }
 
         nlohmann::json json;
         json["number"] = conv.number;
-
         for (const auto &msg : conv.messages)
         {
             json["messages"].push_back({{"message", msg.message},
@@ -85,7 +86,6 @@ namespace Conversations
         storage::Path path(filePath);
         storage::FileStream file;
         file.open(path.str(), storage::Mode::WRITE);
-
         if (!file.isopen())
         {
             std::cerr << "Failed to open file for writing: " << filePath << " Error: " << strerror(errno) << std::endl;

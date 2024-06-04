@@ -5,7 +5,6 @@
 #include <path.hpp>
 #include <filestream.hpp>
 #include <iostream>
-#include <filesystem>
 
 // Test d'initialisation du module GSM
 TEST(GSMTest, Initialization)
@@ -52,7 +51,7 @@ TEST(GSMTest, ReceiveMessage)
     // GSM::data = "+CMTI: \"SM\",1\n"; // Simuler la réception de données du module GSM
     // GSM::onMessage();
 
-    // // Vérifier que le message a été ajouté à la liste des messages
+    // // Vérifier que le message a été ajouté à la liste
     // ASSERT_FALSE(GSM::messages.empty());
     // if (!GSM::messages.empty())
     // {
@@ -78,13 +77,19 @@ TEST(GSMTest, GetMessages)
 {
     // std::string number = "0612345681";
 
-    // // Charger la conversation directement sans passer par lua_gsm
+    // // Ajouter un message de test à la conversation
     // Conversations::Conversation conv;
+    // conv.number = number;
+    // conv.messages.push_back({"Test message", true, "2024-06-01 12:00:00"});
     // storage::Path convFilePath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
-    // Conversations::loadConversation(convFilePath.str(), conv);
+    // Conversations::saveConversation(convFilePath.str(), conv);
 
-    // ASSERT_FALSE(conv.messages.empty());
-    // for (const auto &msg : conv.messages)
+    // // Charger la conversation directement sans passer par lua_gsm
+    // Conversations::Conversation loadedConv;
+    // Conversations::loadConversation(convFilePath.str(), loadedConv);
+
+    // ASSERT_FALSE(loadedConv.messages.empty());
+    // for (const auto &msg : loadedConv.messages)
     // {
     //     std::cout << "Message: " << msg.message << ", Who: " << msg.who << ", Date: " << msg.date << std::endl;
     // }

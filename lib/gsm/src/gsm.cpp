@@ -2,6 +2,7 @@
 #include "contacts.hpp"
 #include "conversation.hpp"
 #include <path.hpp>
+#include <filestream.hpp>
 #include <iostream>
 #include <ctime>
 #include <delay.hpp>
@@ -294,7 +295,7 @@ namespace GSM
             // Ajout du message à la conversation
             Conversations::Conversation conv;
             storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
-            if (std::filesystem::exists(convPath.str()))
+            if (convPath.exists())
             {
                 Conversations::loadConversation(convPath.str(), conv);
             }
@@ -326,7 +327,7 @@ namespace GSM
         // Ajout du message envoyé à la conversation
         Conversations::Conversation conv;
         storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
-        if (std::filesystem::exists(convPath.str()))
+        if (convPath.exists())
         {
             Conversations::loadConversation(convPath.str(), conv);
         }

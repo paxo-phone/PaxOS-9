@@ -3,17 +3,17 @@
 #include <filestream.hpp>
 #include "path.hpp"
 #include <iostream>
-#include <filesystem>
 
 TEST(ConversationTest, SaveLoadConversation)
 {
     // Chemin du répertoire des messages
     storage::Path messagesDir(MESSAGES_LOCATION);
     std::cout << "Checking if directory exists: " << messagesDir.str() << std::endl;
-    if (!std::filesystem::exists(messagesDir.str()))
+    if (!messagesDir.exists())
     {
         std::cout << "Directory does not exist. Creating..." << std::endl;
-        std::filesystem::create_directories(messagesDir.str());
+        std::string command = "mkdir -p " + messagesDir.str();
+        system(command.c_str());
     }
 
     // Nom du fichier de conversation
@@ -28,7 +28,7 @@ TEST(ConversationTest, SaveLoadConversation)
         {"Hello", false, "2024-01-01 10:00:00"},
         {"Hi there!", true, "2024-01-01 10:05:00"}};
 
-    // Sauvegarde de la conversation en utilisant FileStream
+    // Sauvegarde de la conversation
     storage::FileStream writeStream(convFilePath.str(), storage::Mode::WRITE);
     nlohmann::json json;
     json["number"] = conv.number;
@@ -40,7 +40,7 @@ TEST(ConversationTest, SaveLoadConversation)
     writeStream.write(json.dump(4));
     writeStream.close();
 
-    // Chargement de la conversation sauvegardée en utilisant FileStream
+    // Chargement de la conversation sauvegardée
     storage::FileStream readStream(convFilePath.str(), storage::Mode::READ);
     std::string fileContent = readStream.read();
     readStream.close();
