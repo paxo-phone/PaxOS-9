@@ -97,7 +97,7 @@ namespace GSM
                 answer += gsm.read();
                 lastChar = millis();
 
-                if(answer.find(answerKey) == std::string::npos)
+                if(answer.find(answerKey) != std::string::npos)
                 {
                     data += answer.substr(0, answer.find(answerKey) - 1);
                     break;

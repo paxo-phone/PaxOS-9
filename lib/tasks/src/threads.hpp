@@ -20,7 +20,7 @@ extern EventHandler eventHandlerApp;
 namespace ThreadManager
 {
     void init();
-    void new_thread(bool core, void(*func)(void*));
+    void new_thread(bool core, void(*func)(void*), int stackSize = 10000);
 
     void background_thread(void* arg);
     void simcom_thread(void* arg);

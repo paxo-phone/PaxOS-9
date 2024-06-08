@@ -36,7 +36,7 @@ bool storage::init()
 
     while(true)
     {
-        if (SD.begin(4))
+        if (SD.begin(4/*, SPI, 8000000*/))
             return true;
         std::cout << "Error storage initialization" << std::endl;
     }
