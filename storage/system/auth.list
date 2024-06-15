@@ -5,3 +5,4 @@
 ./storage/apps/contacts/app.lua
 ./storage/apps/battery/app.lua
 ./storage/apps/pym/app.lua
+./storage/apps/alarme/app.lua
