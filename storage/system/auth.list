@@ -4,3 +4,4 @@
 ./storage/apps/snake/app.lua
 ./storage/apps/contacts/app.lua
 ./storage/apps/battery/app.lua
+./storage/apps/pym/app.lua
