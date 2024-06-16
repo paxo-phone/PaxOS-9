@@ -1,19 +1,15 @@
 local tNow
 local win
-local heure_label
+-- local heure_label
 local clock
 local offsetAngle = 270
-
--- VERRUE  VIRER
-local heure = 6 --tNow[0]
-local minute = 7 --tNow[1]
-local seconde = 9 --tNow[2]
 
 local oldCoordHeure = {}
 local oldCoordMinute = {}
 local oldCoordSeconde = {}
 
 local toBeRefreshed = false
+local btnToggleAlarme
 
 local BACKGROUND_COLOR = COLOR_WHITE
 
@@ -28,7 +24,7 @@ function drawClock()
     centreX = int (win:getWidth() * 0.5)
     centreY = centreX --int (win:getHeight() * 0.5)
     border = 15
-    radius = int(centreX - border *2)
+    radius = int(centreX - border *2 -20)
 
     -- couleir d'affichage du cadre
     couleur_clock = COLOR_DARK
@@ -38,7 +34,10 @@ function drawClock()
     local espacement = 5
 
     -- draw clock circle
-    clock = gui:canvas(win, 0, 15, int(win:getWidth()), int(win:getWidth()))
+    clock = gui:canvas(win, 0, 0, int(win:getWidth()), int(win:getWidth()))
+    
+    clock:onClick(function() rien() end)
+
     clock:fillRect(0,0,int(win:getWidth()), int(win:getWidth()),BACKGROUND_COLOR)
 --    drawRect_canvas:drawRect(5, 5, 15, 15, COLOR_WARNING)
     --drawCircle_canvas:setBackgroundColor(COLOR_WHITE)
@@ -75,9 +74,9 @@ function drawClock()
 end -- drawClock
 
 
+-- renvoi une string au format HH:MM:SS
 function convert_to_time (h, min, sec)
 
-    
     local strHeure = h
     -- Gestion Heure
     if tonumber(h) < 10 then
@@ -115,18 +114,12 @@ end -- convert_to_time
 -- Recopie une structure dans une autre
 function copyStruct (source, dest)
 
-    print("copyStruct ".. tostring(pairs(source)))
+   --  print("copyStruct ".. tostring(pairs(source)))
     for i in pairs(source) do
-        print("dest["..i.."]=".. source[i])
+    -- print("dest["..i.."]=".. source[i])
         dest[i] = source[i]
     end
 
---    oldCoordHeure = {
---        orig_x = coordHeure.orig_x,
---        orig_y = coordHeure.orig_y,
---        dest_x = coordHeure.dest_x,
---        dest_y = coordHeure.dest_y
---    }
 end -- function copyStruct
 
 
@@ -135,10 +128,13 @@ function afficheHeure ()
 
     -- recupere l'heure
     tNow = time:get("h,mi,s")
---    tNow = {heure,minute,seconde}
 
-    local now = convert_to_time(heure, minute, seconde) --= table.concat(tNow, ":")
-    heure_label:setText(now)
+    local heure = tNow[1]
+    local minute = tNow[2]
+    local seconde = tNow[3]
+
+    -- local now = convert_to_time(heure, minute, seconde) --= table.concat(tNow, ":")
+    -- heure_label:setText(now)
 
     -- Efface les anciennes aiguilles
     -- Si c'est le 1er affichage, alors il n'y a rien à effacer...
@@ -162,19 +158,11 @@ function afficheHeure ()
         dest_x = int (centreX + math.cos(radian) * radius * 0.5),
         dest_y = int (centreY + math.sin(radian) * radius * 0.5)
     }
-    
 
     clock:drawLine(coordHeure.orig_x,coordHeure.orig_y, coordHeure.dest_x,coordHeure.dest_y,COLOR_DARK)
     
     -- Sauvegarde de la position de l'aiguille pour pouvoir l'effacer au prochaine rafraichissement
     copyStruct(coordHeure, oldCoordHeure)
-
---    oldCoordHeure = {
---        orig_x = coordHeure.orig_x,
---        orig_y = coordHeure.orig_y,
---        dest_x = coordHeure.dest_x,
---        dest_y = coordHeure.dest_y
---    }
 
     -- affichage aiguille Minute
     radian = math.rad (minute * 360 / 60 +offsetAngle)
@@ -191,13 +179,6 @@ function afficheHeure ()
     -- Sauvegarde de la position de l'aiguille pour pouvoir l'effacer au prochaine rafraichissement
     copyStruct(coordMinute, oldCoordMinute)
 
---    oldCoordMinute = {
---        orig_x = coordMinute.orig_x,
---        orig_y = coordMinute.orig_y,
---        dest_x = coordMinute.dest_x,
---        dest_y = coordMinute.dest_y
---    }
-
     -- affichage aiguille Seconde
     radian = math.rad (seconde * 360 / 60 +offsetAngle)
 
@@ -212,19 +193,8 @@ function afficheHeure ()
     -- Sauvegarde de la position de l'aiguille pour pouvoir l'effacer au prochaine rafraichissement
     copyStruct(coordSeconde, oldCoordSeconde)
 
-    --    oldCoordSeconde = {
---        orig_x = coordSeconde.orig_x,
---        orig_y = coordSeconde.orig_y,
---        dest_x = coordSeconde.dest_x,
---        dest_y = coordSeconde.dest_y
---    }
-
     -- set timer to refresh in 1 sec
     time:setTimeout(afficheHeure, 1000)
-
-    -- incrément manuel des secondes 
-    seconde = seconde +1
-
 
 end -- afficheHeure
 
@@ -233,25 +203,42 @@ function init()
 
     win = gui:window()
 
+    -- Label de l'heure
+    -- heure_label = gui:label(win, 0, 10, 320, 15)
+    -- heure_label:setHorizontalAlignment(CENTER_ALIGNMENT)
+    -- heure_label:setFontSize(15)
 
-    heure_label = gui:label(win, 0, 0, 320, 15)
-    heure_label:setHorizontalAlignment(CENTER_ALIGNMENT)
-    heure_label:setFontSize(15)
-
-    --drawClock()
-
+    -- Switch activatin alarme
+    btnToggleAlarme = gui:switch(win, 250,400)
+    
     gui:setWindow(win)
 
 
 end -- init
 
+
+-- Fonction pour fermer la fenetre de l'application Alarme
+function closeAlarme()
+    print("closeAlarme")
+    --gui:del(win)
+end -- function closeAlarme
+
+
+-- toggleAlarme - active ou desactive l'alarme
+function toggleAlarme()
+    print("toggleAlarme")
+end --toggleAlarme
+
+-- fonction vide pour test
+function rien()
+    print("rien")
+end -- rien
+
 function run()
 
     init()
-
     drawClock()
-
+    
     afficheHeure()
-
 
 end --run

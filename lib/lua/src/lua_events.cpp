@@ -45,8 +45,22 @@ sol::table LuaTime::get(std::string format)
     result.push_back(format.substr(start));
 
     std::vector<std::string> identifiers = {"s","mi","h","d","mo","y"};
-    std::vector<int> date = {GSM::seconds,GSM::minutes,GSM::hours,GSM::days,GSM::months,GSM::years};
+    #ifdef ESP_PLATFORM
+        std::vector<int> date = {GSM::seconds,GSM::minutes,GSM::hours,GSM::days,GSM::months,GSM::years};
 
+    #else
+            time_t t = std::time(0);   // get time now
+            tm* local_time = std::localtime(&t);
+
+            uint16_t years   = local_time->tm_year + 1900;
+            uint16_t months  = local_time->tm_mon + 1;
+            uint16_t days   = local_time->tm_mday;
+            uint16_t hours   = local_time->tm_hour;
+            uint16_t minutes    = local_time->tm_min;
+            uint16_t seconds    = local_time->tm_sec;                
+
+        std::vector<int> date = {seconds,minutes,hours,days,months,years};
+    #endif
     
     // ajouter les valeurs aux index des identifiers
 
