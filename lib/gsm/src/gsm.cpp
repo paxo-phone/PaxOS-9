@@ -395,40 +395,56 @@ namespace GSM
     {
         std::string data = send("AT+CCLK?", "+CCLK:");
 
-        std::cout << data << std::endl;
+        // si on est sur ESP, alors, on check l'heure via  commande AT
+        #ifdef ESP_PLATFORM
 
-        // Find the start and end positions of the date and time string
-        size_t start = data.find("\"");
-        if (start == std::string::npos) {
-            return;
-        }
-        start++;
+            std::cout << data << std::endl;
 
-        size_t end = data.find("+");
-        if (end == std::string::npos) {
-            return;
-        }
+            // Find the start and end positions of the date and time string
+            size_t start = data.find("\"");
+            if (start == std::string::npos) {
+                return;
+            }
+            start++;
 
-        // Extract the date and time string
-        std::string dateTime = data.substr(start, end - start);
+            size_t end = data.find("+");
+            if (end == std::string::npos) {
+                return;
+            }
 
-        // Extract the year, month, and day
-        try {
-            years = std::atoi(dateTime.substr(0, 2).c_str());
-            months = std::atoi(dateTime.substr(3, 2).c_str());
-            days = std::atoi(dateTime.substr(6, 2).c_str());
-        } catch (const std::invalid_argument&) {
-            return;
-        }
+            // Extract the date and time string
+            std::string dateTime = data.substr(start, end - start);
 
-        // Extract the hour, minute, and second
-        try {
-            hours = std::atoi(dateTime.substr(9, 2).c_str());
-            minutes = std::atoi(dateTime.substr(12, 2).c_str());
-            seconds = std::atoi(dateTime.substr(15, 2).c_str());
-        } catch (const std::invalid_argument&) {
-            return;
-        }
+            // Extract the year, month, and day
+            try {
+                years = std::atoi(dateTime.substr(0, 2).c_str());
+                months = std::atoi(dateTime.substr(3, 2).c_str());
+                days = std::atoi(dateTime.substr(6, 2).c_str());
+            } catch (const std::invalid_argument&) {
+                return;
+            }
+
+            // Extract the hour, minute, and second
+            try {
+                hours = std::atoi(dateTime.substr(9, 2).c_str());
+                minutes = std::atoi(dateTime.substr(12, 2).c_str());
+                seconds = std::atoi(dateTime.substr(15, 2).c_str());
+            } catch (const std::invalid_argument&) {
+                return;
+            }
+
+        // si on est pas sur plateform ESP, on récupére l'heure et date system locale
+        #else
+            time_t t = std::time(0);   // get time now
+            tm* local_time = std::localtime(&t);
+
+            years   = local_time->tm_year + 1900;
+            months  = local_time->tm_mon + 1;
+            days   = local_time->tm_mday;
+            hours   = local_time->tm_hour;
+            minutes    = local_time->tm_min;
+            seconds    = local_time->tm_sec;                
+        #endif
 
         std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
@@ -446,7 +462,8 @@ namespace GSM
 
         updateHour();
 
-        eventHandlerBack.setInterval(new Callback<>(&GSM::getHour), 5000);
+        // Mise à jour de l'heure toutes les 1000 ms
+        eventHandlerBack.setInterval(new Callback<>(&GSM::getHour), 1000);
         eventHandlerBack.setInterval(new Callback<>([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }), 5000);
 
         //eventHandlerBack.setInterval(new Callback<>([](){if(send("AT", "AT").find("OK") == std::string::npos) init(); }), 15000);
