@@ -3,7 +3,7 @@
 #include <app.hpp>
 #include <gsm.hpp>
 
-std::string getFormatedHour()
+std::string getFormatedDate()
 {
     uint16_t day_ = GSM::days;
     uint16_t day = GSM::days;
@@ -29,7 +29,7 @@ int launcher()
     
     Label *date = new Label(55, 89, 210, 18);
     Date data = {GSM::days, GSM::months, GSM::years};
-    date->setText(getFormatedHour()); 
+    date->setText(getFormateddate()); 
     date->setVerticalAlignment(Label::Alignement::CENTER);
     date->setHorizontalAlignment(Label::Alignement::CENTER);
     date->setFontSize(16);
@@ -48,7 +48,7 @@ int launcher()
             if(min!=GSM::minutes)
             {
                 hour->setText(std::to_string(GSM::hours) + ":" + (GSM::minutes<=9 ? "0" : "") + std::to_string(GSM::minutes));
-                date->setText(getFormatedHour());
+                date->setText(getFormatedDate());
                 min = GSM::minutes;
             }
          }),
