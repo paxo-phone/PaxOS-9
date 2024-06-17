@@ -346,6 +346,8 @@ namespace GSM
 
     int getBatteryLevel()
     {
+        #ifdef ESP_PLATFORM
+
         if(voltage>4.12)
             return 100;
         else if(voltage>4.03)
@@ -388,7 +390,9 @@ namespace GSM
             return 5;
         else
             return 0;
-        
+        #else
+        return 100;
+        #endif
     }
 
     void updateHour()
@@ -446,7 +450,7 @@ namespace GSM
             seconds    = local_time->tm_sec;                
         #endif
 
-        std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
+        // std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
 
     void getHour()
