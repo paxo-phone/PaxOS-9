@@ -1,8 +1,10 @@
 local tNow
 local win
--- local heure_label
+local winAlarme
+
 local clock
 local offsetAngle = 270
+local idRefreshClock
 
 local oldCoordHeure = {}
 local oldCoordMinute = {}
@@ -34,9 +36,10 @@ function drawClock()
     local espacement = 5
 
     -- draw clock circle
-    clock = gui:canvas(win, 0, 0, int(win:getWidth()), int(win:getWidth()))
-    
-    clock:onClick(function() rien() end)
+    clock = gui:canvas(win, 0, 35, int(win:getWidth() - 40), int(win:getWidth()-40))
+    -- clock:onClick (function() end)
+
+    --clock:onClick(function() rien() end)
 
     clock:fillRect(0,0,int(win:getWidth()), int(win:getWidth()),BACKGROUND_COLOR)
 --    drawRect_canvas:drawRect(5, 5, 15, 15, COLOR_WARNING)
@@ -194,22 +197,32 @@ function afficheHeure ()
     copyStruct(coordSeconde, oldCoordSeconde)
 
     -- set timer to refresh in 1 sec
-    time:setTimeout(afficheHeure, 1000)
+    idRefreshClock = time:setTimeout(afficheHeure, 1000)
 
 end -- afficheHeure
 
 
 function init()
 
+    -- récupération de la fenetre
     win = gui:window()
 
-    -- Label de l'heure
-    -- heure_label = gui:label(win, 0, 10, 320, 15)
-    -- heure_label:setHorizontalAlignment(CENTER_ALIGNMENT)
-    -- heure_label:setFontSize(15)
+    local title=gui:label(win, 35, 10, 144, 28)
+    title:setFontSize(24)
+    title:setText("Alarme")
 
     -- Switch activatin alarme
     btnToggleAlarme = gui:switch(win, 250,400)
+    btnToggleAlarme:onClick (function() end)
+
+    -- bouton
+    testAlarme = gui:button(win, 35, 420, 250, 38)
+    testAlarme:setText("Test")
+    testAlarme:onClick(
+        function ()
+            closeAlarme()
+        end
+    );
     
     gui:setWindow(win)
 
@@ -219,26 +232,57 @@ end -- init
 
 -- Fonction pour fermer la fenetre de l'application Alarme
 function closeAlarme()
-    print("closeAlarme")
-    --gui:del(win)
+        
+    if (btnToggleAlarme:getState()) then
+        ringAlarme()
+    end
 end -- function closeAlarme
 
 
--- toggleAlarme - active ou desactive l'alarme
-function toggleAlarme()
-    print("toggleAlarme")
-end --toggleAlarme
 
--- fonction vide pour test
-function rien()
-    print("rien")
-end -- rien
+function ringAlarme()
+
+    --     hardware::setVibrator(true);
+    print("ringAlarme")
+
+    winAlarme = gui:window()
+    gui:setWindow(winAlarme)
+
+    time:removeTimeout(idRefreshClock);
+
+
+    popupAlarme = gui:canvas(winAlarme, 0, 0, 320, 480)
+    popupAlarme:fillRect(0,0,320, 480,COLOR_BLUE)
+
+    print("drawText")
+    popupAlarme:drawText(5, 5, "test", COLOR_RED)
+    print("drawText OK")
+
+    print("drawTextCentered")
+    popupAlarme:drawTextCentered(5, 5, "test", COLOR_RED, true, true)
+    print("drawTextCentered OK")
+
+
+    local back = gui:image(win, "back.png", 30, 30, 18, 18)
+    back:onClick(function() 
+        time:setTimeout(
+            function () 
+                --gui:del(winAlarme) 
+                --gui:setWindow(win) 
+                gui:del(popupAlarme)
+                idRefreshClock = time:setTimeout(afficheHeure, 1000)
+
+            end, 
+            0
+        ) 
+    end)
+
+end
 
 function run()
 
     init()
     drawClock()
-    
     afficheHeure()
 
 end --run
