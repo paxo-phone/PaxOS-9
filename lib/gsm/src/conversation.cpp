@@ -7,22 +7,21 @@
 
 namespace Conversations
 {
-    void loadConversation(const std::string &filePath, Conversation &conv)
+    void loadConversation(const storage::Path &filePath, Conversation &conv)
     {
-        std::cout << "Loading conversation from: " << filePath << std::endl;
-        storage::Path path(filePath);
+        std::cout << "Loading conversation from: " << filePath.str() << std::endl;
 
-        if (!path.exists())
+        if (!filePath.exists())
         {
-            std::cerr << "File does not exist: " << filePath << std::endl;
+            std::cerr << "File does not exist: " << filePath.str() << std::endl;
             return;
         }
 
         storage::FileStream file;
-        file.open(path.str(), storage::Mode::READ);
+        file.open(filePath.str(), storage::Mode::READ);
         if (!file.isopen())
         {
-            std::cerr << "Failed to open file: " << filePath << " Error: " << strerror(errno) << std::endl;
+            std::cerr << "Failed to open file: " << filePath.str() << " Error: " << strerror(errno) << std::endl;
             return;
         }
 
@@ -32,7 +31,7 @@ namespace Conversations
 
         if (fileContent.empty())
         {
-            std::cerr << "File is empty: " << filePath << std::endl;
+            std::cerr << "File is empty: " << filePath.str() << std::endl;
             return;
         }
 
@@ -57,21 +56,15 @@ namespace Conversations
         }
     }
 
-    void saveConversation(const std::string &filePath, const Conversation &conv)
+    void saveConversation(const storage::Path &filePath, const Conversation &conv)
     {
-        std::cout << "Saving conversation to: " << filePath << std::endl;
+        std::cout << "Saving conversation to: " << filePath.str() << std::endl;
 
-        // Create directory if it doesn't exist
-        size_t lastSlashPos = filePath.find_last_of('/');
-        if (lastSlashPos != std::string::npos)
+        storage::Path parentPath = filePath / "../";
+
+        if (!parentPath.exists())
         {
-            std::string parentPath = filePath.substr(0, lastSlashPos);
-            storage::Path path(parentPath);
-            if (!path.exists())
-            {
-                std::string command = "mkdir -p " + parentPath;
-                system(command.c_str());
-            }
+            parentPath.newdir();
         }
 
         nlohmann::json json;
@@ -88,7 +81,7 @@ namespace Conversations
         file.open(path.str(), storage::Mode::WRITE);
         if (!file.isopen())
         {
-            std::cerr << "Failed to open file for writing: " << filePath << " Error: " << strerror(errno) << std::endl;
+            std::cerr << "Failed to open file for writing: " << filePath.str() << " Error: " << strerror(errno) << std::endl;
             return;
         }
 

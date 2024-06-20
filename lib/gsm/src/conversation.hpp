@@ -5,6 +5,8 @@
 #include <string>
 #include <json.hpp>
 
+#include <path.hpp>
+
 #define MESSAGES_LOCATION "apps/messages/data"
 
 namespace Conversations
@@ -22,8 +24,8 @@ namespace Conversations
         std::vector<Message> messages;
     };
 
-    void loadConversation(const std::string &filePath, Conversation &conv);
-    void saveConversation(const std::string &filePath, const Conversation &conv);
+    void loadConversation(const storage::Path &filePath, Conversation &conv);
+    void saveConversation(const storage::Path &filePath, const Conversation &conv);
 }
 
 #endif // CONVERSATION_HPP

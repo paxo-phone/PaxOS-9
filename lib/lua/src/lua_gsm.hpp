@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <SOL2/sol.hpp>
 #include "gsm.hpp"
 #include "conversation.hpp"
 
@@ -16,7 +17,7 @@ namespace LuaGSM
     void rejectCall();
     std::string getNumber();
     uint8_t getCallState();
-    std::vector<Conversations::Message> getMessages(const std::string &number);
+    sol::table getMessages(const std::string &number, sol::state& lua);
 };
 
 #endif

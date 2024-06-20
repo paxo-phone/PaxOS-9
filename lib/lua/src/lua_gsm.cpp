@@ -61,11 +61,17 @@ namespace LuaGSM
         return GSM::state.callState;
     }
 
-    std::vector<Conversations::Message> getMessages(const std::string &number)
+    sol::table getMessages(const std::string &number, sol::state& lua)
     {
         Conversations::Conversation conv;
         std::string convFilePath = std::string(MESSAGES_LOCATION) + "/" + number + ".json";
         Conversations::loadConversation(convFilePath, conv);
-        return conv.messages;
+        
+        sol::table messages = lua.create_table();
+        for (const auto msg : conv.messages)
+        {
+            messages.add(msg);
+        }
+        return messages;
     }
 }

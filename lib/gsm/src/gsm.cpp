@@ -239,9 +239,8 @@ namespace GSM
 
     std::string getCurrentTimestamp()
     {
-        std::time_t now = std::time(nullptr);
         char buf[20];
-        std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+        std::sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
         return std::string(buf);
     }
 
@@ -297,17 +296,17 @@ namespace GSM
             storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
             if (convPath.exists())
             {
-                Conversations::loadConversation(convPath.str(), conv);
+                Conversations::loadConversation(convPath, conv);
             }
             else
             {
                 conv.number = number;
             }
             conv.messages.push_back({message, true, getCurrentTimestamp()}); // true = message de l'autre
-            Conversations::saveConversation(convPath.str(), conv);
+            Conversations::saveConversation(convPath, conv);
 
             messages.push_back({number, message, date});
-            std::cout << "Message added to GSM::messages: " << message << std::endl;
+            std::cout << "Message added to GSM::messages: " << number << " - " << message << std::endl;
 
             i = j + 1;
         }
@@ -329,14 +328,14 @@ namespace GSM
         storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
         if (convPath.exists())
         {
-            Conversations::loadConversation(convPath.str(), conv);
+            Conversations::loadConversation(convPath, conv);
         }
         else
         {
             conv.number = number;
         }
         conv.messages.push_back({message, false, getCurrentTimestamp()}); // false = message de l'user
-        Conversations::saveConversation(convPath.str(), conv);
+        Conversations::saveConversation(convPath, conv);
     }
 
     void newMessage(std::string number, std::string message)

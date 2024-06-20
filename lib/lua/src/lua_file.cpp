@@ -395,6 +395,17 @@ void LuaFile::run(std::vector<std::string> arg)
                 "phone", &Contacts::contact::phone
             );
 
+            
+            lua.new_usertype<Conversations::Message>("Message",
+                "message", &Conversations::Message::message,
+                "who", &Conversations::Message::who,
+                "date", &Conversations::Message::date
+            );
+            
+            luaGSM["getMessages"] = [&](const std::string& number) {
+                return LuaGSM::getMessages(number, lua);
+            };
+
             lua["gsm"] = luaGSM;
         }
 
