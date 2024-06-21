@@ -21,7 +21,7 @@ namespace GSM
     std::vector<Message> messages;
     State state;
     uint16_t seconds, minutes, hours, days, months, years = 0;
-    float voltage = 0;
+    float voltage = -1;
 
     namespace ExternalEvents
     {
@@ -347,6 +347,8 @@ namespace GSM
 
     int getBatteryLevel()
     {
+        if(voltage == -1)
+            return 100;
         if(voltage>4.12)
             return 100;
         else if(voltage>4.03)
