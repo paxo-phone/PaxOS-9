@@ -61,6 +61,7 @@ namespace GSM
     void reInit()
     {
 #ifdef ESP_PLATFORM
+        download();
         gsm.begin(115200, SERIAL_8N1, RX, TX);
 #endif
     }
