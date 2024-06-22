@@ -154,13 +154,13 @@ void LuaGui::update()
     }
 }
 
-std::string LuaGui::keyboard(const std::string& placeholder)
+std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText)
 {
     gui::elements::Window win;
 
     graphics::setScreenOrientation(graphics::LANDSCAPE);
 
-    Keyboard key;
+    auto key = Keyboard(defaultText);
     key.setPlaceholder(placeholder);
 
     while (!hardware::getHomeButton() && !key.quitting())

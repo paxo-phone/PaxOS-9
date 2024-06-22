@@ -153,22 +153,24 @@ namespace gui::elements
         this->localGraphicalUpdate();
     }
 
-    void Canvas::drawText(int16_t x, int16_t y, std::string& text, color_t color)
+    void Canvas::drawText(int16_t x, int16_t y, std::string& text, color_t color, float fontSize)
     {
         StandbyMode::triggerPower();
+        this->getAndSetSurface()->setFontSize(fontSize);
         this->getAndSetSurface()->drawText(text, x, y, color);
         this->localGraphicalUpdate();
     }
 
     // w and h are the width and height of the text bounding box
-    void Canvas::drawTextCentered(int16_t x, int16_t y, std::string& text, color_t color, bool horizontallyCentered, bool verticallyCentered)
+    void Canvas::drawTextCentered(int16_t x, int16_t y, std::string& text, color_t color, bool horizontallyCentered, bool verticallyCentered, float fontSize)
     {
         this->drawTextCenteredInRect(x, y, -1, -1, text, color, horizontallyCentered, verticallyCentered);
     }
 
-    void Canvas::drawTextCenteredInRect(int16_t x, int16_t y, uint16_t w, uint16_t h, std::string& text, color_t color, bool horizontallyCentered, bool verticallyCentered)
+    void Canvas::drawTextCenteredInRect(int16_t x, int16_t y, uint16_t w, uint16_t h, std::string& text, color_t color, bool horizontallyCentered, bool verticallyCentered, float fontSize)
     {
         StandbyMode::triggerPower();
+        this->getAndSetSurface()->setFontSize(fontSize);
         this->getAndSetSurface()->drawTextCentered(text, x, y, w, h, horizontallyCentered, verticallyCentered, color);
         this->localGraphicalUpdate();
     }

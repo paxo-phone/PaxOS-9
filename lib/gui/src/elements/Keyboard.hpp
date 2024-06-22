@@ -16,7 +16,7 @@ namespace gui::elements
     class Keyboard final : public ElementBase
     {
     public:
-        Keyboard();
+        explicit Keyboard(const std::string& defaultText = "");
         ~Keyboard() override;
 
         void render() override;
@@ -40,6 +40,7 @@ namespace gui::elements
     private:
         std::string m_buffer;
         std::string m_placeholder;
+        std::string m_defaultText;
 
         Label* m_label;
 

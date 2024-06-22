@@ -39,9 +39,10 @@ constexpr uint8_t CAPS_ONCE = 1;
 constexpr uint8_t CAPS_LOCK = 2;
 
 namespace gui::elements {
-    Keyboard::Keyboard()
+    Keyboard::Keyboard(const std::string& defaultText)
     {
-        //m_buffer = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam nihil, eveniet aliquid culpa officia aut!";
+        m_buffer = defaultText;
+        m_defaultText = defaultText;
 
         if (graphics::getScreenOrientation() == graphics::LANDSCAPE) {
             m_width = graphics::getScreenWidth();
@@ -168,9 +169,14 @@ namespace gui::elements {
             processKey(pressedKey);
         }
 
-        if (m_exitBox->isTouched() || m_confirmBox->isTouched())
+        if (m_exitBox->isTouched())
         {
-            // TODO : Implement callback ?
+            m_buffer = m_defaultText; // Reset text
+            m_exit = true;
+        }
+
+        if (m_confirmBox->isTouched())
+        {
             m_exit = true;
         }
 
@@ -270,7 +276,7 @@ namespace gui::elements {
     {
         auto keyString = std::string(1, key);
 
-        m_keysCanvas->drawTextCenteredInRect(x, y, w, 40, keyString, graphics::packRGB565(0, 0, 0));
+        m_keysCanvas->drawTextCenteredInRect(x, y, w, 40, keyString, graphics::packRGB565(0, 0, 0), true, true, 32);
     }
 
     void Keyboard::drawLastRow() const
@@ -390,6 +396,7 @@ namespace gui::elements {
                     m_caps = CAPS_NONE;
 
                     drawKeys();
+                    updateLayoutIcon(); // Fix bug
 
                     return;
                 }
