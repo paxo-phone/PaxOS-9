@@ -110,7 +110,7 @@ namespace gui::elements
             const int16_t k_maximumXIntersection = 0;
 
             int16_t minimumXIntersection = k_minimumXIntersection;
-            int16_t maximumXIntersection = maximumXIntersection; // the maximum value they could take
+            int16_t maximumXIntersection = k_maximumXIntersection; // the maximum value they could take
 
             for (uint16_t i = 0; i < verticesCount; i++)
             {
