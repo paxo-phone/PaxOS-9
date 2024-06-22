@@ -24,7 +24,7 @@ function run()
 
     local str_time = table.concat(time, ",")
 
-    todo_label = gui:label(win, 0, 0, 320, 480)
+    todo_label = gui:label(win, 0, 0, 320, 50)
     todo_label:setHorizontalAlignment(CENTER_ALIGNMENT)
     todo_label:setFontSize(15)
     todo_label:setText(json_obj:get() .. "\n" .. str_time)
@@ -67,6 +67,9 @@ function run()
     drawTextCenteredInBounds_canvas = gui:canvas(win, 35, 245, 50, 25)
     drawTextCenteredInBounds_canvas:drawRect(0, 0, 40, 20, COLOR_WARNING)
     drawTextCenteredInBounds_canvas:drawTextCenteredInBounds(0, 0, 40, 20, "E", COLOR_WARNING, true, true)
+
+    
+    sw = gui:switch(win, 50, 50)
 
     gui:setWindow(win)
 end

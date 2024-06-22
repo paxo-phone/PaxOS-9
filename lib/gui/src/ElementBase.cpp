@@ -277,7 +277,10 @@ bool gui::ElementBase::update()
     else
     {
         if(globalPressedState == PRESSED)
+        {
             this->m_pressedState = RELEASED;
+            onReleased();
+        }
         
         globalPressedState = NOT_PRESSED;
         widgetPressed = nullptr;
