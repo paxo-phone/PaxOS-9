@@ -61,12 +61,12 @@ function editContact(contact)
     local name = gui:input(win3, 35, 121, 250, 40)
     name:setTitle("Nom")
     name:setText(contact.name)
-    name:onClick(function () name:setText(gui:keyboard("Nom")) end)
+    name:onClick(function () name:setText(gui:keyboard("Nom", contact.name)) end)
 
     local num = gui:input(win3, 35, 216, 250, 40)
     num:setTitle("Numéro")
     num:setText(contact.phone)
-    num:onClick(function () num:setText(gui:keyboard("Numéro")) end)
+    num:onClick(function () num:setText(gui:keyboard("Numéro", contact.phone)) end)
 
     edit = gui:button(win3, 35, 394, 250, 38);
     edit:setText("Modifier")
@@ -90,11 +90,11 @@ function newContact()
 
     local name = gui:input(win2, 35, 121, 250, 40)
     name:setTitle("Nom")
-    name:onClick(function () name:setText(gui:keyboard("Nom")) end)
+    name:onClick(function () name:setText(gui:keyboard("Nom", contact.name)) end)
 
     local num = gui:input(win2, 35, 216, 250, 40)
     num:setTitle("Numéro")
-    num:onClick(function () num:setText(gui:keyboard("Numéro")) end)
+    num:onClick(function () num:setText(gui:keyboard("Numéro", contact.phone)) end)
 
     edit = gui:button(win2, 35, 394, 250, 38);
     edit:setText("Créer")
