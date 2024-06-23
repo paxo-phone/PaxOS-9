@@ -6,17 +6,21 @@
 #define KEYBOARD_HPP
 
 #include "../ElementBase.hpp"
+#include "Box.hpp"
+#include "Canvas.hpp"
+#include "Image.hpp"
+#include "Label.hpp"
 
 namespace gui::elements
 {
     class Keyboard final : public ElementBase
     {
     public:
-        Keyboard();
+        explicit Keyboard(const std::string& defaultText = "");
         ~Keyboard() override;
 
         void render() override;
-        void onReleased() override;
+        void widgetUpdate() override;
 
         /**
          * Returns the content of the keyboard's input AND CLEARS IT.
@@ -24,13 +28,25 @@ namespace gui::elements
          */
         std::string getText();
 
-        bool quitting() {return quit;}
+        /**
+         * @deprecated Please use "hasExitKeyBeenPressed()"
+         */
+        [[nodiscard]] bool quitting() const {return m_exit;}
+
+        [[nodiscard]] bool hasExitKeyBeenPressed() const;
+
+        void setPlaceholder(const std::string& placeholder);
 
     private:
         std::string m_buffer;
-        bool quit = false;
+        std::string m_placeholder;
+        std::string m_defaultText;
 
-        char **m_currentLayout;
+        Label* m_label;
+
+        bool m_exit = false;
+
+        uint8_t m_currentLayout;
 
         char **m_layoutLowercase;
         char **m_layoutUppercase;
@@ -38,26 +54,41 @@ namespace gui::elements
 
         uint8_t m_caps;
 
-        std::unique_ptr<graphics::SImage> m_capsIcon0;
-        std::unique_ptr<graphics::SImage> m_capsIcon1;
-        std::unique_ptr<graphics::SImage> m_capsIcon2;
+        Canvas* m_keysCanvas;
 
-        std::unique_ptr<graphics::SImage> m_backspaceIcon;
+        Image* m_capsIcon0;
+        Image* m_capsIcon1;
+        Image* m_capsIcon2;
+        Image* m_backspaceIcon;
+        Image* m_layoutIcon0;
+        Image* m_layoutIcon1;
+        Image* m_exitIcon;
+        Image* m_confirmIcon;
 
-        void drawKeys();
-        void drawKeyRow(int16_t y, uint8_t count, char* keys);
-        void drawKey(int16_t x, int16_t y, uint16_t w, char key);
+        Box* m_capsBox;
+        Box* m_layoutBox;
+        Box* m_backspaceBox;
+        Box* m_exitBox;
+        Box* m_confirmBox;
 
-        void drawLastRow(int16_t x, int16_t y);
+        void drawKeys() const;
+        void drawKeyRow(int16_t y, uint8_t count, const char* keys) const;
+        void drawKey(int16_t x, int16_t y, uint16_t w, char key) const;
 
-        char getKey(int16_t x, int16_t y);
-        uint8_t getKeyCol(int16_t x, uint8_t keyCount);
+        void drawLastRow() const;
+
+        char getKey(int16_t x, int16_t y) const;
+
+        static uint8_t getKeyCol(int16_t x, uint8_t keyCount);
 
         void processKey(char key);
 
-        void drawInputBox();
+        void drawInputBox() const;
 
-        void markDirty();
+        void updateCapsIcon() const;
+        void updateLayoutIcon() const;
+
+        char** getLayoutCharMap() const;
     };
 } // gui::elements
 

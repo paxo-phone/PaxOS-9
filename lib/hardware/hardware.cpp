@@ -18,6 +18,7 @@ void hardware::init()
     psramInit();
     pinMode(PIN_SCREEN_POWER, OUTPUT);
     pinMode(PIN_VIBRATOR, OUTPUT);
+    pinMode(12, OUTPUT);
     pinMode(PIN_HOME_BUTTON, INPUT_PULLUP);
     setVibrator(false);
 
@@ -29,6 +30,12 @@ void hardware::setScreenPower(bool power)
     #ifdef ESP_PLATFORM
 
     digitalWrite(PIN_SCREEN_POWER, power);
+    delay(100);
+    digitalWrite(12, 1);
+    delay(100);
+    digitalWrite(12, 0);
+    delay(100);
+    digitalWrite(12, 1);
 
     #endif
 }

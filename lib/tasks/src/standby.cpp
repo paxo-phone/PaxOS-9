@@ -113,7 +113,7 @@ namespace StandbyMode
         }
 
         #ifdef ESP_PLATFORM
-        std::cout << "CPU USAGE: " << int(100*(dt/TICKS_MS)) << "%" << std::endl;
+        //std::cout << "CPU USAGE: " << int(100*(dt/TICKS_MS)) << "%" << std::endl;
         #endif
 
         timer = millis();

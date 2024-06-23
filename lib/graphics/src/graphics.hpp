@@ -39,6 +39,7 @@ namespace graphics
     void flip();
 
     void getTouchPos(int16_t *x, int16_t *y);
+    void touchIsRead();
     void touchUpdate();
     bool isTouched();
 

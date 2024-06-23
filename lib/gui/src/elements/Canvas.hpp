@@ -32,9 +32,9 @@ namespace gui::elements
         
         void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
-        void drawText(int16_t x, int16_t y, std::string& text, color_t color);
-        void drawTextCentered(int16_t x, int16_t y, std::string& text, color_t color, bool horizontallyCentered = true, bool verticallyCentered = true);
-        void drawTextCenteredInRect(int16_t x, int16_t y, uint16_t w, uint16_t h, std::string& text, color_t color, bool horizontallyCentered = true, bool verticallyCentered = true);
+        void drawText(int16_t x, int16_t y, std::string& text, color_t color, float fontSize = 16);
+        void drawTextCentered(int16_t x, int16_t y, std::string& text, color_t color, bool horizontallyCentered = true, bool verticallyCentered = true, float fontSize = 16);
+        void drawTextCenteredInRect(int16_t x, int16_t y, uint16_t w, uint16_t h, std::string& text, color_t color, bool horizontallyCentered = true, bool verticallyCentered = true, float fontSize = 16);
     };
 } // gui::elements
 
