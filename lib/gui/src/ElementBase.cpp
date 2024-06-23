@@ -13,6 +13,7 @@ gui::ElementBase *gui::ElementBase::mainWindow = nullptr;
 int16_t gui::ElementBase::touchX, gui::ElementBase::touchY = -1;
 int16_t gui::ElementBase::originTouchX, gui::ElementBase::originTouchY = -1;
 int16_t gui::ElementBase::m_lastTouchX, gui::ElementBase::m_lastTouchY;
+int16_t gui::ElementBase::lastEventTouchX, gui::ElementBase::lastEventTouchY;
 bool gui::ElementBase::scrolling = false;
 gui::ElementBase::PressedState gui::ElementBase::globalPressedState = gui::ElementBase::PressedState::NOT_PRESSED;
 
@@ -133,10 +134,8 @@ bool gui::ElementBase::updateAll()
         }
     }
 
-    if(!returnV)
-    {
-        returnV = update();
-    }
+    update();
+    
     
     if(this->m_parent == nullptr)
         graphics::touchIsRead();
@@ -289,6 +288,8 @@ bool gui::ElementBase::update()
         if(globalPressedState == PRESSED)
         {
             this->m_pressedState = RELEASED;
+            lastEventTouchX = originTouchX;
+            lastEventTouchY = originTouchY;
             onReleased();
         }
         
@@ -557,8 +558,8 @@ void gui::ElementBase::getLastTouchPosAbs(int16_t* x, int16_t* y) const
  */
 void gui::ElementBase::getLastTouchPosRel(int16_t* x, int16_t* y) const
 {
-    *x = m_lastTouchX - getAbsoluteX();
-    *y = m_lastTouchY - getAbsoluteY();
+    *x = lastEventTouchX - getAbsoluteX();
+    *y = lastEventTouchY - getAbsoluteY();
 }
 
 void gui::ElementBase::free()

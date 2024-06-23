@@ -81,6 +81,7 @@ namespace gui
         ElementBase *m_parent;
         std::vector<ElementBase *> m_children;
         static int16_t touchX, touchY;
+        static int16_t lastEventTouchX, lastEventTouchY;
 
         uint16_t m_x, m_y;
     protected:

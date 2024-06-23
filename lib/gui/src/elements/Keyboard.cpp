@@ -155,10 +155,14 @@ namespace gui::elements {
 
     void Keyboard::widgetUpdate()
     {
+        std::cout << "Keyboard update" << std::endl;
         if (isTouched()) {
+            std::cout << "Touched" << std::endl;
             // Get touch position
             int16_t touchX, touchY;
             getLastTouchPosRel(&touchX, &touchY);
+
+            std::cout << "Touch at " << touchX << ", " << touchY << std::endl;
 
             const char pressedKey = getKey(touchX, touchY);
             if (pressedKey == KEY_NULL)
