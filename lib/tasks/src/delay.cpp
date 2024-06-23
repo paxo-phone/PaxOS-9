@@ -4,7 +4,11 @@
 #ifdef ESP_PLATFORM
 #include <LovyanGFX.hpp>
 #else
+#if defined(__linux__)
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 #endif
 
 void PaxOS_Delay(int64_t ms) {
