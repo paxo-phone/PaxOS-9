@@ -59,7 +59,7 @@ void mainLoop(void* data)
         StandbyMode::savePower();
 
 
-        while (!hardware::getHomeButton())
+        while (!hardware::getHomeButton()/* && GSM::state.callState != GSM::CallState::RINGING*/)
         {
             eventHandlerApp.update();
         }
@@ -116,7 +116,7 @@ void setup()
     app::init();
 
     #ifdef ESP_PLATFORM
-    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreateUniversal(mainLoop,"newloop", 64*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
     vTaskDelete(NULL);
     #else
     mainLoop(NULL);

@@ -37,6 +37,13 @@ void hardware::setScreenPower(bool power)
     delay(100);
     digitalWrite(12, 1);
 
+    delay(100);
+    digitalWrite(12, 1);
+    delay(100);
+    digitalWrite(12, 0);
+    delay(100);
+    digitalWrite(12, 1);
+
     #endif
 }
 
