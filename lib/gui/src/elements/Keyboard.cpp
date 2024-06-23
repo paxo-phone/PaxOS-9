@@ -396,7 +396,7 @@ namespace gui::elements {
                     m_caps = CAPS_NONE;
 
                     drawKeys();
-                    updateLayoutIcon(); // Fix bug
+                    updateCapsIcon(); // Fix bug
 
                     return;
                 }
