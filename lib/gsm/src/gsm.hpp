@@ -9,8 +9,8 @@
 extern const char *daysOfWeek[7];
 extern const char *daysOfMonth[12];
 
-#define f_Date(annee, mois) ( ((mois) <= 2) ? ((annee) - 1) : (annee) )
-#define g_Date(mois) ( ((mois) <= 2) ? ((mois) + 13) : ((mois) + 1) )
+#define f_Date(annee, mois) (((mois) <= 2) ? ((annee) - 1) : (annee))
+#define g_Date(mois) (((mois) <= 2) ? ((mois) + 13) : ((mois) + 1))
 
 struct Date
 {
@@ -20,8 +20,7 @@ struct Date
 };
 
 #define myCalculOfDay(d) (1461 * f_Date(d.annee, d.mois) / 4 + 153 * g_Date(d.mois) / 5 + d.jour)
-#define myWhatDay(d_) ( (myCalculOfDay(d_) - 621049) % 7 )
-
+#define myWhatDay(d_) ((myCalculOfDay(d_) - 621049) % 7)
 
 namespace GSM
 {
@@ -42,14 +41,14 @@ namespace GSM
 
     struct Request
     {
-        std::function<void (void)> function;
+        std::function<void(void)> function;
         uint8_t priority;
     };
 
     struct Key
     {
         std::string key;
-        std::function<void ()> function;
+        std::function<void()> function;
     };
 
     struct State
@@ -63,18 +62,21 @@ namespace GSM
     {
         std::string number;
         std::string message;
+        std::string date;
     };
 
     namespace ExternalEvents
     {
-        extern std::function<void (void)> onIncommingCall;
+        extern std::function<void(void)> onIncommingCall;
+        extern std::function<void(void)> onNewMessage;
     }
 
     extern std::string data;
     extern std::vector<Request> requests;
     extern std::vector<Key> keys;
-    extern std::vector<Message> messages;   // received messages
-    extern std::vector<Message> pendingMessages;    // messages pending
+    // extern std::vector<Message> messages;        // received messages
+    // extern std::vector<Message> pendingMessages; // messages pending
+    extern std::vector<Message> messages;
     extern State state;
     extern uint16_t seconds, minutes, hours, days, months, years;
     extern float voltage;
@@ -86,14 +88,19 @@ namespace GSM
     void process();
     void checkRequest();
     void run();
-
     void newMessage(std::string number, std::string message);
+    void onMessage();
     void newCall(std::string number);
     void endCall();
     void acceptCall();
     void rejectCall();
     int getBatteryLevel();
     void getHour();
-};
+    void resetCache();
+    void createConversation(const std::string &filePath);
+    std::string getCurrentTimestamp();
+    void clearFrom(const std::string &from, const std::string &to);
+    void appendRequest(Request request);
+}
 
-#endif
+#endif // GSM_HPP

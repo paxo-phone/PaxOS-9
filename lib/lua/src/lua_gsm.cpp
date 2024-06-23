@@ -1,6 +1,6 @@
 #include "lua_gsm.hpp"
-
 #include "gsm.hpp"
+#include "conversation.hpp"
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
@@ -10,14 +10,14 @@ namespace LuaGSM
 {
     void newMessage(std::string number, std::string message)
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::newMessage(number, message);
-        #endif
+#endif
     }
 
     void newCall(std::string number)
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::newCall(number);
 
         uint64_t timeout = millis() + 5000;
@@ -28,28 +28,28 @@ namespace LuaGSM
         }
 
         GSM::state.callFailure = false;
-        #endif
+#endif
     }
 
     void endCall()
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::endCall();
-        #endif
+#endif
     }
 
     void acceptCall()
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::acceptCall();
-        #endif
+#endif
     }
 
     void rejectCall()
     {
-        #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
         GSM::rejectCall();
-        #endif
+#endif
     }
 
     std::string getNumber()
@@ -61,4 +61,18 @@ namespace LuaGSM
     {
         return GSM::state.callState;
     }
-};
+
+    sol::table getMessages(const std::string &number, sol::state& lua)
+    {
+        Conversations::Conversation conv;
+        std::string convFilePath = std::string(MESSAGES_LOCATION) + "/" + number + ".json";
+        Conversations::loadConversation(convFilePath, conv);
+        
+        sol::table messages = lua.create_table();
+        for (const auto msg : conv.messages)
+        {
+            messages.add(msg);
+        }
+        return messages;
+    }
+}
