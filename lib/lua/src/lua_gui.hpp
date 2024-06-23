@@ -34,7 +34,7 @@ class LuaGui
     LuaRadio* radio(LuaWidget* parent, int x, int y);
     LuaWindow* window();
 
-    std::string keyboard(std::string placeholder);
+    std::string keyboard(const std::string& placeholder, const std::string& defaultText);
 
     void del(LuaWidget* widget);
 

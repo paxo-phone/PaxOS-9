@@ -80,6 +80,7 @@ namespace StandbyMode
         #ifdef ESP_PLATFORM
         setCpuFrequencyMhz(20);
         GSM::reInit();
+        Serial.begin(115200);
         powerMode = false;
         #endif
     }
@@ -89,6 +90,7 @@ namespace StandbyMode
         #ifdef ESP_PLATFORM
         setCpuFrequencyMhz(240);
         GSM::reInit();
+        Serial.begin(115200);
         powerMode = true;
         #endif
     }
@@ -113,7 +115,7 @@ namespace StandbyMode
         }
 
         #ifdef ESP_PLATFORM
-        std::cout << "CPU USAGE: " << int(100*(dt/TICKS_MS)) << "%" << std::endl;
+        //std::cout << "CPU USAGE: " << (float) (100*(dt/TICKS_MS)) << "%" << std::endl;
         #endif
 
         timer = millis();

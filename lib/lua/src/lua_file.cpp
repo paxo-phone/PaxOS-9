@@ -121,6 +121,9 @@ void LuaFile::run(std::vector<std::string> arg)
 
         // en fonction des permissions, charger certains modules
 
+        lua.set_function("nonothing", []() {
+        });
+
         if (perms.acces_hardware)   // si hardware est autorisé
         {
             lua.new_usertype<LuaHardware>("hardware",
@@ -436,7 +439,14 @@ void LuaFile::run(std::vector<std::string> arg)
             {
                 lua_gui.update();
                 lua_time.update();
-                lua.collect_garbage();
+                /*try
+                {
+                    lua.collect_garbage();
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }*/
 
                 if (app::request)
                 {

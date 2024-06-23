@@ -24,12 +24,15 @@ using namespace gui::elements;
 
 
 
-void ringingVibrator()
+void ringingVibrator(void* data)
 {
     #ifdef ESP_PLATFORM
-    if(GSM::state.callState == GSM::CallState::RINGING)
+    while (true)
     {
-        hardware::setVibrator(true); delay(100); hardware::setVibrator(false);
+        if(GSM::state.callState == GSM::CallState::RINGING)
+        {
+            delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);
+        }
     }
     #endif
 }
@@ -56,7 +59,7 @@ void mainLoop(void* data)
         StandbyMode::savePower();
 
 
-        while (!hardware::getHomeButton())
+        while (!hardware::getHomeButton()/* && GSM::state.callState != GSM::CallState::RINGING*/)
         {
             eventHandlerApp.update();
         }
@@ -91,11 +94,13 @@ void setup()
     };
 
     #ifdef ESP_PLATFORM
-    eventHandlerBack.setInterval(
-        new Callback<>(&ringingVibrator),
-        300
-    );
+    ThreadManager::new_thread(CORE_BACK, &ringingVibrator);
     #endif
+
+    eventHandlerBack.setInterval(
+        new Callback<>(&graphics::touchUpdate),
+        10
+    );
 
     hardware::setVibrator(false);
     GSM::endCall();
@@ -111,7 +116,7 @@ void setup()
     app::init();
 
     #ifdef ESP_PLATFORM
-    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreateUniversal(mainLoop,"newloop", 64*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
     vTaskDelete(NULL);
     #else
     mainLoop(NULL);

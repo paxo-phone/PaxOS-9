@@ -28,6 +28,7 @@ namespace GSM
     std::vector<Message> messages;
     State state;
     uint16_t seconds, minutes, hours, days, months, years = 0;
+    float voltage = -1;
 
     namespace ExternalEvents
     {
@@ -68,6 +69,7 @@ namespace GSM
     void reInit()
     {
 #ifdef ESP_PLATFORM
+        download();
         gsm.begin(115200, SERIAL_8N1, RX, TX);
 #endif
     }
@@ -102,7 +104,8 @@ namespace GSM
                 answer += gsm.read();
                 lastChar = millis();
 
-                if (answer.find(answerKey) == std::string::npos)
+
+                if(answer.find(answerKey) != std::string::npos)
                 {
                     data += answer.substr(0, answer.find(answerKey) - 1);
                     break;
@@ -406,8 +409,11 @@ namespace GSM
     int getBatteryLevel()
     {
         float voltage = getVoltage();
-        if (voltage > 4.12)
+
+        if(voltage == -1)
             return 100;
+        if (voltage > 4.12)
+          return 100;
         else if (voltage > 4.03)
             return 95;
         else if (voltage > 3.99)

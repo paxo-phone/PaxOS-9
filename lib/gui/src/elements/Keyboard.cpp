@@ -8,6 +8,14 @@
 #include <graphics.hpp>
 #include <Surface.hpp>
 
+#include "Box.hpp"
+#include "Image.hpp"
+
+// Layouts
+constexpr char LAYOUT_LOWERCASE = 0;
+constexpr char LAYOUT_UPPERCASE = 1;
+constexpr char LAYOUT_NUMBERS = 2;
+
 // 0x0_ => Control chars
 constexpr char KEY_NULL = 0x00;
 constexpr char KEY_EXIT = 0x01;
@@ -31,10 +39,20 @@ constexpr uint8_t CAPS_ONCE = 1;
 constexpr uint8_t CAPS_LOCK = 2;
 
 namespace gui::elements {
-    Keyboard::Keyboard()
+    Keyboard::Keyboard(const std::string& defaultText)
     {
-        m_width = graphics::getScreenHeight();
-        m_height = graphics::getScreenWidth();
+        m_buffer = defaultText;
+        m_defaultText = defaultText;
+
+        if (graphics::getScreenOrientation() == graphics::LANDSCAPE) {
+            m_width = graphics::getScreenWidth();
+            m_height = graphics::getScreenHeight();
+        } else {
+            std::cerr << "[Warning] It seems that you are using the Keyboard element in potrait mode." << std::endl;
+
+            m_width = graphics::getScreenHeight();
+            m_height = graphics::getScreenWidth();
+        }
 
         m_x = 0;
         m_y = 0;
@@ -45,17 +63,8 @@ namespace gui::elements {
 
         m_caps = CAPS_NONE;
 
-        auto thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_0.png");
-        m_capsIcon0 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
-
-        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_1.png");
-        m_capsIcon1 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
-
-        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/caps_icon_2.png");
-        m_capsIcon2 = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
-
-        thisPathIsUselessButGraphicsLibIsStillBroken = storage::Path("system/keyboard/backspace_icon.png");
-        m_backspaceIcon = std::make_unique<graphics::SImage>(thisPathIsUselessButGraphicsLibIsStillBroken);
+        m_keysCanvas = new Canvas(30, 140, 420, 160);
+        addChild(m_keysCanvas);
 
         m_layoutLowercase = new char*[4];
         m_layoutLowercase[0] = new char[10]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
@@ -75,7 +84,60 @@ namespace gui::elements {
         m_layoutNumbers[2] = new char[9]{KEY_CAPS, '_', ',', '.', ':', ';', '!', '?', KEY_BACKSPACE};
         m_layoutNumbers[3] = new char[3]{KEY_LAYOUT_STANDARD, KEY_SPACE, KEY_EXIT};
 
-        m_currentLayout = m_layoutLowercase;
+        m_currentLayout = LAYOUT_LOWERCASE;
+
+        // Create label for text
+        m_label = new Label(30, 30, 380, 100);
+        // m_label->setFont(graphics::ARIAL);
+        m_label->setFontSize(24);
+        addChild(m_label);
+
+        // Create images box (for better performances ?)
+        m_capsBox = new Box(30, 220, 47, 40);
+        m_layoutBox = new Box(30, 260, 80, 40);
+        m_backspaceBox = new Box(403, 220, 47, 40);
+        m_exitBox = new Box(370, 260, 80, 40);
+        m_confirmBox = new Box(410, 30, 40, 100);
+
+        // Create images
+        m_capsIcon0 = new Image(storage::Path("system/keyboard/caps_icon_0.png"), 0, 0, 40, 40);
+        m_capsIcon1 = new Image(storage::Path("system/keyboard/caps_icon_1.png"), 0, 0, 40, 40);
+        m_capsIcon2 = new Image(storage::Path("system/keyboard/caps_icon_2.png"), 0, 0, 40, 40);
+        m_backspaceIcon = new Image(storage::Path("system/keyboard/backspace_icon.png"), 0, 0, 40, 40);
+        m_layoutIcon0 = new Image(storage::Path("system/keyboard/layout_icon_0.png"), 20, 0, 40, 40);
+        m_layoutIcon1 = new Image(storage::Path("system/keyboard/layout_icon_1.png"), 20, 0, 40, 40);
+        m_exitIcon = new Image(storage::Path("system/keyboard/exit_icon.png"), 0, 0, 40, 40);
+        m_confirmIcon = new Image(storage::Path("system/keyboard/confirm_icon.png"), 0, 0, 40, 40);
+
+        // Load images into RAM
+        m_capsIcon0->load();
+        m_capsIcon1->load();
+        m_capsIcon2->load();
+        m_backspaceIcon->load();
+        m_layoutIcon0->load();
+        m_layoutIcon1->load();
+        m_exitIcon->load();
+        m_confirmIcon->load();
+
+        // Add images to boxes
+        m_capsBox->addChild(m_capsIcon0);
+        m_capsBox->addChild(m_capsIcon1);
+        m_capsBox->addChild(m_capsIcon2);
+        m_backspaceBox->addChild(m_backspaceIcon);
+        m_layoutBox->addChild(m_layoutIcon0);
+        m_layoutBox->addChild(m_layoutIcon1);
+        m_exitBox->addChild(m_exitIcon);
+        m_confirmBox->addChild(m_confirmIcon);
+
+        // Add boxes
+        addChild(m_capsBox);
+        addChild(m_layoutBox);
+        addChild(m_backspaceBox);
+        addChild(m_exitBox);
+        addChild(m_confirmBox);
+
+        updateCapsIcon();
+        updateLayoutIcon();
     }
 
     Keyboard::~Keyboard() = default;
@@ -87,37 +149,95 @@ namespace gui::elements {
         // Input box
         drawInputBox();
 
-        // Keyboard box
-        // m_surface->fillRect(30, 140, 420, 160, graphics::packRGB565(255, 255, 255));
-
         // Draw keys
         drawKeys();
     }
 
-    void Keyboard::onReleased()
+    void Keyboard::widgetUpdate()
     {
-        // Get touch position
-        int16_t touchX, touchY;
-        getLastTouchPosRel(&touchX, &touchY);
+        std::cout << "Keyboard update" << std::endl;
+        if (isTouched()) {
+            std::cout << "Touched" << std::endl;
+            // Get touch position
+            int16_t touchX, touchY;
+            getLastTouchPosRel(&touchX, &touchY);
 
-        // std::cout << touchX << ", " << touchY << std::endl;
+            std::cout << "Touch at " << touchX << ", " << touchY << std::endl;
 
-        // m_surface->drawRoundRect(
-        //     static_cast<int16_t>(touchX - 5),
-        //     static_cast<int16_t>(touchY - 5),
-        //     10,
-        //     10,
-        //     10,
-        //     color
-        // );
+            const char pressedKey = getKey(touchX, touchY);
+            if (pressedKey == KEY_NULL)
+            {
+                return;
+            }
 
-        const char pressedKey = getKey(touchX, touchY);
-        if (pressedKey == KEY_NULL)
-        {
-            return;
+            processKey(pressedKey);
         }
 
-        processKey(pressedKey);
+        if (m_exitBox->isTouched())
+        {
+            m_buffer = m_defaultText; // Reset text
+            m_exit = true;
+        }
+
+        if (m_confirmBox->isTouched())
+        {
+            m_exit = true;
+        }
+
+        if (m_backspaceBox->isTouched())
+        {
+            if (!m_buffer.empty())
+            {
+                m_buffer.pop_back();
+            }
+
+            // Redraw input box
+            drawInputBox();
+        }
+
+        if (m_capsBox->isTouched())
+        {
+            switch (m_caps)
+            {
+                case CAPS_NONE:
+                default:
+                    m_currentLayout = LAYOUT_UPPERCASE;
+                    m_caps = CAPS_ONCE;
+                    break;
+                case CAPS_ONCE:
+                    m_currentLayout = LAYOUT_UPPERCASE;
+                    m_caps = CAPS_LOCK;
+                    break;
+                case CAPS_LOCK:
+                    m_currentLayout = LAYOUT_LOWERCASE;
+                    m_caps = CAPS_NONE;
+                    break;
+            }
+
+            updateCapsIcon();
+        }
+
+        if (m_layoutBox->isTouched())
+        {
+            if (m_currentLayout == LAYOUT_LOWERCASE || m_currentLayout == LAYOUT_UPPERCASE)
+            {
+                m_currentLayout = LAYOUT_NUMBERS;
+            }
+            else if (m_currentLayout == LAYOUT_NUMBERS)
+            {
+                if (m_caps == CAPS_NONE)
+                {
+                    m_currentLayout = LAYOUT_LOWERCASE;
+                }
+                else
+                {
+                    m_currentLayout = LAYOUT_UPPERCASE;
+                }
+            }
+
+            drawKeys();
+            updateLayoutIcon();
+        }
     }
 
     std::string Keyboard::getText()
@@ -129,23 +249,26 @@ namespace gui::elements {
         return output;
     }
 
-    void Keyboard::drawKeys()
+    void Keyboard::drawKeys() const
     {
+        // Reset default settings
+        m_keysCanvas->fillRect(0, 0, m_keysCanvas->getWidth(), m_keysCanvas->getHeight(), graphics::packRGB565(255, 255, 255));
+
         // Draw every keys
-        drawKeyRow(140, 10, m_currentLayout[0]);
-        drawKeyRow(180, 10, m_currentLayout[1]);
-        drawKeyRow(220, 9, m_currentLayout[2]);
-        drawLastRow(30, 260);
+        drawKeyRow(0, 10, getLayoutCharMap()[0]);
+        drawKeyRow(40, 10, getLayoutCharMap()[1]);
+        drawKeyRow(80, 9, getLayoutCharMap()[2]);
+        drawLastRow();
     }
 
-    void Keyboard::drawKeyRow(const int16_t y, const uint8_t count, char* keys)
+    void Keyboard::drawKeyRow(const int16_t y, const uint8_t count, const char* keys) const
     {
         const float keyWidth = 420.0f / static_cast<float>(count);
 
         for (uint16_t i = 0; i < count; i++)
         {
             drawKey(
-                static_cast<int16_t>(30 + static_cast<float>(i) * keyWidth),
+                static_cast<int16_t>(static_cast<float>(i) * keyWidth),
                 y,
                 static_cast<int16_t>(keyWidth),
                 keys[i]
@@ -153,77 +276,26 @@ namespace gui::elements {
         }
     }
 
-    void Keyboard::drawKey(const int16_t x, const int16_t y, const uint16_t w, char key)
+    void Keyboard::drawKey(const int16_t x, const int16_t y, const uint16_t w, const char key) const
     {
-        if (key == KEY_CAPS)
-        {
-            if (m_caps == CAPS_NONE)
-            {
-                m_surface->drawImage(*m_capsIcon0, static_cast<int16_t>(x + 3), y);
-            }
-            else if (m_caps == CAPS_ONCE)
-            {
-                m_surface->drawImage(*m_capsIcon1, static_cast<int16_t>(x + 3), y);
-            }
-            else
-            {
-                m_surface->drawImage(*m_capsIcon2, static_cast<int16_t>(x + 3), y);
-            }
+        auto keyString = std::string(1, key);
 
-            return;
-        }
-        else if (key == KEY_BACKSPACE)
-        {
-            m_surface->drawImage(*m_backspaceIcon, static_cast<int16_t>(x + 3), y);
-        }
-
-        std::string keyString = std::string(1, key);
-
-        // m_surface->drawRect(x, y, w, 40, graphics::packRGB565(0, 0, 0));
-        m_surface->drawTextCentered(keyString, x, static_cast<int16_t>(y + 4), w);
+        m_keysCanvas->drawTextCenteredInRect(x, y, w, 40, keyString, graphics::packRGB565(0, 0, 0), true, true, 32);
     }
 
-    void Keyboard::drawLastRow(const int16_t x, const int16_t y)
+    void Keyboard::drawLastRow() const
     {
-        // m_surface->drawRect(x, y, 50, 40, graphics::packRGB565(0, 0, 0));
-        // m_surface->drawRect(static_cast<int16_t>(x + 50), y, 320, 40, graphics::packRGB565(0, 0, 0));
-        // m_surface->drawRect(static_cast<int16_t>(x + 370), y, 50, 40, graphics::packRGB565(0, 0, 0));
-
-        std::string thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow;
-
-        if (m_currentLayout == m_layoutNumbers)
-        {
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "ABC";
-        }
-        else
-        {
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "123";
-        }
-        m_surface->drawTextCentered(
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow,
-            static_cast<int16_t>(x),
-            static_cast<int16_t>(y + 5),
-            50
-        );
-
-        m_surface->fillRect(
-            static_cast<int16_t>(x + 100),
-            static_cast<int16_t>(y + 30),
+        // Draw spacebar
+        m_keysCanvas->fillRect(
+            100,
+            150,
             220,
             2,
             graphics::packRGB565(0, 0, 0)
         );
-
-        thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow = "retour";
-        m_surface->drawTextCentered(
-            thisStringIsUselessButNecessaryBecauseGraphicsLibIsBrokenAsOfNow,
-            static_cast<int16_t>(x + 350),
-            static_cast<int16_t>(y + 5),
-            50
-        );
     }
 
-    char Keyboard::getKey(const int16_t x, const int16_t y)
+    char Keyboard::getKey(const int16_t x, const int16_t y) const
     {
         // Check if the position is in the keyboard box
         if (!(x >= 30 && x <= 450 && y >= 140 && y <= 300))
@@ -265,7 +337,7 @@ namespace gui::elements {
             row = 3;
 
             // Get column
-            if (x <= 80)
+            if (x <= 110)
             {
                 column = 0;
             }
@@ -278,7 +350,7 @@ namespace gui::elements {
             }
         }
 
-        return m_currentLayout[row][column];
+        return getLayoutCharMap()[row][column];
     }
 
     uint8_t Keyboard::getKeyCol(const int16_t x, const uint8_t keyCount)
@@ -307,95 +379,122 @@ namespace gui::elements {
     {
         switch (key)
         {
-        case KEY_NULL:
-            return;
-        case KEY_EXIT:
-            std::cout << "KEYBOARD EXIT" << std::endl;
-            quit = true;
-            return;
-        case KEY_SPACE:
-            m_buffer += " ";
-            break;
-        case KEY_BACKSPACE:
-            if (!m_buffer.empty())
-            {
-                m_buffer.pop_back();
-            }
-            break;
-        case KEY_CAPS:
-            if (m_caps == CAPS_NONE)
-            {
-                m_currentLayout = m_layoutUppercase;
-                m_caps = CAPS_ONCE;
+            case KEY_NULL:
+            case KEY_EXIT:
+            case KEY_BACKSPACE:
+            case KEY_CAPS:
+            case KEY_LAYOUT_STANDARD:
+            case KEY_LAYOUT_NUMBERS:
+                // KEY_EXIT & KEY_BACKSPACE & KEY_CAPS & KEY_LAYOUT_STANDARD & KEY_LAYOUT_NUMBERS are handled directly in update function
+                return;
+            case KEY_SPACE:
+                m_buffer += " ";
+                break;
+            default:
+                m_buffer += std::string(1, key);
 
-                markDirty();
-            }
-            else if (m_caps == CAPS_ONCE)
-            {
-                m_currentLayout = m_layoutUppercase;
-                m_caps = CAPS_LOCK;
+                // Disable caps if not locked
+                if (m_caps == CAPS_ONCE)
+                {
+                    m_currentLayout = LAYOUT_LOWERCASE;
+                    m_caps = CAPS_NONE;
 
-                markDirty();
-            } else if (m_caps == CAPS_LOCK)
-            {
-                m_currentLayout = m_layoutLowercase;
-                m_caps = CAPS_NONE;
+                    drawKeys();
+                    updateCapsIcon(); // Fix bug
 
-                markDirty();
-            }
-            return; // QUIT
-        case KEY_LAYOUT_NUMBERS:
-            m_currentLayout = m_layoutNumbers;
-            markDirty();
+                    return;
+                }
 
-            return;
-        case KEY_LAYOUT_STANDARD:
-            if (m_caps == CAPS_NONE)
-            {
-                m_currentLayout = m_layoutLowercase;
-                markDirty();
-            }
-            else
-            {
-                m_currentLayout = m_layoutUppercase;
-                markDirty();
-            }
-
-            return;
-        default:
-            m_buffer += std::string(1, key);
-
-            // Disable caps if not locked
-            if (m_caps == CAPS_ONCE)
-            {
-                m_currentLayout = m_layoutLowercase;
-                m_caps = CAPS_NONE;
-            }
-
-            break;
+                break;
         }
 
         // Redraw input box
-        // drawInputBox(); <= Useless, because "markDirty" redraws it
-
-        // Mark dirty
-        markDirty();
+        drawInputBox();// <= Useless, because "markDirty" redraws it
     }
 
-    void Keyboard::drawInputBox()
+    void Keyboard::drawInputBox() const
     {
-        // m_surface->fillRect(30, 30, 420, 100, graphics::packRGB565(255, 255, 255));
+        if (m_buffer.empty())
+        {
+            if (m_placeholder.empty())
+            {
+                m_label->setText("");
+                return;
+            }
 
-        // Draw text
-        m_surface->setFont(graphics::ARIAL);
-        m_surface->setFontSize(24);
-        m_surface->setTextColor(graphics::packRGB565(0, 0, 0));
-        m_surface->drawText(m_buffer, 30, 30);
+            // Draw placeholder
+            m_label->setTextColor(graphics::packRGB565(200, 200, 200));
+            m_label->setText(m_placeholder);
+        }
+        else
+        {
+            // Draw text
+            m_label->setTextColor(graphics::packRGB565(0, 0, 0));
+            m_label->setText(m_buffer);
+        }
     }
 
-    void Keyboard::markDirty()
+    void Keyboard::updateCapsIcon() const
     {
-        m_isDrawn = false;
-        m_isRendered = false;
+        switch (m_caps)
+        {
+            case CAPS_NONE:
+                m_capsIcon0->enable();
+                m_capsIcon1->disable();
+                m_capsIcon2->disable();
+                break;
+            case CAPS_ONCE:
+                m_capsIcon0->disable();
+                m_capsIcon1->enable();
+                m_capsIcon2->disable();
+                break;
+            case CAPS_LOCK:
+                m_capsIcon0->disable();
+                m_capsIcon1->disable();
+                m_capsIcon2->enable();
+                break;
+            default: ;
+        }
+    }
+
+    void Keyboard::updateLayoutIcon() const
+    {
+        switch (m_currentLayout)
+        {
+            case LAYOUT_LOWERCASE:
+            case LAYOUT_UPPERCASE:
+                m_layoutIcon0->enable();
+                m_layoutIcon1->disable();
+                break;
+            case LAYOUT_NUMBERS:
+                m_layoutIcon0->disable();
+                m_layoutIcon1->enable();
+                break;
+            default: ;
+        }
+    }
+
+    bool Keyboard::hasExitKeyBeenPressed() const
+    {
+        return m_exit;
+    }
+
+    void Keyboard::setPlaceholder(const std::string& placeholder)
+    {
+        m_placeholder = placeholder;
+    }
+
+    char** Keyboard::getLayoutCharMap() const
+    {
+        switch (m_currentLayout)
+        {
+            case LAYOUT_LOWERCASE:
+            default:
+                return m_layoutLowercase;
+            case LAYOUT_UPPERCASE:
+                return m_layoutUppercase;
+            case LAYOUT_NUMBERS:
+                return m_layoutNumbers;
+        }
     }
 } // gui::elements

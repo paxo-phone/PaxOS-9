@@ -27,15 +27,36 @@ namespace gui::elements
 
     void Image::load(color_t background)
     {
-        graphics::SImage i = graphics::SImage(this->m_path);
+        try
+        {
+            graphics::SImage i = graphics::SImage(this->m_path);
+            
+            m_surface = std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight());
+            this->m_width = i.getWidth();
+            this->m_height = i.getHeight();
+            m_surface->clear(background);
+
+            m_surface->drawImage(i, 0, 0);
+
+            localGraphicalUpdate();
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+            std::cout << "Failed to load image -> crashes" << std::endl;
+            std::cout << "Path: " << this->m_path.str() << std::endl;
+            std::cout << "Size: " << this->m_width << ", " << this->m_height << std::endl;
+            if (m_surface == nullptr)
+            {
+                std::cout << "Surface is nullptr" << std::endl;
+            
+            #ifdef ESP_PLATFORM
+                // Print the size of the psram if the ESP_PLATFORM is defined
+                size_t psram_size = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+                std::cout << "Size of psram: " << psram_size << " bytes" << std::endl;
+            #endif
+            }
+        }
         
-        m_surface = std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight());
-        this->m_width = i.getWidth();
-        this->m_height = i.getHeight();
-        m_surface->clear(background);
-
-        m_surface->drawImage(i, 0, 0);
-
-        localGraphicalUpdate();
     }
 }

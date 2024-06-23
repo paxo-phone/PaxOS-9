@@ -20,7 +20,8 @@ namespace LuaGSM
 #ifdef ESP_PLATFORM
         GSM::newCall(number);
 
-        while (GSM::state.callFailure == false && GSM::state.callState != GSM::CallState::CALLING)
+        uint64_t timeout = millis() + 5000;
+        while (GSM::state.callFailure == false && GSM::state.callState != GSM::CallState::CALLING && millis() < timeout)
         {
             StandbyMode::wait();
             std::cout << "Waiting for call" << std::endl;

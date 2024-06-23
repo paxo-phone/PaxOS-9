@@ -107,7 +107,7 @@ LuaHorizontalList* LuaGui::horizontalList(LuaWidget* parent, int x, int y, int w
 
 LuaSwitch* LuaGui::switchb(LuaWidget* parent, int x, int y)
 {
-    LuaSwitch* w = new LuaSwitch(parent, x, y);
+    LuaSwitch* w = new LuaSwitch(parent, x, y, this);
     widgets.push_back(w);
     w->gui = this;
     return w;
@@ -154,12 +154,14 @@ void LuaGui::update()
     }
 }
 
-std::string LuaGui::keyboard(std::string placeholder)
+std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText)
 {
     gui::elements::Window win;
-    Keyboard key;
 
     graphics::setScreenOrientation(graphics::LANDSCAPE);
+
+    auto key = Keyboard(defaultText);
+    key.setPlaceholder(placeholder);
 
     while (!hardware::getHomeButton() && !key.quitting())
     {

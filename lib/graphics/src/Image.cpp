@@ -49,8 +49,12 @@ namespace graphics {
     {
         this->m_path = path;
 
-        if(!path.isfile())
+        if(!path.exists() || !path.isfile())
+        {
+            m_width = 0;
+            m_height = 0;
             return;
+        }
 
         m_data = getFileData(path);
 
@@ -59,7 +63,9 @@ namespace graphics {
         switch (imageData.type)
         {
         case imgdec::ERROR:
-            throw std::exception();
+            m_width = 0;
+            m_height = 0;
+            return;
         case imgdec::BMP:
             m_type = BMP;
             break;
