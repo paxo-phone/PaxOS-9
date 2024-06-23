@@ -122,17 +122,25 @@ bool gui::ElementBase::updateAll()
     if (!m_isDrawn)
         renderAll();
 
+    bool returnV = false;
+
     for (auto child : m_children)
     {
         if (child->updateAll())
         {
-            return true; // if child had an event, ignore local events
+            returnV = true; // if child had an event, ignore local events
+            break;
         }
     }
 
-    bool returnV = update();
+    if(!returnV)
+    {
+        returnV = update();
+    }
+    
     if(this->m_parent == nullptr)
         graphics::touchIsRead();
+
     return returnV;
 }
 

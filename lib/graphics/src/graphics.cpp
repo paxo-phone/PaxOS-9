@@ -300,8 +300,6 @@ void graphics::touchUpdate()
         newTouchY = -1;
         isTouchRead = false;
     }
-
-    std::cout << touchX << " " << touchY << std::endl;
 }
 
 bool graphics::isTouched()
