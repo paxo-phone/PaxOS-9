@@ -22,7 +22,7 @@
 
 using namespace gui::elements;
 
-void loop(){}
+
 
 void ringingVibrator(void* data)
 {
@@ -37,9 +37,40 @@ void ringingVibrator(void* data)
     #endif
 }
 
+void mainLoop(void* data)
+{
+    while (true)
+    {
+        #ifdef ESP_PLATFORM
+        graphics::setBrightness(0xFF/3);
+        #endif
+
+        int l = 0;
+        while (l!=-1)
+        {
+            l = launcher();
+            if(l!=-1)
+                app::runApp(app::appList[l].path);
+
+            while (hardware::getHomeButton());
+        }
+
+        graphics::setBrightness(0);
+        StandbyMode::savePower();
+
+
+        while (!hardware::getHomeButton())
+        {
+            eventHandlerApp.update();
+        }
+        while (hardware::getHomeButton());
+        
+        StandbyMode::restorePower();
+    }
+}
 
 void setup()
-{    
+{
     hardware::init();
     hardware::setScreenPower(true);
     graphics::init();
@@ -71,9 +102,10 @@ void setup()
         10
     );
 
+    hardware::setVibrator(false);
+    GSM::endCall();
+
     Contacts::load();
-    Contacts::editContact("Jane Doe", {"Jane Doe", "0612345678"});
-    Contacts::save();
 
     std::vector<Contacts::contact> cc = Contacts::listContacts();
     for(auto c : cc)
@@ -83,35 +115,15 @@ void setup()
 
     app::init();
 
-    while (true)
-    {
-        #ifdef ESP_PLATFORM
-        graphics::setBrightness(0xFF/3);
-        #endif
-
-        int l = 0;
-        while (l!=-1)
-        {
-            l = launcher();
-            if(l!=-1)
-                app::runApp(app::appList[l].path);
-
-            while (hardware::getHomeButton());
-        }
-
-        graphics::setBrightness(0);
-        StandbyMode::savePower();
-
-
-        while (hardware::getHomeButton());
-        while (!hardware::getHomeButton())
-        {
-            eventHandlerApp.update();
-        }
-        
-        StandbyMode::restorePower();
-    }
+    #ifdef ESP_PLATFORM
+    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    vTaskDelete(NULL);
+    #else
+    mainLoop(NULL);
+    #endif
 }
+
+void loop(){}
 
 #ifndef ESP_PLATFORM
 

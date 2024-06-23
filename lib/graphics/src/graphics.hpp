@@ -30,16 +30,6 @@ namespace graphics
 
     void setBrightness(uint16_t value);
 
-    constexpr int getRenderScale()
-    {
-        // SDL2 does not support scaling
-#ifdef ESP_PLATFORM
-        return 2; // Change this value
-#else
-        return 1; // Don't change this value
-#endif
-    }
-
     bool isRunning();
 
     void showSurface(const Surface *surface, int x = 0, int y = 0);
