@@ -116,7 +116,6 @@ bool gui::ElementBase::updateAll()
             this->m_isDrawn = false;
         }
 
-        graphics::touchUpdate();
         graphics::getTouchPos(&touchX, &touchY);
     }
 
@@ -131,7 +130,10 @@ bool gui::ElementBase::updateAll()
         }
     }
 
-    return update();
+    bool returnV = update();
+    if(this->m_parent == nullptr)
+        graphics::touchIsRead();
+    return returnV;
 }
 
 gui::ElementBase* gui::ElementBase::getHigestXScrollableParent()
