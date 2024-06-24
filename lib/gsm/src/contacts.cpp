@@ -104,7 +104,7 @@ namespace Contacts
         }
 
         // Return an empty contact if no match is found
-        return {};
+        return {"",""};
     }
 
     contact getByNumber(std::string number)
@@ -118,6 +118,6 @@ namespace Contacts
         }
 
         // Return an empty contact if no match is found
-        return {};
+        return {"",""};
     }
 };

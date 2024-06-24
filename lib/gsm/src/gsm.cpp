@@ -281,10 +281,15 @@ namespace GSM
 
             k = str.find("\"", k + 1);
 
-            message = str.substr(k + 2 + 1, str.find(0x0D, k + 1) - k);
+            std::string message2 = str.substr(k + 2 + 1, -1);
+            std::replace(message2.begin(), message2.end(), '\n', 'n');
+            std::replace(message2.begin(), message2.end(), '\r', 'r');
+
+            message = str.substr(k + 3, str.find("\r\n", k + 3) - k - 3);
 
             // Vérifier si le numéro existe dans les contacts
             auto contact = Contacts::getByNumber(number);
+
             if (contact.name.empty())
             {
                 std::cout << "Message from unknown number: " << number << std::endl;
@@ -308,8 +313,7 @@ namespace GSM
             conv.messages.push_back({message, true, getCurrentTimestamp()}); // true = message de l'autre
             Conversations::saveConversation(convPath, conv);
 
-            messages.push_back({number, message, date});
-            std::cout << "Message added to GSM::messages: " << number << " - " << message << std::endl;
+            std::cout << "New message: " << number << " - " << message << std::endl;
 
             i = j + 1;
         }

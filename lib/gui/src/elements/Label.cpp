@@ -97,6 +97,8 @@ namespace gui::elements {
         std::vector<std::string> lines;
         std::string currentLine = "";
 
+        
+
         for (char c : m_text) {
             if (c == '\n') {
                 lines.push_back(currentLine);
@@ -170,7 +172,21 @@ namespace gui::elements {
 
     uint16_t Label::getTextHeight()
     {
+        bool allocatedSprite = false;
+        if(m_surface == nullptr)
+        {
+            m_surface = std::make_shared<graphics::Surface>(1, 1);
+            allocatedSprite = true;
+        }
+
+        m_surface->setFontSize(this->m_fontSize);
+        
         std::vector<std::string> lines = parse();
-        return getRadius() + getBorderSize()*2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+        uint16_t out = getRadius() + getBorderSize()*2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+
+        if(allocatedSprite)
+            m_surface = nullptr;
+
+        return out;
     }
 } // gui::elements
