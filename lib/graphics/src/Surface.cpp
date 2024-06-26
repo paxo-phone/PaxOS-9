@@ -42,11 +42,26 @@ namespace graphics
         m_sprite.createSprite(width, height);
         if(m_sprite.getBuffer() == nullptr)
         {
-            std::cerr << "[Error] Unable to allocate a new surface (" << width << " x " << height << ")" << std::endl;
+            std::cerr << "[Error] Unable to allocate a new surface: " << width * height * 2 << " bytes" << std::endl;
         }
         else
         {
-            std::cout << "[Debug] Allocated a new surface (" << width << " x " << height << ")" << std::endl;
+            const double size = width * height * 2;
+            const double k = 1024;
+            const double m = k * k;
+
+            if(size < k)
+            {
+                std::cout << "[Debug] New surface: " << size << " bytes" << std::endl;
+            }
+            else if(size < m)
+            {
+                std::cout << "[Debug] New surface: " << size / k << " Ko" << std::endl;
+            }
+            else
+            {
+                std::cout << "[Debug] New surface: " << size / m << " Mo" << std::endl;
+            }
         }
     }
 
@@ -77,6 +92,9 @@ namespace graphics
 
     void Surface::pushSurface(Surface *surface, const int16_t x, const int16_t y)
     {
+        if(surface == nullptr)
+            return;
+            
         if (surface->m_transparent)
         {
             surface->m_sprite.pushSprite(

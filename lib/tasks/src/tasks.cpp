@@ -43,12 +43,22 @@ void EventHandler::update()
     }
 
     // Handle intervals
-    for (auto& interval : intervals) {
-        if (now >= interval->lastTrigger + interval->interval) {
-            interval->callback->call();
-            interval->lastTrigger = now;
+    for (auto it = intervals.begin(); it != intervals.end();) {
+        if (*it && (*it)->callback) {
+            if (now >= (*it)->lastTrigger + (*it)->interval) {
+                (*it)->callback->call();
+                (*it)->lastTrigger = now;
+                ++it;
+            } else {
+                ++it;
+            }
+        } else {
+            // If interval or its callback is invalid, remove it
+            delete *it;
+            it = intervals.erase(it);
         }
     }
+
 }
 
 uint32_t EventHandler::addEventListener(Function* condition, Function* callback) {

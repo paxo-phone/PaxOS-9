@@ -80,6 +80,8 @@ void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
 
 void LuaFile::run(std::vector<std::string> arg)
 {
+    StandbyMode::triggerPower();
+
     std::string errors = "";
 
     lua_setallocf(lua.lua_state(), custom_allocator, NULL);
@@ -217,7 +219,6 @@ void LuaFile::run(std::vector<std::string> arg)
                 "keyboard", &LuaGui::keyboard
             );
 
-
             lua["gui"] = &lua_gui;
 
             lua.new_usertype<LuaWidget>("widget",
@@ -311,7 +312,7 @@ void LuaFile::run(std::vector<std::string> arg)
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.new_usertype<LuaVerticalList>("LuaVList",
-                //"add", &LuaVerticalList::add,
+                "setIndex", &LuaVerticalList::setIndex,
                 sol::base_classes, sol::bases<LuaWidget>());
 
             lua.new_usertype<LuaHorizontalList>("LuaHList",

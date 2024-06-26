@@ -10,9 +10,7 @@ namespace LuaGSM
 {
     void newMessage(std::string number, std::string message)
     {
-#ifdef ESP_PLATFORM
         GSM::newMessage(number, message);
-#endif
     }
 
     void newCall(std::string number)
@@ -65,6 +63,7 @@ namespace LuaGSM
     sol::table getMessages(const std::string &number, sol::state& lua)
     {
         Conversations::Conversation conv;
+        conv.number = number;
         std::string convFilePath = std::string(MESSAGES_LOCATION) + "/" + number + ".json";
         Conversations::loadConversation(convFilePath, conv);
         

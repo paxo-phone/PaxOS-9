@@ -49,8 +49,11 @@ gui::ElementBase::~ElementBase()
     }
 }
 
-void gui::ElementBase::renderAll()
+void gui::ElementBase::renderAll(bool onScreen)
 {
+    if(!isInside())
+        return;
+
     if (!m_isEnabled)
         return;
 
@@ -62,21 +65,13 @@ void gui::ElementBase::renderAll()
             m_surface = nullptr;
 
         if (m_surface == nullptr)
-        {
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
-            //m_surface->clear(COLOR_WHITE);
-        }
-        else
-        {
-            //m_surface->clear(COLOR_WHITE);
-        }
 
         render();
 
         for (const auto child : m_children)
         {
-            // restreindre l'écriture de child sur le buffer local a ses coordonées
-            child->renderAll();
+            child->renderAll(false);
         }
 
         m_isRendered = true;
@@ -85,21 +80,16 @@ void gui::ElementBase::renderAll()
     if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
     {
         StandbyMode::triggerPower();
-        if (m_parent != nullptr && m_parent->m_isDrawn == false) // le parent demande le rendu
+        if (!onScreen) // le parent demande le rendu
         {
-            // push le buffer local vers le buffer du parent
-            // TODO : Change position
             m_parent->m_surface->pushSurface(m_surface.get(), getX(), getY());
         }
         else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
-            // restreindre l'écriture sur l'écran en fonction du buffer local
-
-            // push le buffer local vers l'écran
-            // TODO : Change position
             graphics::setWindow(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
             graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
             graphics::setWindow();
+
             setChildrenDrawn();
         }
     }
@@ -108,6 +98,13 @@ void gui::ElementBase::renderAll()
 
 bool gui::ElementBase::updateAll()
 {
+    if(!isInside())
+    {
+        if(m_surface != nullptr)
+            free();
+        return false;
+    }
+
     if (m_parent == nullptr)
     {
         StandbyMode::wait();
@@ -564,9 +561,30 @@ void gui::ElementBase::getLastTouchPosRel(int16_t* x, int16_t* y) const
 
 void gui::ElementBase::free()
 {
-    m_surface.reset();
-    /*for (auto child : m_children)
+    if(m_surface != nullptr)
+        m_surface.reset();
+
+    setParentNotRendered();
+    
+    for (auto child : m_children)
     {
         child->free();
-    }*/
+    }
+}
+
+bool gui::ElementBase::isInside()
+{
+    if(m_parent == nullptr)
+        return true;
+
+    if(getX() + getWidth() < 0)
+        return false;
+    if(getY() + getHeight() < 0)
+        return false;
+    if(getX() > m_parent->getWidth())
+        return false;
+    if(getY() > m_parent->getHeight())
+        return false;
+
+    return true;
 }

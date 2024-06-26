@@ -18,6 +18,7 @@ std::string getFormatedHour()
 
 int launcher()
 {
+    StandbyMode::triggerPower();
     gui::elements::Window win;
 
     Label *hour = new Label(86, 42, 148, 41);

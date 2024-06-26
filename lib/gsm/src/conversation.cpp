@@ -13,7 +13,8 @@ namespace Conversations
 
         if (!filePath.exists())
         {
-            //std::cerr << "File does not exist: " << filePath.str() << std::endl;
+            std::cerr << "File does not exist: " << filePath.str() << std::endl;
+            saveConversation(filePath, conv);
             return;
         }
 

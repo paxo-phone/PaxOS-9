@@ -25,9 +25,17 @@ namespace gui::elements
     void VerticalList::add(ElementBase* widget)
     {
         m_verticalScrollEnabled = true;
-        widget->setY( (m_children.size() != 0) ? (m_children[m_children.size()-1]->getY() + m_children[m_children.size()-1]->getHeight() + m_lineSpace) : (0));
+        widget->setY( (m_children.size() != 0) ? (m_children.back()->m_y + m_children.back()->getHeight() + m_lineSpace) : (0));
         this->addChild(widget);
-        //this->setHeight(widget->getY()+widget->getHeight());
+    }
+
+    void VerticalList::setIndex(int index)
+    {
+        if(m_focusedIndex >= 0 && m_focusedIndex < m_children.size())
+        {
+            m_focusedIndex = index;
+            updateFocusedIndex();
+        }
     }
 
     void VerticalList::setSpaceLine(uint16_t y)
@@ -47,6 +55,14 @@ namespace gui::elements
             m_verticalScroll = m_children[m_focusedIndex]->m_y;
             std::cout << "focused: " << m_focusedIndex << std::endl;
             localGraphicalUpdate();
+
+            // for (int i = 0; i < m_children.size(); i++)
+            // {
+            //     if (m_children[i]->getY() + m_children[i]->getHeight() < 0 || m_children[i]->getY() > m_height)
+            //     {
+            //         m_children[i]->free();
+            //     }
+            // }
         }), 0);
     }
 

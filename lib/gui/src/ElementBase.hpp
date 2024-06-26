@@ -17,7 +17,7 @@ namespace gui
         virtual ~ElementBase();
 
         virtual void render() = 0;
-        void renderAll();
+        void renderAll(bool onScreen = true);
 
         bool updateAll();
         bool update();
@@ -132,6 +132,8 @@ namespace gui
 
         ElementBase* getHigestXScrollableParent();
         ElementBase* getHigestYScrollableParent();
+
+        bool isInside(); // si le widget est visible dans son parent
 
         static int16_t m_lastTouchX, m_lastTouchY;
         void getLastTouchPosAbs(int16_t* x, int16_t* y) const;

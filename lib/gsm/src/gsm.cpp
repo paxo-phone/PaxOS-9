@@ -532,7 +532,7 @@ namespace GSM
 
         while (true)
         {
-            PaxOS_Delay(50);
+            PaxOS_Delay(5);
 
             download();
 

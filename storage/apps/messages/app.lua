@@ -9,9 +9,9 @@ function newMessage(number)
 end
 
 function appendMessage(msg, list)
-    local bull = gui:box(list, 0, 0, 184, 30)
+    local bull2 = gui:box(list, 0, 0, 184, 30)
     
-    local label = gui:label(bull, 0, 0, 184, 0)
+    local label = gui:label(bull2, 0, 0, 184, 0)
     label:setHorizontalAlignment(CENTER_ALIGNMENT)
     label:setText(msg)
     label:setFontSize(18)
@@ -20,11 +20,12 @@ function appendMessage(msg, list)
 
     label:setHeight(labelHeight)
 
-    local canva = gui:canvas(bull, 0, labelHeight, 68, 1)
+    local canva = gui:canvas(bull2, 0, labelHeight, 68, 1)
     canva:fillRect(0, 0, 68, 1, COLOR_DARK)
     canva:setX(57)
 
-    bull:setX(96)
+    bull2:setX(96)
+    bull2:setHeight(labelHeight + 9)
 end
 
 function converation(number)
@@ -32,7 +33,7 @@ function converation(number)
 
     local c = gsm.getContactByNumber(number)
 
-    local title=gui:label(win2, 90, 30, 141, 18)
+    local title=gui:label(win2, 90, 30, 141, 22)
     title:setHorizontalAlignment(CENTER_ALIGNMENT)
     title:setFontSize(20)
     if(c.name ~= "") then
@@ -68,6 +69,8 @@ function converation(number)
         bull:setHeight(labelHeight + 9)
     end
 
+    list:setIndex(#messages -1)
+
     local add = gui:box(win2, 250, 410, 40, 40)
     add:setMainColor(COLOR_DARK)
     add:setRadius(20)
@@ -90,6 +93,11 @@ function converation(number)
 end
 
 function run()
+    if(#arg == 1) then
+        converation(arg[1])
+        return
+    end
+
     contactList = gsm:listContacts()
 
     win=gui:window()
