@@ -11,3 +11,4 @@
 ./storage/apps/alarme/app.lua
 ./storage/apps/test2/app.lua
 >>>>>>> alarme_app
+./storage/apps/horloge/app.lua
