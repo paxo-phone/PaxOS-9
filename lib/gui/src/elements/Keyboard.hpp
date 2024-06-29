@@ -71,6 +71,9 @@ namespace gui::elements
         Box* m_exitBox;
         Box* m_confirmBox;
 
+        Canvas* m_trackpadCanvas;
+        uint8_t m_trackpadTicks;
+
         void drawKeys() const;
         void drawKeyRow(int16_t y, uint8_t count, const char* keys) const;
         void drawKey(int16_t x, int16_t y, uint16_t w, char key) const;
@@ -89,6 +92,10 @@ namespace gui::elements
         void updateLayoutIcon() const;
 
         char** getLayoutCharMap() const;
+
+        void trackpadUpdate();
+        bool isPointInTrackpad(int16_t x, int16_t y) const;
+        bool isTrackpadActive() const;
     };
 } // gui::elements
 

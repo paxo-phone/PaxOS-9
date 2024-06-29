@@ -138,6 +138,14 @@ namespace gui::elements {
 
         updateCapsIcon();
         updateLayoutIcon();
+
+        m_trackpadCanvas = new Canvas(0, 130, 480, 190);
+        m_trackpadCanvas->fillRect(0, 0, 480, 190, graphics::packRGB565(200, 200, 200));
+        std::string kamoulox = "Contrôle du curseur";
+        m_trackpadCanvas->drawTextCenteredInRect(0, 0, 480, 190, kamoulox, graphics::packRGB565(0, 0, 0), true, true, 20);
+        addChild(m_trackpadCanvas);
+
+        m_trackpadTicks = 0;
     }
 
     Keyboard::~Keyboard() = default;
@@ -149,8 +157,17 @@ namespace gui::elements {
         // Input box
         drawInputBox();
 
-        // Draw keys
-        drawKeys();
+        if (isTrackpadActive())
+        {
+            m_trackpadCanvas->enable();
+        }
+        else
+        {
+            m_trackpadCanvas->disable();
+
+            // Draw keys
+            drawKeys();
+        }
     }
 
     void Keyboard::widgetUpdate()
@@ -234,6 +251,8 @@ namespace gui::elements {
             drawKeys();
             updateLayoutIcon();
         }
+
+        trackpadUpdate();
     }
 
     std::string Keyboard::getText()
@@ -492,5 +511,56 @@ namespace gui::elements {
             case LAYOUT_NUMBERS:
                 return m_layoutNumbers;
         }
+    }
+
+    void Keyboard::trackpadUpdate()
+    {
+        int16_t rawTouchX, rawTouchY;
+        graphics::getTouchPos(&rawTouchX, &rawTouchY);
+
+        const bool wasTrackpadActive = isTrackpadActive();
+
+        // Check if finger is on screen
+        if ((rawTouchX != -1 && rawTouchY != -1) && isPointInTrackpad(m_lastTouchX, m_lastTouchY))
+        {
+            m_trackpadTicks++;
+
+            if (isTrackpadActive())
+            {
+                if (m_trackpadTicks == 10) {
+                    // Do once
+
+                    localGraphicalUpdate();
+                }
+
+                int deltaX = rawTouchX - m_lastTouchX;
+                std::string deltaXString = std::to_string(deltaX);
+
+                m_trackpadCanvas->fillRect(0, 0, 100, 16, graphics::packRGB565(255, 255, 255));
+                m_trackpadCanvas->drawText(0, 0, deltaXString, graphics::packRGB565(0, 0, 0), 16);
+            }
+        }
+        else {
+            m_trackpadTicks = 0;
+
+            if (wasTrackpadActive)
+            {
+                // Do once
+
+                localGraphicalUpdate();
+            }
+        }
+    }
+
+    bool Keyboard::isPointInTrackpad(const int16_t x, const int16_t y) const
+    {
+        if (x < 110 || x > 370) return false;
+        if (y <= 260 || y > 300) return false;
+
+        return true;
+    }
+
+    bool Keyboard::isTrackpadActive() const {
+        return m_trackpadTicks >= 10;
     }
 } // gui::elements
