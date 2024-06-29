@@ -19676,7 +19676,7 @@ namespace sol { namespace function_detail {
 		#if defined(__APPLE__)
 		static int call(lua_State* L) {
 		#else
-		static int call(lua_State* L) noexcept(std::is_nothrow_copy_assignable_v<T>)
+		static int call(lua_State* L) noexcept(std::is_nothrow_copy_assignable_v<T>) {
 		#endif
 			int nr;
 			if constexpr (no_trampoline) {
@@ -19720,7 +19720,7 @@ namespace sol { namespace function_detail {
 		#if defined(__APPLE__)
 		static int call(lua_State* L) {
 		#else
-		static int call(lua_State* L) noexcept(std::is_nothrow_copy_assignable_v<T>)
+		static int call(lua_State* L) noexcept(std::is_nothrow_copy_assignable_v<T>) {
 		#endif
 			int nr;
 			if constexpr (no_trampoline) {
