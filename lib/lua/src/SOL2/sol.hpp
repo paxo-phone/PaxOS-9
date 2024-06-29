@@ -19673,7 +19673,11 @@ namespace sol { namespace function_detail {
 		}
 
 		template <bool is_yielding, bool no_trampoline>
+		#if defined(__APPLE__)
 		static int call(lua_State* L) {
+		#else
+		static int call(lua_State* L) noexcept(std::is_nothrow_copy_assignable_v<T>)
+		#endif
 			int nr;
 			if constexpr (no_trampoline) {
 				nr = real_call(L);
@@ -19713,7 +19717,11 @@ namespace sol { namespace function_detail {
 		}
 
 		template <bool is_yielding, bool no_trampoline>
+		#if defined(__APPLE__)
 		static int call(lua_State* L) {
+		#else
+		static int call(lua_State* L) noexcept(std::is_nothrow_copy_assignable_v<T>)
+		#endif
 			int nr;
 			if constexpr (no_trampoline) {
 				nr = real_call(L);
