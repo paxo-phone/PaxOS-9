@@ -39,8 +39,7 @@ constexpr uint8_t CAPS_ONCE = 1;
 constexpr uint8_t CAPS_LOCK = 2;
 
 namespace gui::elements {
-    Keyboard::Keyboard(const std::string& defaultText)
-    {
+    Keyboard::Keyboard(const std::string &defaultText) {
         m_buffer = defaultText;
         m_defaultText = defaultText;
 
@@ -66,19 +65,19 @@ namespace gui::elements {
         m_keysCanvas = new Canvas(30, 140, 420, 160);
         addChild(m_keysCanvas);
 
-        m_layoutLowercase = new char*[4];
+        m_layoutLowercase = new char *[4];
         m_layoutLowercase[0] = new char[10]{'a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
         m_layoutLowercase[1] = new char[10]{'q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'};
         m_layoutLowercase[2] = new char[9]{KEY_CAPS, 'w', 'x', 'c', 'v', 'b', 'n', '\'', KEY_BACKSPACE};
         m_layoutLowercase[3] = new char[3]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
 
-        m_layoutUppercase = new char*[4];
+        m_layoutUppercase = new char *[4];
         m_layoutUppercase[0] = new char[10]{'A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'};
         m_layoutUppercase[1] = new char[10]{'Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'};
         m_layoutUppercase[2] = new char[9]{KEY_CAPS, 'W', 'X', 'C', 'V', 'B', 'N', '\'', KEY_BACKSPACE};
         m_layoutUppercase[3] = new char[3]{KEY_LAYOUT_NUMBERS, KEY_SPACE, KEY_EXIT};
 
-        m_layoutNumbers = new char*[4];
+        m_layoutNumbers = new char *[4];
         m_layoutNumbers[0] = new char[10]{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
         m_layoutNumbers[1] = new char[10]{'+', '-', '*', '/', '(', ')', '[', ']', '<', '>'};
         m_layoutNumbers[2] = new char[9]{KEY_CAPS, '_', ',', '.', ':', ';', '!', '?', KEY_BACKSPACE};
@@ -144,7 +143,8 @@ namespace gui::elements {
         m_trackpadCanvas = new Canvas(0, 130, 480, 190);
         m_trackpadCanvas->fillRect(0, 0, 480, 190, graphics::packRGB565(200, 200, 200));
         std::string kamoulox = "Contrôle du curseur";
-        m_trackpadCanvas->drawTextCenteredInRect(0, 0, 480, 190, kamoulox, graphics::packRGB565(0, 0, 0), true, true, 20);
+        m_trackpadCanvas->drawTextCenteredInRect(0, 0, 480, 190, kamoulox, graphics::packRGB565(0, 0, 0), true, true,
+                                                 20);
         addChild(m_trackpadCanvas);
 
         m_trackpadTicks = 0;
@@ -152,19 +152,15 @@ namespace gui::elements {
 
     Keyboard::~Keyboard() = default;
 
-    void Keyboard::render()
-    {
+    void Keyboard::render() {
         m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
 
         // Input box
         drawInputBox();
 
-        if (isTrackpadActive())
-        {
+        if (isTrackpadActive()) {
             m_trackpadCanvas->enable();
-        }
-        else
-        {
+        } else {
             m_trackpadCanvas->disable();
 
             // Draw keys
@@ -172,37 +168,31 @@ namespace gui::elements {
         }
     }
 
-    void Keyboard::widgetUpdate()
-    {
+    void Keyboard::widgetUpdate() {
         if (isTouched()) {
             // Get touch position
             int16_t touchX, touchY;
             getLastTouchPosRel(&touchX, &touchY);
 
             const char pressedKey = getKey(touchX, touchY);
-            if (pressedKey == KEY_NULL)
-            {
+            if (pressedKey == KEY_NULL) {
                 return;
             }
 
             processKey(pressedKey);
         }
 
-        if (m_exitBox->isTouched())
-        {
+        if (m_exitBox->isTouched()) {
             m_buffer = m_defaultText; // Reset text
             m_exit = true;
         }
 
-        if (m_confirmBox->isTouched())
-        {
+        if (m_confirmBox->isTouched()) {
             m_exit = true;
         }
 
-        if (m_backspaceBox->isTouched())
-        {
-            if (!m_buffer.empty())
-            {
+        if (m_backspaceBox->isTouched()) {
+            if (!m_buffer.empty()) {
                 m_buffer.pop_back();
             }
 
@@ -210,10 +200,8 @@ namespace gui::elements {
             drawInputBox();
         }
 
-        if (m_capsBox->isTouched())
-        {
-            switch (m_caps)
-            {
+        if (m_capsBox->isTouched()) {
+            switch (m_caps) {
                 case CAPS_NONE:
                 default:
                     m_currentLayout = LAYOUT_UPPERCASE;
@@ -232,20 +220,13 @@ namespace gui::elements {
             updateCapsIcon();
         }
 
-        if (m_layoutBox->isTouched())
-        {
-            if (m_currentLayout == LAYOUT_LOWERCASE || m_currentLayout == LAYOUT_UPPERCASE)
-            {
+        if (m_layoutBox->isTouched()) {
+            if (m_currentLayout == LAYOUT_LOWERCASE || m_currentLayout == LAYOUT_UPPERCASE) {
                 m_currentLayout = LAYOUT_NUMBERS;
-            }
-            else if (m_currentLayout == LAYOUT_NUMBERS)
-            {
-                if (m_caps == CAPS_NONE)
-                {
+            } else if (m_currentLayout == LAYOUT_NUMBERS) {
+                if (m_caps == CAPS_NONE) {
                     m_currentLayout = LAYOUT_LOWERCASE;
-                }
-                else
-                {
+                } else {
                     m_currentLayout = LAYOUT_UPPERCASE;
                 }
             }
@@ -257,8 +238,7 @@ namespace gui::elements {
         trackpadUpdate();
     }
 
-    std::string Keyboard::getText()
-    {
+    std::string Keyboard::getText() {
         const std::string output = m_buffer;
 
         m_buffer = "";
@@ -266,10 +246,10 @@ namespace gui::elements {
         return output;
     }
 
-    void Keyboard::drawKeys() const
-    {
+    void Keyboard::drawKeys() const {
         // Reset default settings
-        m_keysCanvas->fillRect(0, 0, m_keysCanvas->getWidth(), m_keysCanvas->getHeight(), graphics::packRGB565(255, 255, 255));
+        m_keysCanvas->fillRect(0, 0, m_keysCanvas->getWidth(), m_keysCanvas->getHeight(),
+                               graphics::packRGB565(255, 255, 255));
 
         // Draw every keys
         drawKeyRow(0, 10, getLayoutCharMap()[0]);
@@ -278,12 +258,10 @@ namespace gui::elements {
         drawLastRow();
     }
 
-    void Keyboard::drawKeyRow(const int16_t y, const uint8_t count, const char* keys) const
-    {
+    void Keyboard::drawKeyRow(const int16_t y, const uint8_t count, const char *keys) const {
         const float keyWidth = 420.0f / static_cast<float>(count);
 
-        for (uint16_t i = 0; i < count; i++)
-        {
+        for (uint16_t i = 0; i < count; i++) {
             drawKey(
                 static_cast<int16_t>(static_cast<float>(i) * keyWidth),
                 y,
@@ -293,15 +271,13 @@ namespace gui::elements {
         }
     }
 
-    void Keyboard::drawKey(const int16_t x, const int16_t y, const uint16_t w, const char key) const
-    {
+    void Keyboard::drawKey(const int16_t x, const int16_t y, const uint16_t w, const char key) const {
         auto keyString = std::string(1, key);
 
         m_keysCanvas->drawTextCenteredInRect(x, y, w, 40, keyString, graphics::packRGB565(0, 0, 0), true, true, 32);
     }
 
-    void Keyboard::drawLastRow() const
-    {
+    void Keyboard::drawLastRow() const {
         // Draw spacebar
         m_keysCanvas->fillRect(
             100,
@@ -312,11 +288,9 @@ namespace gui::elements {
         );
     }
 
-    char Keyboard::getKey(const int16_t x, const int16_t y) const
-    {
+    char Keyboard::getKey(const int16_t x, const int16_t y) const {
         // Check if the position is in the keyboard box
-        if (!(x >= 30 && x <= 450 && y >= 140 && y <= 300))
-        {
+        if (!(x >= 30 && x <= 450 && y >= 140 && y <= 300)) {
             return KEY_NULL;
         }
 
@@ -324,45 +298,34 @@ namespace gui::elements {
         uint8_t column;
 
         // Get the row
-        if (y <= 180)
-        {
+        if (y <= 180) {
             // First Row
             row = 0;
 
             // Get column
             column = getKeyCol(x, 10);
-        }
-        else if (y <= 220)
-        {
+        } else if (y <= 220) {
             // Second Row
             row = 1;
 
             // Get column
             column = getKeyCol(x, 10);
-        }
-        else if (y <= 260)
-        {
+        } else if (y <= 260) {
             // Third Row
             row = 2;
 
             // Get column
             column = getKeyCol(x, 9);
-        }
-        else
-        {
+        } else {
             // Last Row
             row = 3;
 
             // Get column
-            if (x <= 110)
-            {
+            if (x <= 110) {
                 column = 0;
-            }
-            else if (x <= 370)
-            {
+            } else if (x <= 370) {
                 column = 1;
-            } else
-            {
+            } else {
                 column = 2;
             }
         }
@@ -370,15 +333,12 @@ namespace gui::elements {
         return getLayoutCharMap()[row][column];
     }
 
-    uint8_t Keyboard::getKeyCol(const int16_t x, const uint8_t keyCount)
-    {
+    uint8_t Keyboard::getKeyCol(const int16_t x, const uint8_t keyCount) {
         float boxX = 30;
         const float keyWidth = 420.0f / static_cast<float>(keyCount);
 
-        for (uint8_t i = 0; i < keyCount; i++)
-        {
-            if (static_cast<float>(x) >= boxX && static_cast<float>(x) <= boxX + keyWidth)
-            {
+        for (uint8_t i = 0; i < keyCount; i++) {
+            if (static_cast<float>(x) >= boxX && static_cast<float>(x) <= boxX + keyWidth) {
                 return i;
             }
 
@@ -392,10 +352,8 @@ namespace gui::elements {
      * Execute the needed action for the key
      * @param key The key to process
      */
-    void Keyboard::processKey(const char key)
-    {
-        switch (key)
-        {
+    void Keyboard::processKey(const char key) {
+        switch (key) {
             case KEY_NULL:
             case KEY_EXIT:
             case KEY_BACKSPACE:
@@ -411,9 +369,8 @@ namespace gui::elements {
             default:
                 addChar(key);
 
-                // Disable caps if not locked
-                if (m_caps == CAPS_ONCE)
-                {
+            // Disable caps if not locked
+                if (m_caps == CAPS_ONCE) {
                     m_currentLayout = LAYOUT_LOWERCASE;
                     m_caps = CAPS_NONE;
 
@@ -427,15 +384,12 @@ namespace gui::elements {
         }
 
         // Redraw input box
-        drawInputBox();// <= Useless, because "markDirty" redraws it
+        drawInputBox(); // <= Useless, because "markDirty" redraws it
     }
 
-    void Keyboard::drawInputBox() const
-    {
-        if (m_buffer.empty())
-        {
-            if (m_placeholder.empty())
-            {
+    void Keyboard::drawInputBox() const {
+        if (m_buffer.empty()) {
+            if (m_placeholder.empty()) {
                 m_label->setText("");
                 return;
             }
@@ -443,19 +397,15 @@ namespace gui::elements {
             // Draw placeholder
             m_label->setTextColor(graphics::packRGB565(200, 200, 200));
             m_label->setText(m_placeholder);
-        }
-        else
-        {
+        } else {
             // Draw text
             m_label->setTextColor(graphics::packRGB565(0, 0, 0));
             m_label->setText(m_buffer);
         }
     }
 
-    void Keyboard::updateCapsIcon() const
-    {
-        switch (m_caps)
-        {
+    void Keyboard::updateCapsIcon() const {
+        switch (m_caps) {
             case CAPS_NONE:
                 m_capsIcon0->enable();
                 m_capsIcon1->disable();
@@ -475,10 +425,8 @@ namespace gui::elements {
         }
     }
 
-    void Keyboard::updateLayoutIcon() const
-    {
-        switch (m_currentLayout)
-        {
+    void Keyboard::updateLayoutIcon() const {
+        switch (m_currentLayout) {
             case LAYOUT_LOWERCASE:
             case LAYOUT_UPPERCASE:
                 m_layoutIcon0->enable();
@@ -492,20 +440,16 @@ namespace gui::elements {
         }
     }
 
-    bool Keyboard::hasExitKeyBeenPressed() const
-    {
+    bool Keyboard::hasExitKeyBeenPressed() const {
         return m_exit;
     }
 
-    void Keyboard::setPlaceholder(const std::string& placeholder)
-    {
+    void Keyboard::setPlaceholder(const std::string &placeholder) {
         m_placeholder = placeholder;
     }
 
-    char** Keyboard::getLayoutCharMap() const
-    {
-        switch (m_currentLayout)
-        {
+    char **Keyboard::getLayoutCharMap() const {
+        switch (m_currentLayout) {
             case LAYOUT_LOWERCASE:
             default:
                 return m_layoutLowercase;
@@ -516,22 +460,18 @@ namespace gui::elements {
         }
     }
 
-    void Keyboard::trackpadUpdate()
-    {
+    void Keyboard::trackpadUpdate() {
         int16_t rawTouchX, rawTouchY;
         graphics::getTouchPos(&rawTouchX, &rawTouchY);
 
         const bool wasTrackpadActive = isTrackpadActive();
 
         // Check if finger is on screen
-        if ((rawTouchX != -1 && rawTouchY != -1) && isPointInTrackpad(m_lastTouchX, m_lastTouchY))
-        {
+        if ((rawTouchX != -1 && rawTouchY != -1) && isPointInTrackpad(m_lastTouchX, m_lastTouchY)) {
             m_trackpadTicks++;
 
-            if (isTrackpadActive())
-            {
-                if (m_trackpadTicks == 10)
-                {
+            if (isTrackpadActive()) {
+                if (m_trackpadTicks == 10) {
                     // Do once
 
                     localGraphicalUpdate();
@@ -543,8 +483,7 @@ namespace gui::elements {
                 m_trackpadCanvas->fillRect(0, 0, 100, 16, graphics::packRGB565(255, 255, 255));
                 m_trackpadCanvas->drawText(0, 0, deltaXString, graphics::packRGB565(0, 0, 0), 16);
             }
-        }
-        else {
+        } else {
             m_trackpadTicks = 0;
 
             if (wasTrackpadActive) {
