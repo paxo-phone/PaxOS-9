@@ -245,10 +245,15 @@ namespace gui::elements {
         return m_cursorIndex;
     }
 
-    void Label::setCursorIndex(const uint16_t cursorIndex)
+    void Label::setCursorIndex(const int16_t cursorIndex)
     {
-        // TODO : Check if new cursor index is less than text length
-
         m_cursorIndex = cursorIndex;
+
+        if (m_cursorIndex < 0) {
+            m_cursorIndex = 0;
+        }
+        if (m_cursorIndex > m_text.length()) {
+            m_cursorIndex = static_cast<int16_t>(m_text.length());
+        }
     }
 } // gui::elements

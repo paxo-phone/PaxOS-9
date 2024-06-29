@@ -42,7 +42,7 @@ namespace gui::elements
         void setCursorEnabled(bool enable);
 
         [[nodiscard]] uint16_t getCursorIndex() const;
-        void setCursorIndex(uint16_t cursorIndex);
+        void setCursorIndex(int16_t cursorIndex);
 
     private:
         struct ParseDataOutput {
@@ -63,7 +63,7 @@ namespace gui::elements
         Alignement m_textHorizontalAlignment;
 
         bool m_hasCursor;
-        uint16_t m_cursorIndex;
+        int16_t m_cursorIndex;
     };
 } // gui::elements
 
