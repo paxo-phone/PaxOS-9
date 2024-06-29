@@ -73,6 +73,7 @@ namespace gui::elements {
 
         Canvas *m_trackpadCanvas;
         uint8_t m_trackpadTicks;
+        int32_t m_trackpadLastDeltaX;
 
         void drawKeys() const;
 
@@ -103,6 +104,7 @@ namespace gui::elements {
         [[nodiscard]] bool isTrackpadActive() const;
 
         void addChar(char value);
+        void removeChar();
     };
 } // gui::elements
 

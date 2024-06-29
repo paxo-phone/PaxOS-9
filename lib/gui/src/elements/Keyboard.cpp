@@ -192,9 +192,7 @@ namespace gui::elements {
         }
 
         if (m_backspaceBox->isTouched()) {
-            if (!m_buffer.empty()) {
-                m_buffer.pop_back();
-            }
+            removeChar();
 
             // Redraw input box
             drawInputBox();
@@ -397,10 +395,14 @@ namespace gui::elements {
             // Draw placeholder
             m_label->setTextColor(graphics::packRGB565(200, 200, 200));
             m_label->setText(m_placeholder);
+
+            m_label->setCursorEnabled(false);
         } else {
             // Draw text
             m_label->setTextColor(graphics::packRGB565(0, 0, 0));
             m_label->setText(m_buffer);
+
+            m_label->setCursorEnabled(true);
         }
     }
 
@@ -472,16 +474,38 @@ namespace gui::elements {
 
             if (isTrackpadActive()) {
                 if (m_trackpadTicks == 10) {
-                    // Do once
+                    // Do once, only when trackpad was just enabled
+
+                    m_trackpadLastDeltaX = 0;
 
                     localGraphicalUpdate();
                 }
 
-                int deltaX = rawTouchX - m_lastTouchX;
+                const int32_t deltaX = rawTouchX - m_lastTouchX;
                 std::string deltaXString = std::to_string(deltaX);
 
                 m_trackpadCanvas->fillRect(0, 0, 100, 16, graphics::packRGB565(255, 255, 255));
                 m_trackpadCanvas->drawText(0, 0, deltaXString, graphics::packRGB565(0, 0, 0), 16);
+
+                const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / 10;
+
+                std::cout << "Trackpad, to move : " << toMove << std::endl;
+
+                if (toMove > 0) {
+                    for (int i = 0; i < toMove; i++) {
+                        m_label->setCursorIndex(m_label->getCursorIndex() + 1);
+                    }
+                } else if (toMove < 0) {
+                    for (int i = 0; i < -toMove; i++) {
+                        m_label->setCursorIndex(m_label->getCursorIndex() - 1);
+                    }
+                }
+
+                if (abs(toMove) > 0) {
+                    localGraphicalUpdate();
+                }
+
+                m_trackpadLastDeltaX += toMove * 10;
             }
         } else {
             m_trackpadTicks = 0;
@@ -506,6 +530,18 @@ namespace gui::elements {
     }
 
     void Keyboard::addChar(const char value) {
-        m_buffer += std::string(1, value);
+        m_buffer.insert(m_label->getCursorIndex(), 1, value);
+
+        m_label->setCursorIndex(m_label->getCursorIndex() + 1);
+    }
+
+    void Keyboard::removeChar() {
+        if (m_buffer.empty()) {
+            return;
+        }
+
+        m_buffer.erase(m_label->getCursorIndex() - 1, 1);
+
+        m_label->setCursorIndex(m_label->getCursorIndex() - 1);
     }
 } // gui::elements
