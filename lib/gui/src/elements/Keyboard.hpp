@@ -80,7 +80,7 @@ namespace gui::elements
 
         void drawLastRow() const;
 
-        char getKey(int16_t x, int16_t y) const;
+        [[nodiscard]] char getKey(int16_t x, int16_t y) const;
 
         static uint8_t getKeyCol(int16_t x, uint8_t keyCount);
 
@@ -91,11 +91,13 @@ namespace gui::elements
         void updateCapsIcon() const;
         void updateLayoutIcon() const;
 
-        char** getLayoutCharMap() const;
+        [[nodiscard]] char** getLayoutCharMap() const;
 
         void trackpadUpdate();
-        bool isPointInTrackpad(int16_t x, int16_t y) const;
-        bool isTrackpadActive() const;
+        [[nodiscard]] bool isPointInTrackpad(int16_t x, int16_t y) const;
+        [[nodiscard]] bool isTrackpadActive() const;
+
+        void addChar(char value);
     };
 } // gui::elements
 

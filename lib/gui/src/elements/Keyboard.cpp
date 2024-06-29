@@ -90,6 +90,8 @@ namespace gui::elements {
         m_label = new Label(30, 30, 380, 100);
         // m_label->setFont(graphics::ARIAL);
         m_label->setFontSize(24);
+        m_label->setCursorEnabled(true);
+        m_label->setCursorIndex(m_buffer.length());
         addChild(m_label);
 
         // Create images box (for better performances ?)
@@ -403,10 +405,11 @@ namespace gui::elements {
                 // KEY_EXIT & KEY_BACKSPACE & KEY_CAPS & KEY_LAYOUT_STANDARD & KEY_LAYOUT_NUMBERS are handled directly in update function
                 return;
             case KEY_SPACE:
-                m_buffer += " ";
+                addChar(' ');
+
                 break;
             default:
-                m_buffer += std::string(1, key);
+                addChar(key);
 
                 // Disable caps if not locked
                 if (m_caps == CAPS_ONCE)
@@ -527,7 +530,8 @@ namespace gui::elements {
 
             if (isTrackpadActive())
             {
-                if (m_trackpadTicks == 10) {
+                if (m_trackpadTicks == 10)
+                {
                     // Do once
 
                     localGraphicalUpdate();
@@ -543,8 +547,7 @@ namespace gui::elements {
         else {
             m_trackpadTicks = 0;
 
-            if (wasTrackpadActive)
-            {
+            if (wasTrackpadActive) {
                 // Do once
 
                 localGraphicalUpdate();
@@ -552,8 +555,7 @@ namespace gui::elements {
         }
     }
 
-    bool Keyboard::isPointInTrackpad(const int16_t x, const int16_t y) const
-    {
+    bool Keyboard::isPointInTrackpad(const int16_t x, const int16_t y) const {
         if (x < 110 || x > 370) return false;
         if (y <= 260 || y > 300) return false;
 
@@ -562,5 +564,9 @@ namespace gui::elements {
 
     bool Keyboard::isTrackpadActive() const {
         return m_trackpadTicks >= 10;
+    }
+
+    void Keyboard::addChar(const char value) {
+        m_buffer += std::string(1, value);
     }
 } // gui::elements

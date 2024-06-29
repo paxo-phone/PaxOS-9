@@ -22,6 +22,9 @@ namespace gui::elements {
         m_y = y;
         m_width = width;
         m_height = height;
+
+        m_hasCursor = false;
+        m_cursorIndex = 0;
     }
 
     Label::~Label() = default;
@@ -35,7 +38,7 @@ namespace gui::elements {
         m_surface->setColor(this->m_backgroundColor);
         m_surface->setFontSize(this->m_fontSize);
 
-        std::vector<std::string> lines = parse();
+        auto [lines, m_cursorIndex, m_cursorLine] = parse();
 
         for (size_t i = 0; i < lines.size(); i++)
         {
@@ -92,46 +95,98 @@ namespace gui::elements {
         localGraphicalUpdate();
     }
 
-    std::vector<std::string> Label::parse(void)
+    Label::ParseDataOutput Label::parse(void)
     {
-        std::vector<std::string> lines;
-        std::string currentLine = "";
+        ParseDataOutput output;
+        output.m_cursorIndex = 0;
+        output.m_cursorLine = 0;
+
+        std::string currentLine;
+
+        uint16_t charIndex = 0; // Global text index
+
+        uint16_t lineCharIndex = 0; // X position
+        uint16_t lineIndex = 0; // Y position
 
         for (char c : m_text) {
+            // Save cursor pos
+            if (m_hasCursor)
+            {
+                if (m_cursorIndex == charIndex)
+                {
+                    std::cout << "CURSOR POSITION MATCH ! " << charIndex << ", " << lineCharIndex << ", " << lineIndex << std::endl;
+
+                    // TODO : Better implementation
+                    currentLine += '|';
+
+                    output.m_cursorIndex = lineCharIndex;
+                    output.m_cursorLine = lineIndex;
+                }
+            }
+
             if (c == '\n') {
-                lines.push_back(currentLine);
+                output.m_lines.push_back(currentLine);
                 currentLine = "";
+
+                lineIndex++;
+                lineCharIndex = 0;
             } else if (m_surface->getTextWidth(currentLine + c) <= getUsableWidth()) {
                 currentLine += c;
+
+                lineCharIndex++;
             } else if (c == ' ') {
-                lines.push_back(currentLine);
+                output.m_lines.push_back(currentLine);
                 currentLine = "";
+
+                lineIndex++;
+                lineCharIndex = 0;
             } else {
                 if (currentLine.empty()) {
                     currentLine += c;
+
+                    lineCharIndex++;
                 } else if (currentLine.back() == ' ') {
                     currentLine += c;
+
+                    lineCharIndex++;
                 } else {
                     std::size_t lastSpace = currentLine.find_last_of(' ');
                     if (lastSpace == std::string::npos) {
-                        lines.push_back(currentLine);
+                        output.m_lines.push_back(currentLine);
                         currentLine = "";
                         currentLine += c;
+
+                        lineIndex++;
+                        lineCharIndex = 1;
                     } else {
                         std::string firstPart = currentLine.substr(0, lastSpace);
-                        lines.push_back(firstPart);
+                        output.m_lines.push_back(firstPart);
                         currentLine = currentLine.substr(lastSpace + 1);
                         currentLine += c;
+
+                        lineIndex++;
+                        lineCharIndex = lastSpace + 1; // TODO: Check if this is correct
                     }
                 }
+            }
+
+            charIndex++;
+        }
+
+        if (m_hasCursor)
+        {
+            if (m_cursorIndex == m_text.length())
+            {
+                // TODO : Better implementation
+                currentLine += '|';
             }
         }
 
         if (!currentLine.empty()) {
-            lines.push_back(currentLine);
+            output.m_lines.push_back(currentLine);
         }
 
-        return lines;
+        return output;
     }
 
     uint16_t Label::getUsableWidth(void)
@@ -170,7 +225,30 @@ namespace gui::elements {
 
     uint16_t Label::getTextHeight()
     {
-        std::vector<std::string> lines = parse();
+        const auto [lines, cursorIndex, cursorLine] = parse();
+
         return getRadius() + getBorderSize()*2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+    }
+
+    bool Label::isCursorEnabled() const
+    {
+        return m_hasCursor;
+    }
+
+    void Label::setCursorEnabled(const bool enable)
+    {
+        m_hasCursor = enable;
+    }
+
+    uint16_t Label::getCursorIndex() const
+    {
+        return m_cursorIndex;
+    }
+
+    void Label::setCursorIndex(const uint16_t cursorIndex)
+    {
+        // TODO : Check if new cursor index is less than text length
+
+        m_cursorIndex = cursorIndex;
     }
 } // gui::elements

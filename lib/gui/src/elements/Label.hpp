@@ -38,8 +38,21 @@ namespace gui::elements
         uint16_t getTextWidth();
         uint16_t getTextHeight();
 
+        [[nodiscard]] bool isCursorEnabled() const;
+        void setCursorEnabled(bool enable);
+
+        [[nodiscard]] uint16_t getCursorIndex() const;
+        void setCursorIndex(uint16_t cursorIndex);
+
     private:
-        std::vector<std::string> parse(void);
+        struct ParseDataOutput {
+            std::vector<std::string> m_lines;
+
+            uint16_t m_cursorIndex; // X
+            uint16_t m_cursorLine; // Y
+        };
+
+        ParseDataOutput parse(void);
         uint16_t getUsableWidth(void); // retourne la largeur réelle maximale utilisée par le texte (sans les bordure etc...)
         uint16_t getUsableHeight(void);
 
@@ -48,6 +61,9 @@ namespace gui::elements
         std::string m_text;
         Alignement m_textVerticalAlignment;
         Alignement m_textHorizontalAlignment;
+
+        bool m_hasCursor;
+        uint16_t m_cursorIndex;
     };
 } // gui::elements
 
