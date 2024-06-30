@@ -17,6 +17,7 @@ namespace app
     struct App
     {
         std::string name;
+        std::string displayName;
         storage::Path path;
         storage::Path manifest;
         bool auth;
