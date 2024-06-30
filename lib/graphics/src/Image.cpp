@@ -88,12 +88,12 @@ namespace graphics {
         return m_type;
     }
 
-    uint32_t SImage::getWidth() const
+    uint16_t SImage::getWidth() const
     {
         return m_width;
     }
 
-    uint32_t SImage::getHeight() const
+    uint16_t SImage::getHeight() const
     {
         return m_height;
     }
