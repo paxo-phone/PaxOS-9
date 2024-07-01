@@ -22,7 +22,8 @@
 #include <iostream>
 #include "GuiManager.hpp"
 #include "unistd.h"
-
+#include <SerialManager.hpp>
+#include "../lib/tasks/src/delay.hpp"
 
 using namespace gui::elements;
 
@@ -125,7 +126,7 @@ void setup()
     );
     #endif // ESP_PLATFORM
 
-    // Positionnement de l'écran en mode Portrait
+    // Positionnement de l'écran en mode Portrat
     graphics::setScreenOrientation(graphics::PORTRAIT);
 
     // Init de la gestiuon des Threads
@@ -158,6 +159,7 @@ void setup()
 
     #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
     #endif
 
     // gestion de la détection du toucher de l'écran

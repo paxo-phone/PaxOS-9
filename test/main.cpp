@@ -17,6 +17,7 @@
 #include "gsm/gsm_test.cpp"
 #include "gsm/conversation_test.cpp"
 #include "gsm/contacts_test.cpp"
+#include "serialcom/command.cpp"
 
 int main(int argc, char **argv)
 {
