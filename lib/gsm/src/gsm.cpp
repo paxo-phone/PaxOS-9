@@ -247,6 +247,13 @@ namespace GSM
         return std::string(buf);
     }
 
+    std::string getCurrentTimestampNoSpaces()
+    {
+        char buf[20];
+        std::sprintf(buf, "%04d-%02d-%02d_%02d:%02d:%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
+        return std::string(buf);
+    }
+
     void onMessage()
     {
         std::cout << "onMessage data: " << data << std::endl;

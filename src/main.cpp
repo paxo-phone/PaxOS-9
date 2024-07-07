@@ -5,7 +5,8 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include <esp_system.h>
-
+#include <backtrace_saver.hpp>
+#include "backtrace.hpp"
 #endif
 
 #include "graphics.hpp"
@@ -75,6 +76,14 @@ void setup()
     hardware::setScreenPower(true);
     graphics::init();
     storage::init();
+    #ifdef ESP_PLATFORM
+    backtrace_saver::init();
+
+    backtrace_saver::backtraceEventId = eventHandlerBack.addEventListener(
+        new Condition<>(&backtrace_saver::shouldSaveBacktrace),
+        new Callback<>(&backtrace_saver::saveBacktrace)
+    );
+    #endif // ESP_PLATFORM
 
     graphics::setScreenOrientation(graphics::PORTRAIT);
 

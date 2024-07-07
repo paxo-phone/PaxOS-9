@@ -99,6 +99,7 @@ namespace GSM
     void resetCache();
     void createConversation(const std::string &filePath);
     std::string getCurrentTimestamp();
+    std::string getCurrentTimestampNoSpaces();
     void clearFrom(const std::string &from, const std::string &to);
     void appendRequest(Request request);
 }
