@@ -33,6 +33,7 @@ void ringingVibrator(void* data)
         {
             delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);
         }
+        delay(10);
     }
     #endif
 }
@@ -50,7 +51,23 @@ void mainLoop(void* data)
         {
             l = launcher();
             if(l!=-1)
-                app::runApp(app::appList[l].path);
+            {
+                int search = 0;
+                for (int i = 0; i < AppManager::appList.size(); i++)
+                {
+                    if(AppManager::appList[i].visible)
+                    {
+                        if(search == l)
+                        {
+                            AppManager::get(i).run(false);
+                            while (AppManager::isAnyVisibleApp())
+                                AppManager::loop();                            
+                            break;
+                        }
+                        search++;
+                    }
+                }
+            }
 
             while (hardware::getHomeButton());
         }
@@ -94,29 +111,32 @@ void setup()
     };
 
     #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &ringingVibrator);
+    ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
     #endif
 
     eventHandlerBack.setInterval(
-        new Callback<>(&graphics::touchUpdate),
+        &graphics::touchUpdate,
         10
     );
 
     hardware::setVibrator(false);
     GSM::endCall();
 
+    std::cout << "[Main] Loading Contacts" << std::endl;
     Contacts::load();
 
     std::vector<Contacts::contact> cc = Contacts::listContacts();
+    
     for(auto c : cc)
     {
-        std::cout << c.name << " " << c.phone << std::endl;
+        //std::cout << c.name << " " << c.phone << std::endl;
     }
 
     app::init();
+    AppManager::init();
 
     #ifdef ESP_PLATFORM
-    xTaskCreateUniversal(mainLoop,"newloop", 64*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
     vTaskDelete(NULL);
     #else
     mainLoop(NULL);

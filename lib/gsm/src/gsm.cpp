@@ -57,11 +57,11 @@ namespace GSM
 
             if (gsm.available())
             {
-                std::cout << "Connected" << std::endl;
+                std::cout << "[GSM] Connected!" << std::endl;
                 return;
             }
             else
-                std::cout << "Disconnected" << std::endl;
+                std::cout << "[GSM] [Error] Disconnected" << std::endl;
         }
 #endif
     }
@@ -327,6 +327,7 @@ namespace GSM
     void sendMessage(const std::string &number, const std::string &message)
     {
         std::cout << "Sending message to: " << number << " with content: " << message << std::endl;
+        send("AT+CMGF=1", "OK", 200);
         send("AT+CMGS=\"" + number + "\"\r", ">");
         send(message + char(26), "OK");
 
@@ -464,8 +465,6 @@ namespace GSM
     {
         std::string data = send("AT+CCLK?", "+CCLK:");
 
-        std::cout << data << std::endl;
-
         size_t start = data.find("\"");
         if (start == std::string::npos)
         {
@@ -505,7 +504,7 @@ namespace GSM
             return;
         }
 
-        std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
+        //std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
 
     void getHour()
@@ -517,12 +516,14 @@ namespace GSM
     {
         init();
 
+        //PaxOS_Delay(50000);
+
         requests.push_back({[](){ send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
 
         updateHour();
 
-        eventHandlerBack.setInterval(new Callback<>(&GSM::getHour), 5000);
-        eventHandlerBack.setInterval(new Callback<>([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }), 5000);
+        eventHandlerBack.setInterval(&GSM::getHour, 5000);
+        eventHandlerBack.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
         // eventHandlerBack.setInterval(new Callback<>([](){if(send("AT", "AT").find("OK") == std::string::npos) init(); }), 15000);
 
         keys.push_back({"RING", &GSM::onRinging});

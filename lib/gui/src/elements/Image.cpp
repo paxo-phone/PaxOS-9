@@ -25,12 +25,12 @@ namespace gui::ImagesList
         {
             if (image.path.str() == path.str() && image.width == width && image.height == height)
             {
-                std::cout << "image already loaded" << std::endl;
+                //std::cout << "image already loaded" << std::endl;
                 return image.surface;
             }
         }
 
-        std::cout << "image not loaded" << std::endl;
+        //std::cout << "image not loaded" << std::endl;
 
         graphics::SImage i = graphics::SImage(path);
 
@@ -41,6 +41,7 @@ namespace gui::ImagesList
 
         if(i.getType() != graphics::ImageType::BMP)
             img.surface->clear(backgroundColor);
+
         img.surface->drawImage(i, 0, 0);
 
         images.push_back(img);
@@ -55,7 +56,7 @@ namespace gui::ImagesList
             if (img->surface.use_count() == 1)
             {
                 img = images.erase(img);
-                std::cout << "image deleted ----------------" << std::endl;
+                std::cout << "[Image] image deleted" << std::endl;
             }
             else
             {
@@ -91,37 +92,6 @@ namespace gui::elements
 
     void Image::load(color_t background)
     {
-        /*try
-        {
-            graphics::SImage i = graphics::SImage(this->m_path);
-            
-            m_surface = std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight());
-            this->m_width = i.getWidth();
-            this->m_height = i.getHeight();
-            m_surface->clear(background);
-
-            m_surface->drawImage(i, 0, 0);
-
-            localGraphicalUpdate();
-        }
-        catch (const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-            std::cout << "Failed to load image -> crashes" << std::endl;
-            std::cout << "Path: " << this->m_path.str() << std::endl;
-            std::cout << "Size: " << this->m_width << ", " << this->m_height << std::endl;
-            if (m_surface == nullptr)
-            {
-                std::cout << "Surface is nullptr" << std::endl;
-            
-            #ifdef ESP_PLATFORM
-                // Print the size of the psram if the ESP_PLATFORM is defined
-                size_t psram_size = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-                std::cout << "Size of psram: " << psram_size << " bytes" << std::endl;
-            #endif
-            }
-        }*/
-        
         m_surface = gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
         localGraphicalUpdate();
     }

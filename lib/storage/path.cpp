@@ -148,6 +148,12 @@ namespace storage
         return ((*this) = Path(other));
     }
 
+    
+    bool Path::operator==(const Path &other) const
+    {
+        return this->str() == other.str();
+    }
+
     void Path::assign(const Path &other)
     {
         m_steps = other.m_steps;

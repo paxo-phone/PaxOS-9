@@ -13,10 +13,10 @@ class LuaInput : public LuaWidget
     void setTitle(const std::string& text){ widget->setTitle(text); }
 
     std::string getText(){ return widget->getText(); }
-    void onChange(sol::function func){ onChangeFunc = func;}
+    void onChange(sol::protected_function func){ onChangeFunc = func;}
 
     Input* widget = nullptr;
-    sol::function onChangeFunc;
+    sol::protected_function onChangeFunc;
 };
 
 #endif

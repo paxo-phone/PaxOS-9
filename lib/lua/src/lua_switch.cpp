@@ -13,7 +13,7 @@ LuaSwitch::LuaSwitch(LuaWidget* parent, int x, int y, LuaGui* gui)
 
     this->gui = gui;
 
-    sol::function lua_function = this->gui->lua->lua["donothing"];
+    sol::protected_function lua_function = this->gui->lua->lua["donothing"];
 
     onClick(lua_function);
 }

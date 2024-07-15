@@ -29,9 +29,11 @@ function appendMessage(msg, list)
 end
 
 function converation(number)
+    print("converation called with number ")
     win2=gui:window()
 
     local c = gsm.getContactByNumber(number)
+    print("getContactByNumber returned " .. tostring(c))
 
     local title=gui:label(win2, 90, 30, 141, 22)
     title:setHorizontalAlignment(CENTER_ALIGNMENT)
@@ -45,8 +47,10 @@ function converation(number)
     list = gui:vlist(win2, 20, 76, 280, 320)
     
     messages = gsm.getMessages(number)
+    print("getMessages returned " .. tostring(messages))
 
     for i, message in pairs(messages) do
+        print("message " .. tostring(i) .. " : " .. tostring(message))
         local bull = gui:box(list, 0, 0, 184, 30)
         
         local label = gui:label(bull, 0, 0, 184, 0)
@@ -78,9 +82,11 @@ function converation(number)
         
 
     add:onClick(function ()
+        print("add button clicked")
         local msg = newMessage(number)
 
         if(msg ~= "") then
+            print("new message received: " .. msg)
             appendMessage(msg, list)
         end
     end)
@@ -92,31 +98,31 @@ function converation(number)
     gui:setWindow(win2)
 end
 
-function run()
+function run(arg)
     if(#arg == 1) then
         converation(arg[1])
         return
     end
 
     contactList = gsm:listContacts()
-
+    
     win=gui:window()
-
+    
     local title=gui:label(win, 35, 35, 144, 28)
     title:setFontSize(24)
     title:setText("Message")
-
+    
     listO = gui:vlist(win, 35, 90, 250, 280)
-
+    
     local files = storage:listDir("data")
-
+    
     for i, file in ipairs(files) do
         local case = gui:box(listO, 0, 0, 250, 36)
-
+        
         local number = file:match("(.+)%.json")
-
+        
         local c = gsm.getContactByNumber(number)
-
+        
         local name = gui:label(case, 0, 0, 230, 18)
         if c.name ~= "" then
             name:setText(c.name)
@@ -125,19 +131,19 @@ function run()
             name:setText(number)
             name:setFontSize(16)
         end
-
+        
         local num = gui:label(case, 0, 18, 230, 18)
         if c.name ~= "" then
             num:setText(c.phone)
         else
             num:setText("-")
         end
-
+        
         num:setTextColor(COLOR_GREY)
         num:setFontSize(16)
-
+        
         case:onClick(function() converation(number) end)
     end
-
+    
     gui:setWindow(win)
 end

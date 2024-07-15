@@ -96,8 +96,6 @@ namespace GSM
     void rejectCall();
     int getBatteryLevel();
     void getHour();
-    void resetCache();
-    void createConversation(const std::string &filePath);
     std::string getCurrentTimestamp();
     void clearFrom(const std::string &from, const std::string &to);
     void appendRequest(Request request);

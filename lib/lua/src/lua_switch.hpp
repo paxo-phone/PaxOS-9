@@ -10,10 +10,10 @@ class LuaSwitch : public LuaWidget
     
     void setState(bool state){ widget->setState(state); }
     bool getState(){ return widget->getState(); }
-    void onChange(sol::function func){ onChangeFunc = func; }
+    void onChange(sol::protected_function func){ onChangeFunc = func; }
 
     Switch* widget = nullptr;
-    sol::function onChangeFunc;
+    sol::protected_function onChangeFunc;
 };
 
 #endif
