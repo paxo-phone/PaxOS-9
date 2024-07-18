@@ -300,6 +300,30 @@ namespace GSM
         return std::string(buf);
     }
 
+    bool is_hex_string(const std::string& str) {
+        return str.length() % 4 == 0 && str.find_first_not_of("0123456789ABCDEFabcdef") == std::string::npos;
+    }
+
+    std::string convert_hex_to_utf8(const std::string& hex_str) {
+        std::u16string utf16_str;
+        for (size_t i = 0; i < hex_str.length(); i += 4) {
+            std::string hex_char = hex_str.substr(i, 4);
+            char16_t utf16_char = static_cast<char16_t>(std::stoul(hex_char, nullptr, 16));
+            utf16_str.push_back(utf16_char);
+        }
+        
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+        return converter.to_bytes(utf16_str);
+    }
+
+    std::string process_string(const std::string& input) {
+        if (is_hex_string(input)) {
+            return convert_hex_to_utf8(input);
+        } else {
+            return input; // Already in UTF-8
+        }
+    }
+
     void onMessage()
     {
         std::cout << "onMessage data: " << data << std::endl;
@@ -342,6 +366,7 @@ namespace GSM
 
             // Vérifier si le numéro existe dans les contacts
             if(number.size() == 10) number = "+33" + number.substr(1);
+            message = process_string(message);
 
             auto contact = Contacts::getByNumber(number);
 
