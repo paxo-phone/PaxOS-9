@@ -53,7 +53,6 @@ namespace gui::elements
             }
             
             m_verticalScroll = m_children[m_focusedIndex]->m_y;
-            std::cout << "focused: " << m_focusedIndex << std::endl;
             localGraphicalUpdate();
 
             // for (int i = 0; i < m_children.size(); i++)

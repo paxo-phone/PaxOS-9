@@ -3,6 +3,8 @@
 #include <graphics.hpp>
 #include <threads.hpp>
 #include "lua_file.hpp"
+#include "app.hpp"
+
 
 LuaGui::LuaGui(LuaFile* lua)
 {
@@ -173,3 +175,5 @@ std::string LuaGui::keyboard(const std::string& placeholder, const std::string& 
 
     return key.getText();
 }
+
+void LuaGui::setMainWindow(LuaWindow* window) {this->mainWindow = window; AppManager::askGui(this->lua); }

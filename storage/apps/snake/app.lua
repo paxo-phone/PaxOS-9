@@ -13,12 +13,12 @@ local food = {x=math.random(gridSize.w), y=math.random(gridSize.h)}
 
 function drawSnake()
     for i, part in ipairs(snake) do
-        drawRect_canvas:fillRect(int(part.x*factor), int(part.y*factor), 15, 15, COLOR_WARNING)
+        drawRect_canvas:fillRect(int((part.x-1)*factor), int((part.y-1)*factor), 15, 15, COLOR_WARNING)
     end
 end
 
 function drawFood()
-    drawRect_canvas:fillRect(int(food.x*factor), int(food.y*factor), 15, 15, COLOR_ERROR)
+    drawRect_canvas:fillRect(int((food.x-1)*factor), int((food.y-1)*factor), 15, 15, COLOR_ERROR)
 end
 
 function updateSnake()
@@ -58,11 +58,11 @@ function updateSnake()
     else
         local tail = table.remove(snake)
         -- Effacer le dernier point de la queue
-        drawRect_canvas:fillRect(int(tail.x*factor), int(tail.y*factor), 15, 15, COLOR_DARK)
+        drawRect_canvas:fillRect(int((tail.x-1)*factor), int((tail.y-1)*factor), 15, 15, COLOR_DARK)
     end
 
     -- Afficher que la tête
-    drawRect_canvas:fillRect(int(head.x*factor), int(head.y*factor), 15, 15, COLOR_WARNING)
+    drawRect_canvas:fillRect(int((head.x-1)*factor), int((head.y-1)*factor), 15, 15, COLOR_WARNING)
 end
 
 function isFoodOnSnake(food)

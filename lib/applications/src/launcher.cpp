@@ -18,6 +18,9 @@ std::string getFormatedHour()
 
 int launcher()
 {
+    if(AppManager::isAnyVisibleApp())
+        return -1;
+    
     StandbyMode::triggerPower();
     gui::elements::Window win;
 
@@ -44,7 +47,7 @@ int launcher()
     win.addChild(batt);
 
     uint32_t evid = eventHandlerApp.setInterval(
-        new Callback<>([&hour, &date]() { 
+        [&hour, &date]() { 
             static int min;
             if(min!=GSM::minutes)
             {
@@ -52,23 +55,26 @@ int launcher()
                 date->setText(getFormatedHour());
                 min = GSM::minutes;
             }
-         }),
+         },
         500
     );
 
     std::vector<gui::ElementBase*> apps;
 
-    for (int i = 0; i < app::appList.size(); i++)
+    int placementIndex = 0;
+    for (int i = 0; i < AppManager::appList.size(); i++)
     {
-        Box* box = new Box(60 + 119 * (i%2), 164 + 95 * int(i/2), 80, 80);
+        if (!AppManager::appList[i].visible)
+            continue;
+
+        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 * int(placementIndex/2), 80, 80);
         
-        std::cout << (app::appList[i].path / "../icon.png").str() << std::endl;
-        Image* img = new Image(app::appList[i].path / "../icon.png", 20, 6, 40, 40);
+        Image* img = new Image(AppManager::appList[i].path / "../icon.png", 20, 6, 40, 40);
         img->load();
         box->addChild(img);
 
         Label* text = new Label(0, 46, 80, 34);
-        text->setText(app::appList[i].name);
+        text->setText(AppManager::appList[i].name);
         text->setVerticalAlignment(Label::Alignement::CENTER);
         text->setHorizontalAlignment(Label::Alignement::CENTER);
         text->setFontSize(16);
@@ -77,9 +83,11 @@ int launcher()
         win.addChild(box);
 
         apps.push_back(box);
+        
+        placementIndex++;
     }
 
-    while (!hardware::getHomeButton())
+    while (!hardware::getHomeButton() && AppManager::isAnyVisibleApp() == false)
     {
         for (int i = 0; i < apps.size(); i++)
         {
@@ -90,14 +98,10 @@ int launcher()
             }
         }
 
-        if (app::request)
-        {
-            app::request = false;
-            app::runApp({app::requestingApp.app});
-        }
-
         eventHandlerApp.update();
         win.updateAll();
+
+        AppManager::loop();
     }
 
     eventHandlerApp.removeInterval(evid);

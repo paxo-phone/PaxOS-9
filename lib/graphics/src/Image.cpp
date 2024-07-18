@@ -29,7 +29,6 @@ std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
 
     if(!stream.isopen())
     {
-        std::cout << "Error: " << path.str() << std::endl;
         return data;
     }
 

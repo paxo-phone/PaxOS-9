@@ -80,7 +80,7 @@ namespace StandbyMode
         #ifdef ESP_PLATFORM
         setCpuFrequencyMhz(20);
         GSM::reInit();
-        Serial.begin(115200);
+        //Serial.begin(115200);
         powerMode = false;
         #endif
     }
@@ -90,7 +90,7 @@ namespace StandbyMode
         #ifdef ESP_PLATFORM
         setCpuFrequencyMhz(240);
         GSM::reInit();
-        Serial.begin(115200);
+        //Serial.begin(115200);
         powerMode = true;
         #endif
     }

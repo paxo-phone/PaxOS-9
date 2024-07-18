@@ -13,12 +13,20 @@ const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Ju
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
-#endif
-#include <delay.hpp>
+#include <HardwareSerial.h>
+#include "driver/uart.h"
+#include "soc/uart_struct.h"
+#include "esp_system.h"
 
-#define gsm Serial2
 #define RX 26
 #define TX 27
+
+#define GSM_UART UART_NUM_2
+#define gsm Serial2
+#endif
+
+#include <delay.hpp>
+
 
 namespace GSM
 {
@@ -45,9 +53,27 @@ namespace GSM
         delay(1000);
         digitalWrite(32, 0);
 
+        gsm.begin(115200, SERIAL_8N1, RX, TX);
+
+        // Get the UART number (in this case, UART2 for Serial2)
+        uart_port_t uart_num = UART_NUM_2;
+
+        // Configure UART to use REF_TICK as clock source
+        UART2.conf0.tick_ref_always_on = 1;
+
+        // Set the UART clock divider
+        uint32_t sclk_freq = 1000000; // REF_TICK frequency is 1MHz
+        uint32_t baud_rate = 115200;  // Or whatever baud rate you're using
+        uint32_t clk_div = ((sclk_freq + baud_rate / 2) / baud_rate);
+
+        UART2.clk_div.div_int = clk_div;
+        UART2.clk_div.div_frag = 0;
+
+        // Reconfigure the baud rate
+        Serial2.updateBaudRate(baud_rate);
+
         while (true)
         {
-            gsm.begin(115200, SERIAL_8N1, RX, TX);
 
             while (gsm.available())
                 gsm.read();
@@ -57,11 +83,11 @@ namespace GSM
 
             if (gsm.available())
             {
-                std::cout << "Connected" << std::endl;
+                std::cout << "[GSM] Connected!" << std::endl;
                 return;
             }
             else
-                std::cout << "Disconnected" << std::endl;
+                std::cout << "[GSM] [Error] Disconnected" << std::endl;
         }
 #endif
     }
@@ -70,7 +96,23 @@ namespace GSM
     {
 #ifdef ESP_PLATFORM
         download();
-        gsm.begin(115200, SERIAL_8N1, RX, TX);
+
+        // Get the UART number (in this case, UART2 for Serial2)
+        uart_port_t uart_num = UART_NUM_2;
+
+        // Configure UART to use REF_TICK as clock source
+        UART2.conf0.tick_ref_always_on = 1;
+
+        // Set the UART clock divider
+        uint32_t sclk_freq = 1000000; // REF_TICK frequency is 1MHz
+        uint32_t baud_rate = 115200;  // Or whatever baud rate you're using
+        uint32_t clk_div = ((sclk_freq + baud_rate / 2) / baud_rate);
+
+        UART2.clk_div.div_int = clk_div;
+        UART2.clk_div.div_frag = 0;
+
+        // Reconfigure the baud rate
+        Serial2.updateBaudRate(baud_rate);
 #endif
     }
 
@@ -94,6 +136,8 @@ namespace GSM
 #ifdef ESP_PLATFORM
         gsm.println((message + "\r").c_str());
 
+        std::cout << "[GSM] Sending request" << std::endl;
+
         uint64_t lastChar = millis();
         std::string answer = "";
 
@@ -113,7 +157,7 @@ namespace GSM
             }
         }
 
-        while (lastChar + timeout > millis() && (answer.find("OK\13") == std::string::npos && answer.find("ERROR\13") == std::string::npos))
+        while (lastChar + timeout > millis() && (answer.find("OK\r\n") == std::string::npos && answer.find("ERROR\r\n") == std::string::npos))
         {
             if (gsm.available())
             {
@@ -121,6 +165,15 @@ namespace GSM
                 lastChar = millis();
             }
         }
+
+        /*if(lastChar + timeout < millis())
+        {
+            std::cerr << "[GSM] Response timeout: " << answer  << std::endl;
+        }
+        else
+        {
+            std::cout << "[GSM] Response: " << answer << std::endl;
+        }*/
 
         return answer;
 #endif
@@ -252,6 +305,29 @@ namespace GSM
         char buf[20];
         std::sprintf(buf, "%04d-%02d-%02d_%02d:%02d:%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
         return std::string(buf);
+
+    bool is_hex_string(const std::string& str) {
+        return str.length() % 4 == 0 && str.find_first_not_of("0123456789ABCDEFabcdef") == std::string::npos;
+    }
+
+    std::string convert_hex_to_utf8(const std::string& hex_str) {
+        std::u16string utf16_str;
+        for (size_t i = 0; i < hex_str.length(); i += 4) {
+            std::string hex_char = hex_str.substr(i, 4);
+            char16_t utf16_char = static_cast<char16_t>(std::stoul(hex_char, nullptr, 16));
+            utf16_str.push_back(utf16_char);
+        }
+        
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+        return converter.to_bytes(utf16_str);
+    }
+
+    std::string process_string(const std::string& input) {
+        if (is_hex_string(input)) {
+            return convert_hex_to_utf8(input);
+        } else {
+            return input; // Already in UTF-8
+        }
     }
 
     void onMessage()
@@ -295,6 +371,9 @@ namespace GSM
             message = str.substr(k + 3, str.find("\r\n", k + 3) - k - 3);
 
             // Vérifier si le numéro existe dans les contacts
+            if(number.size() == 10) number = "+33" + number.substr(1);
+            message = process_string(message);
+
             auto contact = Contacts::getByNumber(number);
 
             if (contact.name.empty())
@@ -334,6 +413,7 @@ namespace GSM
     void sendMessage(const std::string &number, const std::string &message)
     {
         std::cout << "Sending message to: " << number << " with content: " << message << std::endl;
+        send("AT+CMGF=1", "OK", 200);
         send("AT+CMGS=\"" + number + "\"\r", ">");
         send(message + char(26), "OK");
 
@@ -471,8 +551,6 @@ namespace GSM
     {
         std::string data = send("AT+CCLK?", "+CCLK:");
 
-        std::cout << data << std::endl;
-
         size_t start = data.find("\"");
         if (start == std::string::npos)
         {
@@ -507,12 +585,12 @@ namespace GSM
             minutes = std::atoi(dateTime.substr(12, 2).c_str());
             seconds = std::atoi(dateTime.substr(15, 2).c_str());
         }
-        catch (const std::invalid_argument &)
+        catch (...)
         {
             return;
         }
 
-        std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
+        //std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
 
     void getHour()
@@ -524,12 +602,14 @@ namespace GSM
     {
         init();
 
+        //PaxOS_Delay(50000);
+
         requests.push_back({[](){ send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
 
         updateHour();
 
-        eventHandlerBack.setInterval(new Callback<>(&GSM::getHour), 5000);
-        eventHandlerBack.setInterval(new Callback<>([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }), 5000);
+        eventHandlerBack.setInterval(&GSM::getHour, 5000);
+        eventHandlerBack.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
         // eventHandlerBack.setInterval(new Callback<>([](){if(send("AT", "AT").find("OK") == std::string::npos) init(); }), 15000);
 
         keys.push_back({"RING", &GSM::onRinging});

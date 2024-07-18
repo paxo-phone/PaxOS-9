@@ -94,7 +94,7 @@ namespace gui::elements
 
         for (std::pair<int16_t, int16_t> vertex : vertices)
         {
-            std::cout << "Vertex: " << vertex.first << ", " << vertex.second << std::endl;
+            //std::cout << "Vertex: " << vertex.first << ", " << vertex.second << std::endl;
         }
 
         // assuming the polygon is convex

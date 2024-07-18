@@ -26,11 +26,11 @@ class LuaWidget
     void enable(){this->widget->enable();}
     void disable(){this->widget->disable();}
     bool isTouched(){return this->widget->isFocused();}
-    void onClick(sol::function func){onClickFunc = func;}
-    void onScrollUp(sol::function func){onScrollUpFunc = func;}
-    void onScrollDown(sol::function func){onScrollDownFunc = func;}
-    void onScrollRight(sol::function func){onScrollRightFunc = func;}
-    void onScrollLeft(sol::function func){onScrollLeftFunc = func;}
+    void onClick(sol::protected_function func){onClickFunc = func;}
+    void onScrollUp(sol::protected_function func){onScrollUpFunc = func;}
+    void onScrollDown(sol::protected_function func){onScrollDownFunc = func;}
+    void onScrollRight(sol::protected_function func){onScrollRightFunc = func;}
+    void onScrollLeft(sol::protected_function func){onScrollLeftFunc = func;}
 
     void update();
     virtual void specificUpdate(){};
@@ -50,11 +50,11 @@ class LuaWidget
 
     static LuaWidget* rootOfDelete;
 
-    sol::function onClickFunc;
-    sol::function onScrollUpFunc;
-    sol::function onScrollDownFunc;
-    sol::function onScrollRightFunc;
-    sol::function onScrollLeftFunc;
+    sol::protected_function onClickFunc;
+    sol::protected_function onScrollUpFunc;
+    sol::protected_function onScrollDownFunc;
+    sol::protected_function onScrollRightFunc;
+    sol::protected_function onScrollLeftFunc;
 };
 
 #endif

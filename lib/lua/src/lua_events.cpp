@@ -65,12 +65,12 @@ sol::table LuaTime::get(std::string format)
     return array;
 }
 
-LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::function func, uint32_t interval)
+LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::protected_function func, uint32_t interval)
 {
     this->lua = lua;
     this->func = func;
     this->interval = interval;
-    this->id = eventHandlerApp.setInterval(new Callback<>(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this))), interval);
+    this->id = eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)), interval);
 }
 
 int LuaTimeInterval::getId()
@@ -100,7 +100,7 @@ LuaTimeInterval::~LuaTimeInterval()
     eventHandlerApp.removeInterval(id);
 }
 
-LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::function func, uint32_t timeout)
+LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint32_t timeout)
 {
     this->lua = lua;
     this->func = func;
@@ -141,14 +141,14 @@ void LuaTime::update()
     }
 }
 
-int LuaTime::setInterval(sol::function func, uint32_t interval)
+int LuaTime::setInterval(sol::protected_function func, uint32_t interval)
 {
     LuaTimeInterval* n = new LuaTimeInterval(lua, func, interval);
     intervals.push_back(n);
     return n->getId();
 }
 
-int LuaTime::setTimeout(sol::function func, uint32_t interval)
+int LuaTime::setTimeout(sol::protected_function func, uint32_t interval)
 {
     LuaTimeTimeout* n = new LuaTimeTimeout(lua, func, interval);
     timeouts.push_back(n);

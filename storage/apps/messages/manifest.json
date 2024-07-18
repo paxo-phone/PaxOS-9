@@ -1,3 +1,4 @@
 {
-    "access": ["files", "files_root", "gsm", "gui", "hardware", "time", "web", "web_paxo"]
+    "access": ["files", "files_root", "gsm", "gui", "hardware", "time", "web", "web_paxo"],
+    "name": "Messages"
 }
