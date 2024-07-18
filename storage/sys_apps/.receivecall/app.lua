@@ -35,8 +35,9 @@ function callPage()
     gui:setWindow(win2)
 end
 
-function run()
+function run(arg)
     win=gui:window()
+
 
     num=gui:label(win, 16, 175, 288, 41)
     num:setHorizontalAlignment(CENTER_ALIGNMENT)

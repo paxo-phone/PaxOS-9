@@ -184,6 +184,8 @@ namespace AppManager {
         }
     }
 
+    std::mutex threadsync;
+
     std::vector<App> appList;
     std::vector<App*> appStack;
 
@@ -256,9 +258,9 @@ namespace AppManager {
         }
     }
 
-    void init()
+    void loadDir(storage::Path directory, bool root = false)
     {
-        std::vector<std::string> dirs = storage::Path(APP_DIR).listdir();
+        std::vector<std::string> dirs = storage::Path(directory).listdir();
 
         storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
         std::string allowedFiles = stream.read();
@@ -266,9 +268,9 @@ namespace AppManager {
 
         for (auto dir : dirs)
         {
-            std::cout << (storage::Path(APP_DIR) / dir).str() << std::endl;
+            std::cout << (storage::Path(directory) / dir).str() << std::endl;
 
-            storage::FileStream manifestStream((storage::Path(APP_DIR) / dir / "manifest.json").str(), storage::READ);
+            storage::FileStream manifestStream((storage::Path(directory) / dir / "manifest.json").str(), storage::READ);
             std::string manifestContent = manifestStream.read();
             manifestStream.close();
 
@@ -280,7 +282,12 @@ namespace AppManager {
 
             nlohmann::json manifest = nlohmann::json::parse(manifestContent);
             
-            if(allowedFiles.find((storage::Path(APP_DIR) / dir).str()) != std::string::npos)
+
+            if(root)
+            {
+                appList.push_back({dir, directory / dir / "app.lua", directory / dir / "manifest.json", true});
+            }
+            else if(allowedFiles.find((storage::Path(directory) / dir).str()) != std::string::npos)
             {
                 appList.push_back({dir, storage::Path(APP_DIR) / dir  / "app.lua", storage::Path(PERMS_DIR) / (dir + ".json"), true});
             }
@@ -312,7 +319,14 @@ namespace AppManager {
         }
     }
 
+    void init()
+    {
+        loadDir(storage::Path(APP_DIR));
+        loadDir(storage::Path(SYSTEM_APP_DIR), true);
+    }
+
     void loop() {
+        threadsync.lock();
         // Implementation for the main loop
         if(appStack.size() && hardware::getHomeButton())   // if the home button is pressed, remove the app from the stack, and kill it if it's not running in the background
         {
@@ -356,6 +370,9 @@ namespace AppManager {
             appStack.back()->luaInstance->lua_gui.update();
         }
 
+        threadsync.unlock();
+    
+        StandbyMode::wait();
     }
 
     bool isAnyVisibleApp()
@@ -419,4 +436,47 @@ namespace AppManager {
         throw std::runtime_error("App not found at path: " + path.str());
     }
 
+    void event_oncall()
+    {
+        threadsync.lock();
+        for (auto& app : appList)
+        {
+            if (app.luaInstance != nullptr && app.isRunning())
+                app.luaInstance->event_oncall();
+        }
+        threadsync.unlock();
+    }
+
+    void event_onlowbattery() {
+        threadsync.lock();
+        for (auto& app : appList)
+        {
+            if (app.luaInstance != nullptr && app.isRunning())
+                app.luaInstance->event_onlowbattery();
+        }
+        threadsync.unlock();
+    }
+
+    void event_oncharging() {
+        threadsync.lock();
+        for (auto& app : appList)
+        {
+            if (app.luaInstance != nullptr && app.isRunning())
+                app.luaInstance->event_oncharging();
+        }
+        threadsync.unlock();
+    }
+
+    void event_onmessage() {
+        std::cout << "event_onmessage waiting..." << std::endl;
+        threadsync.lock();
+
+        std::cout << "event_onmessage ok..." << std::endl;
+        for (auto& app : appList)
+        {
+            if (app.luaInstance != nullptr && app.isRunning())
+                app.luaInstance->event_onmessage();
+        }
+        threadsync.unlock();
+    }
 } // namespace AppManager

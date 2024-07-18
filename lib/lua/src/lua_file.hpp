@@ -47,10 +47,20 @@ class LuaFile
         sol::protected_function oncharging;
         sol::protected_function onmessage;
     
-        void event_oncall() { if(oncall) oncall(); }
-        void event_onlowbattery() { if(onlowbattery) onlowbattery(); }
-        void event_oncharging() { if(oncharging) oncharging(); }
-        void event_onmessage() { if(onmessage) onmessage(); }
+        void event_oncall() { if(oncall.valid()) oncall(); }
+        void event_onlowbattery() { if(onlowbattery.valid()) onlowbattery(); }
+        void event_oncharging() { if(oncharging.valid()) oncharging(); }
+        void event_onmessage() {
+            if(onmessage.valid()) {
+                sol::protected_function_result result = onmessage();
+                if (!result.valid()) {
+                    sol::error err = result;
+                    std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
+                } else {
+                    std::cout << "onmessage event activated" << std::endl;
+                }
+            }
+        }
 
     Permissions perms;
     storage::Path directory;

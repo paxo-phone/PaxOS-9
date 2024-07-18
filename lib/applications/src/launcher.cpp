@@ -18,6 +18,9 @@ std::string getFormatedHour()
 
 int launcher()
 {
+    if(AppManager::isAnyVisibleApp())
+        return -1;
+    
     StandbyMode::triggerPower();
     gui::elements::Window win;
 

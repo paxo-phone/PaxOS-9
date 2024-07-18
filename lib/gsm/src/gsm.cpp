@@ -13,12 +13,20 @@ const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Ju
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
-#endif
-#include <delay.hpp>
+#include <HardwareSerial.h>
+#include "driver/uart.h"
+#include "soc/uart_struct.h"
+#include "esp_system.h"
 
-#define gsm Serial2
 #define RX 26
 #define TX 27
+
+#define GSM_UART UART_NUM_2
+#define gsm Serial2
+#endif
+
+#include <delay.hpp>
+
 
 namespace GSM
 {
@@ -45,9 +53,27 @@ namespace GSM
         delay(1000);
         digitalWrite(32, 0);
 
+        gsm.begin(115200, SERIAL_8N1, RX, TX);
+
+        // Get the UART number (in this case, UART2 for Serial2)
+        uart_port_t uart_num = UART_NUM_2;
+
+        // Configure UART to use REF_TICK as clock source
+        UART2.conf0.tick_ref_always_on = 1;
+
+        // Set the UART clock divider
+        uint32_t sclk_freq = 1000000; // REF_TICK frequency is 1MHz
+        uint32_t baud_rate = 115200;  // Or whatever baud rate you're using
+        uint32_t clk_div = ((sclk_freq + baud_rate / 2) / baud_rate);
+
+        UART2.clk_div.div_int = clk_div;
+        UART2.clk_div.div_frag = 0;
+
+        // Reconfigure the baud rate
+        Serial2.updateBaudRate(baud_rate);
+
         while (true)
         {
-            gsm.begin(115200, SERIAL_8N1, RX, TX);
 
             while (gsm.available())
                 gsm.read();
@@ -70,7 +96,23 @@ namespace GSM
     {
 #ifdef ESP_PLATFORM
         download();
-        gsm.begin(115200, SERIAL_8N1, RX, TX);
+
+        // Get the UART number (in this case, UART2 for Serial2)
+        uart_port_t uart_num = UART_NUM_2;
+
+        // Configure UART to use REF_TICK as clock source
+        UART2.conf0.tick_ref_always_on = 1;
+
+        // Set the UART clock divider
+        uint32_t sclk_freq = 1000000; // REF_TICK frequency is 1MHz
+        uint32_t baud_rate = 115200;  // Or whatever baud rate you're using
+        uint32_t clk_div = ((sclk_freq + baud_rate / 2) / baud_rate);
+
+        UART2.clk_div.div_int = clk_div;
+        UART2.clk_div.div_frag = 0;
+
+        // Reconfigure the baud rate
+        Serial2.updateBaudRate(baud_rate);
 #endif
     }
 
@@ -94,6 +136,8 @@ namespace GSM
 #ifdef ESP_PLATFORM
         gsm.println((message + "\r").c_str());
 
+        std::cout << "[GSM] Sending request" << std::endl;
+
         uint64_t lastChar = millis();
         std::string answer = "";
 
@@ -113,7 +157,7 @@ namespace GSM
             }
         }
 
-        while (lastChar + timeout > millis() && (answer.find("OK\13") == std::string::npos && answer.find("ERROR\13") == std::string::npos))
+        while (lastChar + timeout > millis() && (answer.find("OK\r\n") == std::string::npos && answer.find("ERROR\r\n") == std::string::npos))
         {
             if (gsm.available())
             {
@@ -121,6 +165,15 @@ namespace GSM
                 lastChar = millis();
             }
         }
+
+        /*if(lastChar + timeout < millis())
+        {
+            std::cerr << "[GSM] Response timeout: " << answer  << std::endl;
+        }
+        else
+        {
+            std::cout << "[GSM] Response: " << answer << std::endl;
+        }*/
 
         return answer;
 #endif
@@ -288,6 +341,8 @@ namespace GSM
             message = str.substr(k + 3, str.find("\r\n", k + 3) - k - 3);
 
             // Vérifier si le numéro existe dans les contacts
+            if(number.size() == 10) number = "+33" + number.substr(1);
+
             auto contact = Contacts::getByNumber(number);
 
             if (contact.name.empty())
@@ -499,7 +554,7 @@ namespace GSM
             minutes = std::atoi(dateTime.substr(12, 2).c_str());
             seconds = std::atoi(dateTime.substr(15, 2).c_str());
         }
-        catch (const std::invalid_argument &)
+        catch (...)
         {
             return;
         }

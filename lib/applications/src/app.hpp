@@ -7,8 +7,10 @@
 #include <lua_file.hpp>
 #include <gui.hpp>
 #include <hardware.hpp>
+#include <mutex>
 
 #define APP_DIR "/apps"
+#define SYSTEM_APP_DIR "/sys_apps"
 #define PERMS_DIR "/system"
 
 
@@ -92,6 +94,8 @@ namespace AppManager
             bool background;
     };
 
+    extern std::mutex threadsync; // mutex for thread-safe operations between threads
+
     extern std::vector<App> appList;
     extern std::vector<App*> appStack;
 
@@ -101,6 +105,11 @@ namespace AppManager
 
     void init();
     void loop();
+
+    void event_oncall();
+    void event_onlowbattery();
+    void event_oncharging();
+    void event_onmessage();
 
     App& get(std::string appName);
     App& get(uint8_t index);

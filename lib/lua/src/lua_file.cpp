@@ -425,7 +425,7 @@ void LuaFile::load()
         sol::table luaEvents = lua.create_table();
 
         luaEvents["oncall"] = [&](sol::protected_function func) { this->oncall = func; };
-        luaEvents["onmessage"] = [&](sol::protected_function func) { this->onmessage = func; };
+        luaEvents["onmessage"] = [&](sol::protected_function func) { this->onmessage = func; std::cout << "onmessage event registered" << std::endl; };
         luaEvents["onlowbattery"] = [&](sol::protected_function func) { this->onlowbattery = func; };
         luaEvents["oncharging"] = [&](sol::protected_function func) { this->oncharging = func; };
 
@@ -457,12 +457,13 @@ void LuaFile::run(std::vector<std::string> arg)
 
     std::cout << "Loading Lua File: " << filename.str() << std::endl;
     storage::FileStream file(filename.str(), storage::READ);
+    
     std::string code = file.read();
     file.close();
 
     lua.script(code);   code.clear();  // load and delete the unnecessary code
 
-    SAFE_CALL(lua["run"], this, arg);
+    lua["run"](arg);
 }
 
 void LuaFile::runBackground(std::vector<std::string> arg)
@@ -471,7 +472,7 @@ void LuaFile::runBackground(std::vector<std::string> arg)
 
     lua.set_exception_handler(AppManager::pushError);
 
-    std::cout << "Loading Lua File: " << filename.str() << std::endl;
+    std::cout << "Loading Lua File In Background: " << filename.str() << std::endl;
     storage::FileStream file(filename.str(), storage::READ);
     std::string code = file.read();
     file.close();

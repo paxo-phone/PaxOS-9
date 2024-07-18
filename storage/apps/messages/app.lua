@@ -30,6 +30,17 @@ end
 
 function converation(number)
     print("converation called with number ")
+    events.onmessage(function ()
+        print("message received")
+        if (win2~= nil) then
+            print("win2 not nil")
+            gui:del(win2)
+            print("win2 deleted")
+            converation(number)
+            print("converation finished")
+        end
+    end)
+
     win2=gui:window()
 
     local c = gsm.getContactByNumber(number)
