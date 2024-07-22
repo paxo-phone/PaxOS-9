@@ -46,6 +46,7 @@ class LuaFile
         sol::protected_function onlowbattery;
         sol::protected_function oncharging;
         sol::protected_function onmessage;
+        sol::protected_function onmessageerror;
     
         void event_oncall() { if(oncall.valid()) oncall(); }
         void event_onlowbattery() { if(onlowbattery.valid()) onlowbattery(); }
@@ -53,6 +54,19 @@ class LuaFile
         void event_onmessage() {
             if(onmessage.valid()) {
                 sol::protected_function_result result = onmessage();
+                if (!result.valid()) {
+                    sol::error err = result;
+                    std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
+                } else {
+                    std::cout << "onmessage event activated" << std::endl;
+                }
+            }
+        }
+
+        void event_onmessageerror()
+        {
+            if(onmessage.valid()) {
+                sol::protected_function_result result = onmessageerror();
                 if (!result.valid()) {
                     sol::error err = result;
                     std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;

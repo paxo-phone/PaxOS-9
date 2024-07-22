@@ -46,6 +46,16 @@ int launcher()
     batt->setFontSize(18);
     win.addChild(batt);
 
+    if(GSM::getNetworkStatus() == 99)
+    {
+        Label *batt = new Label(10, 10, 100, 18);
+        batt->setText("pas de réseau");    // hour
+        batt->setVerticalAlignment(Label::Alignement::CENTER);
+        batt->setHorizontalAlignment(Label::Alignement::CENTER);
+        batt->setFontSize(18);
+        win.addChild(batt);
+    }
+
     uint32_t evid = eventHandlerApp.setInterval(
         [&hour, &date]() { 
             static int min;

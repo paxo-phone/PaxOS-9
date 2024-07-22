@@ -69,6 +69,7 @@ namespace GSM
     {
         extern std::function<void(void)> onIncommingCall;
         extern std::function<void(void)> onNewMessage;
+        extern std::function<void(void)> onNewMessageError;
     }
 
     extern std::string data;
@@ -80,6 +81,7 @@ namespace GSM
     extern State state;
     extern uint16_t seconds, minutes, hours, days, months, years;
     extern float voltage;
+    extern int networkQuality;
 
     void init();
     void reInit();
@@ -88,14 +90,20 @@ namespace GSM
     void process();
     void checkRequest();
     void run();
+
     void newMessage(std::string number, std::string message);
     void onMessage();
+
     void newCall(std::string number);
     void endCall();
     void acceptCall();
     void rejectCall();
+
     int getBatteryLevel();
     void getHour();
+
+    int getNetworkStatus();
+
     std::string getCurrentTimestamp();
     void clearFrom(const std::string &from, const std::string &to);
     void appendRequest(Request request);

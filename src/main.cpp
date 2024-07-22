@@ -111,6 +111,11 @@ void setup()
         AppManager::event_onmessage();
     };
 
+    GSM::ExternalEvents::onNewMessageError = []()
+    {
+        AppManager::event_onmessageerror();
+    };
+
     #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
     #endif
@@ -137,7 +142,7 @@ void setup()
     AppManager::init();
 
     #ifdef ESP_PLATFORM
-    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreateUniversal(mainLoop,"newloop", 48*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
     vTaskDelete(NULL);
     #else
     mainLoop(NULL);

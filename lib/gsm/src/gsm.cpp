@@ -37,11 +37,13 @@ namespace GSM
     State state;
     uint16_t seconds, minutes, hours, days, months, years = 0;
     float voltage = -1;
+    int networkQuality = 0;
 
     namespace ExternalEvents
     {
         std::function<void(void)> onIncommingCall;
         std::function<void(void)> onNewMessage;
+        std::function<void(void)> onNewMessageError;
     }
 
     void init()
@@ -406,24 +408,85 @@ namespace GSM
 
     void sendMessage(const std::string &number, const std::string &message)
     {
-        std::cout << "Sending message to: " << number << " with content: " << message << std::endl;
-        send("AT+CMGF=1", "OK", 200);
-        send("AT+CMGS=\"" + number + "\"\r", ">");
-        send(message + char(26), "OK");
+        bool sent = false;
 
-        // Ajout du message envoyé à la conversation
-        Conversations::Conversation conv;
-        storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
-        if (convPath.exists())
+        for (int i = 0; i<3 && !sent; i++)
         {
-            Conversations::loadConversation(convPath, conv);
+            int step = 0;
+            std::string result = "";
+
+            std::cout << "Sending message to: " << number << " with content: " << message << std::endl;
+
+            for (int i = 0; i<2; i++)
+            {
+                if((result = send("AT+CMGF=1", "OK", 9000)).find("OK") == std::string::npos)
+                {
+                    std::cout << "Sending message failed (step 1), logs: " << result << std::endl;
+                }
+                else
+                {
+                    step++;
+                    break;
+                }
+            }
+
+            if(step == 1)
+            {
+                for (int i = 0; i<1; i++)
+                {
+                    if((result = send("AT+CMGS=\"" + number + "\"\r", ">", 1000)).find(">") == std::string::npos)
+                    {
+                        std::cout << "Sending message failed (step 2), logs: " << result << std::endl;
+                    }
+                    else
+                    {
+                        step++;
+                        break;
+                    }
+                }
+            }
+
+            if(step == 2)
+            {
+                for (int i = 0; i<3; i++)
+                {
+                    if((result = send(message + char(26), "OK", 5000)).find("OK") == std::string::npos)
+                    {
+                        std::cout << "Sending message failed (step 3), logs: " << result << std::endl;
+                    }
+                    else
+                    {
+                        sent = true;
+                        break;
+                    }
+                }
+            }
+
+            std::cout << "did " << step << " steps" << std::endl;
+        }
+        
+        if(sent)
+        {
+            Conversations::Conversation conv;
+            storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
+            if (convPath.exists())
+            {
+                Conversations::loadConversation(convPath, conv);
+            }
+            else
+            {
+                conv.number = number;
+            }
+            conv.messages.push_back({message, false, getCurrentTimestamp()}); // false = message de l'user
+            Conversations::saveConversation(convPath, conv);
         }
         else
         {
-            conv.number = number;
+            if(ExternalEvents::onNewMessageError)
+                ExternalEvents::onNewMessageError();
+
+            // todo: timeout to retry later
         }
-        conv.messages.push_back({message, false, getCurrentTimestamp()}); // false = message de l'user
-        Conversations::saveConversation(convPath, conv);
     }
 
     void newMessage(std::string number, std::string message)
@@ -592,6 +655,26 @@ namespace GSM
         requests.push_back({std::bind(&GSM::updateHour), priority::high});
     }
 
+    int getNetworkStatus()
+    {
+        return networkQuality;
+    }
+
+    void updateNetworkQuality()
+    {
+        std::string o = send("AT+CSQ", "OK");
+        if(o.find("+CSQ:") != std::string::npos)
+        {
+            networkQuality = atoi(o.substr(o.find("+CSQ: ") + 5, o.find(",") - o.find("+CSQ: ") - 5).c_str());
+        }
+        std::cout << "networkQuality: " << networkQuality << std::endl;
+    }
+
+    void getNetworkQuality()
+    {
+        requests.push_back({&GSM::updateNetworkQuality, priority::normal});
+    }
+
     void run()
     {
         init();
@@ -601,8 +684,10 @@ namespace GSM
         requests.push_back({[](){ send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
 
         updateHour();
+        getNetworkQuality();
 
         eventHandlerBack.setInterval(&GSM::getHour, 5000);
+        eventHandlerBack.setInterval(&GSM::getNetworkQuality, 10000);
         eventHandlerBack.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
         // eventHandlerBack.setInterval(new Callback<>([](){if(send("AT", "AT").find("OK") == std::string::npos) init(); }), 15000);
 

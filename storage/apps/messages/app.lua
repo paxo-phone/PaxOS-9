@@ -11,14 +11,14 @@ end
 function appendMessage(msg, list)
     local bull2 = gui:box(list, 0, 0, 184, 30)
     
-    local label = gui:label(bull2, 0, 0, 184, 0)
-    label:setHorizontalAlignment(CENTER_ALIGNMENT)
-    label:setText(msg)
-    label:setFontSize(18)
+    label_sent = gui:label(bull2, 0, 0, 184, 0)
+    label_sent:setHorizontalAlignment(CENTER_ALIGNMENT)
+    label_sent:setText(msg)
+    label_sent:setFontSize(18)
 
-    local labelHeight = label:getTextHeight() + 8
+    local labelHeight = label_sent:getTextHeight() + 8
 
-    label:setHeight(labelHeight)
+    label_sent:setHeight(labelHeight)
 
     local canva = gui:canvas(bull2, 0, labelHeight, 68, 1)
     canva:fillRect(0, 0, 68, 1, COLOR_DARK)
@@ -44,7 +44,7 @@ function converation(number)
     win2=gui:window()
 
     local c = gsm.getContactByNumber(number)
-    print("getContactByNumber returned " .. tostring(c))
+    --print("getContactByNumber returned " .. tostring(c))
 
     local title=gui:label(win2, 90, 30, 141, 22)
     title:setHorizontalAlignment(CENTER_ALIGNMENT)
@@ -58,10 +58,10 @@ function converation(number)
     list = gui:vlist(win2, 20, 76, 280, 320)
     
     messages = gsm.getMessages(number)
-    print("getMessages returned " .. tostring(messages))
+    --print("getMessages returned " .. tostring(messages))
 
     for i, message in pairs(messages) do
-        print("message " .. tostring(i) .. " : " .. tostring(message))
+        --print("message " .. tostring(i) .. " : " .. tostring(message))
         local bull = gui:box(list, 0, 0, 184, 30)
         
         local label = gui:label(bull, 0, 0, 184, 0)
@@ -105,6 +105,12 @@ function converation(number)
     local back = gui:image(win2, "back.png", 30, 30, 18, 18)
     back:onClick(function() 
         time:setTimeout(function () gui:del(win2) gui:setWindow(win) end, 0) end)
+
+    events.onmessageerror(function ()
+        if (label_sent~= nil and win2~= nil) then
+            label_sent:setTextColor(COLOR_ERROR)
+        end
+    end)
 
     gui:setWindow(win2)
 end

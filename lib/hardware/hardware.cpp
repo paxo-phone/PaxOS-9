@@ -24,7 +24,7 @@ void hardware::init()
     pinMode(PIN_HOME_BUTTON, INPUT_PULLUP);
     setVibrator(false);
 
-    uart_config_t uart_config = {
+    /*uart_config_t uart_config = {
         .baud_rate = 115200,
         .data_bits = UART_DATA_8_BITS,
         .parity    = UART_PARITY_DISABLE,
@@ -46,7 +46,7 @@ void hardware::init()
     ESP_ERROR_CHECK(uart_set_pin(UART_NUM_0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
     // Install UART driver
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM_0, 256, 0, 0, NULL, 0));
+    ESP_ERROR_CHECK(uart_driver_install(UART_NUM_0, 256, 0, 0, NULL, 0));*/
 
     #endif
 }
