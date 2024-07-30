@@ -13,11 +13,8 @@ EventHandler::~EventHandler()
         delete timeouts[0];
         timeouts.erase(timeouts.begin());
     }
-    while (intervals.size())
-    {
-        delete intervals[0];
-        intervals.erase(intervals.begin());
-    }
+
+    intervals.clear();
 }
 
 void EventHandler::update()
@@ -43,11 +40,31 @@ void EventHandler::update()
     }
 
     // Handle intervals
-    for (auto& interval : intervals) {
-        if (now >= interval->lastTrigger + interval->interval) {
-            interval->callback->call();
-            interval->lastTrigger = now;
+    try
+    {
+        for (int i = 0; i < intervals.size(); i++)
+        {
+            if(intervals.size() > i)
+            {
+                if(intervals[i].callback)
+                {
+                    if(now >= intervals[i].lastTrigger + intervals[i].interval)
+                    {
+                        intervals[i].callback();
+                        intervals[i].lastTrigger = now;
+                    }
+                }
+                else
+                {
+                    intervals.erase(intervals.begin() + i);
+                    i--;
+                }
+            }
         }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
     }
 }
 
@@ -79,16 +96,16 @@ void EventHandler::removeTimeout(uint32_t id) {
                     timeouts.end());
 }
 
-uint32_t EventHandler::setInterval(Function* callback, uint64_t interval) {
+uint32_t EventHandler::setInterval(std::function<void ()> callback, uint64_t interval) {
     uint32_t id = findAvailableId();
-    intervals.push_back(new Interval(callback, interval, id));
+    intervals.push_back(Interval(callback, interval, id));
     return id;
 }
 
 void EventHandler::removeInterval(uint32_t id) {
     intervals.erase(std::remove_if(intervals.begin(), intervals.end(),
-                                    [id](Interval* interval) {
-                                        return interval->id == id;
+                                    [id](Interval& interval) {
+                                        return interval.id == id;
                                     }),
                     intervals.end());
 }
@@ -113,7 +130,7 @@ uint32_t EventHandler::findAvailableId() {
         }
         for (auto& interval : intervals)
         {
-            if(interval->id == nextId)
+            if(interval.id == nextId)
                 found = false;
         }
 

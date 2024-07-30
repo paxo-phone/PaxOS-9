@@ -25,8 +25,8 @@ namespace graphics
         ImageType m_type;
         storage::Path m_path;
 
-        uint32_t m_width;
-        uint32_t m_height;
+        uint16_t m_width;
+        uint16_t m_height;
 
         uint32_t m_size;
         std::shared_ptr<uint8_t[]> m_data;
@@ -37,8 +37,8 @@ namespace graphics
 
         [[nodiscard]] ImageType getType() const;
 
-        [[nodiscard]] uint32_t getWidth() const;
-        [[nodiscard]] uint32_t getHeight() const;
+        [[nodiscard]] uint16_t getWidth() const;
+        [[nodiscard]] uint16_t getHeight() const;
 
         [[nodiscard]] uint32_t getSize() const;
         [[nodiscard]] uint8_t * getData() const;

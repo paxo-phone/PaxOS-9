@@ -9,11 +9,12 @@ namespace Conversations
 {
     void loadConversation(const storage::Path &filePath, Conversation &conv)
     {
-        std::cout << "Loading conversation from: " << filePath.str() << std::endl;
+        //std::cout << "Loading conversation from: " << filePath.str() << std::endl;
 
         if (!filePath.exists())
         {
             std::cerr << "File does not exist: " << filePath.str() << std::endl;
+            saveConversation(filePath, conv);
             return;
         }
 
@@ -27,11 +28,11 @@ namespace Conversations
 
         std::string fileContent = file.read();
         file.close();
-        std::cout << "File content: " << fileContent << std::endl;
+        //std::cout << "File content: " << fileContent << std::endl;
 
         if (fileContent.empty())
         {
-            std::cerr << "File is empty: " << filePath.str() << std::endl;
+            //std::cerr << "File is empty: " << filePath.str() << std::endl;
             return;
         }
 
@@ -58,7 +59,7 @@ namespace Conversations
 
     void saveConversation(const storage::Path &filePath, const Conversation &conv)
     {
-        std::cout << "Saving conversation to: " << filePath.str() << std::endl;
+        //std::cout << "Saving conversation to: " << filePath.str() << std::endl;
 
         storage::Path parentPath = filePath / "../";
 
@@ -86,7 +87,7 @@ namespace Conversations
         }
 
         std::string jsonString = json.dump(4);
-        std::cout << "Writing JSON: " << jsonString << std::endl;
+        //std::cout << "Writing JSON: " << jsonString << std::endl;
         file.write(jsonString);
         file.close();
     }

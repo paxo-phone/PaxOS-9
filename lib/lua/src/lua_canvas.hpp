@@ -46,7 +46,7 @@ class LuaCanvas : public LuaWidget
     void drawTextCentered(int16_t x, int16_t y, std::string text, color_t color, bool horizontallyCentered, bool verticallyCentered) { widget->drawTextCentered(x, y, text, color, horizontallyCentered, verticallyCentered); }
     void drawTextCenteredInRect(int16_t x, int16_t y, uint16_t w, uint16_t h, std::string text, color_t color, bool horizontallyCentered, bool verticallyCentered) { widget->drawTextCenteredInRect(x, y, w, h, text, color, horizontallyCentered, verticallyCentered); }
 
-    void onTouch(sol::function function) { this->onTouchFunc = function; }
+    void onTouch(sol::protected_function function) { this->onTouchFunc = function; }
 
     sol::table getTouch();
     void specificUpdate();
@@ -54,7 +54,7 @@ class LuaCanvas : public LuaWidget
     LuaFile* lua = nullptr;
     gui::elements::Canvas* widget = nullptr;
 
-    sol::function onTouchFunc;
+    sol::protected_function onTouchFunc;
 };
 
 #endif // LUA_CANVAS_MODULE

@@ -90,11 +90,11 @@ function newContact()
 
     local name = gui:input(win2, 35, 121, 250, 40)
     name:setTitle("Nom")
-    name:onClick(function () name:setText(gui:keyboard("Nom", contact.name)) end)
+    name:onClick(function () name:setText(gui:keyboard("Nom", "")) end)
 
     local num = gui:input(win2, 35, 216, 250, 40)
     num:setTitle("Numéro")
-    num:onClick(function () num:setText(gui:keyboard("Numéro", contact.phone)) end)
+    num:onClick(function () num:setText(gui:keyboard("Numéro", "")) end)
 
     edit = gui:button(win2, 35, 394, 250, 38);
     edit:setText("Créer")
@@ -127,12 +127,13 @@ function openContact(contact)
     num:setTextColor(COLOR_GREY)
     num:setText(contact.phone)
 
-    local messages = gui:button(win2, 35, 244, 250, 38);
+    local messages = gui:button(win2, 35, 244, 250, 38)
     messages:setText("Messages")
+    messages:onClick(function () launch("messages", {contact.phone}) end)
 
     local call = gui:button(win2, 35, 294, 250, 38);
     call:setText("Appeler")
-    call:onClick(function () launch("phone", {contact.phone}) end);
+    call:onClick(function () launch("phone", {contact.phone}) end)
 
     local edit = gui:button(win2, 35, 344, 250, 38);
     edit:setText("Éditer")

@@ -28,6 +28,42 @@
 
 #include "Encoder/decodeutf8.hpp"
 
+/*void print_memory_info() {
+    // Get total and free heap size
+    uint32_t free_heap = esp_get_free_heap_size();
+    uint32_t total_heap = 270000;
+
+    // Get largest free block
+    uint32_t largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
+
+    // Get PSRAM info (if available)
+    uint32_t psram_free = 0;
+    uint32_t psram_size = 0;
+    uint32_t psram_largest_free_block = 0;
+
+    if (esp_spiram_is_initialized()) {
+        psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+        psram_size = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
+        psram_largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+    }
+
+    // Print memory info
+    printf("Memory Info:\n");
+    printf("Internal RAM - Total: %u, Free: %u, Largest Free Block: %u\n", 
+           total_heap, free_heap, largest_free_block);
+    
+    if (esp_spiram_is_initialized()) {
+        printf("PSRAM - Total: %u, Free: %u, Largest Free Block: %u\n", 
+               psram_size, psram_free, psram_largest_free_block);
+    } else {
+        printf("PSRAM not initialized or not available\n");
+    }
+
+    // Get stack high water mark
+    UBaseType_t stack_hwm = uxTaskGetStackHighWaterMark(NULL);
+    printf("Stack High Water Mark: %u\n", stack_hwm);
+}*/
+
 namespace graphics
 {
     Surface::Surface(const uint16_t width, const uint16_t height) : m_color(0xFFFF),
@@ -42,11 +78,26 @@ namespace graphics
         m_sprite.createSprite(width, height);
         if(m_sprite.getBuffer() == nullptr)
         {
-            std::cerr << "[Error] Unable to allocate a new surface (" << width << " x " << height << ")" << std::endl;
+            //std::cerr << "[Error] Unable to allocate a new surface: " << width * height * 2 << " bytes" << std::endl;
         }
         else
         {
-            std::cout << "[Debug] Allocated a new surface (" << width << " x " << height << ")" << std::endl;
+            const double size = width * height * 2;
+            const double k = 1024;
+            const double m = k * k;
+
+            // if(size < k)
+            // {
+            //     std::cout << "[Debug] New surface: " << size << " bytes" << std::endl;
+            // }
+            // else if(size < m)
+            // {
+            //     std::cout << "[Debug] New surface: " << size / k << " Ko" << std::endl;
+            // }
+            // else
+            // {
+            //     std::cout << "[Debug] New surface: " << size / m << " Mo" << std::endl;
+            // }
         }
     }
 
@@ -77,6 +128,9 @@ namespace graphics
 
     void Surface::pushSurface(Surface *surface, const int16_t x, const int16_t y)
     {
+        if(surface == nullptr)
+            return;
+            
         if (surface->m_transparent)
         {
             surface->m_sprite.pushSprite(
@@ -205,7 +259,6 @@ namespace graphics
                     m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y);
                 break;
                 case PNG:
-                std::cout << "drawPngFile: " + std::string((m_sprite.getBuffer() != nullptr)?("Ok"):("nullptr")) << std::endl;
                     m_sprite.drawPngFile(image.getPath().str().c_str(), x, y);
                 break;
                 case JPG:

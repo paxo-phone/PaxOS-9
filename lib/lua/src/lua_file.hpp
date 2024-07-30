@@ -16,30 +16,6 @@
 #include "lua_json.hpp"
 
 
-/*class LuaHttpClient
-{
-    public:
-    LuaHttpClient(LuaFile* lua);
-    ~LuaHttpClient();
-    std::string get(std::string url);
-    std::string post(std::string url);
-
-    network::HttpClient httpClient;
-
-    private:
-    LuaFile* lua;
-};
-
-class LuaNetwork
-{
-    public:
-    LuaNetwork(LuaFile* lua);
-    std::shared_ptr<LuaHttpClient> createHttpClient();
-
-    private:
-    LuaFile* lua;
-};*/
-
 struct Permissions
 {
     bool acces_gui = true;
@@ -58,15 +34,53 @@ class LuaFile
     LuaFile(storage::Path filename, storage::Path manifest);
     ~LuaFile();
 
+    void load();
+    void runBackground(std::vector<std::string> arg = {});
     void run(std::vector<std::string> arg = {});
+    void wakeup(std::vector<std::string> arg = {});
+    void stop(std::vector<std::string> arg = {});
+
+    void loop();
+
+        sol::protected_function oncall; 
+        sol::protected_function onlowbattery;
+        sol::protected_function oncharging;
+        sol::protected_function onmessage;
+        sol::protected_function onmessageerror;
+    
+        void event_oncall() { if(oncall.valid()) oncall(); }
+        void event_onlowbattery() { if(onlowbattery.valid()) onlowbattery(); }
+        void event_oncharging() { if(oncharging.valid()) oncharging(); }
+        void event_onmessage() {
+            if(onmessage.valid()) {
+                sol::protected_function_result result = onmessage();
+                if (!result.valid()) {
+                    sol::error err = result;
+                    std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
+                } else {
+                    std::cout << "onmessage event activated" << std::endl;
+                }
+            }
+        }
+
+        void event_onmessageerror()
+        {
+            if(onmessage.valid()) {
+                sol::protected_function_result result = onmessageerror();
+                if (!result.valid()) {
+                    sol::error err = result;
+                    std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
+                } else {
+                    std::cout << "onmessage event activated" << std::endl;
+                }
+            }
+        }
 
     Permissions perms;
     storage::Path directory;
     storage::Path manifest;
-
     sol::state lua;
 
-    private:
     storage::Path filename;
     gui::elements::Window* current_root;
 

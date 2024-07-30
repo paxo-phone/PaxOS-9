@@ -26,6 +26,8 @@ namespace storage {
             Path& operator=(const Path& other);
             Path& operator=(const std::string& other);
 
+            bool operator==(const Path& other) const;
+
             void assign(const Path& other);
             void assign(const std::string& other);
 

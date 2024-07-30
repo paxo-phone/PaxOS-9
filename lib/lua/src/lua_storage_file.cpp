@@ -4,7 +4,6 @@
 
 LuaStorageFile::LuaStorageFile(storage::Path filename, uint8_t mode)
 {
-    std::cout << filename.str() << std::endl;
     this->filename = filename;
     this->mode = mode;
 }

@@ -11,7 +11,6 @@
 
 #include <cstdint>
 
-
 namespace graphics
 {
     enum EScreenOrientation

@@ -97,7 +97,7 @@ namespace gui::elements {
         m_layoutBox = new Box(30, 260, 80, 40);
         m_backspaceBox = new Box(403, 220, 47, 40);
         m_exitBox = new Box(370, 260, 80, 40);
-        m_confirmBox = new Box(410, 30, 40, 100);
+        m_confirmBox = new Box(410, 30, 40, 40);
 
         // Create images
         m_capsIcon0 = new Image(storage::Path("system/keyboard/caps_icon_0.png"), 0, 0, 40, 40);
@@ -155,14 +155,10 @@ namespace gui::elements {
 
     void Keyboard::widgetUpdate()
     {
-        std::cout << "Keyboard update" << std::endl;
         if (isTouched()) {
-            std::cout << "Touched" << std::endl;
             // Get touch position
             int16_t touchX, touchY;
             getLastTouchPosRel(&touchX, &touchY);
-
-            std::cout << "Touch at " << touchX << ", " << touchY << std::endl;
 
             const char pressedKey = getKey(touchX, touchY);
             if (pressedKey == KEY_NULL)

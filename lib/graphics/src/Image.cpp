@@ -29,7 +29,6 @@ std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
 
     if(!stream.isopen())
     {
-        std::cout << "Error: " << path.str() << std::endl;
         return data;
     }
 
@@ -88,12 +87,12 @@ namespace graphics {
         return m_type;
     }
 
-    uint32_t SImage::getWidth() const
+    uint16_t SImage::getWidth() const
     {
         return m_width;
     }
 
-    uint32_t SImage::getHeight() const
+    uint16_t SImage::getHeight() const
     {
         return m_height;
     }
