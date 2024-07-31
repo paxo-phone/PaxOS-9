@@ -21,12 +21,12 @@ namespace gui::elements {
         m_surface->clear(COLOR_WHITE);
         if(!m_state)
         {
-            m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_DARK);
+            m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_GREY);
             m_surface->fillRoundRect(4, 3, 14, 14, 7, COLOR_WHITE);
         }
         else
         {
-            m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_GREY);
+            m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_BLACK);
             m_surface->fillRoundRect(22, 3, 14, 14, 7, COLOR_WHITE);
         }
     }

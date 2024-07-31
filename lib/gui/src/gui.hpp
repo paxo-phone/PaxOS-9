@@ -16,6 +16,8 @@
 #include "elements/Radio.hpp"
 #include "elements/Keyboard.hpp"
 
+#include "GuiManager.hpp"
+
 using namespace gui::elements;
 
 #endif

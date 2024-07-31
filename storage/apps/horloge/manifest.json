@@ -1,0 +1,3 @@
+{
+    "access": ["files", "files_root", "os", "gsm", "gui", "time"]
+}

@@ -68,7 +68,7 @@ void LuaWidget::update()
 
     if(onClickFunc && this->widget->isTouched())
     {
-        std::cout << "[Lua] User Interacted" << std::endl;
+        //std::cout << "[Lua] User Interacted" << std::endl;
         onClickFunc();
     }
 
