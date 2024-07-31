@@ -371,13 +371,23 @@ void LuaFile::load()
 
         lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
             {
-                AppManager::get(name).run(false, arg);
+                try{
+                    AppManager::get(name).run(false, arg);
+                }
+                catch(std::runtime_error &e) {
+                    std::cerr << "Erreur: " << e.what() << std::endl;
+                }
 
                 return true;
             },
             [&](std::string name)
             {
-                AppManager::get(name).run(false, {});
+                try{
+                    AppManager::get(name).run(false, {});
+                }
+                catch(std::runtime_error &e) {
+                    std::cerr << "Erreur: " << e.what() << std::endl;
+                }
 
                 return true;
             }

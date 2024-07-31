@@ -6,6 +6,7 @@
 #include <iostream>
 #include <ctime>
 #include <delay.hpp>
+#include <codecvt>
 #include "../../tasks/src/threads.hpp"
 
 const char *daysOfWeek[7] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
@@ -26,7 +27,6 @@ const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Ju
 #endif
 
 #include <delay.hpp>
-
 
 namespace GSM
 {
@@ -150,8 +150,7 @@ namespace GSM
                 answer += gsm.read();
                 lastChar = millis();
 
-
-                if(answer.find(answerKey) != std::string::npos)
+                if (answer.find(answerKey) != std::string::npos)
                 {
                     data += answer.substr(0, answer.find(answerKey) - 1);
                     break;
@@ -189,7 +188,9 @@ namespace GSM
         if (!request.function)
             std::cout << "request.function is invalid -> can't run the new request" << std::endl;
         else
-            eventHandlerBack.setTimeout(new Callback<>(std::bind([](Request r){ GSM::requests.push_back(r); }, request)), 0);
+            eventHandlerBack.setTimeout(new Callback<>(std::bind([](Request r)
+                                                                 { GSM::requests.push_back(r); }, request)),
+                                        0);
     }
 
     void process()
@@ -302,26 +303,33 @@ namespace GSM
         return std::string(buf);
     }
 
-    bool is_hex_string(const std::string& str) {
+    bool is_hex_string(const std::string &str)
+    {
         return str.length() % 4 == 0 && str.find_first_not_of("0123456789ABCDEFabcdef") == std::string::npos;
     }
 
-    std::string convert_hex_to_utf8(const std::string& hex_str) {
+    std::string convert_hex_to_utf8(const std::string &hex_str)
+    {
         std::u16string utf16_str;
-        for (size_t i = 0; i < hex_str.length(); i += 4) {
+        for (size_t i = 0; i < hex_str.length(); i += 4)
+        {
             std::string hex_char = hex_str.substr(i, 4);
             char16_t utf16_char = static_cast<char16_t>(std::stoul(hex_char, nullptr, 16));
             utf16_str.push_back(utf16_char);
         }
-        
+
         std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
         return converter.to_bytes(utf16_str);
     }
 
-    std::string process_string(const std::string& input) {
-        if (is_hex_string(input)) {
+    std::string process_string(const std::string &input)
+    {
+        if (is_hex_string(input))
+        {
             return convert_hex_to_utf8(input);
-        } else {
+        }
+        else
+        {
             return input; // Already in UTF-8
         }
     }
@@ -367,7 +375,8 @@ namespace GSM
             message = str.substr(k + 3, str.find("\r\n", k + 3) - k - 3);
 
             // Vérifier si le numéro existe dans les contacts
-            if(number.size() == 10) number = "+33" + number.substr(1);
+            if (number.size() == 10)
+                number = "+33" + number.substr(1);
             message = process_string(message);
 
             auto contact = Contacts::getByNumber(number);
@@ -410,16 +419,16 @@ namespace GSM
     {
         bool sent = false;
 
-        for (int i = 0; i<3 && !sent; i++)
+        for (int i = 0; i < 3 && !sent; i++)
         {
             int step = 0;
             std::string result = "";
 
             std::cout << "Sending message to: " << number << " with content: " << message << std::endl;
 
-            for (int i = 0; i<2; i++)
+            for (int i = 0; i < 2; i++)
             {
-                if((result = send("AT+CMGF=1", "OK", 9000)).find("OK") == std::string::npos)
+                if ((result = send("AT+CMGF=1", "OK", 9000)).find("OK") == std::string::npos)
                 {
                     std::cout << "Sending message failed (step 1), logs: " << result << std::endl;
                 }
@@ -430,11 +439,11 @@ namespace GSM
                 }
             }
 
-            if(step == 1)
+            if (step == 1)
             {
-                for (int i = 0; i<1; i++)
+                for (int i = 0; i < 1; i++)
                 {
-                    if((result = send("AT+CMGS=\"" + number + "\"\r", ">", 1000)).find(">") == std::string::npos)
+                    if ((result = send("AT+CMGS=\"" + number + "\"\r", ">", 1000)).find(">") == std::string::npos)
                     {
                         std::cout << "Sending message failed (step 2), logs: " << result << std::endl;
                     }
@@ -446,11 +455,11 @@ namespace GSM
                 }
             }
 
-            if(step == 2)
+            if (step == 2)
             {
-                for (int i = 0; i<3; i++)
+                for (int i = 0; i < 3; i++)
                 {
-                    if((result = send(message + char(26), "OK", 5000)).find("OK") == std::string::npos)
+                    if ((result = send(message + char(26), "OK", 5000)).find("OK") == std::string::npos)
                     {
                         std::cout << "Sending message failed (step 3), logs: " << result << std::endl;
                     }
@@ -464,8 +473,8 @@ namespace GSM
 
             std::cout << "did " << step << " steps" << std::endl;
         }
-        
-        if(sent)
+
+        if (sent)
         {
             Conversations::Conversation conv;
             storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
@@ -482,7 +491,7 @@ namespace GSM
         }
         else
         {
-            if(ExternalEvents::onNewMessageError)
+            if (ExternalEvents::onNewMessageError)
                 ExternalEvents::onNewMessageError();
 
             // todo: timeout to retry later
@@ -519,12 +528,14 @@ namespace GSM
 
     void endCall()
     {
-        appendRequest({[](){ GSM::send("AT+CHUP", "OK"); }, priority::high});
+        appendRequest({[]()
+                       { GSM::send("AT+CHUP", "OK"); }, priority::high});
     }
 
     void acceptCall()
     {
-        requests.push_back({[](){ GSM::send("ATA", "OK"); }, priority::high});
+        requests.push_back({[]()
+                            { GSM::send("ATA", "OK"); }, priority::high});
     }
 
     void rejectCall()
@@ -556,12 +567,34 @@ namespace GSM
 
     int getBatteryLevel()
     {
-        float voltage = getVoltage();
+        float voltage_max = 4.12;
+        float voltage_min = 3.5;
 
-        if(voltage == -1)
+
+
+        float voltage = voltage_max;
+
+        // on regarde le voltage de la batterie... que s'il y a une batterie sur ESP32...
+        #ifdef  ESP_PLATFORM
+            voltage = getVoltage();
+        #endif
+
+
+        if (voltage > voltage_max)
+            return voltage = voltage_max;
+        if (voltage_min > voltage)
+            return voltage = voltage_min;
+        
+        float battery = 100 *(voltage-voltage_min) / (voltage_max-voltage_min);
+        std::cout << "battery: " << battery << std::endl;
+
+
+        return floor(battery+0.5);
+
+/*        if (voltage == -1)
             return 100;
         if (voltage > 4.12)
-          return 100;
+            return 100;
         else if (voltage > 4.03)
             return 95;
         else if (voltage > 3.99)
@@ -602,17 +635,19 @@ namespace GSM
             return 5;
         else
             return 0;
+*/
     }
 
     void updateHour()
     {
         std::string data = send("AT+CCLK?", "+CCLK:");
 
-        // si on est sur ESP, alors, on check l'heure via  commande AT
-        #ifdef ESP_PLATFORM
+// si on est sur ESP, alors, on check l'heure via  commande AT
+#ifdef ESP_PLATFORM
 
-            std::cout << data << std::endl;
+        std::cout << data << std::endl;
 
+        // Find the start and end positions of the date and time string
         size_t start = data.find("\"");
         if (start == std::string::npos)
         {
@@ -652,7 +687,20 @@ namespace GSM
             return;
         }
 
-        std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
+        // si on est pas sur plateform ESP, on récupére l'heure et date system locale
+#else
+        time_t t = std::time(0); // get time now
+        tm *local_time = std::localtime(&t);
+
+        years = local_time->tm_year + 1900;
+        months = local_time->tm_mon + 1;
+        days = local_time->tm_mday;
+        hours = local_time->tm_hour;
+        minutes = local_time->tm_min;
+        seconds = local_time->tm_sec;
+#endif
+
+        // std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
 
     void getHour()
@@ -668,11 +716,11 @@ namespace GSM
     void updateNetworkQuality()
     {
         std::string o = send("AT+CSQ", "OK");
-        if(o.find("+CSQ:") != std::string::npos)
+        if (o.find("+CSQ:") != std::string::npos)
         {
             networkQuality = atoi(o.substr(o.find("+CSQ: ") + 5, o.find(",") - o.find("+CSQ: ") - 5).c_str());
         }
-        std::cout << "networkQuality: " << networkQuality << std::endl;
+        //std::cout << "networkQuality: " << networkQuality << std::endl;
     }
 
     void getNetworkQuality()
@@ -684,9 +732,10 @@ namespace GSM
     {
         init();
 
-        //PaxOS_Delay(50000);
+        // PaxOS_Delay(50000);
 
-        requests.push_back({[](){ send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
+        requests.push_back({[]()
+                            { send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
 
         updateHour();
         getNetworkQuality();
@@ -694,13 +743,15 @@ namespace GSM
         // Mise à jour de l'heure toutes les 1000 ms
         eventHandlerBack.setInterval(&GSM::getHour, 1000);
         eventHandlerBack.setInterval(&GSM::getNetworkQuality, 10000);
-        eventHandlerBack.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
+        eventHandlerBack.setInterval([]()
+                                     { requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
         // eventHandlerBack.setInterval(new Callback<>([](){if(send("AT", "AT").find("OK") == std::string::npos) init(); }), 15000);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});
         keys.push_back({"VOICE CALL: END", &GSM::onHangOff});
-        keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
+        keys.push_back({"VOICE CALL: BEGIN", []()
+                        { state.callState = CallState::CALLING; }});
 
         while (true)
         {
