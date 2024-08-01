@@ -586,7 +586,7 @@ namespace GSM
             return voltage = voltage_min;
         
         float battery = 100 *(voltage-voltage_min) / (voltage_max-voltage_min);
-        std::cout << "battery: " << battery << std::endl;
+        //std::cout << "battery: " << battery << std::endl;
 
 
         return floor(battery+0.5);
