@@ -397,6 +397,19 @@ namespace GSM
 
             std::cout << "New message: " << number << " - " << message << std::endl;
 
+            storage::FileStream file(std::string(MESSAGES_NOTIF_LOCATION), storage::Mode::READ);
+            std::string content = file.read();
+            file.close();
+
+            std::cerr << content << std::endl;
+
+            if(content.find(number) == std::string::npos)
+            {
+                storage::FileStream file2(storage::Path(std::string(MESSAGES_NOTIF_LOCATION)).str(), storage::Mode::APPEND);
+                file2.write(number + "\n");
+                file2.close();
+            }
+
             i = j + 1;
         }
 
@@ -685,6 +698,7 @@ namespace GSM
 
         updateHour();
         getNetworkQuality();
+        onMessage();
 
         eventHandlerBack.setInterval(&GSM::getHour, 5000);
         eventHandlerBack.setInterval(&GSM::getNetworkQuality, 10000);

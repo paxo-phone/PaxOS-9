@@ -8,6 +8,8 @@
 #include <path.hpp>
 
 #define MESSAGES_LOCATION "apps/messages/data"
+#define MESSAGES_NOTIF_LOCATION "apps/messages/unread.txt"
+#define MAX_MESSAGES 40
 
 namespace Conversations
 {

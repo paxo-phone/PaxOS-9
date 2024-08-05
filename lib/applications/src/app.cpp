@@ -180,6 +180,8 @@ namespace AppManager {
             delete luaInstance;
             luaInstance = nullptr;
 
+            std::cout << "App killed" << std::endl;
+
             app_state = NOT_RUNNING;
         }
     }

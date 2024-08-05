@@ -108,6 +108,10 @@ void setup()
 
     GSM::ExternalEvents::onNewMessage = []()
     {
+        #ifdef ESP_PLATFORM
+        eventHandlerBack.setTimeout(new Callback<>([](){delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);}), 0);
+        #endif
+        
         AppManager::event_onmessage();
     };
 
@@ -142,7 +146,7 @@ void setup()
     AppManager::init();
 
     #ifdef ESP_PLATFORM
-    xTaskCreateUniversal(mainLoop,"newloop", 48*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
     vTaskDelete(NULL);
     #else
     mainLoop(NULL);

@@ -70,8 +70,11 @@ namespace Conversations
 
         nlohmann::json json;
         json["number"] = conv.number;
-        for (const auto &msg : conv.messages)
+
+        for (int i = ((conv.messages.size() < MAX_MESSAGES)?(0):(conv.messages.size() - MAX_MESSAGES)); i < conv.messages.size(); i++)
         {
+            auto& msg = conv.messages[i];
+
             json["messages"].push_back({{"message", msg.message},
                                         {"who", msg.who},
                                         {"date", msg.date}});
