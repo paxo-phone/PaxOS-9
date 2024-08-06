@@ -9,21 +9,6 @@
 #include <Surface.hpp>
 #include <threads.hpp>
 
-#ifdef ESP_PLATFORM
-
-#include "platforms/LGFX_ESP32_PAXO5.hpp"
-#include <FT6236G.h>
-FT6236G ct;
-
-#else
-
-#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
-#include "LGFX_AUTODETECT.hpp"
-
-#include "LovyanGFX.hpp"
-
-#endif
-
 namespace
 {
     bool running;
@@ -301,7 +286,7 @@ void graphics::touchUpdate()
         isTouchRead = false;
     }
 
-    std::cout << touchX << " " << touchY << std::endl;
+    // std::cout << touchX << " " << touchY << std::endl;
 }
 
 bool graphics::isTouched()
@@ -330,4 +315,8 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
         lcd->setRotation(1);
         break;
     }
+}
+
+std::shared_ptr<LGFX> graphics::getLCD() {
+    return lcd;
 }

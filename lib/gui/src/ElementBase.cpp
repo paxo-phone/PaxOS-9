@@ -508,3 +508,11 @@ void gui::ElementBase::free()
         child->free();
     }*/
 }
+
+std::shared_ptr<graphics::Surface> gui::ElementBase::getSurface() {
+    return getAndSetSurface();
+}
+
+void gui::ElementBase::forceUpdate() {
+    localGraphicalUpdate();
+}

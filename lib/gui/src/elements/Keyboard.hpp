@@ -8,6 +8,7 @@
 #include "../ElementBase.hpp"
 #include "Box.hpp"
 #include "Canvas.hpp"
+#include "Filter.hpp"
 #include "Image.hpp"
 #include "Label.hpp"
 
@@ -71,7 +72,7 @@ namespace gui::elements {
         Box *m_exitBox;
         Box *m_confirmBox;
 
-        Canvas *m_trackpadCanvas;
+        Filter *m_trackpadFilter;
         uint8_t m_trackpadTicks;
         int32_t m_trackpadLastDeltaX;
 
@@ -104,6 +105,7 @@ namespace gui::elements {
         [[nodiscard]] bool isTrackpadActive() const;
 
         void addChar(char value);
+
         void removeChar();
     };
 } // gui::elements

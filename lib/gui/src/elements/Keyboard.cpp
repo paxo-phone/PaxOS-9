@@ -9,6 +9,7 @@
 #include <Surface.hpp>
 
 #include "Box.hpp"
+#include "Filter.hpp"
 #include "Image.hpp"
 
 // Layouts
@@ -86,7 +87,7 @@ namespace gui::elements {
         m_currentLayout = LAYOUT_LOWERCASE;
 
         // Create label for text
-        m_label = new Label(30, 30, 380, 100);
+        m_label = new Label(30, 30, 380, 80);
         // m_label->setFont(graphics::ARIAL);
         m_label->setFontSize(24);
         m_label->setCursorEnabled(true);
@@ -140,12 +141,10 @@ namespace gui::elements {
         updateCapsIcon();
         updateLayoutIcon();
 
-        m_trackpadCanvas = new Canvas(0, 130, 480, 190);
-        m_trackpadCanvas->fillRect(0, 0, 480, 190, graphics::packRGB565(200, 200, 200));
-        std::string kamoulox = "Contrôle du curseur";
-        m_trackpadCanvas->drawTextCenteredInRect(0, 0, 480, 190, kamoulox, graphics::packRGB565(0, 0, 0), true, true,
-                                                 20);
-        addChild(m_trackpadCanvas);
+        m_trackpadFilter = new Filter(0, 120, 480, 200);
+        m_trackpadFilter->disable();
+
+        addChild(m_trackpadFilter);
 
         m_trackpadTicks = 0;
     }
@@ -158,11 +157,7 @@ namespace gui::elements {
         // Input box
         drawInputBox();
 
-        if (isTrackpadActive()) {
-            m_trackpadCanvas->enable();
-        } else {
-            m_trackpadCanvas->disable();
-
+        if (!isTrackpadActive()) {
             // Draw keys
             drawKeys();
         }
@@ -470,11 +465,16 @@ namespace gui::elements {
 
         // Check if finger is on screen
         if ((rawTouchX != -1 && rawTouchY != -1) && isPointInTrackpad(m_lastTouchX, m_lastTouchY)) {
-            m_trackpadTicks++;
+            if (m_trackpadTicks < UINT8_MAX) {
+                m_trackpadTicks++;
+            }
 
             if (isTrackpadActive()) {
                 if (m_trackpadTicks == 10) {
                     // Do once, only when trackpad was just enabled
+
+                    m_trackpadFilter->enable();
+                    m_trackpadFilter->apply();
 
                     m_trackpadLastDeltaX = 0;
 
@@ -484,25 +484,26 @@ namespace gui::elements {
                 const int32_t deltaX = rawTouchX - m_lastTouchX;
                 std::string deltaXString = std::to_string(deltaX);
 
-                m_trackpadCanvas->fillRect(0, 0, 100, 16, graphics::packRGB565(255, 255, 255));
-                m_trackpadCanvas->drawText(0, 0, deltaXString, graphics::packRGB565(0, 0, 0), 16);
+                // m_trackpadCanvas->fillRect(0, 0, 100, 16, graphics::packRGB565(255, 255, 255));
+                // m_trackpadCanvas->drawText(0, 0, deltaXString, graphics::packRGB565(0, 0, 0), 16);
 
                 const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / 10;
 
-                std::cout << "Trackpad, to move : " << toMove << std::endl;
+                // std::cout << "Trackpad, to move : " << toMove << std::endl;
 
                 if (toMove > 0) {
                     for (int i = 0; i < toMove; i++) {
-                        m_label->setCursorIndex(m_label->getCursorIndex() + 1);
+                        m_label->setCursorIndex(static_cast<int16_t>(m_label->getCursorIndex() + 1));
                     }
                 } else if (toMove < 0) {
                     for (int i = 0; i < -toMove; i++) {
-                        m_label->setCursorIndex(m_label->getCursorIndex() - 1);
+                        m_label->setCursorIndex(static_cast<int16_t>(m_label->getCursorIndex() - 1));
                     }
                 }
 
                 if (abs(toMove) > 0) {
-                    localGraphicalUpdate();
+                    m_label->forceUpdate();
+                    // localGraphicalUpdate();
                 }
 
                 m_trackpadLastDeltaX += toMove * 10;
@@ -512,6 +513,8 @@ namespace gui::elements {
 
             if (wasTrackpadActive) {
                 // Do once
+
+                m_trackpadFilter->disable();
 
                 localGraphicalUpdate();
             }
@@ -539,9 +542,12 @@ namespace gui::elements {
         if (m_buffer.empty()) {
             return;
         }
+        if (m_label->getCursorIndex() <= 0) {
+            return;
+        }
 
         m_buffer.erase(m_label->getCursorIndex() - 1, 1);
 
-        m_label->setCursorIndex(m_label->getCursorIndex() - 1);
+        m_label->setCursorIndex(static_cast<int16_t>(m_label->getCursorIndex() - 1));
     }
 } // gui::elements
