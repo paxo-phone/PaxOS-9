@@ -12,8 +12,6 @@
 #ifdef ESP_PLATFORM
 
 #include "platforms/LGFX_ESP32_PAXO5.hpp"
-#include <FT6236G.h>
-FT6236G ct;
 
 #else
 

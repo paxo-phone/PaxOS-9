@@ -5,6 +5,13 @@
 
 #include "graphics.hpp"
 
+#ifdef ESP_PLATFORM
+
+#include <FT6236G.h>
+FT6236G ct;
+
+#endif
+
 #include <iostream>
 #include <Surface.hpp>
 #include <threads.hpp>
