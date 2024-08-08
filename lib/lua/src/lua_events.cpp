@@ -87,6 +87,18 @@ LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::protected_function func, uin
     this->id = eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)), interval);
 }
 
+
+uint32_t LuaTimeEvent::addEventListener(LuaFile* lua, sol::protected_function condition, sol::protected_function callback) {
+//    this->lua = lua;
+    this->condition = condition;
+    this->callback = callback;
+//    this->interval = interval;
+    // this->id = eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)),);
+    return  eventHandlerApp.addEventListener( (Function *) condition, (Function *) callback);
+}
+
+
+
 int LuaTimeInterval::getId()
 {
     return id;
@@ -199,4 +211,21 @@ LuaTime::~LuaTime()
         delete intervals[i];
     for (int i = 0; i < timeouts.size(); i++)
         delete timeouts[i];
+}
+
+void LuaTimeEvent::call()
+{
+    try {
+        if(func)
+        func();
+    } catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Handle other standard exceptions
+        std::cerr << "Standard error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
+    }
 }

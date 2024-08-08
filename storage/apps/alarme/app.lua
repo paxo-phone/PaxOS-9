@@ -4,6 +4,11 @@ local tNow
 local win = gui:window()
 local winAlarme
 
+-- Définition des couleurs de l'horloge
+local BACKGROUND_COLOR = COLOR_WHITE
+local couleur_clock = COLOR_DARK
+local couleur_aiguille_sec = COLOR_RED
+
 -- liste Alarme
 listAlarme ={
     {"lever 1", "7:30", true}, 
@@ -11,10 +16,12 @@ listAlarme ={
     {"lever 3", "9:30", true}
 }
 
--- Définition des couleurs de l'horloge
-local BACKGROUND_COLOR = COLOR_WHITE
-local couleur_clock = COLOR_DARK
-local couleur_aiguille_sec = COLOR_RED
+
+-- -------------------------------------------
+--    FONCTION HELPERS
+-- -------------------------------------------
+
+
 
 function int(x)
     return math.floor(x)
@@ -72,6 +79,11 @@ function afficheHeure()
     idRefreshClock = time:setTimeout(afficheHeure, 1000)
 end -- afficheHeure
 
+
+-- ---------------------------
+--     Ecran principal
+-- ---------------------------
+
 -- Affichage initiale de l'écran
 function init()
 
@@ -87,17 +99,24 @@ function init()
     -- Liste des alarmes
     lstAlarme = gui:vlist(win, 70, 110, 250, 280)
 
+
     for i, value in pairs(listAlarme) do
+
+        -- créer une box pour la ligne de l'alarme
         local case = gui:box(lstAlarme, 0, 0, 250, 25)
 
+        -- Affichage de l'heure
         local heure = gui:label(case, 0, 0, 100, 18)
         heure:setText(value[2])
         heure:setFontSize(16)
 
+        -- affichafe du nom
         local nom = gui:label(case, 100, 0, 100, 18)
         nom:setText(value[1])
         nom:setFontSize(16)
+        nom:onClick(function() changeName(nom) end)
 
+        -- afffichage du bouton d'activation
         local btnToggleAlarme = gui:switch(case, 200, 0, 18, 18)
         if value[3] then
             btnToggleAlarme:setState(true)
@@ -111,7 +130,6 @@ function init()
         end 
         btnToggleAlarme:onClick(function () fnToggleAlarme(btnToggleAlarme, heure, nom) end)
 
-        --case:onClick(function() openContact(value) end)
     end
 
     -- bouton +
@@ -119,18 +137,23 @@ function init()
     add:setMainColor(COLOR_DARK)
     add:setRadius(20)
     local icon_plus = gui:image(add, "plus.png", 14, 14, 12, 12, COLOR_DARK)
+    add:onClick(addAlarme)
+
     --add:onClick(newContact)
 
     -- bouton de test
-    testAlarme = gui:button(win, 35, 350, 250, 38)
+    testAlarme = gui:button(win, 35, 400, 200, 38)
     testAlarme:setText("Test")
     testAlarme:onClick(
-        function()
-            print("btn Cliqué")
-            closeAlarme()
-        end
-    )
-
+            closeAlarme
+            
+            --    time:setTimeout(
+            --             gui:showInfoMessage("TimeOut") 
+            --        , 
+            --        10000
+            --    )
+            
+        )
     gui:setWindow(win)
 
 end -- init
@@ -147,59 +170,40 @@ function fnToggleAlarme(btn, lblHeure, lblNom)
 end
 
 
-
+function changeName(label)
+    
+    local keyboard = gui:keyboard("Placeholder", label:getText())
+    label:setText(keyboard)
+end
 
 -- Fonction pour fermer la fenetre de l'application 
 -- lance le timer si l'alarme est active
 function closeAlarme()
         -- get the time diff
-        local heureDiff = 1000 *10
-        time:setTimeout( ringAlarme, heureDiff)
-        
+        id = time:setTimeout( function() ringAlarme() end, 10000)
+        print("id"..id)
 end -- function closeAlarme
+
 
 
 -- Fonction de lancement de l'alarme
 function ringAlarme()
     print("ringAlarme")
+    gui:showInfoMessage("TimeOut")
     hardware:setVibrator(true);
-
-    winAlarme = gui:window()
-    gui:setWindow(winAlarme)
-
-    -- time:removeTimeout(idRefreshClock)
-
-    local x = 10
-    local y = 10
-    local width = 300
-    local height = 200
-    local radius = 5
-
-    popupAlarme = gui:canvas(winAlarme, x, y, width, height)
-    popupAlarme:fillRect(0, 0, width, height, COLOR_WHITE)
-    popupAlarme:drawRoundRect(0, 0, width, height, 5, COLOR_RED);
-
-    popupAlarme:drawTextCentered(5, 5, "ALARME !", COLOR_BACK, true, true)
-
-    local close = gui:button(popupAlarme, 30, height-38-10, width-(30*2), 38);
-    close:setText("Fermer")
-    close:onClick(
-        function()
-            time:setTimeout(
-                function()
-                    -- réactivation de la fenetre principale
-                    gui:setWindow(win)
-                    -- réactiviation de l'horloge
-                    -- idRefreshClock = time:setTimeout(afficheHeure, 1000)
-                    -- on ferme la fenetre
-                    gui:del(popupAlarme) 
-                end,
-                0
-            )
-        end
-    )
-
 end
+
+-- ---------------------------------------
+-- Ecran Ajout nouvelle alarme
+-- ---------------------------------------
+
+function addAlarme()
+
+    print("addAlarme")
+
+end -- addAlarme
+
+
 
 function run()
     init()
