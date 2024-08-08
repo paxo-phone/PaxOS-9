@@ -176,4 +176,27 @@ std::string LuaGui::keyboard(const std::string& placeholder, const std::string& 
     return key.getText();
 }
 
-void LuaGui::setMainWindow(LuaWindow* window) {this->mainWindow = window; AppManager::askGui(this->lua); }
+void LuaGui::setMainWindow(LuaWindow* window) {
+    this->mainWindow = window; 
+    AppManager::askGui(this->lua); 
+}
+
+void LuaGui::showErrorMessage(const std::string& msg ){
+
+        GuiManager &guiManager = GuiManager::getInstance();
+        guiManager.showErrorMessage(msg);
+
+}
+
+void LuaGui::showWarningMessage(const std::string& msg ){
+
+        GuiManager &guiManager = GuiManager::getInstance();
+        guiManager.showWarningMessage(msg);
+
+}
+void LuaGui::showInfoMessage(const std::string& msg ){
+
+        GuiManager &guiManager = GuiManager::getInstance();
+        guiManager.showInfoMessage(msg);
+
+}
