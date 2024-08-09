@@ -27,7 +27,7 @@ LuaWidget::~LuaWidget()
         LuaWidget* parent = this->parent;
         gui::ElementBase* reParent = parent->widget;
 
-        for (uint i = 0; i < parent->children.size(); i++)
+        for (uint16_t i = 0; i < parent->children.size(); i++)
         {
             if (parent->children[i] == widget)
             {
@@ -36,7 +36,7 @@ LuaWidget::~LuaWidget()
             }
         }
 
-        for (uint i = 0; i < reParent->m_children.size(); i++)
+        for (uint16_t i = 0; i < reParent->m_children.size(); i++)
         {
             if (reParent->m_children[i] == reWidget)
             {
@@ -46,7 +46,7 @@ LuaWidget::~LuaWidget()
         }
     }
 
-    for (uint i = 0; i < gui->widgets.size(); i++)
+    for (uint16_t i = 0; i < gui->widgets.size(); i++)
     {
         if (gui->widgets[i] == this)
         {
