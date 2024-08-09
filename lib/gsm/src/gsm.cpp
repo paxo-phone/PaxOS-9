@@ -5,6 +5,7 @@
 #include <filestream.hpp>
 #include <iostream>
 #include <ctime>
+#include <codecvt>
 #include <delay.hpp>
 #include "../../tasks/src/threads.hpp"
 
@@ -299,6 +300,13 @@ namespace GSM
     {
         char buf[20];
         std::sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
+        return std::string(buf);
+    }
+
+    std::string getCurrentTimestampNoSpaces()
+    {
+        char buf[20];
+        std::sprintf(buf, "%04d-%02d-%02d_%02d:%02d:%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
         return std::string(buf);
     }
 
