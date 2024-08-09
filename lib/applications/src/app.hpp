@@ -110,6 +110,7 @@ namespace AppManager
     void event_onlowbattery();
     void event_oncharging();
     void event_onmessage();
+    void event_onmessageerror();
 
     App& get(std::string appName);
     App& get(uint8_t index);

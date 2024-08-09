@@ -115,9 +115,9 @@ std::string decodeString(std::string &code)
       }
     }
 
-    if(!result && char(code_16[i]) != -1)
+    if(!result && code_16[i] <= 0xFF)
     {
-        code_8.push_back(code_16[i]);
+        code_8.push_back(static_cast<char>(code_16[i]));
     }
   }
 

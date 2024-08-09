@@ -19,7 +19,7 @@ namespace gui::elements
 
     void VerticalList::render()
     {
-        m_surface->clear(COLOR_WHITE);
+        m_surface->fillRect(0, 0, m_width, m_height, COLOR_WHITE);
     }
 
     void VerticalList::add(ElementBase* widget)

@@ -117,7 +117,16 @@ void setup()
 
     GSM::ExternalEvents::onNewMessage = []()
     {
+        #ifdef ESP_PLATFORM
+        eventHandlerBack.setTimeout(new Callback<>([](){delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);}), 0);
+        #endif
+        
         AppManager::event_onmessage();
+    };
+
+    GSM::ExternalEvents::onNewMessageError = []()
+    {
+        AppManager::event_onmessageerror();
     };
 
     #ifdef ESP_PLATFORM

@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <dirent.h>   // for Dir and Files
 #include <sys/stat.h> // to check files
+#include <esp_system.h>
 #endif
 
 #include "path.hpp"
@@ -34,12 +35,14 @@ bool storage::init()
 {
 #ifdef ESP_PLATFORM
 
-    while(true)
+    for (int i = 0; i < 4; i++)
     {
         if (SD.begin(4/*, SPI, 8000000*/))
             return true;
         std::cout << "Error storage initialization" << std::endl;
     }
+
+    esp_restart();
 
     // Show error message on the screen?
 

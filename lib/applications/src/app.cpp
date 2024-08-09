@@ -180,6 +180,8 @@ namespace AppManager {
             delete luaInstance;
             luaInstance = nullptr;
 
+            std::cout << "App killed" << std::endl;
+
             app_state = NOT_RUNNING;
         }
     }
@@ -468,14 +470,22 @@ namespace AppManager {
     }
 
     void event_onmessage() {
-        std::cout << "event_onmessage waiting..." << std::endl;
         threadsync.lock();
-
-        std::cout << "event_onmessage ok..." << std::endl;
         for (auto& app : appList)
         {
             if (app.luaInstance != nullptr && app.isRunning())
                 app.luaInstance->event_onmessage();
+        }
+        threadsync.unlock();
+    }
+
+    void event_onmessageerror()
+    {
+        threadsync.lock();
+        for (auto& app : appList)
+        {
+            if (app.luaInstance != nullptr && app.isRunning())
+                app.luaInstance->event_onmessageerror();
         }
         threadsync.unlock();
     }

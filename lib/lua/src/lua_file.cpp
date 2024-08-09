@@ -428,6 +428,7 @@ void LuaFile::load()
         luaEvents["onmessage"] = [&](sol::protected_function func) { this->onmessage = func; std::cout << "onmessage event registered" << std::endl; };
         luaEvents["onlowbattery"] = [&](sol::protected_function func) { this->onlowbattery = func; };
         luaEvents["oncharging"] = [&](sol::protected_function func) { this->oncharging = func; };
+        luaEvents["onmessageerror"] = [&](sol::protected_function func) { this->onmessageerror = func; };
 
         lua["events"] = luaEvents;
     }
@@ -463,7 +464,7 @@ void LuaFile::run(std::vector<std::string> arg)
 
     lua.script(code);   code.clear();  // load and delete the unnecessary code
 
-    lua["run"](arg);
+    SAFE_CALL(lua["run"], lua, arg);
 }
 
 void LuaFile::runBackground(std::vector<std::string> arg)

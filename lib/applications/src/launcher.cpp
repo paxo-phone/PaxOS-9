@@ -46,6 +46,16 @@ int launcher()
     batt->setFontSize(18);
     win.addChild(batt);
 
+    if(GSM::getNetworkStatus() == 99)
+    {
+        Label *batt = new Label(10, 10, 100, 18);
+        batt->setText("pas de réseau");    // hour
+        batt->setVerticalAlignment(Label::Alignement::CENTER);
+        batt->setHorizontalAlignment(Label::Alignement::CENTER);
+        batt->setFontSize(18);
+        win.addChild(batt);
+    }
+
     uint32_t evid = eventHandlerApp.setInterval(
         [&hour, &date]() { 
             static int min;
@@ -79,6 +89,22 @@ int launcher()
         text->setHorizontalAlignment(Label::Alignement::CENTER);
         text->setFontSize(16);
         box->addChild(text);
+
+        storage::Path notifs = (AppManager::appList[i].path / ".." / "unread.txt");
+        if(notifs.exists())
+        {
+            storage::FileStream file(notifs.str(), storage::READ);
+            
+            if(file.size() > 0)
+            {
+                Box* notifBox = new Box(66, 0, 14, 14);
+                notifBox->setRadius(7);
+                notifBox->setBackgroundColor(COLOR_WARNING);
+                box->addChild(notifBox);
+            }
+
+            file.close();
+        }
 
         win.addChild(box);
 

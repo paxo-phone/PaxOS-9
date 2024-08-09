@@ -38,11 +38,16 @@ end
 function run(arg)
     win=gui:window()
 
-
     num=gui:label(win, 16, 175, 288, 41)
     num:setHorizontalAlignment(CENTER_ALIGNMENT)
     num:setFontSize(36)
-    num:setText(gsm.getNumber())
+
+    local c = gsm.getContactByNumber(gsm.getNumber())
+    if(c.name ~= "") then
+        num:setText(c.name)
+    else
+        num:setText(gsm.getNumber())
+    end
 
     state=gui:label(win, 16, 219, 288, 28)
     state:setHorizontalAlignment(CENTER_ALIGNMENT)
