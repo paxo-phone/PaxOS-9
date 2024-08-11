@@ -95,10 +95,13 @@ void graphics::init()
     lcd->setTextColor(TFT_BLACK);
     lcd->fillScreen(TFT_WHITE);
 
-    // Random message
-    lcd->setFont(&lgfx::fonts::DejaVu18);
-    lcd->setCursor(2, 2);
-    lcd->printf("Starting OS...");
+    // Show init text
+    const std::string& initText = "Starting OS";
+    lcd->setFont(&DejaVu18);
+    lcd->setCursor(
+        static_cast<int32_t>(0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))),
+        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - 18))); // 18 because of "DejaVu18"
+    lcd->printf(initText.c_str());
 }
 
 uint16_t graphics::getScreenWidth()
