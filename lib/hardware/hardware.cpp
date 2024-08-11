@@ -53,6 +53,8 @@ void hardware::init()
 
 void hardware::setScreenPower(bool power)
 {
+    // TODO : Explain what it does
+
     #ifdef ESP_PLATFORM
 
     digitalWrite(12, 0);

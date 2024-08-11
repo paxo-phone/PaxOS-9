@@ -62,9 +62,9 @@ void mainLoop(void* data)
                     {
                         std::shared_ptr<AppManager::App> app = AppManager::get(i);
 
-                        if (!app->auth) {
-                            app->requestAuth();
-                        }
+                        // if (!app->auth) {
+                        //     app->requestAuth();
+                        // }
 
                         app->run(false);
 
