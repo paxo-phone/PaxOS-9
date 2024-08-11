@@ -26,7 +26,7 @@ void libsystem::panic(const std::string &message) {
     std::cerr << "- OS Version: " << OS_VERSION << std::endl;
     std::cerr << "- Message: " << message << std::endl;
 
-    lcd->clear();
+    lcd->clear(graphics::packRGB565(0, 0, 0));
 
     lcd->setTextSize(4);
     lcd->setTextColor(graphics::packRGB565(58, 186, 153));
