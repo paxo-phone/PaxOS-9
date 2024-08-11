@@ -92,19 +92,13 @@ void graphics::init()
 
     lcd->init();
     lcd->setColorDepth(16);
-    lcd->setTextColor(TFT_WHITE);
-    lcd->fillScreen(TFT_RED);
-}
+    lcd->setTextColor(TFT_BLACK);
+    lcd->fillScreen(TFT_WHITE);
 
-void graphics::reInit()
-{
-    lcd->init();
-    lcd->setTextColor(TFT_WHITE);
-    lcd->fillScreen(TFT_RED);
-
-    #ifdef ESP_PLATFORM
-    ct.init(21, 22, false, 400000);
-    #endif
+    // Random message
+    lcd->setFont(&lgfx::fonts::DejaVu18);
+    lcd->setCursor(2, 2);
+    lcd->printf("Starting OS...");
 }
 
 uint16_t graphics::getScreenWidth()

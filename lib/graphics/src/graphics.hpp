@@ -22,7 +22,6 @@ namespace graphics
     class Surface;
 
     void init();
-    void reInit();
 
     uint16_t getScreenWidth();
     uint16_t getScreenHeight();
