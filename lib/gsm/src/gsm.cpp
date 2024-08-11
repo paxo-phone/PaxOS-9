@@ -8,7 +8,6 @@
 #include <delay.hpp>
 #include <codecvt>
 #include "../../tasks/src/threads.hpp"
-#include <codecvt>
 
 const char *daysOfWeek[7] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
 const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"};
@@ -568,31 +567,14 @@ namespace GSM
 
     int getBatteryLevel()
     {
-        float voltage_max = 4.12;
-        float voltage_min = 3.5;
-
-
-
-        float voltage = voltage_max;
+        float voltage = -1;
 
         // on regarde le voltage de la batterie... que s'il y a une batterie sur ESP32...
         #ifdef  ESP_PLATFORM
             voltage = getVoltage();
         #endif
 
-
-        if (voltage > voltage_max)
-            return voltage = voltage_max;
-        if (voltage_min > voltage)
-            return voltage = voltage_min;
-        
-        float battery = 100 *(voltage-voltage_min) / (voltage_max-voltage_min);
-        //std::cout << "battery: " << battery << std::endl;
-
-
-        return floor(battery+0.5);
-
-/*        if (voltage == -1)
+       if (voltage == -1)
             return 100;
         if (voltage > 4.12)
             return 100;
@@ -636,16 +618,16 @@ namespace GSM
             return 5;
         else
             return 0;
-*/
+
     }
 
     void updateHour()
     {
-        std::string data = send("AT+CCLK?", "+CCLK:");
 
 // si on est sur ESP, alors, on check l'heure via  commande AT
 #ifdef ESP_PLATFORM
 
+        std::string data = send("AT+CCLK?", "+CCLK:");
         std::cout << data << std::endl;
 
         // Find the start and end positions of the date and time string
@@ -742,7 +724,7 @@ namespace GSM
         getNetworkQuality();
 
         // Mise à jour de l'heure toutes les 1000 ms
-        eventHandlerBack.setInterval(&GSM::getHour, 1000);
+        eventHandlerBack.setInterval(&GSM::getHour, 5000);
         eventHandlerBack.setInterval(&GSM::getNetworkQuality, 10000);
         eventHandlerBack.setInterval([]()
                                      { requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);

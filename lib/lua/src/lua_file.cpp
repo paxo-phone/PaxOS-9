@@ -8,7 +8,6 @@
 #include <json.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
-#include <alarme.hpp>
 
 
 /*
@@ -253,7 +252,7 @@ void LuaFile::load()
             "getY", &LuaWidget::getY,
             "getWidth", &LuaWidget::getWidth,
             "getHeight", &LuaWidget::getHeight,
-            "setMainColor", &LuaWidget::setBackgroundColor,
+            "setBackgroundColor", &LuaWidget::setBackgroundColor,
             "enable", &LuaWidget::enable,
             "disable", &LuaWidget::disable,
             "isTouched", &LuaWidget::isTouched,
@@ -336,6 +335,7 @@ void LuaFile::load()
 
         lua.new_usertype<LuaVerticalList>("LuaVList",
             "setIndex", &LuaVerticalList::setIndex,
+            "setSpaceLine", &LuaVerticalList::setSpaceLine,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
@@ -414,8 +414,7 @@ void LuaFile::load()
             "setInterval", &LuaTime::setInterval,
             "setTimeout", &LuaTime::setTimeout,
             "removeInterval", &LuaTime::removeInterval,
-            "removeTimeout", &LuaTime::removeTimeout,
-            "addEventListener", &LuaTime::addEventListener
+            "removeTimeout", &LuaTime::removeTimeout
         );
 
         lua["time"] = &lua_time;
