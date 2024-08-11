@@ -87,7 +87,7 @@ function converation(number)
     list:setIndex(#messages -1)
 
     local add = gui:box(win2, 250, 410, 40, 40)
-    add:setMainColor(COLOR_DARK)
+    add:setBackgroundColor(COLOR_DARK)
     add:setRadius(20)
         local icon_plus = gui:image(add, "plus.png", 14, 14, 12, 12, COLOR_DARK)
         
