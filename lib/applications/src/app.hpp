@@ -36,10 +36,10 @@ namespace app
     extern AppRequest requestingApp;
 
     void init();
-    App getApp(std::string appName);
+    App getApp(const std::string& appName);
     bool askPerm(App &app);
-    void runApp(storage::Path path);
-    void runApp(AppRequest app);
+    void runApp(const storage::Path& path);
+    void runApp(const AppRequest& app);
 };
 
 namespace AppManager
@@ -59,18 +59,18 @@ namespace AppManager
     class App
     {
     public:
-        App(std::string name, storage::Path path, storage::Path manifest, bool auth);
+        App(std::string name, const storage::Path& path, const storage::Path& manifest, bool auth);
 
         ~App();
 
-        void run(bool background, std::vector<std::string> parameters = {});
+        void run(bool background, const std::vector<std::string> &parameters = {});
 
         void wakeup();
 
         void sleep();
 
-        bool isRunning(); // app is active
-        bool isLoaded(); // app is loaded and allocated
+        bool isRunning() const; // app is active
+        bool isLoaded() const; // app is loaded and allocated
         bool isVisible(); // app is visible
         void kill();
 
@@ -117,10 +117,10 @@ namespace AppManager
     void event_onmessage();
     void event_onmessageerror();
 
-    App& get(std::string appName);
+    App& get(const std::string& appName);
     App& get(uint8_t index);
     App& get(LuaFile* luaInstance);
-    App& get(lua_State* L);
+    App& get(const lua_State* L);
     App& get(sol::state* L);
     App& get(storage::Path path);
 };

@@ -59,7 +59,8 @@ void mainLoop(void* data)
                 {
                     if(search == l)
                     {
-                        AppManager::get(i).run(false);
+                        AppManager::App app = AppManager::get(i);
+
                         while (AppManager::isAnyVisibleApp())
                             AppManager::loop();
                         break;
