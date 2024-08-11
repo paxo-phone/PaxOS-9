@@ -6,10 +6,25 @@
 #ifndef GRAPHICS_HPP
 #define GRAPHICS_HPP
 
-#define LGFX_USE_V1
-#include <LovyanGFX.hpp>
+// #define LGFX_USE_V1
+// #include <LovyanGFX.hpp>
+
+#ifdef ESP_PLATFORM
+
+#include "platforms/LGFX_ESP32_PAXO5.hpp"
+#include <FT6236G.h>
+
+#else
+
+#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
+#include "LGFX_AUTODETECT.hpp"
+
+#include "LovyanGFX.hpp"
+
+#endif
 
 #include <cstdint>
+
 
 namespace graphics
 {
@@ -43,6 +58,8 @@ namespace graphics
 
     EScreenOrientation getScreenOrientation();
     void setScreenOrientation(EScreenOrientation screenOrientation);
+
+    LGFX* getLGFX();
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());

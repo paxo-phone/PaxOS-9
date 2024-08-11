@@ -1,5 +1,7 @@
 #include "app.hpp"
 
+#include <system.hpp>
+
 namespace app
 {
     std::vector<App> appList;
@@ -132,7 +134,7 @@ namespace AppManager {
 
     void App::run(bool background, std::vector<std::string> parameters) {
         if (!auth) {
-            throw std::runtime_error("App is not authorized to run");
+            throw libsystem::exceptions::RuntimeError("App is not authorized to run");
         }
         
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
@@ -390,14 +392,14 @@ namespace AppManager {
             }
         }
 
-        throw std::runtime_error("App not found: " + appName);
+        throw libsystem::exceptions::RuntimeError("App not found: " + appName);
     }
 
     App& get(uint8_t index) {
         if (index < appList.size()) {
             return appList[index];
         }
-        throw std::out_of_range("App index out of range");
+        throw libsystem::exceptions::OutOfRange("App index out of range");
     }
 
     App& get(lua_State* L) {
@@ -408,7 +410,7 @@ namespace AppManager {
                 return app;
             }
         }
-        throw std::runtime_error("App not found for given lua_State instance");
+        throw libsystem::exceptions::RuntimeError("App not found for given lua_State instance");
     }
 
     App& get(sol::state* L) {
@@ -417,7 +419,7 @@ namespace AppManager {
         if (it != appList.end()) {
             return *it;
         }
-        throw std::runtime_error("App not found for given sol::state instance");
+        throw libsystem::exceptions::RuntimeError("App not found for given sol::state instance");
     }
 
     App& get(LuaFile* luaInstance) {
@@ -426,7 +428,7 @@ namespace AppManager {
         if (it != appList.end()) {
             return *it;
         }
-        throw std::runtime_error("App not found for given LuaFile instance");
+        throw libsystem::exceptions::RuntimeError("App not found for given LuaFile instance");
     }
 
     App& get(storage::Path path) {
@@ -435,7 +437,7 @@ namespace AppManager {
         if (it != appList.end()) {
             return *it;
         }
-        throw std::runtime_error("App not found at path: " + path.str());
+        throw libsystem::exceptions::RuntimeError("App not found at path: " + path.str());
     }
 
     void event_oncall()

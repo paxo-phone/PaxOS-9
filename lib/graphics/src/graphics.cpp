@@ -11,16 +11,7 @@
 
 #ifdef ESP_PLATFORM
 
-#include "platforms/LGFX_ESP32_PAXO5.hpp"
-#include <FT6236G.h>
 FT6236G ct;
-
-#else
-
-#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
-#include "LGFX_AUTODETECT.hpp"
-
-#include "LovyanGFX.hpp"
 
 #endif
 
@@ -329,3 +320,8 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
         break;
     }
 }
+
+LGFX* graphics::getLGFX() {
+    return lcd.get();
+}
+
