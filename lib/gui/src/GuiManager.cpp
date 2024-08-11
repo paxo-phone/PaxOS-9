@@ -73,7 +73,7 @@
             title->setTextColor(color_text);
             msgWindow->addChild(title);
 
-            gui::elements::Label *txt = new gui::elements::Label(20, 60, 240, 30);
+            gui::elements::Label *txt = new gui::elements::Label(20, 60, 240, 80);
             txt->setText(msg);
             txt->setVerticalAlignment(gui::elements::Label::Alignement::CENTER);
             txt->setHorizontalAlignment(gui::elements::Label::Alignement::CENTER);

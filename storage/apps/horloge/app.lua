@@ -623,7 +623,6 @@ function initMinuteur()
 
 end -- initMinuteur
 
-
 function runMinuteur()
 
     -- si le timer arrive à 0, on fait sonner l'alarme    
