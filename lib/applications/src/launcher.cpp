@@ -74,23 +74,23 @@ int launcher()
     int placementIndex = 0;
     for (int i = 0; i < AppManager::appList.size(); i++)
     {
-        if (!AppManager::appList[i].visible)
+        if (!AppManager::appList[i]->visible)
             continue;
 
         Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 * int(placementIndex/2), 80, 80);
         
-        Image* img = new Image(AppManager::appList[i].path / "../icon.png", 20, 6, 40, 40);
+        Image* img = new Image(AppManager::appList[i]->path / "../icon.png", 20, 6, 40, 40);
         img->load();
         box->addChild(img);
 
         Label* text = new Label(0, 46, 80, 34);
-        text->setText(AppManager::appList[i].name);
+        text->setText(AppManager::appList[i]->name);
         text->setVerticalAlignment(Label::Alignement::CENTER);
         text->setHorizontalAlignment(Label::Alignement::CENTER);
         text->setFontSize(16);
         box->addChild(text);
 
-        storage::Path notifs = (AppManager::appList[i].path / ".." / "unread.txt");
+        storage::Path notifs = (AppManager::appList[i]->path / ".." / "unread.txt");
         if(notifs.exists())
         {
             storage::FileStream file(notifs.str(), storage::READ);

@@ -94,9 +94,11 @@ namespace AppManager
             bool background;
     };
 
+    // TODO : Check if "extern" is needed
+
     extern std::mutex threadsync; // mutex for thread-safe operations between threads
 
-    extern std::vector<App> appList;
+    extern std::vector<std::shared_ptr<App>> appList;
     extern std::vector<App*> appStack;
 
     int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description);

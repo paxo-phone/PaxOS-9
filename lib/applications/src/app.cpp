@@ -127,6 +127,8 @@ namespace AppManager {
         }
 
     App::~App() {
+        std::cout << "Unloading app: " << fullName << std::endl;
+
         if (luaInstance) {
             delete luaInstance;
         }
@@ -190,43 +192,53 @@ namespace AppManager {
 
     std::mutex threadsync;
 
-    std::vector<App> appList;
+    std::vector<std::shared_ptr<App>> appList;
     std::vector<App*> appStack;
 
-    int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description)
+    // ReSharper disable once CppParameterMayBeConstPtrOrRef
+    int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception, const sol::string_view description)
     {
-        App* a = nullptr;
+        std::shared_ptr<App> erroredApp;
 
         for(auto& app : appList)
         {
-            if(app.luaInstance->lua.lua_state() == L)
+            // Get the corresponding Lua app
+            if(app->luaInstance->lua.lua_state() == L)
             {
-                app.errors = std::string(description);
+                // Save app
+                erroredApp = app;
+
+                // Store errors
+                app->errors = std::string(description);
                 if(maybe_exception)
                 {
-                    app.errors += ": " + std::string(maybe_exception->what());
+                    app->errors += ": " + std::string(maybe_exception->what());
                 }
 
-                a = &app;
+                // Stop the app
+                app->app_state = App::AppState::NOT_RUNNING;
 
-                app.app_state = App::AppState::NOT_RUNNING;
                 //return 0;
             }
         }
 
-        std::cerr << "The App " << a->name << " encountered an error:" << std::endl;
-        std::cerr << a->errors << std::endl;
+        // Show error GUI
 
-        gui::elements::Window win;
-        Label *label = new Label(0, 0, 320, 400);
+        std::cerr << "The App " << erroredApp->name << " encountered an error:" << std::endl;
+        std::cerr << erroredApp->errors << std::endl;
+
+        Window win;
+
+        const auto label = new Label(0, 0, 320, 400);
         
-        label->setText("The App " + a->name + " encountered an error:\n" + a->errors);
+        label->setText("The App " + erroredApp->name + " encountered an error:\n" + erroredApp->errors);
         win.addChild(label);
         
-        Button *btn = new Button(35, 420, 250, 38);
+        auto *btn = new Button(35, 420, 250, 38);
         btn->setText("Quitter");
         win.addChild(btn);
 
+        // Wait for action before closing GUI
         while (!hardware::getHomeButton())  // TODO: asynchronize this
         {
             win.updateAll();
@@ -285,32 +297,50 @@ namespace AppManager {
             }
 
             nlohmann::json manifest = nlohmann::json::parse(manifestContent);
-            
+
+            std::shared_ptr<App> app;
 
             if(root)
             {
-                appList.push_back({dir, directory / dir / "app.lua", directory / dir / "manifest.json", true});
+                app = std::make_shared<App>(
+                    dir,
+                    directory / dir / "app.lua",
+                    directory / dir / "manifest.json",
+                    true
+                );
             }
             else if(allowedFiles.find((storage::Path(directory) / dir).str()) != std::string::npos)
             {
-                appList.push_back({dir, storage::Path(APP_DIR) / dir  / "app.lua", storage::Path(PERMS_DIR) / (dir + ".json"), true});
+                app = std::make_shared<App>(
+                    dir,
+                    storage::Path(APP_DIR) / dir  / "app.lua",
+                    storage::Path(PERMS_DIR) / (dir + ".json"),
+                    true
+                );
             }
             else
             {
-                appList.push_back({dir, storage::Path(APP_DIR) / dir  / "app.lua", storage::Path(APP_DIR) / dir / "manifest.json", false});
+                app = std::make_shared<App>(
+                    dir,
+                    storage::Path(APP_DIR) / dir  / "app.lua",
+                    storage::Path(APP_DIR) / dir / "manifest.json",
+                    false
+                );
             }
 
-            appList.back().fullName = dir;
+            app->fullName = dir;
 
-            if(dir.size() && dir[0] == '.')
-                appList.back().visible = false;
-            else
-                appList.back().visible = true;
+            if (!dir.empty() && dir[0] == '.') {
+                app->visible = false;
+            } else {
+                app->visible = true;
+            }
             
-            if(manifest["name"].is_string())
-                appList.back().name = manifest["name"];
+            if(manifest["name"].is_string()) {
+                app->name = manifest["name"];
+            }
 
-            appList.back().background = false;
+            app->background = false; // TODO : Allow background running
 
             if(manifest["autorun"].is_boolean())
             {
@@ -320,6 +350,9 @@ namespace AppManager {
                     //appList.back().luaInstance->runBackground();
                 }
             }
+
+            // Add app to list
+            appList.push_back(app);
         }
     }
 
@@ -360,12 +393,12 @@ namespace AppManager {
         }
 
         for (auto& app : appList) {
-            if (app.isRunning()) {
-                app.luaInstance->loop();
+            if (app->isRunning()) {
+                app->luaInstance->loop();
             }
-            else if(app.luaInstance != nullptr)
+            else if(app->luaInstance != nullptr)
             {
-                app.kill();
+                app->kill();
             }
         }
 
@@ -386,9 +419,9 @@ namespace AppManager {
 
     App& get(std::string appName) {
         for (auto& app : AppManager::appList) {
-            if(app.fullName == appName)
+            if(app->fullName == appName)
             {
-                return app;
+                return *app; // Probably not safe
             }
         }
 
@@ -397,7 +430,7 @@ namespace AppManager {
 
     App& get(uint8_t index) {
         if (index < appList.size()) {
-            return appList[index];
+            return *appList[index]; // Probably not safe
         }
         throw libsystem::exceptions::OutOfRange("App index out of range");
     }
@@ -405,38 +438,59 @@ namespace AppManager {
     App& get(lua_State* L) {
         for (auto& app : appList)
         {
-            if(app.luaInstance!=nullptr && app.luaInstance->lua.lua_state() == L)
+            if(app->luaInstance!=nullptr && app->luaInstance->lua.lua_state() == L)
             {
-                return app;
+                return *app; // Probably not safe
             }
         }
         throw libsystem::exceptions::RuntimeError("App not found for given lua_State instance");
     }
 
     App& get(sol::state* L) {
-        auto it = std::find_if(appList.begin(), appList.end(),
-                            [L](const App& app) { return &app.luaInstance->lua == L; });
+        const auto it = std::find_if(
+            appList.begin(),
+            appList.end(),
+            [L](const std::shared_ptr<App> &app) {
+                return &app->luaInstance->lua == L;
+            }
+        );
+
         if (it != appList.end()) {
-            return *it;
+            return **it; // Probably not safe
         }
+
         throw libsystem::exceptions::RuntimeError("App not found for given sol::state instance");
     }
 
     App& get(LuaFile* luaInstance) {
-        auto it = std::find_if(appList.begin(), appList.end(),
-                            [luaInstance](const App& app) { return app.luaInstance == luaInstance; });
+        const auto it = std::find_if(
+            appList.begin(),
+            appList.end(),
+            [luaInstance](const std::shared_ptr<App> &app) {
+                return app->luaInstance == luaInstance;
+            }
+        );
+
         if (it != appList.end()) {
-            return *it;
+            return **it; // Probably not safe
         }
+
         throw libsystem::exceptions::RuntimeError("App not found for given LuaFile instance");
     }
 
     App& get(storage::Path path) {
-        auto it = std::find_if(appList.begin(), appList.end(),
-                            [&path](const App& app) { return app.path == path; });
+        const auto it = std::find_if(
+            appList.begin(),
+            appList.end(),
+            [&path](const std::shared_ptr<App> &app) {
+                return app->path == path;
+            }
+        );
+
         if (it != appList.end()) {
-            return *it;
+            return **it; // Probably not safe
         }
+
         throw libsystem::exceptions::RuntimeError("App not found at path: " + path.str());
     }
 
@@ -445,8 +499,8 @@ namespace AppManager {
         threadsync.lock();
         for (auto& app : appList)
         {
-            if (app.luaInstance != nullptr && app.isRunning())
-                app.luaInstance->event_oncall();
+            if (app->luaInstance != nullptr && app->isRunning())
+                app->luaInstance->event_oncall();
         }
         threadsync.unlock();
     }
@@ -455,8 +509,8 @@ namespace AppManager {
         threadsync.lock();
         for (auto& app : appList)
         {
-            if (app.luaInstance != nullptr && app.isRunning())
-                app.luaInstance->event_onlowbattery();
+            if (app->luaInstance != nullptr && app->isRunning())
+                app->luaInstance->event_onlowbattery();
         }
         threadsync.unlock();
     }
@@ -465,8 +519,8 @@ namespace AppManager {
         threadsync.lock();
         for (auto& app : appList)
         {
-            if (app.luaInstance != nullptr && app.isRunning())
-                app.luaInstance->event_oncharging();
+            if (app->luaInstance != nullptr && app->isRunning())
+                app->luaInstance->event_oncharging();
         }
         threadsync.unlock();
     }
@@ -475,8 +529,8 @@ namespace AppManager {
         threadsync.lock();
         for (auto& app : appList)
         {
-            if (app.luaInstance != nullptr && app.isRunning())
-                app.luaInstance->event_onmessage();
+            if (app->luaInstance != nullptr && app->isRunning())
+                app->luaInstance->event_onmessage();
         }
         threadsync.unlock();
     }
@@ -486,8 +540,8 @@ namespace AppManager {
         threadsync.lock();
         for (auto& app : appList)
         {
-            if (app.luaInstance != nullptr && app.isRunning())
-                app.luaInstance->event_onmessageerror();
+            if (app->luaInstance != nullptr && app->isRunning())
+                app->luaInstance->event_onmessageerror();
         }
         threadsync.unlock();
     }

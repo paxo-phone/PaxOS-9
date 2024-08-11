@@ -55,7 +55,7 @@ void mainLoop(void* data)
 
             for (int i = 0; i < AppManager::appList.size(); i++)
             {
-                if(AppManager::appList[i].visible)
+                if(AppManager::appList[i]->visible)
                 {
                     if(search == l)
                     {
