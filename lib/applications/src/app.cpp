@@ -2,121 +2,115 @@
 
 #include <system.hpp>
 
-namespace app {
-    std::vector<App> appList;
-
-    bool request;
-    AppRequest requestingApp;
-
-    void init() {
-        std::vector<std::string> dirs = storage::Path(APP_DIR).listdir();
-
-        storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
-        const std::string allowedFiles = stream.read();
-        stream.close();
-
-        for (const auto& dir: dirs) {
-            std::cout << (storage::Path(APP_DIR) / dir).str() << std::endl;
-            if (allowedFiles.find((storage::Path(APP_DIR) / dir).str()) != std::string::npos) {
-                appList.push_back({
-                    dir, storage::Path(APP_DIR) / dir / "app.lua", storage::Path(PERMS_DIR) / (dir + ".json"), true
-                });
-            } else {
-                appList.push_back({
-                    dir, storage::Path(APP_DIR) / dir / "app.lua", storage::Path(APP_DIR) / dir / "manifest.json", false
-                });
-            }
-        }
-    }
-
-    App getApp(const std::string& appName) {
-        for (auto &app: appList) {
-            if (app.name == appName) {
-                return app;
-            }
-        }
-
-        return {"", storage::Path(), storage::Path(), false};
-    }
-
-    bool askPerm(App &app) {
-        gui::elements::Window win;
-        auto *label = new Label(0, 0, 320, 400);
-
-        storage::FileStream stream(app.manifest.str(), storage::READ);
-        std::string data = stream.read();
-        stream.close();
-
-        label->setText(data);
-        win.addChild(label);
-
-        auto *btn = new Button(35, 420, 250, 38);
-        btn->setText("Accepter");
-        win.addChild(btn);
-
-        // TODO: Add "Cancel" button
-
-        while (true) {
-            win.updateAll();
-
-            if (btn->isTouched()) {
-                storage::FileStream streamP((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
-                streamP.write(app.path.str() + "\n");
-                streamP.close();
-
-                app.manifest = storage::Path(PERMS_DIR) / (app.name + ".json");
-                app.auth = true;
-
-                storage::FileStream newPermCopy(app.manifest.str(), storage::WRITE);
-                newPermCopy.write(data);
-                newPermCopy.close();
-
-                return true;
-            }
-        }
-    }
-
-    void runApp(const storage::Path& path) {
-        for (auto &app: appList) {
-            if (app.path.str() == path.str()) {
-                if (app.auth) {
-                    std::cout << "Succes: running app" << std::endl;
-                    LuaFile luaApp(path, app.manifest);
-                    luaApp.run();
-                } else {
-                    std::cout << "Asking for permissions" << std::endl;
-
-                    if (askPerm(app)) {
-                        LuaFile luaApp(path, app.manifest);
-                        luaApp.run();
-                    }
-                }
-
-                return;
-            }
-        }
-
-        std::cout << "Error: no such app" << std::endl;
-    }
-
-    void runApp(const AppRequest& app) {
-        LuaFile luaApp(app.app.path, app.app.manifest);
-        luaApp.run(app.parameters);
-    }
-};
+// namespace app {
+//     std::vector<App> appList;
+//
+//     bool request;
+//     AppRequest requestingApp;
+//
+//     void init() {
+//         std::vector<std::string> dirs = storage::Path(APP_DIR).listdir();
+//
+//         storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
+//         const std::string allowedFiles = stream.read();
+//         stream.close();
+//
+//         for (const auto& dir: dirs) {
+//             std::cout << (storage::Path(APP_DIR) / dir).str() << std::endl;
+//             if (allowedFiles.find((storage::Path(APP_DIR) / dir).str()) != std::string::npos) {
+//                 appList.push_back({
+//                     dir, storage::Path(APP_DIR) / dir / "app.lua", storage::Path(PERMS_DIR) / (dir + ".json"), true
+//                 });
+//             } else {
+//                 appList.push_back({
+//                     dir, storage::Path(APP_DIR) / dir / "app.lua", storage::Path(APP_DIR) / dir / "manifest.json", false
+//                 });
+//             }
+//         }
+//     }
+//
+//     App getApp(const std::string& appName) {
+//         for (auto &app: appList) {
+//             if (app.name == appName) {
+//                 return app;
+//             }
+//         }
+//
+//         return {"", storage::Path(), storage::Path(), false};
+//     }
+//
+//     bool askPerm(App &app) {
+//         gui::elements::Window win;
+//         auto *label = new Label(0, 0, 320, 400);
+//
+//         storage::FileStream stream(app.manifest.str(), storage::READ);
+//         std::string data = stream.read();
+//         stream.close();
+//
+//         label->setText(data);
+//         win.addChild(label);
+//
+//         auto *btn = new Button(35, 420, 250, 38);
+//         btn->setText("Accepter");
+//         win.addChild(btn);
+//
+//         // TODO: Add "Cancel" button
+//
+//         while (true) {
+//             win.updateAll();
+//
+//             if (btn->isTouched()) {
+//                 storage::FileStream streamP((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
+//                 streamP.write(app.path.str() + "\n");
+//                 streamP.close();
+//
+//                 app.manifest = storage::Path(PERMS_DIR) / (app.name + ".json");
+//                 app.auth = true;
+//
+//                 storage::FileStream newPermCopy(app.manifest.str(), storage::WRITE);
+//                 newPermCopy.write(data);
+//                 newPermCopy.close();
+//
+//                 return true;
+//             }
+//         }
+//     }
+//
+//     void runApp(const storage::Path& path) {
+//         for (auto &app: appList) {
+//             if (app.path.str() == path.str()) {
+//                 if (app.auth) {
+//                     std::cout << "Succes: running app" << std::endl;
+//                     LuaFile luaApp(path, app.manifest);
+//                     luaApp.run();
+//                 } else {
+//                     std::cout << "Asking for permissions" << std::endl;
+//
+//                     if (askPerm(app)) {
+//                         LuaFile luaApp(path, app.manifest);
+//                         luaApp.run();
+//                     }
+//                 }
+//
+//                 return;
+//             }
+//         }
+//
+//         std::cout << "Error: no such app" << std::endl;
+//     }
+//
+//     void runApp(const AppRequest& app) {
+//         LuaFile luaApp(app.app.path, app.app.manifest);
+//         luaApp.run(app.parameters);
+//     }
+// };
 
 namespace AppManager {
-    App::App(std::string name, const storage::Path& path, const storage::Path& manifest, const bool auth)
-        : name(std::move(name)), fullName(std::move(name)), path(path), manifest(manifest),
+    App::App(const std::string& name, const storage::Path& path, const storage::Path& manifest, const bool auth)
+        : name(name), fullName(name), path(path), manifest(manifest),
           auth(auth),
           luaInstance(nullptr), app_state(NOT_RUNNING), background(false) {
         std::cout << "App: \"" << name << "\" \"" << fullName << "\"" << std::endl;
-    }
-
-    App::~App() {
-        std::cout << "Unloading app: " << fullName << std::endl;
-
-        delete luaInstance;
     }
 
     void App::run(const bool background, const std::vector<std::string>& parameters) {
@@ -124,9 +118,13 @@ namespace AppManager {
             throw libsystem::exceptions::RuntimeError("App is not authorized to run");
         }
 
+        libsystem::log("1 Run app: " + toString());
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
+        libsystem::log("2 Run app: " + toString());
 
-        luaInstance = new LuaFile(path, manifest);
+        luaInstance = std::make_shared<LuaFile>(path, manifest);
+        luaInstance->app = this;
+
         luaInstance->load();
         luaInstance->run(parameters);
     }
@@ -153,7 +151,7 @@ namespace AppManager {
         return app_state != NOT_RUNNING;
     }
 
-    bool App::isVisible() {
+    bool App::isVisible() const {
         if (!isLoaded())
             return false;
 
@@ -163,18 +161,53 @@ namespace AppManager {
     void App::kill() {
         if (luaInstance != nullptr) {
             luaInstance->stop();
-            delete luaInstance;
-            luaInstance = nullptr;
-
-            std::cout << "App killed" << std::endl;
+            luaInstance.reset(); // delete luaInstance
 
             app_state = NOT_RUNNING;
+
+            std::cout << "App killed" << std::endl;
+        }
+    }
+
+    void App::requestAuth() {
+        Window win;
+
+        auto *label = new Label(0, 0, 320, 400);
+
+        storage::FileStream stream(manifest.str(), storage::READ);
+        std::string data = stream.read();
+        stream.close();
+
+        label->setText(data);
+        win.addChild(label);
+
+        auto *btn = new Button(35, 420, 250, 38);
+        btn->setText("Accepter");
+        win.addChild(btn);
+
+        // TODO: Add "Cancel" button
+
+        while (true) {
+            win.updateAll();
+
+            if (btn->isTouched()) {
+                storage::FileStream streamP((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
+                streamP.write(path.str() + "\n");
+                streamP.close();
+
+                manifest = storage::Path(PERMS_DIR) / (name + ".json");
+                auth = true;
+
+                storage::FileStream newPermCopy(manifest.str(), storage::WRITE);
+                newPermCopy.write(data);
+                newPermCopy.close();
+            }
         }
     }
 
     std::string App::toString() const {
         return "{name = " + name + ", fullName = " + fullName + ", path = " + path.str() + ", manifest = " + manifest.
-               str() + ", auth = " + std::to_string(auth) + "}";
+               str() + ", auth = " + std::to_string(auth) + ", state = " + std::to_string(app_state) + "}";
     }
 
     std::mutex threadsync;
@@ -235,13 +268,13 @@ namespace AppManager {
         return 0;
     }
 
-    void askGui(LuaFile *lua) {
-        App &app = AppManager::get(lua);
+    void askGui(const LuaFile* lua) {
+        App* app = lua->app;
 
         if (lua->lua_gui.mainWindow == nullptr) {
             for (auto it = appStack.begin(); it != appStack.end(); ++it) {
-                if (*it == &app) {
-                    app.app_state = App::AppState::NOT_RUNNING;
+                if (*it == app) {
+                    app->app_state = App::AppState::NOT_RUNNING;
                     appStack.erase(it);
                     break;
                 }
@@ -250,8 +283,8 @@ namespace AppManager {
             return;
         }
 
-        if (appStack.empty() || appStack.back() != &app) {
-            appStack.push_back(&app);
+        if (appStack.empty() || appStack.back() != app) {
+            appStack.push_back(app);
         }
     }
 
@@ -339,6 +372,8 @@ namespace AppManager {
     }
 
     void loop() {
+        // libsystem::log("[AppManager] loop()");
+
         threadsync.lock();
         // Implementation for the main loop
         if (!appStack.empty() && hardware::getHomeButton())
@@ -367,6 +402,8 @@ namespace AppManager {
         }
 
         for (const auto& app: appList) {
+            libsystem::log("[AppManager] loop() : loop through app : " + app->toString());
+
             if (app->isRunning()) {
                 app->luaInstance->loop();
             } else if (app->luaInstance != nullptr) {
@@ -387,75 +424,77 @@ namespace AppManager {
         return !appStack.empty();
     }
 
-    App& get(const std::string& appName) {
+    std::shared_ptr<App> get(const std::string& appName) {
         for (const auto& app: AppManager::appList) {
             if (app->fullName == appName) {
-                return *app; // Probably not safe
+                return app;
             }
         }
 
         throw libsystem::exceptions::RuntimeError("App not found: " + appName);
     }
 
-    App& get(const uint8_t index) {
+    std::shared_ptr<App> get(const uint8_t index) {
         if (index < appList.size()) {
-            return *appList[index]; // Probably not safe
+            return appList[index];
         }
         throw libsystem::exceptions::OutOfRange("App index out of range");
     }
 
-    App& get(const lua_State *L) {
+    std::shared_ptr<App> get(const lua_State* L) {
         for (const auto& app: appList) {
             if (app->luaInstance != nullptr && app->luaInstance->lua.lua_state() == L) {
-                return *app; // Probably not safe
+                return app;
             }
         }
         throw libsystem::exceptions::RuntimeError("App not found for given lua_State instance");
     }
 
-    App& get(sol::state *L) {
+    std::shared_ptr<App> get(sol::state* L) {
         const auto it = std::find_if(
             appList.begin(),
             appList.end(),
-            [L](const std::shared_ptr<App> &app) {
+            [L](const std::shared_ptr<App>& app) {
                 return &app->luaInstance->lua == L;
             }
         );
 
         if (it != appList.end()) {
-            return **it; // Probably not safe
+            return *it;
         }
 
         throw libsystem::exceptions::RuntimeError("App not found for given sol::state instance");
     }
 
-    App& get(LuaFile *luaInstance) {
-        const auto it = std::find_if(
-            appList.begin(),
-            appList.end(),
-            [luaInstance](const std::shared_ptr<App> &app) {
-                return app->luaInstance == luaInstance;
-            }
-        );
+    App* get(const LuaFile* luaInstance) {
+        return luaInstance->app;
 
-        if (it != appList.end()) {
-            return **it; // Probably not safe
-        }
-
-        throw libsystem::exceptions::RuntimeError("App not found for given LuaFile instance");
+        // const auto it = std::find_if(
+        //     appList.begin(),
+        //     appList.end(),
+        //     [luaInstance](const std::shared_ptr<App>& app) {
+        //         return app->luaInstance.get() == luaInstance;
+        //     }
+        // );
+        //
+        // if (it != appList.end()) {
+        //     return **it; // Probably not safe
+        // }
+        //
+        // throw libsystem::exceptions::RuntimeError("App not found for given LuaFile instance");
     }
 
-    App& get(storage::Path path) {
+    std::shared_ptr<App> get(storage::Path path) {
         const auto it = std::find_if(
             appList.begin(),
             appList.end(),
-            [&path](const std::shared_ptr<App> &app) {
+            [&path](const std::shared_ptr<App>& app) {
                 return app->path == path;
             }
         );
 
         if (it != appList.end()) {
-            return **it; // Probably not safe
+            return *it;
         }
 
         throw libsystem::exceptions::RuntimeError("App not found at path: " + path.str());

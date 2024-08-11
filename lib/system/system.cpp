@@ -10,6 +10,10 @@
 #include "color.hpp"
 #include "graphics.hpp"
 
+namespace libsystem {
+    std::vector<std::string> bootErrors;
+}
+
 void libsystem::delay(uint64_t ms) {
 
 #ifdef ESP_PLATFORM
@@ -68,15 +72,55 @@ void libsystem::panic(const std::string &message) {
         delay(200);
     }
 
-    // Wait sometime to allow the user to read the message
-    delay(15000);
-
-    // Make the system crash (and restart)
-    throw std::runtime_error("System panic: " + message);
+    // Restart the system
+    // TODO: Check if stacktrace is available with this
+    restart(true, 15000);
 }
 
 void libsystem::log(const std::string &message) {
     std::cout << "[LOG] " << message << std::endl;
+}
+
+void libsystem::registerBootError(const std::string& message) {
+    bootErrors.emplace_back(message);
+}
+
+bool libsystem::hasBootErrors() {
+    return !bootErrors.empty();
+}
+
+void libsystem::displayBootErrors() {
+    LGFX* lcd = graphics::getLGFX();
+
+    lcd->setFont(&DejaVu18);
+    lcd->setTextColor(graphics::packRGB565(255, 100, 100));
+
+    const int32_t screenWidth = graphics::getScreenWidth();
+    const int32_t screenHeight = graphics::getScreenHeight();
+
+    const int32_t fontHeight = lcd->fontHeight();
+
+    // Draw every boot errors
+    for (int32_t i = 0; i < bootErrors.size(); i++) {
+        const std::string& message = bootErrors[i];
+
+        lcd->setCursor(
+            static_cast<int32_t>(0.5 * static_cast<double>(screenWidth - lcd->textWidth(message.c_str()))),
+            screenHeight - static_cast<int32_t>(bootErrors.size() - i + 1) * fontHeight
+        );
+
+        lcd->printf(message.c_str());
+    }
+}
+
+void libsystem::restart(bool silent, const uint64_t timeout) {
+    if (timeout > 0) {
+        delay(timeout);
+    }
+
+#ifdef ESP_PLATFORM
+    esp_restart();
+#endif
 }
 
 libsystem::exceptions::RuntimeError::RuntimeError(const std::string &message): runtime_error(message) {

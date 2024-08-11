@@ -172,6 +172,8 @@ void LuaTime::removeInterval(int id)
         {
             delete intervals[it];
             intervals.erase(intervals.begin() + it);
+
+            break;
         }
     }
 }
@@ -184,6 +186,8 @@ void LuaTime::removeTimeout(int id)
         {
             delete timeouts[it];
             timeouts.erase(timeouts.begin() + it);
+
+            break;
         }
     }
 }

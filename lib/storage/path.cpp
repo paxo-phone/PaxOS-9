@@ -42,15 +42,17 @@ bool storage::init()
         std::cout << "Error storage initialization" << std::endl;
     }
 
-    esp_restart();
+    // esp_restart();
 
     // Show error message on the screen?
 
     return false;
 
-#endif
+#else
 
     return true;
+
+#endif
 }
 
 namespace storage

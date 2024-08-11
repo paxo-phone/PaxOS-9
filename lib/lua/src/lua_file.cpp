@@ -8,6 +8,7 @@
 #include <json.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
+#include <system.hpp>
 
 
 /*
@@ -55,11 +56,6 @@ LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     this->directory = filename / storage::Path("..");
 }
 
-LuaFile::~LuaFile()
-{
-    // libérer les ressources (events, etc)
-}
-
 void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
     //std::cout << "custom_allocator: " << nsize << std::endl;
     if (nsize == 0) {
@@ -92,10 +88,10 @@ int sol_exception_handler(lua_State* L, sol::optional<const std::exception&> may
 }
 
 int custom_panic_handler(lua_State* L) {
-    AppManager::App& app = AppManager::get(L);
+    std::shared_ptr<AppManager::App> app = AppManager::get(L);
 
-    app.errors += std::string(lua_tostring(L, -1)) + "\n";
-    app.app_state = AppManager::App::AppState::NOT_RUNNING;
+    app->errors += std::string(lua_tostring(L, -1)) + "\n";
+    app->app_state = AppManager::App::AppState::NOT_RUNNING;
 
     const char* msg = lua_tostring(L, -1);
     std::cerr << "Lua panic: " << msg << std::endl;
@@ -122,8 +118,7 @@ void LuaFile::load()
 
     if(!nlohmann::json::accept(conf))
     {
-        std::cerr << "Les permissions de l'app ne sont pas définies ou sont invalides" << std::endl;
-        return;
+        throw libsystem::exceptions::RuntimeError("Invalid app permissions.");
     }
 
     nlohmann::json confJson = nlohmann::json::parse(conf);
@@ -354,13 +349,13 @@ void LuaFile::load()
 
         lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
             {
-                AppManager::get(name).run(false, arg);
+                AppManager::get(name)->run(false, arg);
 
                 return true;
             },
             [&](std::string name)
             {
-                AppManager::get(name).run(false, {});
+                AppManager::get(name)->run(false, {});
 
                 return true;
             }
@@ -504,6 +499,8 @@ void LuaFile::stop(std::vector<std::string> arg)
 
 void LuaFile::loop()
 {
+    libsystem::log("[LuaFile] loop()");
+
     //lua_gui.update();   // add App Priority To Acces Gui
     lua_time.update();
 }

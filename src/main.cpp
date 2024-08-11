@@ -20,6 +20,7 @@
 #include "app.hpp"
 #include "contacts.hpp"
 #include <iostream>
+#include <system.hpp>
 
 using namespace gui::elements;
 
@@ -59,10 +60,17 @@ void mainLoop(void* data)
                 {
                     if(search == l)
                     {
-                        AppManager::App app = AppManager::get(i);
+                        std::shared_ptr<AppManager::App> app = AppManager::get(i);
+
+                        if (!app->auth) {
+                            app->requestAuth();
+                        }
+
+                        app->run(false);
 
                         while (AppManager::isAnyVisibleApp())
                             AppManager::loop();
+
                         break;
                     }
                     search++;
@@ -97,7 +105,13 @@ void setup()
     hardware::init();
     hardware::setScreenPower(true);
     graphics::init();
-    storage::init();
+    setScreenOrientation(graphics::PORTRAIT);
+
+    if (!storage::init()) {
+        libsystem::registerBootError("Storage initialization error.");
+        libsystem::registerBootError("Please check the SD Card.");
+    }
+
     #ifdef ESP_PLATFORM
     backtrace_saver::init();
 
@@ -107,13 +121,19 @@ void setup()
     );
     #endif // ESP_PLATFORM
 
-    graphics::setScreenOrientation(graphics::PORTRAIT);
-
     ThreadManager::init();
+
+    // When everything is initialized
+    // Check if errors occurred
+    // If so, restart
+    if (libsystem::hasBootErrors()) {
+        libsystem::displayBootErrors();
+        libsystem::restart(true, 10000);
+    }
 
     GSM::ExternalEvents::onIncommingCall = []()
     {
-        eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall").run(false);}), 0);
+        eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run(false);}), 0);
     };
 
     GSM::ExternalEvents::onNewMessage = []()
@@ -152,7 +172,7 @@ void setup()
         //std::cout << c.name << " " << c.phone << std::endl;
     }
 
-    app::init();
+    // app::init();
     AppManager::init();
 
     #ifdef ESP_PLATFORM

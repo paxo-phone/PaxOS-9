@@ -26,6 +26,12 @@ namespace libsystem {
 
     void log(const std::string& message);
 
+    void registerBootError(const std::string& message);
+    void displayBootErrors();
+    bool hasBootErrors();
+
+    void restart(bool silent = false, uint64_t timeout = 0);
+
     namespace exceptions {
         class RuntimeError final : public std::runtime_error {
         public:

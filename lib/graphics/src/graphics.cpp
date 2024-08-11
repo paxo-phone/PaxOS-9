@@ -83,15 +83,16 @@ void graphics::init()
 
     lcd->init();
     lcd->setColorDepth(16);
-    lcd->setTextColor(TFT_BLACK);
-    lcd->fillScreen(TFT_WHITE);
+    lcd->setTextColor(TFT_WHITE);
+    lcd->fillScreen(TFT_BLACK);
 
     // Show init text
-    const std::string& initText = "Starting OS";
-    lcd->setFont(&DejaVu18);
+    const std::string& initText = "Paxo";
+    lcd->setFont(&DejaVu40);
+    lcd->setTextColor(packRGB565(58, 186, 153));
     lcd->setCursor(
         static_cast<int32_t>(0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))),
-        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - 18))); // 18 because of "DejaVu18"
+        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())));
     lcd->printf(initText.c_str());
 }
 
