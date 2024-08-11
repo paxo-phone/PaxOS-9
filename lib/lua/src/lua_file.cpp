@@ -499,8 +499,6 @@ void LuaFile::stop(std::vector<std::string> arg)
 
 void LuaFile::loop()
 {
-    libsystem::log("[LuaFile] loop()");
-
     //lua_gui.update();   // add App Priority To Acces Gui
     lua_time.update();
 }

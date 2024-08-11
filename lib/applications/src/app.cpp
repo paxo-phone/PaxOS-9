@@ -118,9 +118,7 @@ namespace AppManager {
             throw libsystem::exceptions::RuntimeError("App is not authorized to run");
         }
 
-        libsystem::log("1 Run app: " + toString());
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
-        libsystem::log("2 Run app: " + toString());
 
         luaInstance = std::make_shared<LuaFile>(path, manifest);
         luaInstance->app = this;
@@ -372,8 +370,6 @@ namespace AppManager {
     }
 
     void loop() {
-        // libsystem::log("[AppManager] loop()");
-
         threadsync.lock();
         // Implementation for the main loop
         if (!appStack.empty() && hardware::getHomeButton())
@@ -402,8 +398,6 @@ namespace AppManager {
         }
 
         for (const auto& app: appList) {
-            libsystem::log("[AppManager] loop() : loop through app : " + app->toString());
-
             if (app->isRunning()) {
                 app->luaInstance->loop();
             } else if (app->luaInstance != nullptr) {
