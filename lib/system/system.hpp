@@ -24,6 +24,8 @@ namespace libsystem {
     void delay(uint64_t ms);
     void panic(const std::string& message);
 
+    void log(const std::string& message);
+
     namespace exceptions {
         class RuntimeError final : public std::runtime_error {
         public:

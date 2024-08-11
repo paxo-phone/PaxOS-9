@@ -190,12 +190,17 @@ namespace AppManager {
         }
     }
 
+    std::string App::toString() const {
+        return "{name = " + name + ", fullName = " + fullName + ", path = " + path.str() + ", manifest = " + manifest.str() + ", auth = " + std::to_string(auth) + "}";
+    }
+
     std::mutex threadsync;
 
     std::vector<std::shared_ptr<App>> appList;
     std::vector<App*> appStack;
 
     // ReSharper disable once CppParameterMayBeConstPtrOrRef
+    // ReSharper disable once CppDFAConstantFunctionResult
     int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception, const sol::string_view description)
     {
         std::shared_ptr<App> erroredApp;
@@ -282,17 +287,22 @@ namespace AppManager {
         std::string allowedFiles = stream.read();
         stream.close();
 
+        libsystem::log("auth.list : " + allowedFiles);
+
         for (auto dir : dirs)
         {
-            std::cout << (storage::Path(directory) / dir).str() << std::endl;
+            auto appPath = storage::Path(directory) / dir;
+            libsystem::log("Loading app at \"" + appPath.str() + "\".");
 
-            storage::FileStream manifestStream((storage::Path(directory) / dir / "manifest.json").str(), storage::READ);
+            auto manifestPath = storage::Path(directory) / dir / "manifest.json";
+
+            storage::FileStream manifestStream(manifestPath.str(), storage::READ);
             std::string manifestContent = manifestStream.read();
             manifestStream.close();
 
             if(!nlohmann::json::accept(manifestContent))
             {
-                std::cout << "Error: invalid manifest" << std::endl;
+                std::cout << "Error: invalid manifest at \"" << manifestPath.str() << "\"" <<  std::endl;
                 continue;
             }
 
@@ -309,7 +319,7 @@ namespace AppManager {
                     true
                 );
             }
-            else if(allowedFiles.find((storage::Path(directory) / dir).str()) != std::string::npos)
+            else if(allowedFiles.find(appPath.str()) != std::string::npos)
             {
                 app = std::make_shared<App>(
                     dir,
@@ -352,6 +362,7 @@ namespace AppManager {
             }
 
             // Add app to list
+            libsystem::log("Loaded app : " + app->toString() + ".");
             appList.push_back(app);
         }
     }

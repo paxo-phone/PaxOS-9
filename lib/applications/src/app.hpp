@@ -58,40 +58,43 @@ namespace AppManager
 
     class App
     {
-        public:
-            App(std::string name, storage::Path path, storage::Path manifest, bool auth);
-            ~App();
+    public:
+        App(std::string name, storage::Path path, storage::Path manifest, bool auth);
 
-            void run(bool background, std::vector<std::string> parameters = {});
+        ~App();
 
-            void wakeup();
-            void sleep();
+        void run(bool background, std::vector<std::string> parameters = {});
 
-            bool isRunning();   // app is active
-            bool isLoaded();    // app is loaded and allocated
-            bool isVisible();  // app is visible
-            void kill();
+        void wakeup();
 
-            std::string name;
-            std::string fullName;
-            storage::Path path; // app directory
-            storage::Path manifest;
-            bool auth;  // is allowed to run
-            bool visible = false;
+        void sleep();
 
-            std::string errors;
+        bool isRunning(); // app is active
+        bool isLoaded(); // app is loaded and allocated
+        bool isVisible(); // app is visible
+        void kill();
 
-            enum AppState
-            {
-                RUNNING,
-                RUNNING_BACKGROUND,
-                SLEEPING,
-                NOT_RUNNING
-            };
+        std::string name;
+        std::string fullName;
+        storage::Path path; // app directory
+        storage::Path manifest;
+        bool auth; // is allowed to run
+        bool visible = false;
 
-            LuaFile* luaInstance;
-            uint8_t app_state;
-            bool background;
+        std::string errors;
+
+        enum AppState {
+            RUNNING,
+            RUNNING_BACKGROUND,
+            SLEEPING,
+            NOT_RUNNING
+        };
+
+        LuaFile *luaInstance;
+        uint8_t app_state;
+        bool background;
+
+        std::string toString() const;
     };
 
     // TODO : Check if "extern" is needed

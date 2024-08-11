@@ -98,7 +98,8 @@ namespace storage
         {
             o += m_steps[i];
             if (i != m_steps.size() - 1)
-                o += SYSTEM_PATH_SEPARATOR;
+                o += "/";
+                // o += SYSTEM_PATH_SEPARATOR;
         }
 
         return o;

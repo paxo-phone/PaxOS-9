@@ -75,6 +75,10 @@ void libsystem::panic(const std::string &message) {
     throw std::runtime_error("System panic: " + message);
 }
 
+void libsystem::log(const std::string &message) {
+    std::cout << "[LOG] " << message << std::endl;
+}
+
 libsystem::exceptions::RuntimeError::RuntimeError(const std::string &message): runtime_error(message) {
     panic(message);
 }
