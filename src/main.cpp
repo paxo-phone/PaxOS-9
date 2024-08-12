@@ -5,7 +5,6 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include <esp_system.h>
-#include <backtrace_saver.hpp>
 #include "backtrace.hpp"
 #endif
 
@@ -43,7 +42,27 @@ void ringingVibrator(void* data)
 void mainLoop(void* data)
 {
     #ifdef ESP_PLATFORM
+    /*
+    int randomN = random(0, 2);
+    std::cout << "Random: " << randomN << std::endl;
+    if (randomN == 0) {
+        std::cout << "Crashing" << std::endl;
+        int l = -1;
+
+        int p = 0;
+
+        l = l / p;
+
+        std::cout << l << std::endl;
+    }
+    */
     graphics::setBrightness(0xFF/3);
+    //std::cout << "Backtrace empty: " << backtrace_saver::isBacktraceEmpty() << std::endl;
+    //std::cout << "backtrace " << backtrace_saver::getBacktraceMessage() << std::endl;
+    if (!backtrace_saver::isBacktraceEmpty())
+    {
+        backtrace_saver::backtraceMessageGUI();
+    }
     #endif
     
     while (true)    // Main loop
@@ -125,7 +144,7 @@ void setup()
 
     #ifdef ESP_PLATFORM
     backtrace_saver::init();
-
+    std::cout << "backtrace: " << backtrace_saver::getBacktraceMessage() << std::endl;
     backtrace_saver::backtraceEventId = eventHandlerBack.addEventListener(
         new Condition<>(&backtrace_saver::shouldSaveBacktrace),
         new Callback<>(&backtrace_saver::saveBacktrace)
