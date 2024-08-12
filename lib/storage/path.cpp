@@ -1,9 +1,10 @@
+#include "path.hpp"
+
 #include <string>
 #include <cstdint>
 #include <vector>
-
-#include <stdlib.h>
 #include <iostream>
+#include <libsystem.hpp>
 
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 #include <filesystem>
@@ -11,13 +12,9 @@
 #else
 #include <Arduino.h>
 #include <SD.h>
-#include <stdbool.h>
 #include <dirent.h>   // for Dir and Files
 #include <sys/stat.h> // to check files
-#include <esp_system.h>
 #endif
-
-#include "path.hpp"
 
 #define MOUNT_POINT "/sd"
 
@@ -31,20 +28,25 @@
 #define SYSTEM_PATH_SEPARATOR '/'
 #endif
 
-bool storage::init()
-{
+bool storage::init() {
 #ifdef ESP_PLATFORM
 
-    for (int i = 0; i < 4; i++)
-    {
-        if (SD.begin(4/*, SPI, 8000000*/))
+    constexpr uint8_t sdBeginTryCount = 4;
+
+    for (int i = 0; i < sdBeginTryCount; i++) {
+        if (SD.begin(4/*, SPI, 8000000*/)) {
+            libsystem::log("Storage SD card initialized.");
             return true;
-        std::cout << "Error storage initialization" << std::endl;
+        }
+
+        libsystem::log("Storage SD card failed, try " + std::to_string(i + 1) + " of " + std::to_string(sdBeginTryCount) + ".");
     }
 
     // esp_restart();
 
     // Show error message on the screen?
+
+    libsystem::log("Storage SD card failed.");
 
     return false;
 

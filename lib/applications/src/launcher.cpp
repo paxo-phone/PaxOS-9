@@ -2,7 +2,6 @@
 
 #include <app.hpp>
 #include <gsm.hpp>
-#include <system.hpp>
 
 std::string getFormatedHour()
 {
@@ -20,7 +19,6 @@ std::string getFormatedHour()
 int launcher()
 {
     if(AppManager::isAnyVisibleApp()) {
-        libsystem::log("isAnyVisibleApp()");
         return -1;
     }
 

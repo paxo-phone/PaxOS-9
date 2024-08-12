@@ -2,8 +2,8 @@
 // Created by Charles on 11/08/2024.
 //
 
-#ifndef SYSTEM_HPP
-#define SYSTEM_HPP
+#ifndef LIBSYSTEM_HPP
+#define LIBSYSTEM_HPP
 
 #include <string>
 #include <cstdint>
@@ -47,4 +47,4 @@ namespace libsystem {
     }
 }
 
-#endif //SYSTEM_HPP
+#endif //LIBSYSTEM_HPP

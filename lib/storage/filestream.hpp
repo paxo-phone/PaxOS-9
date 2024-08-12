@@ -2,12 +2,7 @@
 #define FILE_STREAM_HPP
 
 #include <string>
-
 #include <fstream>
-
-#ifdef ESP_PLATFORM
-#include "SD.h"
-#endif
 
 namespace storage
 {

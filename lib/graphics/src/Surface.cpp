@@ -5,7 +5,6 @@
 
 #include "Surface.hpp"
 
-#include <graphics.hpp>
 #include <path.hpp>
 #include <filestream.hpp>
 #include <iostream>

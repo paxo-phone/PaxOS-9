@@ -2,7 +2,7 @@
 // Created by Charles on 11/08/2024.
 //
 
-#include "system.hpp"
+#include "libsystem.hpp"
 
 #include <hardware.hpp>
 #include <iostream>
@@ -83,6 +83,8 @@ void libsystem::log(const std::string &message) {
 
 void libsystem::registerBootError(const std::string& message) {
     bootErrors.emplace_back(message);
+
+    log("[Boot Error] " + message);
 }
 
 bool libsystem::hasBootErrors() {
