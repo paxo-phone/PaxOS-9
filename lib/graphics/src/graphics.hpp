@@ -36,7 +36,13 @@ namespace graphics
 
     class Surface;
 
-    void init();
+    enum GraphicsInitCode {
+        SUCCESS,
+        ERROR_NO_TOUCHSCREEN,
+        ERROR_FAULTY_TOUCHSCREEN
+    };
+
+    GraphicsInitCode init();
 
     uint16_t getScreenWidth();
     uint16_t getScreenHeight();

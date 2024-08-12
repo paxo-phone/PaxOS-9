@@ -6,10 +6,13 @@
 #include "graphics.hpp"
 
 #include <iostream>
+#include <libsystem.hpp>
 #include <Surface.hpp>
 #include <threads.hpp>
 
 #ifdef ESP_PLATFORM
+
+#include <Wire.h>
 
 FT6236G ct;
 
@@ -61,14 +64,13 @@ void graphics::setBrightness(uint16_t value)
     #endif
 }
 
-void graphics::init()
+graphics::GraphicsInitCode graphics::init()
 {
 #ifdef ESP_PLATFORM
 
     running = true; // It doesn't feel right to set this here...
 
     lcd = std::make_shared<LGFX>();
-    ct.init(21, 22, false, 400000);
 
 #else
 
@@ -94,6 +96,28 @@ void graphics::init()
         static_cast<int32_t>(0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))),
         static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())));
     lcd->printf(initText.c_str());
+
+#ifdef ESP_PLATFORM
+
+    // Init touchscreen
+
+    ct.init(21, 22, false, 400000);
+
+    // Check if only 1 I2C (touchscreen) device is found
+    // 0 => No device are connected
+    // 2+ => Faulty touchscreen
+    const uint8_t i2cDevicesCount = hardware::scanI2C(21, 22, false);
+
+    if (i2cDevicesCount == 0) {
+        return ERROR_NO_TOUCHSCREEN;
+    }
+    if (i2cDevicesCount >= 2) {
+        return ERROR_FAULTY_TOUCHSCREEN;
+    }
+
+#endif
+
+    return SUCCESS;
 }
 
 uint16_t graphics::getScreenWidth()

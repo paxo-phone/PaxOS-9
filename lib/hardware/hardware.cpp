@@ -1,16 +1,24 @@
 #include "hardware.hpp"
+
+#include <libsystem.hpp>
+
 #include "gpio.hpp"
 
 #ifdef ESP_PLATFORM
-    #include <Arduino.h>
-    #include "driver/uart.h"
-    #include "esp_system.h"
+
+#include <Arduino.h>
+#include <Wire.h>
+#include "driver/uart.h"
+#include "esp_system.h"
+
 #else
-    #ifdef __linux__
-        #include <SDL2/SDL.h>
-    #else
-        #include <SDL_keyboard.h>
-    #endif
+
+#ifdef __linux__
+#include <SDL2/SDL.h>
+#else
+#include <SDL_keyboard.h>
+#endif
+
 #endif
 
 void hardware::init()
@@ -100,4 +108,44 @@ bool hardware::getHomeButton()
         return (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_ESCAPE] || SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_Q]);
     
     #endif
+}
+
+uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin) {
+#ifdef ESP_PLATFORM
+
+    if (begin) {
+        Wire.begin(sda, scl);
+    }
+
+    uint8_t count = 0;
+
+    // Address 0 is broadcast
+    for (uint8_t i = 1; i < 128; i++) {
+        if (checkI2C(i, sda, scl, false) == SUCCESS) {
+            libsystem::log("Found I2C device at address: " + std::to_string(i));
+            count++;
+        }
+    }
+
+    return count;
+
+#else
+
+    return 0;
+
+#endif
+}
+
+hardware::I2CResponse hardware::checkI2C(const uint8_t address, const int sda, const int scl, const bool begin) {
+    if (begin) {
+        Wire.begin(sda, scl);
+    }
+
+#ifdef ESP_PLATFORM
+    Wire.beginTransmission(address);
+
+    return static_cast<I2CResponse>(Wire.endTransmission());
+#else
+    return SUCCESS;
+#endif
 }

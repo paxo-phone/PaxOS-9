@@ -35,18 +35,18 @@ bool storage::init() {
 
     for (int i = 0; i < sdBeginTryCount; i++) {
         if (SD.begin(4/*, SPI, 8000000*/)) {
-            libsystem::log("Storage SD card initialized.");
+            libsystem::log("SD card initialized.");
             return true;
         }
 
-        libsystem::log("Storage SD card failed, try " + std::to_string(i + 1) + " of " + std::to_string(sdBeginTryCount) + ".");
+        libsystem::log("SD card initialization failed, try " + std::to_string(i + 1) + " of " + std::to_string(sdBeginTryCount) + ".");
     }
 
     // esp_restart();
 
     // Show error message on the screen?
 
-    libsystem::log("Storage SD card failed.");
+    libsystem::log("SD card initialization failed.");
 
     return false;
 

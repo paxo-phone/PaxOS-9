@@ -104,9 +104,20 @@ void setup()
 {
     hardware::init();
     hardware::setScreenPower(true);
-    graphics::init();
+
+    // Init graphics and check for errors
+    if (const graphics::GraphicsInitCode graphicsInitCode = graphics::init(); graphicsInitCode != graphics::SUCCESS) {
+        libsystem::registerBootError("Graphics initialization error.");
+
+        if (graphicsInitCode == graphics::ERROR_NO_TOUCHSCREEN) {
+            libsystem::registerBootError("No touchscreen found.");
+        } else if (graphicsInitCode == graphics::ERROR_FAULTY_TOUCHSCREEN) {
+            libsystem::registerBootError("Faulty touchscreen detected.");
+        }
+    }
     setScreenOrientation(graphics::PORTRAIT);
 
+    // Init storage and check for errors
     if (!storage::init()) {
         libsystem::registerBootError("Storage initialization error.");
         libsystem::registerBootError("Please check the SD Card.");
