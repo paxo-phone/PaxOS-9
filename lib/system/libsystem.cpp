@@ -4,11 +4,14 @@
 
 #include "libsystem.hpp"
 
+#include <esp_debug_helpers.h>
 #include <hardware.hpp>
 #include <iostream>
+#include <sstream>
 
 #include "color.hpp"
 #include "graphics.hpp"
+#include "base64.hpp"
 
 namespace libsystem {
     std::vector<std::string> bootErrors;
@@ -30,8 +33,22 @@ void libsystem::delay(uint64_t ms) {
 
 }
 
+std::string hexToString(const uint32_t hex) {
+    std::stringstream stringStream;
+    stringStream << std::hex << hex;
+    return stringStream.str();
+}
+
 void libsystem::panic(const std::string &message, const bool restart) {
+    setScreenOrientation(graphics::PORTRAIT);
+
+    const uint16_t screenWidth = graphics::getScreenWidth();
+    const uint16_t screenHeight = graphics::getScreenHeight();
+
     LGFX* lcd = graphics::getLGFX();
+#ifdef ESP_PLATFORM
+    FT6236G* touchController = graphics::getTouchController();
+#endif
 
     std::cerr << "System panicked !" << std::endl;
     std::cerr << "- OS Version: " << OS_VERSION << std::endl;
@@ -67,9 +84,29 @@ void libsystem::panic(const std::string &message, const bool restart) {
     lcd->printf("- Check and clean the SD Card.\n");
     lcd->printf("- Re-flash this device.\n\n");
 
+
+#ifdef ESP_PLATFORM
+
     // Backtrace
-    lcd->printf("The cause of this crash will be saved on the device after restarting.\n\n");
-    lcd->printf("Please send them to the Paxo / PaxOS team.\n");
+
+    std::string fullBacktraceData;
+
+    std::cerr << "Backtrace:" << std::endl;
+    lcd->printf("Backtrace:\n");
+
+    esp_backtrace_frame_t frame;
+    esp_backtrace_get_start(&frame.pc, &frame.sp, &frame.next_pc);
+
+    do {
+        const std::string frameString = "0x" + hexToString(esp_cpu_process_stack_pc(frame.pc)) + ":0x" + hexToString(frame.sp);
+
+        fullBacktraceData += frameString + ";";
+
+        std::cerr << "- " << frameString << std::endl;
+        lcd->printf("- %s\n", frameString.c_str());
+    } while (esp_backtrace_get_next_frame(&frame));
+
+#endif
 
     // Show hint
     lcd->printf("\n\nThe device will restart in 5 seconds.");
@@ -82,10 +119,42 @@ void libsystem::panic(const std::string &message, const bool restart) {
         delay(200);
     }
 
+    constexpr uint64_t panicDelay = 5000;
+
+#ifdef ESP_PLATFORM
+    // Show QR code
+    const std::string qrCodeData = "https://paxo.fr/panic/" + base64::to_base64(fullBacktraceData);
+
+    std::cerr << "QR Code Link: " << qrCodeData << std::endl;
+
+    const uint16_t qrCodeWidth = screenWidth / 2;
+
+    bool isQRShown = false;
+
+    // Send hash in QR ?
+    // esp_partition_get_sha256(esp_ota_get_running_partition(), nullptr);
+
+    // Wait 5 seconds and check touch
+    for (int i = panicDelay; i > 0; i--) {
+        TOUCHINFO touchInfo;
+        touchController->getSamples(&touchInfo);
+
+        if (!isQRShown && touchInfo.count > 0) {
+            lcd->qrcode(qrCodeData.c_str(), screenWidth - qrCodeWidth - 30, screenHeight - qrCodeWidth - 30, qrCodeWidth);
+
+            isQRShown = true;
+        }
+
+        delay(1);
+    }
+#else
+
+    delay(panicDelay);
+
+#endif
+
     if (restart) {
-        libsystem::restart(true, 5000, true);
-    } else {
-        delay(5000);
+        libsystem::restart(true, 0, true);
     }
 }
 

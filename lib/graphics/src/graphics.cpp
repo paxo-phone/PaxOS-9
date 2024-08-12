@@ -353,3 +353,10 @@ LGFX* graphics::getLGFX() {
     return lcd.get();
 }
 
+#ifdef ESP_PLATFORM
+
+FT6236G* graphics::getTouchController() {
+    return &ct;
+}
+
+#endif

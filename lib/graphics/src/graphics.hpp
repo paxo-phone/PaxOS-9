@@ -66,6 +66,9 @@ namespace graphics
     void setScreenOrientation(EScreenOrientation screenOrientation);
 
     LGFX* getLGFX();
+#ifdef ESP_PLATFORM
+    FT6236G* getTouchController();
+#endif
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());

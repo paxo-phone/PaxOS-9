@@ -576,54 +576,62 @@ namespace GSM
         }
     }
 
-    int getBatteryLevel()
-    {
-        float voltage = getVoltage();
+    int getBatteryLevel() {
+        // That's not "Level" but "Percent"
 
-        if(voltage == -1)
+        const float voltage = getVoltage();
+
+        if (voltage == -1) {
+            // Probably return something else ?
             return 100;
-        if (voltage > 4.12)
-          return 100;
-        else if (voltage > 4.03)
-            return 95;
-        else if (voltage > 3.99)
-            return 90;
-        else if (voltage > 3.94)
-            return 85;
-        else if (voltage > 3.90)
-            return 80;
-        else if (voltage > 3.86)
-            return 75;
-        else if (voltage > 3.82)
-            return 70;
-        else if (voltage > 3.77)
-            return 65;
-        else if (voltage > 3.74)
-            return 60;
-        else if (voltage > 3.70)
-            return 55;
-        else if (voltage > 3.66)
-            return 50;
-        else if (voltage > 3.64)
-            return 45;
-        else if (voltage > 3.63)
-            return 40;
-        else if (voltage > 3.62)
-            return 35;
-        else if (voltage > 3.59)
-            return 30;
-        else if (voltage > 3.58)
-            return 25;
-        else if (voltage > 3.57)
-            return 20;
-        else if (voltage > 3.55)
-            return 15;
-        else if (voltage > 3.52)
-            return 10;
-        else if (voltage > 3.5)
-            return 5;
-        else
-            return 0;
+        }
+
+        const double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
+
+        return static_cast<int>(batteryLevel * 100);
+
+        // if (voltage > 4.12)
+        //   return 100;
+        // else if (voltage > 4.03)
+        //     return 95;
+        // else if (voltage > 3.99)
+        //     return 90;
+        // else if (voltage > 3.94)
+        //     return 85;
+        // else if (voltage > 3.90)
+        //     return 80;
+        // else if (voltage > 3.86)
+        //     return 75;
+        // else if (voltage > 3.82)
+        //     return 70;
+        // else if (voltage > 3.77)
+        //     return 65;
+        // else if (voltage > 3.74)
+        //     return 60;
+        // else if (voltage > 3.70)
+        //     return 55;
+        // else if (voltage > 3.66)
+        //     return 50;
+        // else if (voltage > 3.64)
+        //     return 45;
+        // else if (voltage > 3.63)
+        //     return 40;
+        // else if (voltage > 3.62)
+        //     return 35;
+        // else if (voltage > 3.59)
+        //     return 30;
+        // else if (voltage > 3.58)
+        //     return 25;
+        // else if (voltage > 3.57)
+        //     return 20;
+        // else if (voltage > 3.55)
+        //     return 15;
+        // else if (voltage > 3.52)
+        //     return 10;
+        // else if (voltage > 3.5)
+        //     return 5;
+        // else
+        //     return 0;
     }
 
     void updateHour()
