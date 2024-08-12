@@ -95,7 +95,7 @@ graphics::GraphicsInitCode graphics::init()
     lcd->setCursor(
         static_cast<int32_t>(0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))),
         static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())));
-    lcd->printf(initText.c_str());
+    lcd->printf("%s", initText.c_str());
 
 #ifdef ESP_PLATFORM
 

@@ -4,10 +4,15 @@
 
 #include "libsystem.hpp"
 
-#include <esp_debug_helpers.h>
 #include <hardware.hpp>
 #include <iostream>
 #include <sstream>
+
+#ifdef ESP_PLATFORM
+
+#include <esp_debug_helpers.h>
+
+#endif
 
 #include "color.hpp"
 #include "graphics.hpp"
@@ -19,8 +24,7 @@ namespace libsystem {
 
 class Restart final : public std::exception {
 public:
-    Restart() {
-    }
+    Restart() = default;
 };
 
 void libsystem::delay(uint64_t ms) {
