@@ -22,7 +22,7 @@
 
 namespace libsystem {
     void delay(uint64_t ms);
-    void panic(const std::string& message);
+    void panic(const std::string& message, bool restart = true);
 
     void log(const std::string& message);
 
@@ -30,7 +30,7 @@ namespace libsystem {
     void displayBootErrors();
     bool hasBootErrors();
 
-    void restart(bool silent = false, uint64_t timeout = 0);
+    void restart(bool silent = false, uint64_t timeout = 0, bool saveBacktrace = false);
 
     namespace exceptions {
         class RuntimeError final : public std::runtime_error {

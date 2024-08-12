@@ -42,27 +42,11 @@ void ringingVibrator(void* data)
 void mainLoop(void* data)
 {
     #ifdef ESP_PLATFORM
-    /*
-    int randomN = random(0, 2);
-    std::cout << "Random: " << randomN << std::endl;
-    if (randomN == 0) {
-        std::cout << "Crashing" << std::endl;
-        int l = -1;
 
-        int p = 0;
-
-        l = l / p;
-
-        std::cout << l << std::endl;
-    }
-    */
-    graphics::setBrightness(0xFF/3);
-    //std::cout << "Backtrace empty: " << backtrace_saver::isBacktraceEmpty() << std::endl;
-    //std::cout << "backtrace " << backtrace_saver::getBacktraceMessage() << std::endl;
-    if (!backtrace_saver::isBacktraceEmpty())
-    {
+    if (!backtrace_saver::isBacktraceEmpty()) {
         backtrace_saver::backtraceMessageGUI();
     }
+
     #endif
     
     while (true)    // Main loop
@@ -79,7 +63,7 @@ void mainLoop(void* data)
                 {
                     if(search == l)
                     {
-                        std::shared_ptr<AppManager::App> app = AppManager::get(i);
+                        const std::shared_ptr<AppManager::App> app = AppManager::get(i);
 
                         // if (!app->auth) {
                         //     app->requestAuth();

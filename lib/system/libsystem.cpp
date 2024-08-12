@@ -14,6 +14,12 @@ namespace libsystem {
     std::vector<std::string> bootErrors;
 }
 
+class Restart final : public std::exception {
+public:
+    Restart() {
+    }
+};
+
 void libsystem::delay(uint64_t ms) {
 
 #ifdef ESP_PLATFORM
@@ -24,7 +30,7 @@ void libsystem::delay(uint64_t ms) {
 
 }
 
-void libsystem::panic(const std::string &message) {
+void libsystem::panic(const std::string &message, const bool restart) {
     LGFX* lcd = graphics::getLGFX();
 
     std::cerr << "System panicked !" << std::endl;
@@ -59,10 +65,14 @@ void libsystem::panic(const std::string &message) {
     lcd->printf("What you should do:\n");
     lcd->printf("- Report this issue with every possible detail (what you done, installed applications...).\n");
     lcd->printf("- Check and clean the SD Card.\n");
-    lcd->printf("- Re-flash this device.\n");
+    lcd->printf("- Re-flash this device.\n\n");
+
+    // Backtrace
+    lcd->printf("The cause of this crash will be saved on the device after restarting.\n\n");
+    lcd->printf("Please send them to the Paxo / PaxOS team.\n");
 
     // Show hint
-    lcd->printf("\n\nThe device will restart in 15 seconds.");
+    lcd->printf("\n\nThe device will restart in 5 seconds.");
 
     // Vibrate to alert user
     for (uint8_t i = 0; i < 3; i++) {
@@ -72,9 +82,11 @@ void libsystem::panic(const std::string &message) {
         delay(200);
     }
 
-    // Restart the system
-    // TODO: Check if stacktrace is available with this
-    restart(true, 15000);
+    if (restart) {
+        libsystem::restart(true, 5000, true);
+    } else {
+        delay(5000);
+    }
 }
 
 void libsystem::log(const std::string &message) {
@@ -115,28 +127,32 @@ void libsystem::displayBootErrors() {
     }
 }
 
-void libsystem::restart(bool silent, const uint64_t timeout) {
+void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBacktrace) {
     if (timeout > 0) {
         delay(timeout);
     }
 
 #ifdef ESP_PLATFORM
+    if (saveBacktrace) {
+        throw Restart();
+    }
+
     esp_restart();
 #endif
 }
 
 libsystem::exceptions::RuntimeError::RuntimeError(const std::string &message): runtime_error(message) {
-    panic(message);
+    panic(message, false);
 }
 
 libsystem::exceptions::RuntimeError::RuntimeError(const char* message): runtime_error(message) {
-    panic(message);
+    panic(message, false);
 }
 
 libsystem::exceptions::OutOfRange::OutOfRange(const std::string &message): out_of_range(message) {
-    panic(message);
+    panic(message, false);
 }
 
 libsystem::exceptions::OutOfRange::OutOfRange(const char *message): out_of_range(message) {
-    panic(message);
+    panic(message, false);
 }
