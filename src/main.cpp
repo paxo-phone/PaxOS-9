@@ -42,6 +42,7 @@ void ringingVibrator(void* data)
 void mainLoop(void* data)
 {
     #ifdef ESP_PLATFORM
+    /*
     int randomN = random(0, 2);
     std::cout << "Random: " << randomN << std::endl;
     if (randomN == 0) {
@@ -54,10 +55,10 @@ void mainLoop(void* data)
 
         std::cout << l << std::endl;
     }
-
+    */
     graphics::setBrightness(0xFF/3);
-    std::cout << "Backtrace empty: " << backtrace_saver::isBacktraceEmpty() << std::endl;
-    std::cout << "backtrace " << backtrace_saver::getBacktraceMessage() << std::endl;
+    //std::cout << "Backtrace empty: " << backtrace_saver::isBacktraceEmpty() << std::endl;
+    //std::cout << "backtrace " << backtrace_saver::getBacktraceMessage() << std::endl;
     if (!backtrace_saver::isBacktraceEmpty())
     {
         backtrace_saver::backtraceMessageGUI();
