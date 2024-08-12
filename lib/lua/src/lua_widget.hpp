@@ -23,6 +23,9 @@ class LuaWidget
     int getWidth(){return this->widget->getWidth();}
     int getHeight(){return this->widget->getHeight();}
     void setBackgroundColor(color_t color){this->widget->setBackgroundColor(color);}
+    void setBorderColor(color_t color){this->widget->setBorderColor(color);}
+    void setBorderSize(uint16_t size){this->widget->setBorderSize(size);}
+    void setRadius(uint16_t r){this->widget->setRadius(r);}    
     void enable(){this->widget->enable();}
     void disable(){this->widget->disable();}
     bool isTouched(){return this->widget->isFocused();}

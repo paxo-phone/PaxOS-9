@@ -7,3 +7,4 @@
 ./storage/apps/keyboard_test/app.lua
 ./storage/apps/horloge/app.lua
 ./storage/apps/alarme/app.lua
+./storage/apps/calculatrice/app.lua
