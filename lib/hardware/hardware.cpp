@@ -137,11 +137,10 @@ uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin) {
 }
 
 hardware::I2CResponse hardware::checkI2C(const uint8_t address, const int sda, const int scl, const bool begin) {
+#ifdef ESP_PLATFORM
     if (begin) {
         Wire.begin(sda, scl);
     }
-
-#ifdef ESP_PLATFORM
     Wire.beginTransmission(address);
 
     return static_cast<I2CResponse>(Wire.endTransmission());
