@@ -68,6 +68,8 @@ namespace gui
 
         void enable();
         void disable();
+        bool getIsEnabled() const;
+
         void free();    // free the buffers in the ram to allow more windows to work at the same time
 
         /**
