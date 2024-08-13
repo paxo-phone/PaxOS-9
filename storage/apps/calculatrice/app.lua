@@ -143,38 +143,46 @@ end
 function clickKey(key)
     local result = lblResultat:getText()
 
-    -- si on a plus de 14 caractères, on arrete la saisie
+    -- Si c'est un nouveau nombre, on l'enregistre dans num1
     if (nouveauNombre) then
         num1 = tonumber(result)
-        lblResultat:setText(key)
         nouveauNombre = false
         if (num2 ~= nil) then
-            displayOperation(false)
+            num2 = nil
         end
-
-        return
-    elseif (string.len(result) > 13) then
-        return    
+        lblResultat:setText(key)
+    else
+            -- si on a plus de 14 caractères, on arrete la saisie
+        if (string.len(result) > 13) then
+            return    
+        else
+            -- sinon on concatene le nombre
+            lblResultat:setText(lblResultat:getText()..key)
+        end
     end
 
-
-    if (num2 ~= nil) then
-        num2 = nil
-    end
-
+    -- gestion du signe négatif devant le 1er chiffre 0
     if (result == "0") then
         lblResultat:setText(key)
+        
     elseif (result == "-0") then
         lblResultat:setText("-"..key)
-    else
-        lblResultat:setText(lblResultat:getText()..key)
     end
+
+      --  lblResultat:setText(key)
+    
+    if (num2 ~= nil) then
+        displayOperation(false)
+    end
+
+
 
 end --clickKey
 
 -- Efface l'écran
 function erase()
     lblResultat:setText("0")
+    unslectButtons()
     displayOperation(false)
     num1 = 0
     num2 = nil
@@ -265,7 +273,7 @@ function equal()
     if (num2 == nil) then
         num2 = tonumber(lblResultat:getText())
     end
-        local result 
+        local result
         if (operation == "+") then
             result= num1 + num2
         elseif (operation == "-") then
@@ -274,6 +282,8 @@ function equal()
             result= num1 / num2
         elseif (operation == "x") then
             result= num1 * num2
+        else
+            return
         end
         lblResultat:setText(tostring(result))
         
