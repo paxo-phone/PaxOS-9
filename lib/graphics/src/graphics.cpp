@@ -24,9 +24,12 @@ FT6236G ct;
 
 #endif
 
+int16_t graphics::brightness = 0xFF/3;
+
 namespace
 {
     bool running;
+
 
     std::shared_ptr<LGFX> lcd;
 
