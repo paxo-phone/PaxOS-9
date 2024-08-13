@@ -439,6 +439,11 @@ void gui::ElementBase::disable()
     globalGraphicalUpdate();
 }
 
+bool gui::ElementBase::getIsEnabled() const
+{
+    return m_isEnabled;
+}
+
 gui::ElementBase *gui::ElementBase::getMaster()
 {
     // We shoud probably remove this function.

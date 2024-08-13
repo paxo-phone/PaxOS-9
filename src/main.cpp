@@ -20,6 +20,9 @@
 #include "app.hpp"
 #include "contacts.hpp"
 #include <iostream>
+#include "GuiManager.hpp"
+#include "unistd.h"
+
 
 using namespace gui::elements;
 
@@ -45,11 +48,14 @@ void mainLoop(void* data)
     graphics::setBrightness(0xFF/3);
     #endif
     
-    while (true)    // Main loop
-    {
+    GuiManager &guiManager = GuiManager::getInstance();
+
+    // Main loop
+    while (true) {
         int l = -1;
 
-        if(!AppManager::isAnyVisibleApp() && (l = launcher()) != -1)    // if there is not app running, run launcher, and it an app is choosen, launch it
+        // if there is no app running, run launcher, and if an app is choosen, launch it
+        if(!AppManager::isAnyVisibleApp() && (l = launcher()) != -1)    
         {
             int search = 0;
 
@@ -59,7 +65,17 @@ void mainLoop(void* data)
                 {
                     if(search == l)
                     {
-                        AppManager::get(i).run(false);
+                        try{
+                            AppManager::get(i).run(false);
+                        }
+                        catch(std::runtime_error &e) { // Si Erreur à l'execution de l'app, on catche et affiche un msg d'ereur
+                            std::cerr << "Erreur: " << e.what() << std::endl;
+                            // Affichage du msg d'erreur
+                            guiManager.showErrorMessage(e.what());
+                            // on kill l'application ?!?
+                            //AppManager::appList[i].kill();
+                        }
+
                         while (AppManager::isAnyVisibleApp())
                             AppManager::loop();
                         break;
@@ -93,6 +109,9 @@ void mainLoop(void* data)
 
 void setup()
 {
+    /**
+     * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
+     */
     hardware::init();
     hardware::setScreenPower(true);
     graphics::init();
@@ -106,15 +125,23 @@ void setup()
     );
     #endif // ESP_PLATFORM
 
+    // Positionnement de l'écran en mode Portrait
     graphics::setScreenOrientation(graphics::PORTRAIT);
 
+    // Init de la gestiuon des Threads
     ThreadManager::init();
 
+    /**
+     * Gestion des eventHandlers pour les evenements
+     */
+
+    // gestion des appels entrants
     GSM::ExternalEvents::onIncommingCall = []()
     {
         eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall").run(false);}), 0);
     };
 
+    // Gestion de la réception d'un message
     GSM::ExternalEvents::onNewMessage = []()
     {
         #ifdef ESP_PLATFORM
@@ -133,6 +160,7 @@ void setup()
     ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
     #endif
 
+    // gestion de la détection du toucher de l'écran
     eventHandlerBack.setInterval(
         &graphics::touchUpdate,
         10
@@ -141,16 +169,21 @@ void setup()
     hardware::setVibrator(false);
     GSM::endCall();
 
+    // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
     Contacts::load();
 
     std::vector<Contacts::contact> cc = Contacts::listContacts();
     
-    for(auto c : cc)
+/*    for(auto c : cc)
     {
         //std::cout << c.name << " " << c.phone << std::endl;
     }
+*/
 
+    /**
+     * Gestion des applications
+     */
     app::init();
     AppManager::init();
 

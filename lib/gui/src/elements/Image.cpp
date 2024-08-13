@@ -56,7 +56,7 @@ namespace gui::ImagesList
             if (img->surface.use_count() == 1)
             {
                 img = images.erase(img);
-                std::cout << "[Image] image deleted" << std::endl;
+                //std::cout << "[Image] image deleted" << std::endl;
             }
             else
             {
