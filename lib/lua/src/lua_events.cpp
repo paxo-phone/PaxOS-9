@@ -142,7 +142,16 @@ int LuaTimeTimeout::getId()
 void LuaTimeTimeout::call()
 {
     if(func)
-        func();
+    {
+        sol::protected_function_result result = func();
+
+        // Check for errors
+        if (!result.valid()) {
+            sol::error err = result;
+            std::cerr << "Lua Error: " << err.what() << std::endl;
+        }
+    }
+
     done = true;
 }
 

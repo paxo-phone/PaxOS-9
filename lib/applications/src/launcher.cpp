@@ -121,9 +121,24 @@ int launcher()
         text->setFontSize(16);
         box->addChild(text);
 
-        //win.addChild(box);
+        storage::Path notifs = (AppManager::appList[i].path / ".." / "unread.txt");
+        if(notifs.exists())
+        {
+            storage::FileStream file(notifs.str(), storage::READ);
+            
+            if(file.size() > 0)
+            {
+                Box* notifBox = new Box(66, 0, 14, 14);
+                notifBox->setRadius(7);
+                notifBox->setBackgroundColor(COLOR_WARNING);
+                box->addChild(notifBox);
+            }
+
+            file.close();
+        }
+
         winListApps->addChild(box);
-        
+
         apps.push_back(box);
         
         placementIndex++;
