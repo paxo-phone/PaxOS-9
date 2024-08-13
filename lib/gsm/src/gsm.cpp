@@ -586,7 +586,10 @@ namespace GSM
             return 100;
         }
 
-        const double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
+        // Thanks NumWorks for the regression app
+        double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
+
+        batteryLevel = std::clamp(batteryLevel, 0.0, 1.0);
 
         return static_cast<int>(batteryLevel * 100);
 
