@@ -41,6 +41,7 @@ namespace graphics
 #define COLOR_PINK          graphics::packRGB565(255,192,203)
 
 #define COLOR_LIGHT_GREEN   graphics::packRGB565(0, 255, 0)
+#define COLOR_LIGHT_ORANGE  graphics::packRGB565(255, 213, 128)
 #define COLOR_LIGHT_BLUE    graphics::packRGB565(173,216,230)
 #define COLOR_LIGHT_GREY    graphics::packRGB565(211,211,211)
 
