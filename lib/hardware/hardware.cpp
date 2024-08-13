@@ -26,10 +26,13 @@ void hardware::init()
     #ifdef ESP_PLATFORM
 
     psramInit();
+
     pinMode(PIN_SCREEN_POWER, OUTPUT);
     pinMode(PIN_VIBRATOR, OUTPUT);
-    pinMode(12, OUTPUT);
+    pinMode(12, OUTPUT); // Pin name ?
     pinMode(PIN_HOME_BUTTON, INPUT_PULLUP);
+    pinMode(PIN_BATTERY_CHARGING_STATUS, INPUT);
+
     setVibrator(false);
 
     /*uart_config_t uart_config = {
@@ -146,5 +149,16 @@ hardware::I2CResponse hardware::checkI2C(const uint8_t address, const int sda, c
     return static_cast<I2CResponse>(Wire.endTransmission());
 #else
     return SUCCESS;
+#endif
+}
+
+bool hardware::isCharging() {
+    // Found between 2700 < 3000
+    // But tested with good chargers
+
+#ifdef ESP_PLATFORM
+    return analogRead(PIN_BATTERY_CHARGING_STATUS) > 100;
+#else
+    return false;
 #endif
 }
