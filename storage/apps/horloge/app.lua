@@ -61,7 +61,7 @@ function init()
     title:setFontSize(24)
 
     --Affichage du label pour l'heure
-    heure_label = gui:label(win, 0, 50, 320, 70)
+    heure_label = gui:label(win, 0, 50, 320, 30)
     heure_label:setFontSize(20)
     heure_label:setHorizontalAlignment(CENTER_ALIGNMENT)
 
@@ -97,9 +97,9 @@ function init()
     -- -------------
     
     -- affichage des boutons de gestion du chrono et du minuteur
-    btnStartStop = gui:button(win, 40, 360, 80, 30)
-    btnStartStop:setText("Start")
-    btnStartStop:onClick(
+    btnStartPause = gui:button(win, 40, 360, 80, 30)
+    btnStartPause:setText("Start")
+    btnStartPause:onClick(
         function()
             runChronoMinuteur()
         end
@@ -151,7 +151,7 @@ function setEcranMode()
 
     if (Mode == "Horloge") then
         -- masque les boutons du chrono
-        btnStartStop:disable()
+        btnStartPause:disable()
         btnReset:disable()
 
         -- masque le minuteur s'il est définit
@@ -161,17 +161,17 @@ function setEcranMode()
         clock:enable()
 
         if (ChronoEnCours) then
-            stopChrono()
+            pauseChrono()
         end
         if (MinuteurEnCours) then
-            stopMinuteur()
+            pauseMinuteur()
         end
 
     end
     if (Mode == "Chrono") then
 
         -- Affiche les boutons start / reset
-        btnStartStop:enable()
+        btnStartPause:enable()
         btnReset:enable()
     
         -- masque le minuteur 
@@ -180,10 +180,10 @@ function setEcranMode()
         -- affiche l'horloge
         clock:enable()
         if (MinuteurEnCours) then
-            stopMinuteur()
+            pauseMinuteur()
         end
         if (HorlogeEnCours) then
-            stopHorloge()
+            pauseHorloge()
         end
 
     end
@@ -191,17 +191,17 @@ function setEcranMode()
     if (Mode == "Minuteur") then
         -- Arrete les timer Chrono et Horloge
         if (ChronoEnCours) then
-            stopChrono()
+            pauseChrono()
         end
         if (HorlogeEnCours) then
-            stopHorloge()
+            pauseHorloge()
         end
 
         -- masque l'horloge
         clock:disable()
         
         -- Affiche les boutons start / reset
-        btnStartStop:enable()
+        btnStartPause:enable()
         btnReset:enable()
 
         minuteur:enable()
@@ -437,7 +437,7 @@ function initChrono()
     title:setText("Chronomètre")
 
     -- Arrete le tmer de l'horloge
-    --stopHorloge()
+    --pauseHorloge()
 
     Mode = "Chrono"
     setEcranMode()
@@ -451,7 +451,7 @@ end --initChrono
 
 
 -- Arrete le tmer de l'horloge
-function stopHorloge()
+function pauseHorloge()
     time:removeTimeout(idTimerHorloge)
     HorlogeEnCours = false
 end
@@ -493,14 +493,14 @@ function resetChrono()
 end --resetChrono
 
 
--- Stop le chrono
-function stopChrono()
+-- Pause le chrono
+function pauseChrono()
     time:removeTimeout(idTimerChrono)
     ChronoEnCours = false
 
     --Si le chrono est en route, modifie le texte et le callback
-    btnStartStop:setText("Start")
-    btnStartStop:onClick(
+    btnStartPause:setText("Start")
+    btnStartPause:onClick(
         function()
             runChronoMinuteur()
         end
@@ -623,6 +623,33 @@ function initMinuteur()
 
 end -- initMinuteur
 
+function resetSelectionMinuteur()
+    if (lbOldlHeure) then
+        lbOldlHeure:setBackgroundColor(COLOR_WHITE)
+    end
+    if (lbOldMinute) then
+        lbOldMinute:setBackgroundColor(COLOR_WHITE)
+    end
+    if (lbOldSeconde) then
+        lbOldSeconde:setBackgroundColor(COLOR_WHITE)
+    end
+
+    vListHeure:setIndex(0)
+    vListMinute:setIndex(0)
+    vListSeconde:setIndex(0)
+
+    vListHeure:getChildAtIndex(0):setBackgroundColor(COLOR_LIGHT_GREY)
+    vListMinute:getChildAtIndex(0):setBackgroundColor(COLOR_LIGHT_GREY)
+    vListSeconde:getChildAtIndex(0):setBackgroundColor(COLOR_LIGHT_GREY)
+
+    minuteurHeure = 0
+    minuteurMinute = 0
+    minuteurSeconde = 0
+    local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
+    heure_label:setText(strTimer) 
+    tMinuteur = minuteurHeure * 3600 + minuteurMinute * 60 + minuteurSeconde
+end
+
 function runMinuteur()
 
     -- si le timer arrive à 0, on fait sonner l'alarme    
@@ -661,11 +688,11 @@ end
 
 -- appel lorsque le minuteur arrive à zéro
 function ringMinuteur()
-    --stopMinuteur()
+    --pauseMinuteur()
     gui:showInfoMessage("Fin minuteur !")
     resetMinuteur()
-    btnStartStop:setText("Start")
-    btnStartStop:onClick(
+    btnStartPause:setText("Start")
+    btnStartPause:onClick(
         function() 
             --decompteMinuteur:enable()
             --minuteur:disable()
@@ -684,12 +711,14 @@ function resetMinuteur()
     --decompteMinuteur:disable()
     tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 +minuteurSeconde
 
-    if (MinuteurEnCours) then
-        stopChronoMinuteur()
+    if (heure_label:isEnabled()) then -- on ne reset la sélection que si la sélection est active
+        resetSelectionMinuteur()
     end
+
     minuteur:enable()
     decompteMinuteur:disable()
     heure_label:enable()
+    pauseChronoMinuteur()
 end
 
 -- Arrete le timer du minuteur
@@ -700,17 +729,14 @@ function stopMinuteur()
     end
 end
 
-
-
-
 -- lance les fonctions run pour le chrono ou le minuteur
 function runChronoMinuteur()
 
-    -- Si le chrono / moniteur erst en route, modifie le texte du bouton et prépare le stop
-    btnStartStop:setText("Stop")
-    btnStartStop:onClick(
+    -- Si le chrono / moniteur est en route, modifie le texte du bouton et prépare le stop
+    btnStartPause:setText("Pause")
+    btnStartPause:onClick(
         function()
-            stopChronoMinuteur()
+            pauseChronoMinuteur()
         end
     )
 
@@ -740,13 +766,13 @@ function resetChronoMinuteur()
 end
 
 
-function stopChronoMinuteur()
+function pauseChronoMinuteur()
     --Si le chrono est en route, modifie le texte et le callback
-    btnStartStop:setText("Start")
-    btnStartStop:onClick(function() runChronoMinuteur() end)
+    btnStartPause:setText("Start")
+    btnStartPause:onClick(function() runChronoMinuteur() end)
 
     if (Mode == "Chrono") then
-        stopChrono()
+        pauseChrono()
     elseif (Mode == "Minuteur") then
         stopMinuteur()
     end

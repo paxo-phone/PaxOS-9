@@ -23,10 +23,9 @@ LuaGui::~LuaGui()
             hasParent.push_back(false);
     }
 
-    for (int i = 0; i < widgets.size(); i++)
+    while (widgets.size())
     {
-        if(!hasParent[i])
-            delete widgets[i];
+        delete widgets[0];
     }
 }
 
@@ -158,22 +157,23 @@ void LuaGui::update()
 
 std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText)
 {
-    gui::elements::Window win;
-
     graphics::setScreenOrientation(graphics::LANDSCAPE);
 
-    auto key = Keyboard(defaultText);
-    key.setPlaceholder(placeholder);
+    auto key = new Keyboard(defaultText);
+    key->setPlaceholder(placeholder);
 
-    while (!hardware::getHomeButton() && !key.quitting())
+    while (!hardware::getHomeButton() && !key->quitting())
     {
         eventHandlerApp.update();
-        key.updateAll();
+        key->updateAll();
     }
 
     graphics::setScreenOrientation(graphics::PORTRAIT);
 
-    return key.getText();
+    std::string o = key->getText();
+
+    delete key;
+    return o;
 }
 
 void LuaGui::setMainWindow(LuaWindow* window) {

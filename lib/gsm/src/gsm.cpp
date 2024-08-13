@@ -5,6 +5,7 @@
 #include <filestream.hpp>
 #include <iostream>
 #include <ctime>
+#include <codecvt>
 #include <delay.hpp>
 #include <codecvt>
 #include "../../tasks/src/threads.hpp"
@@ -303,8 +304,14 @@ namespace GSM
         return std::string(buf);
     }
 
-    bool is_hex_string(const std::string &str)
+    std::string getCurrentTimestampNoSpaces()
     {
+        char buf[20];
+        std::sprintf(buf, "%04d-%02d-%02d_%02d:%02d:%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
+        return std::string(buf);
+    }
+
+    bool is_hex_string(const std::string& str) {
         return str.length() % 4 == 0 && str.find_first_not_of("0123456789ABCDEFabcdef") == std::string::npos;
     }
 
@@ -405,6 +412,19 @@ namespace GSM
             Conversations::saveConversation(convPath, conv);
 
             std::cout << "New message: " << number << " - " << message << std::endl;
+
+            storage::FileStream file(std::string(MESSAGES_NOTIF_LOCATION), storage::Mode::READ);
+            std::string content = file.read();
+            file.close();
+
+            std::cerr << content << std::endl;
+
+            if(content.find(number) == std::string::npos)
+            {
+                storage::FileStream file2(storage::Path(std::string(MESSAGES_NOTIF_LOCATION)).str(), storage::Mode::APPEND);
+                file2.write(number + "\n");
+                file2.close();
+            }
 
             i = j + 1;
         }
@@ -722,6 +742,7 @@ namespace GSM
 
         updateHour();
         getNetworkQuality();
+        onMessage();
 
         // Mise à jour de l'heure toutes les 1000 ms
         eventHandlerBack.setInterval(&GSM::getHour, 5000);

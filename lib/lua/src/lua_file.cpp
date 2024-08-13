@@ -258,8 +258,10 @@ void LuaFile::load()
             "setBorderSize", &LuaWidget::setBorderSize,
             "enable", &LuaWidget::enable,
             "disable", &LuaWidget::disable,
+            "isEnabled", &LuaWidget::isEnabled,
             "isTouched", &LuaWidget::isTouched,
-            "onClick", &LuaWidget::onClick
+            "onClick", &LuaWidget::onClick,
+            "getChildAtIndex", &LuaWidget::getChildAtIndex
         );
 
         lua.new_usertype<LuaWindow>("LuaWindow",
@@ -506,7 +508,7 @@ void LuaFile::run(std::vector<std::string> arg)
 
     lua.script(code);   code.clear();  // load and delete the unnecessary code
 
-    lua["run"](arg);
+    SAFE_CALL(lua["run"], lua, arg);
 }
 
 void LuaFile::runBackground(std::vector<std::string> arg)
