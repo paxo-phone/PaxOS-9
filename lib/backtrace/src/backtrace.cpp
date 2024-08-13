@@ -21,7 +21,7 @@ namespace backtrace_saver {
 
     bool isBacktraceEmpty()
     {
-        return currentData.backtrace[0] == 0;
+        return currentData.backtrace[0].first == 0;
     }
 
     std::string getBacktraceMessage() {
@@ -35,9 +35,9 @@ namespace backtrace_saver {
         #if CONFIG_RESTART_DEBUG_STACK_DEPTH > 0
             backtraceMessageStream << "backtrace: ";
             for (int i = 0; i < CONFIG_RESTART_DEBUG_STACK_DEPTH; i++) {
-                if (currentData.backtrace[i] == 0)
+                if (currentData.backtrace[i].first == 0)
                     break;
-                backtraceMessageStream << "0x" << std::hex << currentData.backtrace[i] << " ";
+                backtraceMessageStream << "0x" << std::hex << currentData.backtrace[i].first << ":0x" << std::hex << currentData.backtrace[i].second << " ";
             }
             backtraceMessageStream << "\n";
         #endif // CONFIG_RESTART_DEBUG_STACK_DEPTH > 0
@@ -45,6 +45,19 @@ namespace backtrace_saver {
         backtraceMessageStream << "\n";
 
         return backtraceMessageStream.str(); 
+    }
+
+    
+    re_restart_debug_t getCurrentBacktrace()
+    {
+        re_restart_debug_t oldData = _debug_info;
+        debugUpdate();
+
+        re_restart_debug_t returnData = _debug_info;
+
+        _debug_info = oldData;
+
+        return returnData;
     }
 
     bool saveBacktrace()

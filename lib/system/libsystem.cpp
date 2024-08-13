@@ -10,6 +10,7 @@
 
 #ifdef ESP_PLATFORM
 
+#include <backtrace.hpp>
 #include <esp_debug_helpers.h>
 
 #endif
@@ -93,6 +94,7 @@ void libsystem::panic(const std::string &message, const bool restart) {
 
     // Backtrace
 
+    //backtrace_saver::re_restart_debug_t backtraceData = backtrace_saver::getCurrentBacktrace();
     std::string fullBacktraceData;
 
     std::cerr << "Backtrace:" << std::endl;
