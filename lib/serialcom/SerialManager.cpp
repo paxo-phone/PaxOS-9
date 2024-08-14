@@ -1,9 +1,9 @@
 #include "SerialManager.hpp"
 #include "CommandsManager.hpp"
+#include <delay.hpp>
+#include <iostream>
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
-#else
-#include <iostream>
 #endif
 
 namespace serialcom {
@@ -13,6 +13,8 @@ namespace serialcom {
         #ifdef ESP_PLATFORM
         Serial.begin(115200);
         #endif
+
+        this->buffer.installOnStream(&std::cout);
     }
 
     SerialManager::~SerialManager() {
@@ -20,39 +22,9 @@ namespace serialcom {
         Serial.end();
         #endif
     }
-
-    void SerialManager::log(std::string message) {
-        // copy the string into the outputbuffer from the outputesize position and then increment the outputsize
-        size_t messageSize = message.size();
-
-        if (this->outputSize + messageSize + 1 > MAX_OUTPUT_SIZE) {
-            if (messageSize + 1 > MAX_OUTPUT_SIZE) { // truncate message
-                message = message.substr(messageSize - MAX_OUTPUT_SIZE - 1, MAX_OUTPUT_SIZE - 1);
-                messageSize = MAX_OUTPUT_SIZE - 1;
-            } else {
-                this->outputSize = MAX_OUTPUT_SIZE - messageSize - 1; // truncate the output buffer
-            }
-        }
-
-        for (size_t i = 0; i < messageSize; i++) {
-            this->outputBuffer[outputSize - 1 + i] = message[i];
-        }
-        
-        this->outputBuffer[outputSize + messageSize] = '\n';
-
-        this->outputSize += messageSize + 1;
-    }
-
-    void SerialManager::flushOutputBuffer() {
-        if (this->outputSize == 0) {
-            return;
-        }
-        this->println(std::string(this->outputBuffer));
-        this->outputSize = 0;
-    }
-
-    void SerialManager::commandLog(const std::string& message) const { // should only be called in the serialLoop thread
-        this->println(message);
+    
+    void SerialManager::commandLog(const std::string& message) { // should only be called in the serialLoop thread
+        this->buffer.directLog(message);
     }
 
     #ifdef ESP_PLATFORM
@@ -61,15 +33,19 @@ namespace serialcom {
     void SerialManager::serialLoop() {
     #endif
         SerialManager *serialManager = SerialManager::sharedInstance.get();
-        serialManager->println("Serial loop started");
-        serialManager->getInputCommand();
-        if (serialManager->newData) {
-            Command newCommand = Command(serialManager->current_input);
-            CommandsManager::defaultInstance->processCommand(newCommand);
-            serialManager->newData = false;
-        }
+        std::cout << "Serial loop started" << std::endl;
+        while (true) {
+            serialManager->getInputCommand();
+            if (serialManager->newData) {
+                Command newCommand = Command(serialManager->current_input);
+                CommandsManager::defaultInstance->processCommand(newCommand);
+                serialManager->newData = false;
+            }
 
-        serialManager->flushOutputBuffer();
+            serialManager->buffer.flushBuffer();
+
+            PaxOS_Delay(10);
+        }
     }
 
     void SerialManager::getInputCommand() {
@@ -97,14 +73,6 @@ namespace serialcom {
                 newData = true;
             }
         }
-    }
-
-    void SerialManager::println(const std::string& log) const {
-        #ifdef ESP_PLATFORM
-        Serial.println(log.c_str());
-        #else
-        std::cout << log << std::endl;
-        #endif
     }
 
     bool SerialManager::isNewInputAvailable() const {

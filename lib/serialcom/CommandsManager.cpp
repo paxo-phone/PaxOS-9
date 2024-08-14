@@ -32,7 +32,7 @@ namespace serialcom {
                 if (this->shellMode) {
                     SerialManager::sharedInstance->commandLog("Unknown command type");
                 } else {
-                    std::cout << NON_SHELL_MODE_ERROR_CODE << std::flush;
+                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                 }
         }
     }

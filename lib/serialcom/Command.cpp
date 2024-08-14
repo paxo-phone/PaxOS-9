@@ -4,6 +4,8 @@
 
 namespace serialcom {
     Command::Command(char (&input)[INPUT_MAX_SIZE]) {
+        bool shellMode = CommandsManager::defaultInstance->shellMode;
+
         // detect the command type knowing that the maximum size that the command type can have is MAX_COMMMAND_TYPE_SIZE
         char command_type[MAX_COMMMAND_TYPE_SIZE];
 
@@ -26,7 +28,11 @@ namespace serialcom {
                 continue;
             }
             if (MAX_COMMMAND_TYPE_SIZE < val.size()) {
-                SerialManager::sharedInstance->log("WARNING: COMMAND TYPE " + val + " HAS A GREATER SIZE THAN THE MAXIMUM COMMAND TYPE SIZE");
+                if (shellMode) {
+                    SerialManager::sharedInstance->commandLog("WARNING: COMMAND TYPE " + val + " HAS A GREATER SIZE THAN THE MAXIMUM COMMAND TYPE SIZE");
+                } else {
+                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                }
                 continue;
             }
 
@@ -46,7 +52,11 @@ namespace serialcom {
         }
 
         if (type == CommandType::unknown) {
-            SerialManager::sharedInstance->log("ERROR: UNKONWN COMMAND TYPE");
+            if (shellMode) {
+                SerialManager::sharedInstance->commandLog("ERROR: UNKONWN COMMAND TYPE");
+            } else {
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+            }
             return;
         }
 
@@ -138,7 +148,11 @@ namespace serialcom {
                             this->arguments[argument_index][argument_char_index] = '"';
                             argument_char_index++;
                         } else {
-                            SerialManager::sharedInstance->log("ERROR: UNEXPECTED QUOTE CHARACTER AT POSITION " + std::to_string(i));
+                            if (shellMode) {
+                                SerialManager::sharedInstance->commandLog("ERROR: UNEXPECTED QUOTE CHARACTER AT POSITION " + std::to_string(i));
+                            } else {
+                                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                            }
                             this->type = CommandType::unknown;
                             for (size_t j = 0; j < MAX_COMMAND_ARGUMENTS_COUNT; j++)
                             {

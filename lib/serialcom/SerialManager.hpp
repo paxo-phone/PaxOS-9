@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
+#include <ArrayedStreamBuffer.hpp>
 #include <Command.hpp>
 #include <shared_mutex>
+#include <ostream>
 #include "config.h"
 
 namespace serialcom {
@@ -14,9 +16,7 @@ namespace serialcom {
 
         static const std::shared_ptr<SerialManager> sharedInstance;
 
-        void log(std::string message);
-
-        void commandLog(const std::string& message) const;
+        void commandLog(const std::string& message); // log by a command result only
 
         #ifdef ESP_PLATFORM
         static void serialLoop(void *);
@@ -25,16 +25,12 @@ namespace serialcom {
         #endif
 
         private:
-
-        char outputBuffer[MAX_OUTPUT_SIZE] = {'\0'};
-        uint32_t outputSize = 0;
+        ArrayedStreamBuffer<MAX_OUTPUT_SIZE> buffer;
 
         bool newData = false;
         bool isOutputingCommand = false;
         char current_input[INPUT_MAX_SIZE];   // an array to store the received data
-        void flushOutputBuffer();
         void getInputCommand();
-        void println(const std::string& log) const;
         bool isNewInputAvailable() const;
     };
 }
