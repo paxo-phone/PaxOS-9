@@ -144,7 +144,7 @@ int launcher()
         placementIndex++;
     }
 
-    Label* networkLabel = new Label(120, 360, 20, 20);
+    Label* networkLabel = new Label(20, 40, 20, 20);
     networkLabel->setBackgroundColor(COLOR_DARK);
     networkLabel->setText("Network");
     networkLabel->setTextColor(COLOR_WHITE);
@@ -171,7 +171,7 @@ int launcher()
         {
             std::cout << "connection status " << network::NetworkManager::sharedInstance->isConnected() << std::endl;
 
-            #if !defined(ESP32)
+            #ifndef ESP_PLATFORM
             network::URLSessionDataTask* getTask = network::URLSession::defaultInstance.get()->dataTaskWithURL(network::URL("https://www.youtube.com/s/player/652ba3a2/player_ias.vflset/fr_FR/base.js"), [](const std::string& data)
             {
                 {

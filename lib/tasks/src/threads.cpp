@@ -8,7 +8,7 @@
     EventHandler eventHandlerApp;
 #endif
 
-#ifdef ESP32
+#ifdef ESP_PLATFORM
     #include <Arduino.h>
     #include "soc/rtc_wdt.h"
     #include "esp_heap_caps.h"

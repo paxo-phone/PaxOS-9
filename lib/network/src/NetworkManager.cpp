@@ -1,6 +1,6 @@
 #include "NetworkManager.hpp"
 
-#ifdef ESP32
+#ifdef ESP_PLATFORM
     #include <WiFi.h>
 #endif
 #include <iostream>
@@ -12,7 +12,7 @@ namespace network
 
     NetworkManager::NetworkManager()
     {
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             this->turnON();
         #endif
         curl_global_init(CURL_GLOBAL_ALL);
@@ -20,46 +20,46 @@ namespace network
 
     const void NetworkManager::connect(const std::string& ssid)
     {
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             WiFi.begin(ssid.c_str());
         #endif
     }
 
     const void NetworkManager::connect(const std::string& ssid, const std::string& password)
     {
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             WiFi.begin(ssid.c_str(), password.c_str());
         #endif
     }
 
     const void NetworkManager::disconnect(void)
     {
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             WiFi.disconnect();
         #endif
     }
 
     const void NetworkManager::turnOFF(void)
     {
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             WiFi.mode(WIFI_OFF);
         #endif
     }
 
     const void NetworkManager::turnON(void)
     {
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             WiFi.mode(WIFI_STA);
         #endif
     }
 
     const bool NetworkManager::isConnected()
     {
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             if (WiFi.status() != WL_CONNECTED)
                 return false;
-        #endif
-        /*
+        #else
+        
         int pingExitCode = system("ping -c1 -s1 8.8.8.8 > /dev/null 2>&1"); // ping Google's DNS server and return the exit code
         if (pingExitCode == 0)
         {
@@ -67,6 +67,7 @@ namespace network
         } else
         {
             return false;
-        }*/
+        }
+       #endif
     }
 }

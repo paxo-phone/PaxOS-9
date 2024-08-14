@@ -70,7 +70,7 @@ void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
         return NULL;
     } else {
         // Allocate or resize the block
-        #ifdef ESP32
+        #ifdef ESP_PLATFORM
             return ps_realloc(ptr, nsize);
         #else
             return realloc(ptr, nsize);

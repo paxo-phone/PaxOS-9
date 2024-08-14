@@ -8,7 +8,7 @@
 namespace network {
     URLSessionDataTask::URLSessionDataTask(const URLRequest request, CompletionHandler completionHandler) : URLSessionTask(request), completionHandler(completionHandler)
     {
-        #if !defined(ESP32)
+        #ifndef ESP_PLATFORM
         curlHandle = curl_easy_init();
         #endif
     };
