@@ -79,7 +79,7 @@ jobs:
             run: pip install --upgrade platformio
 
           - name: Install SDL2 and libcurl
-            run: sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse" && sudo apt-get update -y -qq && sudo apt-get install libsdl2-dev && && sudo apt-get install libcurl4-openssl-dev
+            run: sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse" && sudo apt-get update -y -qq && sudo apt-get install libsdl2-dev && sudo apt-get install libcurl4-openssl-dev
 
           - name: Run tests for Linux
             run: pio test -e linux --json-output-path linux-test-report.json --junit-output-path linux-test-report.xml
@@ -202,7 +202,7 @@ jobs:
                   windows-test-report.xml
 
             - name: Build PlatformIO Project for Windows
-              run: pio run -e windows
+              run: pio run -e windows-build-only
 
             - name: Move files into artifact directory
               shell: bash
@@ -218,3 +218,4 @@ jobs:
                 name: windows-build
                 path: |
                   build
+
