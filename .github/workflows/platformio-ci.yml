@@ -3,10 +3,10 @@ name: PlatformIO CI
 on:
   push:
     branches: 
-        - main
+        - '**'
   pull_request:
     branches:
-        - main
+        - '**'
 
 jobs:
     paxo_v5_build_test_upload:
@@ -79,7 +79,7 @@ jobs:
             run: pip install --upgrade platformio
 
           - name: Install SDL2 and libcurl
-            run: sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse" && sudo apt-get update -y -qq && sudo apt-get install libsdl2-dev && && sudo apt-get install libcurl4-openssl-dev
+            run: sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse" && sudo apt-get update -y -qq && sudo apt-get install libsdl2-dev && sudo apt-get install libcurl4-openssl-dev
 
           - name: Run tests for Linux
             run: pio test -e linux --json-output-path linux-test-report.json --junit-output-path linux-test-report.xml
@@ -189,6 +189,24 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
+            - name: Build PlatformIO Project for Windows
+              run: pio run -e windows-build-only
+
+            - name: Move files into artifact directory
+              shell: bash
+              run: |
+                mkdir build
+                cp -r .pio/build/windows-build-only/program.exe build
+                cp -r .pio/build/windows-build-only/*.dll build
+                cp -r storage build
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: windows-build
+                path: |
+                  build
+
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
@@ -201,20 +219,3 @@ jobs:
                   windows-test-report.json
                   windows-test-report.xml
 
-            - name: Build PlatformIO Project for Windows
-              run: pio run -e windows
-
-            - name: Move files into artifact directory
-              shell: bash
-              run: |
-                mkdir build
-                cp -r .pio/build/windows/program.exe build
-                cp -r .pio/build/windows/*.dll build
-                cp -r storage build
-
-            - name: Upload artifact
-              uses: actions/upload-artifact@v4
-              with:
-                name: windows-build
-                path: |
-                  build
