@@ -12,7 +12,35 @@ namespace serialcom {
         switch (command.type) {
             case Command::CommandType::info:
                 processInfoCommand(command);
-                break;/*
+                break;
+            case Command::CommandType::ls:
+                processLSCommand(command);
+                break;
+            case Command::CommandType::touch:
+                processTouchCommand(command);
+                break;
+            case Command::CommandType::mkdir:
+                processMKDIRCommand(command);
+                break;
+            case Command::CommandType::rm:
+                processRMCommand(command);
+                break;
+            case Command::CommandType::cp:
+                processCPCommand(command);
+                break;
+            case Command::CommandType::mv:
+                processMVCommand(command);
+                break;
+            case Command::CommandType::cat:
+                processCATCommand(command);
+                break;
+            case Command::CommandType::download:
+                processDownloadCommand(command);
+                break;
+            case Command::CommandType::upload:
+                processUploadCommand(command);
+                break;
+            /*
             case Command::CommandType::echo:
                 processEchoCommand(command);
                 break;

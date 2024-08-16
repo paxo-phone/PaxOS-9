@@ -35,7 +35,7 @@ namespace storage
 
         void close(void);
 
-        std::string read(void);
+        std::string read(size_t returnSize = -1);
         std::string readline(void);
         std::string readword(void);
         char readchar(void);

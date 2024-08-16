@@ -25,7 +25,8 @@ namespace serialcom {
         #endif
 
         private:
-        ArrayedStreamBuffer<MAX_OUTPUT_SIZE> buffer;
+        ArrayedStreamBuffer<MAX_OUTPUT_SIZE> coutBuffer;
+        ArrayedStreamBuffer<MAX_OUTPUT_SIZE> cerrBuffer;
 
         bool newData = false;
         bool isOutputingCommand = false;

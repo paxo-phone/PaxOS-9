@@ -1,5 +1,6 @@
 #include "Command.hpp"
 #include "Commands/InfoCommand.hpp"
+#include "Commands/FileCommands.hpp"
 #include <iostream>
 
 namespace serialcom {
@@ -182,6 +183,16 @@ namespace serialcom {
         {Command::CommandType::files, "files"},
         {Command::CommandType::elevate, "elevate"},
         {Command::CommandType::lte, "lte"},
+
+        {Command::CommandType::ls, "ls"},
+        {Command::CommandType::touch, "touch"},
+        {Command::CommandType::mkdir, "mkdir"},
+        {Command::CommandType::rm, "rm"},
+        {Command::CommandType::cp, "cp"},
+        {Command::CommandType::mv, "mv"},
+        {Command::CommandType::cat, "cat"},
+        {Command::CommandType::download, "download"},
+        {Command::CommandType::upload, "upload"}
     };
 }
 

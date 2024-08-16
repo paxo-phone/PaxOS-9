@@ -14,17 +14,22 @@ namespace serialcom {
         Serial.begin(115200);
         #endif
 
-        this->buffer.installOnStream(&std::cout);
+        std::ios_base::sync_with_stdio(false);
+
+        this->coutBuffer.installOnStream(&std::cout);
+        this->cerrBuffer.installOnStream(&std::cerr);
     }
 
     SerialManager::~SerialManager() {
         #ifdef ESP_PLATFORM
         Serial.end();
         #endif
+
+        std::ios_base::sync_with_stdio(true);
     }
     
     void SerialManager::commandLog(const std::string& message) { // should only be called in the serialLoop thread
-        this->buffer.directLog(message);
+        this->coutBuffer.directLog(message);
     }
 
     #ifdef ESP_PLATFORM
@@ -37,12 +42,15 @@ namespace serialcom {
         while (true) {
             serialManager->getInputCommand();
             if (serialManager->newData) {
+                if (CommandsManager::defaultInstance->shellMode) {
+                    std::cout << std::endl;
+                }
                 Command newCommand = Command(serialManager->current_input);
                 CommandsManager::defaultInstance->processCommand(newCommand);
                 serialManager->newData = false;
             }
-
-            serialManager->buffer.flushBuffer();
+            serialManager->coutBuffer.flushBuffer();
+            serialManager->cerrBuffer.flushBuffer();
 
             PaxOS_Delay(10);
         }

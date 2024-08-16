@@ -23,6 +23,16 @@ namespace serialcom {
             void processInfoCommandVersion(const Command& command) const;
             void processInfoCommandHardware(const Command& command) const;
 
+            void processLSCommand(const Command& command) const;
+            void processTouchCommand(const Command& command) const;
+            void processMKDIRCommand(const Command& command) const;
+            void processRMCommand(const Command& command) const;
+            void processCPCommand(const Command& command) const;
+            void processMVCommand(const Command& command) const;
+            void processCATCommand(const Command& command) const;
+            void processDownloadCommand(const Command& command) const;
+            void processUploadCommand(const Command& command) const;
+
 
             void processEchoCommand(const Command& command) const;
             void processAppsCommand(const Command& command) const;

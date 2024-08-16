@@ -19,6 +19,18 @@ namespace serialcom {
             elevate,
             lte,
 
+            ls,
+            touch,
+            mkdir,
+            rm,
+            cp,
+            mv,
+            cat,
+            download,
+            upload,
+              
+            
+
             unknown
         };
 

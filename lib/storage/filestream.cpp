@@ -35,19 +35,27 @@ namespace storage
         m_stream.close();
     }
 
-    std::string FileStream::read(void)
+    std::string FileStream::read(size_t returnSize)
     {
-        std::string text = "";
-
-        std::string line;
-        while (std::getline(m_stream, line))
+        if (returnSize == -1)
         {
-            text += line;
-            if (line.back() != '\n')
-                text += "\n";
-        }
+            std::string text = "";
 
-        return text;
+            std::string line;
+            while (std::getline(m_stream, line))
+            {
+                text += line;
+                if (line.back() != '\n')
+                    text += "\n";
+            }
+
+            return text;
+        } else
+        {
+            char buff[returnSize];
+            m_stream.read(buff, returnSize);
+            return buff;
+        }
     }
 
     std::string FileStream::readline(void)
