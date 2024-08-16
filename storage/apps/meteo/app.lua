@@ -91,7 +91,6 @@ function rechercherVille(txt)
             local longitude     = json_results:at(num)["longitude"]:get()
             
             local boxVille = displaySelectionVille(num, name, country_code, county, latitude, longitude)
-            print(boxVille)
             boxVille:onClick(
                 function () 
 --                    if (oldSelection ~= nil) then

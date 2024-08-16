@@ -15,19 +15,9 @@ void LuaVerticalList::addChild(LuaWidget* widget)
 
 void LuaVerticalList::clear() { 
 
-        std::cout <<"to clear :"<< this << " - nb enfants:" <<this->children.size() << std::endl;
-        for (auto & obj :this->children) {
-            std::cout << obj << std::endl;
-        }
-        
-        std::cout <<"début effacement"<< std::endl;
-        for (auto & obj :this->children) {
-            //obj->free();
-            std::cout << obj << std::endl;
-            delete obj;
-        }
-//        this->widget->m_children.clear();
-
+        while (!this->children.empty()) {
+            delete this->children[0];
+        }       
 }
 
 
