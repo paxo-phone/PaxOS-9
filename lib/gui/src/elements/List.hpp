@@ -14,6 +14,8 @@ namespace gui::elements
         void render() override;
 
         void add(ElementBase* widget);
+        void clear();
+
         void setIndex(int index);
 
         void setSpaceLine(uint16_t y);
@@ -34,9 +36,8 @@ namespace gui::elements
         ~HorizontalList() override;
 
         void render() override;
-
         void add(ElementBase* widget);
-
+        void clear();
         void setSpaceLine(uint16_t y);
 
     private:

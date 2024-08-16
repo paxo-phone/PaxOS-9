@@ -142,7 +142,7 @@
 ** 32-bit integers and 'float'
 */
 #if LUAI_IS32INT  /* use 'int' if big enough */
-#define LUA_INT_TYPE	LUA_INT_INT
+#define LUA_INT_TYPE	LUA_INT_LONG//LUA_INT_INT
 #else  /* otherwise use 'long' */
 #define LUA_INT_TYPE	LUA_INT_LONG
 #endif

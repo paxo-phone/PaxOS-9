@@ -29,6 +29,17 @@ namespace gui::elements
         this->addChild(widget);
     }
 
+    void VerticalList::clear()
+    {
+        //m_children.clear();
+//        m_children.erase(m_children.begin(), m_children.end());
+        for (auto & obj : m_children) {
+            //obj->free();
+            delete obj;
+        }
+        m_children.clear();
+    }
+
     void VerticalList::setIndex(int index)
     {
         if(m_focusedIndex >= 0 && m_focusedIndex < m_children.size())
@@ -105,6 +116,17 @@ namespace gui::elements
         widget->setX((m_children.size() != 0) ? (m_children[m_children.size()-1]->getX() + m_children[m_children.size()-1]->getWidth() + m_lineSpace) : (0));
         this->addChild(widget);
         this->setWidth(widget->getX()+widget->getWidth());
+    }
+    void HorizontalList::clear()
+    {
+        //m_children.clear();
+        //m_children.erase(m_children.begin(), m_children.end());
+        for (auto & obj : m_children) {
+            // obj->free();
+            delete obj;
+        }
+        m_children.clear();
+
     }
 
     void HorizontalList::setSpaceLine(uint16_t y)

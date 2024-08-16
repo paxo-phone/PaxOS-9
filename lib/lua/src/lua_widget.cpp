@@ -11,16 +11,23 @@ void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
 
 LuaWidget::~LuaWidget()
 {
-    if(rootOfDelete == nullptr)
+    std::cout << "destructor : "<< this <<std::endl;
+    if(rootOfDelete == nullptr) {
+        std::cout << "rootOfDelete == nullptr" << std::endl;
         rootOfDelete = this;
+    }
+        
 
     for (LuaWidget* child : children)
     {
+        std::cout << "delete child" << std::endl;
         delete child;
     }
 
     if(rootOfDelete == this && this->parent != nullptr)
     {
+        std::cout << "rootOfDelete == this && this->parent != nullptr" << std::endl;
+
         LuaWidget* widget = this;
         gui::ElementBase* reWidget = widget->widget;
 
@@ -29,8 +36,10 @@ LuaWidget::~LuaWidget()
 
         for (uint16_t i = 0; i < parent->children.size(); i++)
         {
+            std::cout << "boucle for sur parent->children " << i << " : " << parent->children[i]<< std::endl;
             if (parent->children[i] == widget)
             {
+                std::cout << "parent->children[i] == widget" << std::endl;
                 parent->children.erase(parent->children.begin() + i);
                 break;
             }
@@ -38,9 +47,11 @@ LuaWidget::~LuaWidget()
 
         for (uint16_t i = 0; i < reParent->m_children.size(); i++)
         {
+            std::cout << "boucle for reParent->m_children" << i << std::endl;
             if (reParent->m_children[i] == reWidget)
             {
-                reParent->m_children.erase(reParent->m_children.begin() + i);
+                  std::cout << "reParent->m_children[i] == reWidget" << std::endl;
+                  reParent->m_children.erase(reParent->m_children.begin() + i);
                 break;
             }
         }
@@ -48,8 +59,10 @@ LuaWidget::~LuaWidget()
 
     for (uint16_t i = 0; i < gui->widgets.size(); i++)
     {
+        std::cout << "boucle for gui->widgets: " << i << " - " << gui->widgets[i] << std::endl;
         if (gui->widgets[i] == this)
         {
+            std::cout << "gui->widgets[i] == this - " << i << std::endl;
             gui->widgets.erase(gui->widgets.begin() + i);
             break;
         }
@@ -57,6 +70,7 @@ LuaWidget::~LuaWidget()
 
     if(rootOfDelete == this)
     {
+        std::cout << "rootOfDelete == this" << std::endl;
         delete this->widget;
         rootOfDelete = nullptr;
     }

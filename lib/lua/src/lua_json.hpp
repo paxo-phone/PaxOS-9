@@ -13,11 +13,13 @@ public:
     std::string get();
     LuaJson op(std::string key);
     void set(std::string id, std::string value);
+    LuaJson at(int position);
 
     bool is_null();
     size_t size();
     bool has_key(std::string key);
     void remove(std::string key);
+
 
     int get_int(std::string key);
     double get_double(std::string key);

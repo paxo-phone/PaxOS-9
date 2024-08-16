@@ -145,6 +145,15 @@ void LuaFile::load()
     lua.set_function("nonothing", []() {
     });
 
+
+        lua.open_libraries(sol::lib::string);
+
+    if (perms.acces_web)   // si hardware est autorisé
+    {
+        lua.open_libraries(sol::lib::string);
+    }
+
+
     if (perms.acces_hardware)   // si hardware est autorisé
     {
         lua.new_usertype<LuaHardware>("hardware",
@@ -185,6 +194,7 @@ void LuaFile::load()
             "new", sol::constructors<LuaJson(std::string)>(),
             "get", &LuaJson::get,
             "is_null", &LuaJson::is_null,
+            "at", &LuaJson::at,
             "size", &LuaJson::size,
             "has_key", &LuaJson::has_key,
             "remove", &LuaJson::remove,
@@ -341,10 +351,12 @@ void LuaFile::load()
         lua.new_usertype<LuaVerticalList>("LuaVList",
             "setIndex", &LuaVerticalList::setIndex,
             "setSpaceLine", &LuaVerticalList::setSpaceLine,
+            "clear",&LuaVerticalList::clear,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
-            //"add", &LuaHorizontalList::add,
+//            "add", &LuaHorizontalList::add,
+            "clear",&LuaHorizontalList::clear,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);

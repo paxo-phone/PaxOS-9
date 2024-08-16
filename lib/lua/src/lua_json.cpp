@@ -26,6 +26,13 @@ LuaJson LuaJson::op(std::string key)
     return LuaJson(json[key]);
 }
 
+LuaJson LuaJson::at(int position)
+{
+    return LuaJson(json.at(position));
+}
+
+
+
 void LuaJson::set(std::string id, std::string value)
 {
     this->json[id] = value;

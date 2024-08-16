@@ -8,3 +8,4 @@
 ./storage/apps/horloge/app.lua
 ./storage/apps/alarme/app.lua
 ./storage/apps/calculatrice/app.lua
+./storage/apps/meteo/app.lua

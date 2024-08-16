@@ -49,7 +49,8 @@ class LuaWidget
     private:
     virtual void addChild(LuaWidget* child)
     {
-        this->children.push_back(child); child->parent = this;
+        this->children.push_back(child); 
+        child->parent = this;
         this->widget->addChild(child->widget);
     }
 
