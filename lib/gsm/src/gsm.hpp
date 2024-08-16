@@ -99,7 +99,7 @@ namespace GSM
     void acceptCall();
     void rejectCall();
 
-    int getBatteryLevel();
+    double getBatteryLevel();
     void getHour();
 
     int getNetworkStatus();

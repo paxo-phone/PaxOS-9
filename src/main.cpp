@@ -20,6 +20,7 @@
 #include "contacts.hpp"
 #include <iostream>
 #include <libsystem.hpp>
+#include <overlay.hpp>
 
 using namespace gui::elements;
 
@@ -48,58 +49,92 @@ void mainLoop(void* data)
     }
 
     #endif
-    
-    while (true)    // Main loop
-    {
-        int l = -1;
 
-        if(!AppManager::isAnyVisibleApp() && (l = launcher()) != -1)    // if there is not app running, run launcher, and it an app is choosen, launch it
-        {
-            int search = 0;
+    // Init the launcher
+    applications::launcher::init();
 
-            for (int i = 0; i < AppManager::appList.size(); i++)
-            {
-                if(AppManager::appList[i]->visible)
-                {
-                    if(search == l)
-                    {
-                        const std::shared_ptr<AppManager::App> app = AppManager::get(i);
+    // Main loop
+    while (true) {
+        // Update running apps
+        AppManager::update();
 
-                        // if (!app->auth) {
-                        //     app->requestAuth();
-                        // }
+        if (AppManager::isAnyVisibleApp()) {
+            if (hardware::getHomeButton()) {
+                AppManager::quitApp();
+            }
+        } else {
+            // Update, show and allocate launcher
+            applications::launcher::update();
 
-                        app->run(false);
+            // Icons interactions
+            if (applications::launcher::iconTouched()) {
+                libsystem::log("Mon frère a l'air tout triste,");
 
-                        while (AppManager::isAnyVisibleApp())
-                            AppManager::loop();
+                const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
 
-                        break;
-                    }
-                    search++;
-                }
+                libsystem::log("J'veux pas l'écraser 'vec mes aléas");
+
+                // Free the launcher resources
+                applications::launcher::free();
+
+                libsystem::log("J'me prends trop la tête sur comment essayer d'être agréable");
+
+                // Launch the app
+                app->run(false);
+
+                libsystem::log("À cause de ça j'suis pas réel");
             }
         }
 
-        if(!AppManager::isAnyVisibleApp() && l == -1)   // if the launcher did not launch an app and there is no app running, then sleep
-        {
-            graphics::setBrightness(0);
-            StandbyMode::savePower();
-
-            while (hardware::getHomeButton());
-            while (!hardware::getHomeButton() && !AppManager::isAnyVisibleApp()/* && GSM::state.callState != GSM::CallState::RINGING*/)
-            {
-                eventHandlerApp.update();
-                AppManager::loop();
-            }
-
-            while (hardware::getHomeButton());
-            
-            StandbyMode::restorePower();
-            graphics::setBrightness(0xFF/3);
-        }
-
-        AppManager::loop();
+        // int l = -1;
+        //
+        // if(!AppManager::isAnyVisibleApp() && (l = launcher()) != -1)    // if there is not app running, run launcher, and it an app is choosen, launch it
+        // {
+        //     int search = 0;
+        //
+        //     for (int i = 0; i < AppManager::appList.size(); i++)
+        //     {
+        //         if(AppManager::appList[i]->visible)
+        //         {
+        //             if(search == l)
+        //             {
+        //                 const std::shared_ptr<AppManager::App> app = AppManager::get(i);
+        //
+        //                 // if (!app->auth) {
+        //                 //     app->requestAuth();
+        //                 // }
+        //
+        //                 app->run(false);
+        //
+        //                 while (AppManager::isAnyVisibleApp())
+        //                     AppManager::loop();
+        //
+        //                 break;
+        //             }
+        //             search++;
+        //         }
+        //     }
+        // }
+        //
+        // if(!AppManager::isAnyVisibleApp() && l == -1)   // if the launcher did not launch an app and there is no app running, then sleep
+        // {
+        //     graphics::setBrightness(0);
+        //     StandbyMode::savePower();
+        //
+        //     while (hardware::getHomeButton());
+        //     while (!hardware::getHomeButton() && !AppManager::isAnyVisibleApp()/* && GSM::state.callState != GSM::CallState::RINGING*/)
+        //     {
+        //         eventHandlerApp.update();
+        //         AppManager::loop();
+        //     }
+        //
+        //     while (hardware::getHomeButton());
+        //
+        //     StandbyMode::restorePower();
+        //     graphics::setBrightness(0xFF/3);
+        // }
+        //
+        // AppManager::loop();
     }
 }
 
@@ -136,6 +171,12 @@ void setup()
     #endif // ESP_PLATFORM
 
     ThreadManager::init();
+
+    // Init overlay
+    gui::overlay::init();
+
+    // Init launcher
+    applications::launcher::init();
 
     // When everything is initialized
     // Check if errors occurred

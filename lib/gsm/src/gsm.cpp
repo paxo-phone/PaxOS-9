@@ -140,7 +140,7 @@ namespace GSM
 #ifdef ESP_PLATFORM
         gsm.println((message + "\r").c_str());
 
-        std::cout << "[GSM] Sending request" << std::endl;
+        std::cout << "[GSM] Sending request: " << message << ", " << answerKey << std::endl;
 
         uint64_t lastChar = millis();
         std::string answer = "";
@@ -576,9 +576,7 @@ namespace GSM
         }
     }
 
-    int getBatteryLevel() {
-        // That's not "Level" but "Percent"
-
+    double getBatteryLevel() {
         const float voltage = getVoltage();
 
         if (voltage == -1) {
@@ -587,11 +585,9 @@ namespace GSM
         }
 
         // Thanks NumWorks for the regression app
-        double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
+        const double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
 
-        batteryLevel = std::clamp(batteryLevel, 0.0, 1.0);
-
-        return static_cast<int>(batteryLevel * 100);
+        return std::clamp(batteryLevel, 0.0, 1.0);
 
         // if (voltage > 4.12)
         //   return 100;

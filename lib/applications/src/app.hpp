@@ -111,7 +111,21 @@ namespace AppManager
     bool isAnyVisibleApp();
 
     void init();
+
+    /**
+     * @deprecated
+     */
     void loop();
+
+    /**
+     * Update every application.
+     */
+    void update();
+
+    /**
+     * Quit the currently foreground running application.
+     */
+    void quitApp();
 
     void event_oncall();
     void event_onlowbattery();

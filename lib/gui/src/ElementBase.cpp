@@ -5,6 +5,7 @@
 #include <threads.hpp>
 
 #include <iostream>
+#include <libsystem.hpp>
 
 // TODO : Remove this, the user need to define its widget for the screen itself.
 gui::ElementBase *gui::ElementBase::widgetPressed = nullptr;
@@ -463,6 +464,10 @@ gui::ElementBase *gui::ElementBase::getParent() const
 
 void gui::ElementBase::addChild(gui::ElementBase *child)
 {
+    if (child == nullptr) {
+        throw libsystem::exceptions::RuntimeError("Child can't be null.");
+    }
+
     m_children.push_back(child);
     child->m_parent = this;
 }

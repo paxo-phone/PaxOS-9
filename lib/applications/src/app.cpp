@@ -414,6 +414,52 @@ namespace AppManager {
         StandbyMode::wait();
     }
 
+    void update() {
+        threadsync.lock();
+
+        // Run tick on every app
+        for (const auto& app: appList) {
+            if (app->isRunning()) {
+                app->luaInstance->loop();
+            } else if (app->luaInstance != nullptr) {
+                app->kill();
+            }
+        }
+
+        // Update foreground app GUI
+        // TODO : What happens if a background app is on top of a foreground app on the stack ?
+        if (!appStack.empty()) {
+            const App* app = appStack.back();
+
+            if (app->luaInstance != nullptr) {
+                app->luaInstance->lua_gui.update();
+            }
+        }
+
+        threadsync.unlock();
+    }
+
+    void quitApp() {
+        if (appStack.empty()) {
+            throw libsystem::exceptions::RuntimeError("Cannot quit an app if no app is running.");
+        }
+
+        // Get the currently running app
+        App* app = appStack.back();
+
+        // Check if the app on the top is a foreground app
+        // TODO : Go down the stack ?
+        if (app->background) {
+            throw libsystem::exceptions::RuntimeError("Cannot quit an backgroundn app.");
+        }
+
+        // Kill the app
+        app->kill();
+
+        // Remove app from stack
+        appStack.pop_back();
+    }
+
     bool isAnyVisibleApp() {
         return !appStack.empty();
     }
