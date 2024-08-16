@@ -57,34 +57,17 @@ int launcher()
     date->setFontSize(16);
     win.addChild(date);
 
-<<<<<<< HEAD
-    // Affichage du niveau de batterie
-    Label *batt = new Label(269, 10, 40, 18);
-    batt->setText(std::to_string(GSM::getBatteryLevel()) +" %");
-=======
     Box *light = new Box(0, 77, 50, 325);
     //light->setBackgroundColor(COLOR_RED);
     win.addChild(light);
 
     Label *batt = new Label(269, 10, 40, 18);
     batt->setText(std::to_string(GSM::getBatteryLevel()) + "%");    // hour
->>>>>>> 2caea40 (screen light control)
     batt->setVerticalAlignment(Label::Alignement::CENTER);
     batt->setHorizontalAlignment(Label::Alignement::CENTER);
     batt->setFontSize(18);
     win.addChild(batt);
 
-<<<<<<< HEAD
-    // Affichage de la qualité réseau
-    if(GSM::getNetworkStatus() == 99)
-    {
-        Label *network = new Label(10, 10, 100, 18);
-        network->setText("pas de réseau");    // hour
-        network->setVerticalAlignment(Label::Alignement::CENTER);
-        network->setHorizontalAlignment(Label::Alignement::CENTER);
-        network->setFontSize(18);
-        win.addChild(network);
-=======
     Label *network = new Label(10, 10, 100, 18);
     network->setVerticalAlignment(Label::Alignement::CENTER);
     network->setHorizontalAlignment(Label::Alignement::LEFT);
@@ -98,7 +81,6 @@ int launcher()
     else
     {
         network->setText(" " + std::to_string(GSM::getNetworkStatus() * 100 / 31) + "%");
->>>>>>> 2caea40 (screen light control)
     }
 
     // Mise à jour de l'heure

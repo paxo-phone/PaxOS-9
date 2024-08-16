@@ -189,7 +189,7 @@ function run(arg)
         
         if notifs:find(number) then
             local unread = gui:box(case, 0, 12, 13, 13)
-            unread:setMainColor(COLOR_WARNING)
+            unread:setBackgroundColor(COLOR_WARNING)
             unread:setRadius(6)
         end
         
