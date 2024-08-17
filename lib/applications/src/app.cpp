@@ -120,6 +120,8 @@ namespace AppManager {
 
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
 
+        appStack.push_back(this);
+
         luaInstance = std::make_shared<LuaFile>(path, manifest);
         luaInstance->app = this;
 
@@ -281,9 +283,9 @@ namespace AppManager {
             return;
         }
 
-        if (appStack.empty() || appStack.back() != app) {
-            appStack.push_back(app);
-        }
+        // if (appStack.empty() || appStack.back() != app) {
+        //     appStack.push_back(app);
+        // }
     }
 
     void loadDir(const storage::Path& directory, bool root = false) {

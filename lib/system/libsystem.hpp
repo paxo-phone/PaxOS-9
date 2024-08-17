@@ -32,6 +32,14 @@ namespace libsystem {
 
     void restart(bool silent = false, uint64_t timeout = 0, bool saveBacktrace = false);
 
+    enum DeviceMode {
+        NORMAL,
+        SLEEP
+    };
+
+    void setDeviceMode(DeviceMode mode);
+    [[nodiscard]] DeviceMode getDeviceMode();
+
     namespace exceptions {
         class RuntimeError final : public std::runtime_error {
         public:
@@ -43,6 +51,12 @@ namespace libsystem {
         public:
             explicit OutOfRange(const std::string& message);
             explicit OutOfRange(const char* message);
+        };
+
+        class InvalidArgument final : public std::invalid_argument {
+        public:
+            explicit InvalidArgument(const std::string& message);
+            explicit InvalidArgument(const char* message);
         };
     }
 }

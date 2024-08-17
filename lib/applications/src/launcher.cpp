@@ -39,8 +39,6 @@ void applications::launcher::init() {
 }
 
 void applications::launcher::update() {
-    libsystem::log("applications::launcher::update");
-
     if (dirty) {
         // If dirty, free to force redraw it
         free();
@@ -52,7 +50,9 @@ void applications::launcher::update() {
     }
 
     // Update, draw AND update touch events
-    launcherWindow->updateAll();
+    if (launcherWindow != nullptr) {
+        launcherWindow->updateAll();
+    }
 
     // Check touch events
     targetApp = nullptr;
@@ -87,6 +87,10 @@ void applications::launcher::update() {
 
 void applications::launcher::draw() {
     libsystem::log("applications::launcher::draw");
+
+    if (launcherWindow == nullptr) {
+        launcherWindow = std::make_shared<Window>();
+    }
 
     StandbyMode::triggerPower();
 
@@ -196,10 +200,11 @@ void applications::launcher::free() {
         return;
     }
 
-    launcherWindow->free();
-
-    // TODO : This is not a "free"
-    launcherWindow = std::make_shared<Window>();
+    if (launcherWindow != nullptr) {
+        launcherWindow->free();
+        launcherWindow.reset();
+        launcherWindow = nullptr;
+    }
 
     applicationsIconsMap.clear();
 

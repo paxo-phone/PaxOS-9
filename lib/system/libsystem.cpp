@@ -15,12 +15,15 @@
 
 #endif
 
+#include <standby.hpp>
+
 #include "color.hpp"
 #include "graphics.hpp"
 #include "base64.hpp"
 
 namespace libsystem {
     std::vector<std::string> bootErrors;
+    DeviceMode deviceMode = NORMAL;
 }
 
 class Restart final : public std::exception {
@@ -216,6 +219,25 @@ void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBack
 #endif
 }
 
+void libsystem::setDeviceMode(const DeviceMode mode) {
+    deviceMode = mode;
+
+    switch (mode) {
+        case NORMAL:
+            StandbyMode::restorePower();
+            graphics::setBrightness(0xFF);
+            break;
+        case SLEEP:
+            graphics::setBrightness(0x00);
+            StandbyMode::savePower();
+            break;
+    }
+}
+
+libsystem::DeviceMode libsystem::getDeviceMode() {
+    return deviceMode;
+}
+
 libsystem::exceptions::RuntimeError::RuntimeError(const std::string &message): runtime_error(message) {
     panic(message, false);
 }
@@ -229,5 +251,13 @@ libsystem::exceptions::OutOfRange::OutOfRange(const std::string &message): out_o
 }
 
 libsystem::exceptions::OutOfRange::OutOfRange(const char *message): out_of_range(message) {
+    panic(message, false);
+}
+
+libsystem::exceptions::InvalidArgument::InvalidArgument(const std::string &message): invalid_argument(message) {
+    panic(message, false);
+}
+
+libsystem::exceptions::InvalidArgument::InvalidArgument(const char *message): invalid_argument(message) {
     panic(message, false);
 }

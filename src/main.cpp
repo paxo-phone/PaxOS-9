@@ -50,39 +50,47 @@ void mainLoop(void* data)
 
     #endif
 
-    // Init the launcher
-    applications::launcher::init();
-
     // Main loop
     while (true) {
+        // Update inputs
+        hardware::input::update();
+
         // Update running apps
         AppManager::update();
 
+        // Don't show anything
+        if (libsystem::getDeviceMode() == libsystem::SLEEP) {
+            if (getButtonDown(hardware::input::HOME)) {
+                setDeviceMode(libsystem::NORMAL);
+            }
+
+            continue;
+        }
+
         if (AppManager::isAnyVisibleApp()) {
-            if (hardware::getHomeButton()) {
+            if (getButtonDown(hardware::input::HOME)) {
                 AppManager::quitApp();
             }
         } else {
+            // If home button pressed on the launcher
+            // Put the device in sleep
+            if (getButtonDown(hardware::input::HOME)) {
+                setDeviceMode(libsystem::SLEEP);
+                continue;
+            }
+
             // Update, show and allocate launcher
             applications::launcher::update();
 
             // Icons interactions
             if (applications::launcher::iconTouched()) {
-                libsystem::log("Mon frère a l'air tout triste,");
-
                 const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
-
-                libsystem::log("J'veux pas l'écraser 'vec mes aléas");
 
                 // Free the launcher resources
                 applications::launcher::free();
 
-                libsystem::log("J'me prends trop la tête sur comment essayer d'être agréable");
-
                 // Launch the app
                 app->run(false);
-
-                libsystem::log("À cause de ça j'suis pas réel");
             }
         }
 
@@ -154,6 +162,9 @@ void setup()
         }
     }
     setScreenOrientation(graphics::PORTRAIT);
+
+    // Set device mode to normal
+    setDeviceMode(libsystem::NORMAL);
 
     // Init storage and check for errors
     if (!storage::init()) {

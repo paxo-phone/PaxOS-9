@@ -162,3 +162,32 @@ bool hardware::isCharging() {
     return false;
 #endif
 }
+
+namespace hardware::input {
+    InputFrame lastFrame;
+    InputFrame frame;
+}
+
+void hardware::input::update() {
+    lastFrame = frame;
+
+    frame.homeButtonState = getHomeButton() ? PRESSED : RELEASED;
+}
+
+hardware::input::ButtonState hardware::input::getButtonState(const Button button) {
+    switch (button) {
+        case HOME:
+            return getHomeButton() ? PRESSED : RELEASED;
+        default:
+            throw libsystem::exceptions::InvalidArgument("Unknown button.");
+    }
+}
+
+bool hardware::input::getButtonDown(const Button button) {
+    switch (button) {
+        case HOME:
+            return lastFrame.homeButtonState == RELEASED && frame.homeButtonState == PRESSED;
+        default:
+            throw libsystem::exceptions::InvalidArgument("Unknown button.");
+    }
+}

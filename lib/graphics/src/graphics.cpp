@@ -48,13 +48,13 @@ void graphics::setBrightness(uint16_t value)
     for (uint16_t i = oldValue; i < value; i++)
     {
         lcd->setBrightness(i);
-        delay(2);
+        delay(1);
     }
 
     for (int16_t i = oldValue; i >= value && i!=-1; i--)
     {
         lcd->setBrightness(i);
-        delay(2);
+        delay(1);
     }
 
     oldValue = value;

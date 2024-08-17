@@ -25,6 +25,44 @@ namespace hardware
     I2CResponse checkI2C(uint8_t address, int sda = -1, int scl = -1, bool begin = true);
 
     bool isCharging();
+
+    /**
+     * Namespace managing every hardware input on the PaxoPhone.
+     */
+    namespace input {
+        enum Button {
+            HOME
+        };
+
+        enum ButtonState {
+            PRESSED,
+            RELEASED
+        };
+
+        struct InputFrame {
+            ButtonState homeButtonState = RELEASED;
+        };
+
+        /**
+         * Read the last input frame.
+         * Please call this ONCE by update loop.
+         */
+        void update();
+
+        /**
+         * Get the button state of the provided button, raw output.
+         * @param button The button to check the state.
+         * @return The current button state.
+         */
+        ButtonState getButtonState(Button button);
+
+        /**
+         * Return if the button was pressed at this frame
+         * @param button The button.
+         * @return True if the button was pressed this frame.
+         */
+        bool getButtonDown(Button button);
+    }
 };
 
 #endif
