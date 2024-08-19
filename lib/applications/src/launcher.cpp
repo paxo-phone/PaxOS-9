@@ -29,9 +29,12 @@ namespace applications::launcher {
     Label* clockLabel = nullptr;
     Label* dateLabel = nullptr;
     Label* batteryLabel = nullptr;
+    Box* chargingPopupBox = nullptr;
 
     uint64_t lastClockUpdate = 0;
     uint64_t lastBatteryUpdate = 0;
+
+    uint64_t chargingStartTime = 0;
 }
 
 void applications::launcher::init() {
@@ -82,6 +85,21 @@ void applications::launcher::update() {
         batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
 
         lastBatteryUpdate = millis();
+    }
+
+    if (hardware::isCharging()) {
+        if (chargingStartTime == 0) {
+            chargingStartTime = millis();
+        }
+
+        if (chargingStartTime + 2000 > millis()) {
+            chargingPopupBox->enable();
+        } else {
+            chargingPopupBox->disable();
+        }
+    } else {
+        chargingStartTime = 0;
+        chargingPopupBox->disable();
     }
 }
 
@@ -176,6 +194,28 @@ void applications::launcher::draw() {
         placementIndex++;
     }
 
+    // "Overlay"
+    chargingPopupBox = new Box(112, 192, 96, 96);
+    chargingPopupBox->setRadius(7);
+    chargingPopupBox->setBackgroundColor(TFT_BLACK);
+
+    const auto path = storage::Path("system/icons/battery_charging_full_64px.png");
+
+    libsystem::log("Path: " + path.str());
+
+    const auto chargingIconImage = new Image(
+        path,
+        16,
+        16,
+        64,
+        64,
+        TFT_BLACK
+    );
+    chargingIconImage->load(TFT_BLACK);
+    chargingPopupBox->addChild(chargingIconImage);
+
+    launcherWindow->addChild(chargingPopupBox);
+
     // Update variables
     allocated = true;
     dirty = false;
@@ -210,6 +250,7 @@ void applications::launcher::free() {
 
     clockLabel = nullptr;
     dateLabel = nullptr;
+    chargingPopupBox = nullptr;
 
     allocated = false;
     dirty = true;

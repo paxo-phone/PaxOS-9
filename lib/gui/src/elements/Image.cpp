@@ -5,6 +5,7 @@
 #include <path.hpp>
 
 #include <iostream>
+#include <libsystem.hpp>
 
 namespace gui::ImagesList
 {
@@ -33,6 +34,8 @@ namespace gui::ImagesList
         //std::cout << "image not loaded" << std::endl;
 
         graphics::SImage i = graphics::SImage(path);
+
+        libsystem::log("Image: " + std::to_string(i.getType()) + ", " + std::to_string(i.getWidth()) + ", " + std::to_string(i.getHeight()) + ", " + i.getPath().str());
 
         ImageLoaded img = { path, i.getWidth(), i.getHeight(), std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight()) };
         

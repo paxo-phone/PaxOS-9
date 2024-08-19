@@ -9,6 +9,7 @@
 #include <fstream>
 #include <path.hpp>
 #include <filestream.hpp>
+#include <libsystem.hpp>
 #include <memory>
 
 // TODO: Replace this with "storage"
@@ -48,11 +49,11 @@ namespace graphics {
     {
         this->m_path = path;
 
-        if(!path.exists() || !path.isfile())
-        {
-            m_width = 0;
-            m_height = 0;
-            return;
+        if(!path.exists() || !path.isfile()) {
+            throw libsystem::exceptions::InvalidArgument("Path does not exist.");
+            // m_width = 0;
+            // m_height = 0;
+            // return;
         }
 
         m_data = getFileData(path);
@@ -62,9 +63,10 @@ namespace graphics {
         switch (imageData.type)
         {
         case imgdec::ERROR:
-            m_width = 0;
-            m_height = 0;
-            return;
+            throw libsystem::exceptions::InvalidArgument("Invalid image data.");
+            // m_width = 0;
+            // m_height = 0;
+            // return;
         case imgdec::BMP:
             m_type = BMP;
             break;
