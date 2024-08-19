@@ -1,0 +1,63 @@
+{
+    "latitude": 48.86,
+    "longitude": 2.3399997,
+    "generationtime_ms": 0.09894371032714844,
+    "utc_offset_seconds": 0,
+    "timezone": "GMT",
+    "timezone_abbreviation": "GMT",
+    "elevation": 43.0,
+    "daily_units": {
+        "time": "iso8601",
+        "weather_code": "wmo code",
+        "temperature_2m_max": "°C",
+        "temperature_2m_min": "°C",
+        "precipitation_probability_max": "%"
+    },
+    "daily": {
+        "time": [
+            "2024-08-19",
+            "2024-08-20",
+            "2024-08-21",
+            "2024-08-22",
+            "2024-08-23",
+            "2024-08-24",
+            "2024-08-25"
+        ],
+        "weather_code": [
+            3,
+            80,
+            3,
+            2,
+            3,
+            81,
+            2
+        ],
+        "temperature_2m_max": [
+            23.3,
+            22.6,
+            21.6,
+            25.0,
+            24.9,
+            26.5,
+            20.8
+        ],
+        "temperature_2m_min": [
+            13.1,
+            14.8,
+            12.3,
+            12.3,
+            14.6,
+            16.4,
+            13.7
+        ],
+        "precipitation_probability_max": [
+            0,
+            94,
+            0,
+            0,
+            3,
+            19,
+            10
+        ]
+    }
+}

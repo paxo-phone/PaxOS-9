@@ -21,8 +21,6 @@ listAlarme ={
 --    FONCTION HELPERS
 -- -------------------------------------------
 
-
-
 function int(x)
     return math.floor(x)
 end

@@ -24,7 +24,7 @@ class LuaHorizontalList : public LuaWidget
     void addChild(LuaWidget* widget){ this->children.push_back(widget); widget->parent = this; this->widget->add(widget->widget); }
     void setSpaceLine(int line){  this->widget->setSpaceLine(line); }
 
-    void clear() { this->widget->clear();}
+    void clear();
 
 
     HorizontalList* widget = nullptr;

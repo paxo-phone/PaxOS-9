@@ -27,3 +27,10 @@ LuaHorizontalList::LuaHorizontalList(LuaWidget* parent, int x, int y, int width,
     widget = new HorizontalList(x, y, width, height);
     init(widget, parent);
 }
+
+void LuaHorizontalList::clear() { 
+
+    while (!this->children.empty()) {
+        delete this->children[0];
+    }       
+}
