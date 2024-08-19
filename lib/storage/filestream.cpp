@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include "filestream.hpp"
+#include <sstream>
 
 namespace storage
 {
@@ -37,24 +38,10 @@ namespace storage
 
     std::string FileStream::read(void)
     {
-        std::string text = "";
-        std::string line;
-        bool firstLine = true;
+        std::stringstream buffer;
+        buffer << m_stream.rdbuf();
 
-        while (std::getline(m_stream, line))
-        {
-            if (firstLine)
-            {
-                firstLine = false;
-            }
-            else
-            {
-                text += "\n";
-            }
-            text += line;
-        }
-
-        return text;
+        return buffer.str();
     }
 
     std::string FileStream::readline(void)
