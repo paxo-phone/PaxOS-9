@@ -19,6 +19,9 @@ namespace gui
         virtual void render() = 0;
         void renderAll(bool onScreen = true);
 
+        virtual void preRender() {};
+        virtual void postRender() {};
+
         bool updateAll();
         bool update();
         virtual void widgetUpdate() {};
@@ -70,6 +73,9 @@ namespace gui
         void disable();
         void free();    // free the buffers in the ram to allow more windows to work at the same time
 
+        void setEnabled(bool enabled);
+        [[nodiscard]] bool isEnabled() const;
+
         /**
          * \brief Get the highest parent widget in the hierachy
          * \return the highest parent in the hierarchy
@@ -111,6 +117,8 @@ namespace gui
         bool m_isDrawn;    // si le widget est bien a jour sur l'écran
         static ElementBase *masterOfRender;
         static ElementBase *mainWindow;
+
+        bool m_isVirtualContainer;
 
         // variables sur les events
         enum PressedState

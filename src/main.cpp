@@ -50,6 +50,15 @@ void mainLoop(void* data)
 
     #endif
 
+    auto box = new Box(0, 0, 128, 128);
+    box->setBackgroundColor(TFT_RED);
+
+    const auto icon = new Box(0, 0, 64, 64);
+    icon->setBackgroundColor(TFT_BLUE);
+    box->addChild(icon);
+
+    gui::overlay::add(box);
+
     // Main loop
     while (true) {
         // Update inputs
@@ -92,6 +101,12 @@ void mainLoop(void* data)
                 // Launch the app
                 app->run(false);
             }
+        }
+
+        // Overlay
+        if (box->isEnabled() != hardware::isCharging()) {
+            box->setEnabled(hardware::isCharging());
+            gui::overlay::redraw();
         }
 
         // int l = -1;

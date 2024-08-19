@@ -33,7 +33,8 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
                                   m_isRendered(false),
                                   m_isDrawn(false),
                                   m_pressedState(NOT_PRESSED),
-                                  m_hasEvents(false)
+                                  m_hasEvents(false),
+                                  m_isVirtualContainer(false)
 {
     // Initialiser d'autres membres si nécessaire dans le constructeur
 }
@@ -61,6 +62,10 @@ void gui::ElementBase::renderAll(bool onScreen)
     if (!m_isRendered)
     {
         StandbyMode::triggerPower();
+
+        // Use it to initialize data
+        preRender();
+
         // initialiser le buffer ou le clear
         if(m_surface != nullptr && (m_surface->getWidth() != this->getWidth() || m_surface->getHeight() != this->getHeight()))
             m_surface = nullptr;
@@ -68,6 +73,7 @@ void gui::ElementBase::renderAll(bool onScreen)
         if (m_surface == nullptr)
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
 
+        // Render the element
         render();
 
         for (const auto child : m_children)
@@ -76,9 +82,12 @@ void gui::ElementBase::renderAll(bool onScreen)
         }
 
         m_isRendered = true;
+
+        // Use it to clear data
+        postRender();
     }
 
-    if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
+    if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false) && !m_isVirtualContainer)
     {
         StandbyMode::triggerPower();
         if (!onScreen) // le parent demande le rendu
@@ -438,6 +447,15 @@ void gui::ElementBase::disable()
 {
     m_isEnabled = false;
     globalGraphicalUpdate();
+}
+
+void gui::ElementBase::setEnabled(const bool enabled) {
+    m_isEnabled = enabled;
+    globalGraphicalUpdate();
+}
+
+bool gui::ElementBase::isEnabled() const {
+    return m_isEnabled;
 }
 
 gui::ElementBase *gui::ElementBase::getMaster()
