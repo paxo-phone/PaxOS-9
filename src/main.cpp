@@ -20,7 +20,6 @@
 #include "contacts.hpp"
 #include <iostream>
 #include <libsystem.hpp>
-#include <overlay.hpp>
 
 using namespace gui::elements;
 
@@ -50,15 +49,6 @@ void mainLoop(void* data)
 
     #endif
 
-    auto box = new Box(0, 0, 128, 128);
-    box->setBackgroundColor(TFT_RED);
-
-    const auto icon = new Box(0, 0, 64, 64);
-    icon->setBackgroundColor(TFT_BLUE);
-    box->addChild(icon);
-
-    gui::overlay::add(box);
-
     // Main loop
     while (true) {
         // Update inputs
@@ -84,6 +74,9 @@ void mainLoop(void* data)
             // If home button pressed on the launcher
             // Put the device in sleep
             if (getButtonDown(hardware::input::HOME)) {
+                // Free the launcher resources
+                applications::launcher::free();
+
                 setDeviceMode(libsystem::SLEEP);
                 continue;
             }
@@ -101,12 +94,6 @@ void mainLoop(void* data)
                 // Launch the app
                 app->run(false);
             }
-        }
-
-        // Overlay
-        if (box->isEnabled() != hardware::isCharging()) {
-            box->setEnabled(hardware::isCharging());
-            gui::overlay::redraw();
         }
 
         // int l = -1;
@@ -197,9 +184,6 @@ void setup()
     #endif // ESP_PLATFORM
 
     ThreadManager::init();
-
-    // Init overlay
-    gui::overlay::init();
 
     // Init launcher
     applications::launcher::init();

@@ -490,7 +490,7 @@ void LuaFile::wakeup(std::vector<std::string> arg)
 
 void LuaFile::stop(std::vector<std::string> arg)
 {
-    sol::protected_function func = lua["quit"];
+    const sol::protected_function func = lua.get<sol::protected_function>("quit");;
     if (!func.valid())
         return;
 

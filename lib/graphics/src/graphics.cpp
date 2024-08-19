@@ -59,8 +59,12 @@ void graphics::setBrightness(uint16_t value)
 
     oldValue = value;
     #else
-    if(value == 0)
+
+    // Simulate a switched off display
+    if (value == 0) {
         lcd->fillScreen(0x0000);
+    }
+
     #endif
 }
 

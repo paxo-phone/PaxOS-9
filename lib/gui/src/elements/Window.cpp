@@ -6,7 +6,6 @@
 
 #include <cstdio>
 #include <graphics.hpp>
-#include <overlay.hpp>
 #include <Surface.hpp>
 
 namespace gui::elements {
@@ -17,13 +16,9 @@ namespace gui::elements {
         m_width = graphics::getScreenWidth();
         m_height = graphics::getScreenHeight();
         m_backgroundColor = COLOR_WHITE;
-
-        overlay::registerWindow(this);
     }
 
-    Window::~Window() {
-        overlay::unregisterWindow(this);
-    };
+    Window::~Window() = default;
 
     void Window::render()
     {

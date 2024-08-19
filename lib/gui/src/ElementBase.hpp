@@ -118,8 +118,6 @@ namespace gui
         static ElementBase *masterOfRender;
         static ElementBase *mainWindow;
 
-        bool m_isVirtualContainer;
-
         // variables sur les events
         enum PressedState
         {

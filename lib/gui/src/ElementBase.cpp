@@ -33,8 +33,7 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
                                   m_isRendered(false),
                                   m_isDrawn(false),
                                   m_pressedState(NOT_PRESSED),
-                                  m_hasEvents(false),
-                                  m_isVirtualContainer(false)
+                                  m_hasEvents(false)
 {
     // Initialiser d'autres membres si nécessaire dans le constructeur
 }
@@ -87,7 +86,7 @@ void gui::ElementBase::renderAll(bool onScreen)
         postRender();
     }
 
-    if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false) && !m_isVirtualContainer)
+    if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
     {
         StandbyMode::triggerPower();
         if (!onScreen) // le parent demande le rendu
