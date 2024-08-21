@@ -4,6 +4,7 @@
 //
 
 #include "graphics.hpp"
+#include "standby.hpp"
 
 #include <iostream>
 #include <Surface.hpp>
@@ -29,7 +30,6 @@ int16_t graphics::brightness = 0xFF/3;
 namespace
 {
     bool running;
-
 
     std::shared_ptr<LGFX> lcd;
 
@@ -305,6 +305,11 @@ void graphics::touchUpdate()
         newTouchX = -1;
         newTouchY = -1;
         isTouchRead = false;
+    }
+
+    if(liveTouchX != touchX || liveTouchY != touchY)
+    {
+        StandbyMode::trigger();
     }
 }
 

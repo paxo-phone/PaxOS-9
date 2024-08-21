@@ -1,4 +1,8 @@
 #include "standby.hpp"
+#include "app.hpp"
+#include "graphics.hpp"
+#include "hardware.hpp"
+#include "gsm.hpp"
 
 #include <threads.hpp>
 #include <LovyanGFX.hpp>
@@ -26,6 +30,8 @@ namespace StandbyMode
     void trigger()
     {
         lastTrigger = millis();
+
+        graphics::setBrightness(graphics::brightness);
     }
 
     void triggerPower()
@@ -40,9 +46,14 @@ namespace StandbyMode
 
     void update()
     {
-        if (millis() - lastTrigger > 1000)
+        if (!enabled && millis() - lastTrigger > sleepTime - 10000)
         {
-            enabled = true;
+            graphics::setBrightness(graphics::brightness/3 + 3);
+        }
+
+        if (!enabled && millis() - lastTrigger > sleepTime)
+        {
+            enable();
         }
 
         if (millis() - lastPowerTrigger > 5000)
@@ -67,6 +78,24 @@ namespace StandbyMode
     void enable()
     {
         enabled = true;
+        lastTrigger = millis() - sleepTime;
+
+        graphics::setBrightness(0);
+        StandbyMode::savePower();
+
+        while (hardware::getHomeButton());
+        while (!hardware::getHomeButton() && !AppManager::isAnyVisibleApp() && millis() - sleepTime > lastTrigger)
+        {
+            eventHandlerApp.update();
+            AppManager::loop();
+        }
+
+        while (hardware::getHomeButton());
+        
+        StandbyMode::restorePower();
+        graphics::setBrightness(graphics::brightness);
+
+        disable();
     }
     
     void disable()

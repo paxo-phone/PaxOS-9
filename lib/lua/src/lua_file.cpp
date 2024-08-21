@@ -123,6 +123,7 @@ void LuaFile::load()
     if(!nlohmann::json::accept(conf))
     {
         std::cerr << "Les permissions de l'app ne sont pas définies ou sont invalides" << std::endl;
+        std::cerr << "Conf: " << conf << " in " << manifest.str() << std::endl;
         return;
     }
 

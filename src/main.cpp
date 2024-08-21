@@ -87,20 +87,7 @@ void mainLoop(void* data)
 
         if(!AppManager::isAnyVisibleApp() && l == -1)   // if the launcher did not launch an app and there is no app running, then sleep
         {
-            graphics::setBrightness(0);
-            StandbyMode::savePower();
-
-            while (hardware::getHomeButton());
-            while (!hardware::getHomeButton() && !AppManager::isAnyVisibleApp()/* && GSM::state.callState != GSM::CallState::RINGING*/)
-            {
-                eventHandlerApp.update();
-                AppManager::loop();
-            }
-
-            while (hardware::getHomeButton());
-            
-            StandbyMode::restorePower();
-            graphics::setBrightness(graphics::brightness);
+            StandbyMode::enable();
         }
 
         AppManager::loop();

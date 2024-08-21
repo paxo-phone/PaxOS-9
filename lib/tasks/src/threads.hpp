@@ -4,7 +4,6 @@
 #include "tasks.hpp"
 #include "standby.hpp"
 
-#include <gsm.hpp>
 
 extern EventHandler eventHandlerBack;
 extern EventHandler eventHandlerApp;
