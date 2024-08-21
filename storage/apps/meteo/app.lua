@@ -7,7 +7,7 @@ local vListVilles   -- liste des villes recherchée (dans l'écran de recherche 
 local vDataMeteo    -- liste des données météo affichées
 
 local modeDisplay = "day"
-local lblDate
+local lblDate, lblSwitch
 
 -- --------------------------------------------
 --   Main function of the application
@@ -15,8 +15,16 @@ local lblDate
 
 -- run principal de l'application
 function run()
+    -- read saved Town
     initVille()
+
+    -- init the Meteo Screen
     initMeteo()
+
+    -- if no town is selected (from saved file), display the search screen
+    if (selectedVille == nill) then
+        initRechercheVille()
+    end
 end
 
 
@@ -81,16 +89,8 @@ function extractDateTime(strDateTime, format)
 
     if (strDateTime) then
         _,_,year,month,day,hour,minute =string.find(strDateTime, "(%d+)-(%d+)-(%d+)T(%d+):(%d+)")
---        print("year :"..tostring(year))
---        print("month :"..tostring(month))
---        print("day :"..tostring(day))
---        print("hour :"..tostring(hour))
---        print("minute :"..tostring(minute))
         if (year == nil) then
             _,_,year,month,day =string.find(strDateTime, "(%d+)-(%d+)-(%d+)")
---            print("year :"..tostring(year))
---            print("month :"..tostring(month))
---            print("day :"..tostring(day))
         end
     end
     
@@ -104,7 +104,7 @@ function extractDateTime(strDateTime, format)
     end
 
     return result
-end
+end --extractDateTime
 
 
 -- --------------------------------------------
@@ -118,10 +118,10 @@ function initMeteo()
     end
 
         --Affichage du Titre
-    lblTitle = gui:label(win, 35, 10, 200, 28)
+    lblTitle = gui:label(win, 15, 10, 200, 28)
     lblTitle:setFontSize(24)
 
-    lblCoord = gui:label(win, 40, 38, 200, 20)
+    lblCoord = gui:label(win, 15, 38, 200, 20)
     lblCoord:setFontSize(16)
 
     -- Affichage de la ville sélectionnée
@@ -143,11 +143,12 @@ end
 -- Affichage de la ville sélectionnée, ainsi que la latitud et la longitude
 function printVille()
 
-    lblTitle:setText("Météo "..selectedVille)
-    if (selectedLatitude ~= nil and selectedLongitude ~= nil ) then
-        lblCoord:setText("lat: "..tostring(selectedLatitude).."  -  long: "..tostring(selectedLongitude))
+    if (selectedVille ~= nil) then
+        lblTitle:setText("Météo "..selectedVille)
+        if (selectedLatitude ~= nil and selectedLongitude ~= nil ) then
+            lblCoord:setText("lat: "..tostring(selectedLatitude).."  -  long: "..tostring(selectedLongitude))
+        end
     end
-
 end
 
 
@@ -238,24 +239,24 @@ function displayMeteoData()
             dataToDisplay.hours = {}
 
             -- On recupere la 1ere date pour l'afficher pleinement
-            -- on enleve les " du début et de fin
+            -- on enleve les " des string récupérées
             if (mode == "hourly") then
-                firstDate = extractDateTime(string.sub(json_hours:at(0):get(), 2, -2), "longDate")
+                firstDate = extractDateTime(string.gsub(json_hours:at(0):get(),"\"", ""), "longDate")
             
                 -- on extrait uniquement les heuress
                 for i=0, json_hours:size()-1 do
-                    local strTime = extractDateTime(string.sub(json_hours:at(i):get(), 2, -2), "time")
+                    local strTime = extractDateTime(string.gsub(json_hours:at(i):get(),"\"", ""), "time")
                     dataToDisplay.hours[i] = strTime
                 end
             end
 
             if (mode == "daily") then            
                 
-                firstDate = "Semaine du "..extractDateTime(string.sub(json_hours:at(0):get(), 2, -2), "shortDate")
+                firstDate = "Semaine du "..extractDateTime(string.gsub(json_hours:at(0):get(),"\"", ""), "shortDate")
 
                 -- on extrait uniquement les date courtes
                 for i=0, json_hours:size()-1 do
-                    local strTime = extractDateTime(string.sub(json_hours:at(i):get(), 2, -2), "shortDate")
+                    local strTime = extractDateTime(string.gsub(json_hours:at(i):get(),"\"", ""), "shortDate")
                     dataToDisplay.hours[i] = strTime
                 end
             end
@@ -336,21 +337,42 @@ end
 function displayHourlyMeteo(dataToDisplay, day)
 
     if (vDataMeteo == nil) then
-        vDataMeteo = gui:vlist(win, 10, 100, 300, 360)
+        vDataMeteo = gui:vlist(win, 15, 100, 285, 360)
         vDataMeteo:setSpaceLine(0)
     else
         vDataMeteo:clear()
         if (lblDate ~= nil) then
             lblDate:disable()
+            lblSwitch:disable()
         end
     end
 
     if (day ~= nil) then
         -- Affichage de la date
-        lblDate = gui:label(win, 10, 70, 300, 25)
+        if  (lblDate == nil) then
+            lblDate = gui:label(win, 15, 70, 300, 25)
+        end
         lblDate:setText(day)
-        lblDate:onClick(switchDisplayMeteoData)
         lblDate:enable()
+        
+        if (lblSwitch == nil) then
+            lblSwitch = gui:label(win, 240, 72, 60, 15)
+            lblSwitch:setFontSize(12)
+            lblSwitch:setTextColor(COLOR_BLUE)
+            lblSwitch:setHorizontalAlignment(CENTER_ALIGNMENT)
+            lblSwitch:setVerticalAlignment(CENTER_ALIGNMENT)
+            lblSwitch:setBorderSize(1)
+            lblSwitch:setRadius(10)
+            lblSwitch:setBorderColor(COLOR_GREY)
+            lblSwitch:onClick(switchDisplayMeteoData)
+            lblSwitch:onClick(switchDisplayMeteoData)
+        end
+            if (modeDisplay == "day") then
+            lblSwitch:setText(" Semaine... ")
+        else
+            lblSwitch:setText(" Jour... ")
+        end
+        lblSwitch:enable()
     end
 
     local lstBox = {}
@@ -361,11 +383,11 @@ function displayHourlyMeteo(dataToDisplay, day)
         for _, hour in ipairs(dataToDisplay.hours) do
 
             -- ajout de la box
-            local boxHour = gui:box(vDataMeteo, 5, 0, 300, 30)
+            local boxHour = gui:box(vDataMeteo, 0, 0, 300, 30)
             lstBox[i] = boxHour
 
             -- ajout heure/day
-            local lblHeure = gui:label(boxHour, 5, 0, 300, 30)
+            local lblHeure = gui:label(boxHour, 0, 0, 300, 30)
             lblHeure:setFontSize(14)
             lblHeure:setVerticalAlignment(CENTER_ALIGNMENT)
             lblHeure:setHorizontalAlignment(LEFT_ALIGNMENT)
@@ -450,7 +472,8 @@ function displayHourlyMeteo(dataToDisplay, day)
             
             -- gestion du décalage de la temperature
             local decalage = 0
-            local largeur = 114
+            -- largeur de la partie "temperature"
+            local largeur = 105
             decalage = int(largeur * ( int(temp) - minTemp ) / (maxTemp - minTemp))
 
             -- gestion de la couleur de la temperature
@@ -636,22 +659,26 @@ function initRechercheVille()
         winRecherche = gui:window()
     end
 
-    inputVille = gui:input(winRecherche, 10, 10)
+    btnBack = gui:image(winRecherche, "back.png", 20, 20, 18, 18)
+    btnBack:onClick(displayMeteoData)
+
+    inputVille = gui:input(winRecherche, 60, 20)
     if (selectedVille == nil) then
-        selectedVille = ""
+        inputVille:setText("")
+    else
+        inputVille:setText(selectedVille)
     end
-    inputVille:setText(selectedVille)
     inputVille:setTitle("Ville") 
-    inputVille:onClick(function() saisieVille() end)
+    inputVille:onClick(saisieVille)
 
-    btnRechercher = gui:image(winRecherche, "loupe.png", 270, 20, 24, 24, COLOR_WHITE)
-    btnRechercher:setBorderSize(2)
-    btnRechercher:setBorderColor(COLOR_BLACK)
-    btnRechercher:onClick(function() rechercherVille(inputVille:getText()) end)
-
-    vListVilles = gui:vlist(winRecherche, 10, 80, 300, 400)
+    vListVilles = gui:vlist(winRecherche, 15, 100, 295, 400)
     vListVilles:setBackgroundColor(COLOR_LIGHT_GREY)
     vListVilles:setSpaceLine(10)
+
+    if (selectedVille ~= nil and selectedVille ~= "") then
+        rechercherVille(selectedVille)
+    end
+
 
     -- Affichage de l'écran
     gui:setWindow(winRecherche)
@@ -663,7 +690,10 @@ function saisieVille()
 
     local keyboard = gui:keyboard("Ville", inputVille:getText())
     inputVille:setText(keyboard)
-    ville = keyboard
+    selectedVille = keyboard
+    if (selectedVille ~= nil and selectedVille ~= "") then
+        rechercherVille(selectedVille)
+    end
 
 end
 
@@ -679,6 +709,7 @@ function rechercherVille(txt)
 
     local json_obj = Json:new(json_str)
     local oldSelection = nil
+
     -- check if we have some results
     if (json_obj:has_key("results")) then
 --        print("we have some results")
@@ -686,9 +717,9 @@ function rechercherVille(txt)
         json_results = json_obj["results"]
 
         for num = 0, json_results:size()-1 do
-            local name          = json_results:at(num)["name"]:get()
-            local country_code  = json_results:at(num)["country_code"]:get()
-            local county        = json_results:at(num)["admin1"]:get()
+            local name          = string.gsub(json_results:at(num)["name"]:get(),"\"", "")
+            local country_code  = string.gsub(json_results:at(num)["country_code"]:get(),"\"", "")
+            local county        = string.gsub(json_results:at(num)["admin1"]:get(),"\"", "")
             local latitude      = json_results:at(num)["latitude"]:get()
             local longitude     = json_results:at(num)["longitude"]:get()
             
@@ -734,7 +765,7 @@ end
 -- ajoute une ville dans la liste de villes sélectionnables
 function displaySelectionVille(row, name, country_code, county, latitude, longitude)
 
-    local boxVille = gui:label(vListVilles, 0, 0, 300, 60)
+    local boxVille = gui:label(vListVilles, 0, 0, 290, 60)
     boxVille:setBackgroundColor(COLOR_LIGHT_GREY)
     boxVille:setRadius(10)
     boxVille:setFontSize(16)
@@ -758,6 +789,7 @@ function selectionneVille(selected, oldSelected, strVille, strLatitude, strLongi
         selectedLatitude = tonumber(strLatitude)
         selectedLongitude = tonumber(strLongitude)
         --gui:setWindow(win)
+        saveVille()
         displayMeteoData()
         return
     end
@@ -774,9 +806,54 @@ end
 --   Gestion de la recherche de la ville
 -- --------------------------------------------
 
-function initVille()
     -- read the data from the saved file
-    selectedVille = "Paris"
-    selectedLatitude = 48.85341
-    selectedLongitude = 2.3488
+    function initVille()
+
+
+    selectedVille = nil
+    selectedLatitude = nil
+    selectedLongitude = nil
+
+    local fileMeteo = storage:file ("meteo.json", READ)
+    if (not storage:isFile("meteo.json")) then
+        print("pas de fichier")
+        return
+    end
+
+    fileMeteo:open()
+    str_meteo = fileMeteo:readAll()
+    fileMeteo:close()
+    fileMeteo = nil
+
+    json_meteo = Json:new(str_meteo)
+
+    if (json_meteo:has_key("ville")) then
+        selectedVille = string.gsub(json_meteo["ville"]:get(),"\"", "")
+        selectedLatitude = tonumber(json_meteo["latitude"]:get())
+        selectedLongitude = tonumber(json_meteo["longitude"]:get())
+    else
+        print("pas json_meteo:has(ville)")
+    end
+end
+
+function saveVille()
+
+    local fileMeteo = storage:file ("meteo.json", WRITE)
+
+    if (fileMeteo == nil) then
+        print("error saving meteo file")
+        return
+    end
+
+    local str_Json = '{"ville":\"'..selectedVille..'\", "latitude":'..selectedLatitude..', "longitude":'..selectedLongitude..'}'
+    --json_meteo = Json:new(str_Json)
+
+--    json_meteo["ville"] = selectedVille
+--    json_meteo["latitude"] = selectedLatitude
+--    json_meteo["longitude"] = selectedLongitude
+    fileMeteo:open()
+    fileMeteo:write(str_Json)
+
+    fileMeteo:close()
+
 end
