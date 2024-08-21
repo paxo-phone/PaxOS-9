@@ -112,6 +112,7 @@ int launcher()
 
         Image* img = new Image(AppManager::appList[i].path / "../icon.png", 20, 6, 40, 40, COLOR_LIGHT_GREY);
         img->load();
+        img->setTransparentColor(COLOR_WHITE);
         box->addChild(img);
 
         Label* text = new Label(5, 46, 70, 34);

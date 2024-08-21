@@ -34,7 +34,12 @@ namespace gui::ImagesList
 
         graphics::SImage i = graphics::SImage(path);
 
-        ImageLoaded img = { path, i.getWidth(), i.getHeight(), std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight()) };
+        ImageLoaded img = { 
+            path, 
+            i.getWidth(), 
+            i.getHeight(), 
+            std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight()) 
+        };
         
         uint16_t m_width = i.getWidth();
         uint16_t m_height = i.getHeight();
@@ -88,6 +93,11 @@ namespace gui::elements
     {
         if(m_isRendered == false)
             load(m_backgroundColor);
+    }
+
+    void Image::setTransparentColor(color_t color){
+        m_surface->setTransparency(true);
+        m_surface->setTransparentColor(color);
     }
 
     void Image::load(color_t background)
