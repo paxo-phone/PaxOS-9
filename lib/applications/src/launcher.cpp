@@ -52,20 +52,6 @@ void applications::launcher::update() {
         draw();
     }
 
-    // Update, draw AND update touch events
-    if (launcherWindow != nullptr) {
-        launcherWindow->updateAll();
-    }
-
-    // Check touch events
-    targetApp = nullptr;
-
-    for (const auto& [icon, app] : applicationsIconsMap) {
-        if (icon->isTouched()) {
-            targetApp = app;
-        }
-    }
-
     // Update dynamic elements
     // TODO : Refactor this
     if (millis() > lastClockUpdate + 1000) {
@@ -100,6 +86,20 @@ void applications::launcher::update() {
     } else {
         chargingStartTime = 0;
         chargingPopupBox->disable();
+    }
+
+    // Update, draw AND update touch events
+    if (launcherWindow != nullptr) {
+        launcherWindow->updateAll();
+    }
+
+    // Check touch events
+    targetApp = nullptr;
+
+    for (const auto& [icon, app] : applicationsIconsMap) {
+        if (icon->isTouched()) {
+            targetApp = app;
+        }
     }
 }
 
