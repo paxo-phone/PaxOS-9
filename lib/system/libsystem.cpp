@@ -201,7 +201,7 @@ void libsystem::displayBootErrors() {
             screenHeight - static_cast<int32_t>(bootErrors.size() - i + 1) * fontHeight
         );
 
-        lcd->printf(message.c_str());
+        lcd->print(message.c_str());
     }
 }
 

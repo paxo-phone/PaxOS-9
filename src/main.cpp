@@ -165,6 +165,21 @@ void setup()
     }
     setScreenOrientation(graphics::PORTRAIT);
 
+    // If battery is too low
+    // Don't initialize ANY MORE service
+    // But display error
+    if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
+        libsystem::registerBootError("Battery level is too low.");
+        libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "% < 5%");
+        libsystem::registerBootError("Please charge your Paxo.");
+        libsystem::registerBootError("Tip: Force boot by plugging a charger.");
+
+        libsystem::displayBootErrors();
+        libsystem::restart(true, 10000);
+
+        return;
+    }
+
     // Set device mode to normal
     setDeviceMode(libsystem::NORMAL);
 
