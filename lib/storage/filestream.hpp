@@ -46,6 +46,7 @@ namespace storage
         bool isopen(void) const;
 
         long size(void);
+        long sizeFromCurrentPosition(void);
 
         friend FileStream &operator<<(FileStream &stream,
                                       const std::string &text);

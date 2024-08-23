@@ -98,6 +98,18 @@ namespace storage
         m_stream.seekg (0, std::ios::end);
         const auto end = m_stream.tellg();
         const auto fsize = (end-begin);
+        m_stream.seekg(0, std::ios::beg);
+        return fsize;
+
+    }
+
+    long FileStream::sizeFromCurrentPosition(void)
+    {
+        const auto currentPosition = m_stream.tellg();
+        m_stream.seekg (0, std::ios::end);
+        const auto end = m_stream.tellg();
+        const auto fsize = (end-currentPosition);
+        m_stream.seekg(fsize, std::ios::beg);
         return fsize;
 
     }

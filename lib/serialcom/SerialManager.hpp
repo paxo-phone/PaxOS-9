@@ -30,7 +30,7 @@ namespace serialcom {
 
         bool newData = false;
         bool isOutputingCommand = false;
-        char current_input[INPUT_MAX_SIZE];   // an array to store the received data
+        char current_input[INPUT_MAX_SIZE] = {'\0'};   // an array to store the received data
         void getInputCommand();
         bool isNewInputAvailable() const;
     };

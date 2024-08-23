@@ -251,22 +251,43 @@ namespace serialcom
     // output = file content in chunks of 2048 bytes (or less for the last chunk), each one encoded in base64
     void CommandsManager::processDownloadCommand(const Command& command) const
     {
-        std::string downloadPath = command.arguments[0];
+        storage::Path downloadPath = storage::Path(command.arguments[0]);
 
-        SerialManager::sharedInstance->commandLog("download path: " + downloadPath);
-        storage::FileStream fileStream(downloadPath, storage::READ);
+        std::cout << downloadPath.str() << std::endl << std::endl;
+        storage::FileStream fileStream(downloadPath.str(), storage::READ);
+
+        if (!fileStream.isopen())
+        {
+            SerialManager::sharedInstance->commandLog("Error: file couldn't be opened.");
+            return;
+        }
+        #define BOOL_STR(b) (b?"true":"false")
+
+        std::cout << "File size " << std::to_string(fileStream.size()) << " : " << std::to_string(fileStream.size() + 1) << " : " << BOOL_STR(fileStream.size() == 0) << std::endl; 
+
+        if (fileStream.size() == 0)
+        {
+            SerialManager::sharedInstance->commandLog("Nothing in the file");
+            return;
+        }
+
+        SerialManager::sharedInstance->commandLog(std::to_string(fileStream.size()));
 
         char nextChar = fileStream.readchar();
-        while (!nextChar)
+        while (nextChar != std::char_traits<char>::eof() && fileStream.sizeFromCurrentPosition() > 0)
         {
-            std::string chunk = fileStream.read(2047) + nextChar;
+            SerialManager::sharedInstance->commandLog("chunk");
+            SerialManager::sharedInstance->commandLog(std::to_string((uint8_t)nextChar));
+            SerialManager::sharedInstance->commandLog("size till end");
+            SerialManager::sharedInstance->commandLog(std::to_string(fileStream.sizeFromCurrentPosition()));
+            std::string chunk = nextChar + fileStream.read(2047);
             std::string encodedChunk = base64::to_base64(chunk);
             SerialManager::sharedInstance->commandLog(encodedChunk);
-
+            
             nextChar = fileStream.readchar();
         }
 
-        SerialManager::sharedInstance->commandLog("finsihed");
+        SerialManager::sharedInstance->commandLog("finished");
 
     
         fileStream.close();
