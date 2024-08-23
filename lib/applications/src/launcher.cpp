@@ -53,6 +53,9 @@ void applications::launcher::update() {
     }
 
     // Update dynamic elements
+    // Do this before updating the window (so drawing it)
+    // Because it can cause weird "blinking" effects
+
     // TODO : Refactor this
     if (millis() > lastClockUpdate + 1000) {
         // What ???
