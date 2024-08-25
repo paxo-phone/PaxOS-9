@@ -16,6 +16,7 @@ namespace gui::elements
 
         void load(color_t background = COLOR_WHITE);
         void setTransparentColor(color_t);
+//        void setTransparency(bool _transparent);
 
     private:
         storage::Path m_path;

@@ -32,7 +32,8 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
                                   m_isRendered(false),
                                   m_isDrawn(false),
                                   m_pressedState(NOT_PRESSED),
-                                  m_hasEvents(false)
+                                  m_hasEvents(false),
+                                  m_autoDelete(true)
 {
     // Initialiser d'autres membres si nécessaire dans le constructeur
 }
@@ -100,9 +101,9 @@ bool gui::ElementBase::updateAll()
 {
     if(!isInside())
     {
-        if(m_surface != nullptr)
-            free();
-        return false;
+        if(m_surface != nullptr && this->m_autoDelete) {
+           free();
+        }
     }
 
     if (m_parent == nullptr)

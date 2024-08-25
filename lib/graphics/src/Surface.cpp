@@ -194,12 +194,12 @@ namespace graphics
         m_color = color;
     }
 
-    void Surface::setTransparency(const bool enabled)
+    void Surface::setTransparency(bool enabled)
     {
         m_transparent = enabled;
     }
 
-    void Surface::setTransparentColor(const color_t color)
+    void Surface::setTransparentColor(color_t color)
     {
         m_transparent_color = color;
     }

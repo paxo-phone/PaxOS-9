@@ -96,9 +96,23 @@ namespace gui::elements
     }
 
     void Image::setTransparentColor(color_t color){
-        m_surface->setTransparency(true);
+        if ( ! m_surface) {
+            //std::cout << "[Image] m_surface is null";
+            load(color);
+        }
         m_surface->setTransparentColor(color);
+        m_surface->setTransparency(true);
     }
+
+/*    void Image::setTransparency(bool _transparent){
+        if (m_surface) {
+            m_surface->setTransparency(_transparent);
+        }
+        else{
+            std::cout << "[Image] m_surface is null";
+        }
+    }
+*/
 
     void Image::load(color_t background)
     {

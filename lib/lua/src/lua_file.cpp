@@ -233,7 +233,8 @@ void LuaFile::load()
                     return gui->image(parent, path, x, y, width, height, COLOR_WHITE);
                 },
                 &LuaGui::image
-            ),
+            ),          
+//            "image", &LuaGui::image,
             "label", &LuaGui::label,
             "input", &LuaGui::input,
             "button", &LuaGui::button,
@@ -305,7 +306,8 @@ void LuaFile::load()
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaImage>("LuaImage",
-            sol::base_classes, sol::bases<LuaWidget>());
+            "setTransparentColor", &LuaImage::setTransparentColor,
+            sol::base_classes, sol::bases<LuaWidget>());            
 
         lua.new_usertype<LuaLabel>("LuaLabel",
             "setText", &LuaLabel::setText,

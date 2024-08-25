@@ -28,6 +28,28 @@ function run()
 end
 
 
+-- transforme une couleur RGB656 en decimal
+local function RGB(r, g, b)
+
+    -- Convert 8-bit red to 5-bit red.
+    red5 = int(r / 255 * 31)
+    -- Convert 8-bit green to 6-bit green.
+    green6 = int(g / 255 * 63)
+    --  Convert 8-bit blue to 5-bit blue.
+    blue5 = int(b / 255 * 31)
+
+    -- Shift the red value to the left by 11 bits.
+    red5_shifted = red5 << 11
+    --  Shift the green value to the left by 5 bits.
+    green6_shifted = green6 << 5
+
+    -- Combine the red, green, and blue values.
+    rgb565 = red5_shifted | green6_shifted | blue5
+
+    return rgb565
+
+end
+
 --Fonction helper int : renvoi x tronqué
 function int(x)
     return math.floor(x)
@@ -417,6 +439,8 @@ function displayHourlyMeteo(dataToDisplay, day)
             end
 
             imgCode = gui:image(boxHour, "images/meteo_"..tonumber(code)..".png", 50, 5, 20, 20, color)
+            imgCode:setTransparentColor(COLOR_WHITE)
+            --imgCode:setTransparency(true)
 
             i=i+1
         end
@@ -439,8 +463,12 @@ function displayHourlyMeteo(dataToDisplay, day)
 
                 if (tonumber(proba) == 0) then
                     local imgRain = gui:image(boxHour, "images/no-rain.png", 85, 5, 20, 30, color)
+                    imgRain:setTransparentColor(COLOR_WHITE)
+
                 else
                     local imgRain = gui:image(boxHour, "images/rain.png", 85, 5, 20, 20, color)
+                    imgRain:setTransparentColor(COLOR_WHITE)
+
                     lblProba = gui:label(boxHour, 110, 5, 30, 20)
                     lblProba:setFontSize(12)
                     lblProba:setBackgroundColor(color)
@@ -456,6 +484,7 @@ function displayHourlyMeteo(dataToDisplay, day)
 
         local i=0
         local color = COLOR_WHITE
+        local colorBackGround
 
         local minTemp = int(min(dataToDisplay.temperature))
         local maxTemp = int(max(dataToDisplay.temperature))
@@ -476,26 +505,41 @@ function displayHourlyMeteo(dataToDisplay, day)
             local largeur = 105
             decalage = int(largeur * ( int(temp) - minTemp ) / (maxTemp - minTemp))
 
+
+            -- de 10 à 14: RGB (255, 190, 63)
+            -- de 14 à 20: RGB (230, 148, 61)
+            -- de 20 à 30: RGB (213, 102, 43)
+            -- de 30 à +: RGB (206, 59, 36)
+
             -- gestion de la couleur de la temperature
-            if (temp<0) then
-                color = COLOR_BLUE
-            elseif (temp < 10) then
-                color = COLOR_LIGHT_BLUE
+            if (temp < -10 ) then
+                color = RGB (161, 205, 231)
+            elseif (temp<5) then
+                color = RGB (200, 225, 241)
+            elseif (temp < 14) then
+                color = RGB (255, 190, 63)
             elseif (temp < 20) then
-                color = COLOR_LIGHT_ORANGE
+                color = RGB (230, 148, 61)
             elseif (temp < 30) then
-                color = COLOR_ORANGE
+                color = RGB (213, 102, 43)
             else
-                color = COLOR_RED
+                color = RGB (206, 59, 36)
             end
 
-            local lblTemperature = gui:label(boxHour, 140+decalage, 2, 28, 28, colorBackGround)
-            lblTemperature:setRadius(14)
-            lblTemperature:setHorizontalAlignment(CENTER_ALIGNMENT)
-            lblTemperature:setVerticalAlignment(CENTER_ALIGNMENT)
-            lblTemperature:setBackgroundColor(color)
-            lblTemperature:setFontSize(10)
-            lblTemperature:setText(tostring(int(temp)).."°")
+            local strTemp = tostring(int(temp)).."°"
+            local cnvTemp = gui:canvas(boxHour, 140+decalage, 0, 30, 30)
+            cnvTemp:fillRect(0, 0, 30, 30, colorBackGround)
+            cnvTemp:fillRoundRect(1, 1, 28, 28, 14, color)
+            cnvTemp:drawTextCentered(0, 0,strTemp , 65534, true,true, 8)
+--            local lblTemperature = gui:label(boxHour, 140+decalage, 2, 28, 28, colorBackGround)
+            -- local lblTemperature = gui:label(boxHour, 140+decalage, 2, 28, 28, colorBackGround)
+
+            --            lblTemperature:setRadius(14)
+            --lblTemperature:setHorizontalAlignment(CENTER_ALIGNMENT)
+            --lblTemperature:setVerticalAlignment(CENTER_ALIGNMENT)
+--            lblTemperature:setBackgroundColor(color)
+            --lblTemperature:setFontSize(10)
+            --lblTemperature:setText(tostring(int(temp)).."°")
 
             i=i+1
         end
@@ -516,7 +560,7 @@ function displayHourlyMeteo(dataToDisplay, day)
                 colorBackGround = COLOR_WHITE
             end
 
-            local lblTemperatureMax = gui:label(boxHour, 150, 0, 30, 30, colorBackGround)
+            local lblTemperatureMax = gui:label(boxHour, 150, 0, 30, 30)
             lblTemperatureMax:setHorizontalAlignment(CENTER_ALIGNMENT)
             lblTemperatureMax:setVerticalAlignment(CENTER_ALIGNMENT)
             lblTemperatureMax:setFontSize(15)
@@ -528,7 +572,7 @@ function displayHourlyMeteo(dataToDisplay, day)
         end
     end --dataToDisplay.temperatureMax
 
-    -- Affichage des temperature Max
+    -- Affichage des temperature Min
        if (dataToDisplay.temperatureMin ~= nil) then
         local i=0
         local colorBackGround            
@@ -573,7 +617,7 @@ function getMeteoData()
 --    url = url.."&"..codeInterpretationMeteo.."&"..codeTimeZoneAuto.."&"..codeDataUnJour.."&"..codeTemperature.."&"...."&"..
   
     local urlDaily = 'https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_hours=24&timezone=auto'
-    local resultDaily = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[22.9,22.6,22.2,21.6,21.3,21.0,20.7,20.5,20.6,20.6,20.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
+    local resultDaily = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[22.9,22.6,22.2,0,4,7,12,13,14.3,20.6,20.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
     -- faire un appel à l'url
 
     -- url pour vue à 7 jours
@@ -602,7 +646,7 @@ end
 function getMeteoDataDay()
 
     local url = 'https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_hours=24&timezone=auto'
-    local result = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[22.9,22.6,22.2,21.6,21.3,21.0,20.7,20.5,20.6,20.6,20.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
+    local result = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[-22.9,-12.6,-2.2,0.6,3.3,6.0,12.7,18.5,20.6,30.6,40.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
 
     return result
 end

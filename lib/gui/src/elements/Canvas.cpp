@@ -10,6 +10,7 @@ namespace gui::elements
         this->m_y = y;
         this->m_width = width;
         this->m_height = height;
+        this->m_autoDelete = false;
     }
 
     void Canvas::render() {}
@@ -87,7 +88,8 @@ namespace gui::elements
 
     void Canvas::fillPolygon(std::vector<std::pair<int16_t, int16_t>> vertices, color_t color)
     {        
-        StandbyMode::triggerPower();if (vertices.empty())
+        StandbyMode::triggerPower();
+        if (vertices.empty())
         {
             return;
         }
@@ -156,7 +158,7 @@ namespace gui::elements
     void Canvas::drawText(int16_t x, int16_t y, std::string& text, color_t color, float fontSize)
     {
         StandbyMode::triggerPower();
-        this->getAndSetSurface()->setFontSize(fontSize);
+        this->getAndSetSurface()->setFontSize(x);
         this->getAndSetSurface()->drawText(text, x, y, color);
         this->localGraphicalUpdate();
     }
@@ -164,7 +166,7 @@ namespace gui::elements
     // w and h are the width and height of the text bounding box
     void Canvas::drawTextCentered(int16_t x, int16_t y, std::string& text, color_t color, bool horizontallyCentered, bool verticallyCentered, float fontSize)
     {
-        this->drawTextCenteredInRect(x, y, -1, -1, text, color, horizontallyCentered, verticallyCentered);
+        this->drawTextCenteredInRect(x, y, -1, -1, text, color, horizontallyCentered, verticallyCentered, fontSize);
     }
 
     void Canvas::drawTextCenteredInRect(int16_t x, int16_t y, uint16_t w, uint16_t h, std::string& text, color_t color, bool horizontallyCentered, bool verticallyCentered, float fontSize)

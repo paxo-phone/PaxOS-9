@@ -15,6 +15,7 @@ namespace gui::elements {
         m_y = y;
         m_width = width;
         m_height = height;
+        m_autoDelete = false;
     }
 
     Box::~Box() = default;
