@@ -57,6 +57,13 @@ LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
 
 LuaFile::~LuaFile()
 {
+    // prevent a crash if the app is deleted and one or more callbacks are defined
+    this->onmessage = sol::nil;
+    this->onmessageerror = sol::nil;
+    this->oncall = sol::nil;
+    this->onlowbattery = sol::nil;
+    this->oncharging = sol::nil;
+
     // libérer les ressources (events, etc)
 }
 
