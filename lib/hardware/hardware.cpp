@@ -159,7 +159,7 @@ bool hardware::isCharging() {
 #ifdef ESP_PLATFORM
     return analogRead(PIN_BATTERY_CHARGING_STATUS) > 100;
 #else
-    return false;
+    return true;
 #endif
 }
 

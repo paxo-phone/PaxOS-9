@@ -577,6 +577,7 @@ namespace GSM
     }
 
     double getBatteryLevel() {
+#ifdef ESP_PLATFORM
         const float voltage = getVoltage();
 
         if (voltage == -1) {
@@ -631,6 +632,9 @@ namespace GSM
         //     return 5;
         // else
         //     return 0;
+#else
+        return 1;
+#endif
     }
 
     void updateHour()
