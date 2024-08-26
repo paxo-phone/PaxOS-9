@@ -3,10 +3,10 @@ name: PlatformIO CI
 on:
   push:
     branches: 
-        - main
+        - "**"
   pull_request:
     branches:
-        - main
+        - "**"
 
 jobs:
     paxo_v5_build_test_upload:
