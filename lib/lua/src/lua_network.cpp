@@ -16,8 +16,6 @@
                     completionHandler(data);
                 }
             });
-
-
   
             // call back fonction pour mise à jour de l'avancement de la requete
            getTask->downloadProgressHandler = [&](double progress)

@@ -18,7 +18,7 @@ void LuaVerticalList::clear() {
         while (!this->children.empty()) {
             delete this->children[0];
         }       
-        this->widget->renderAll();
+//        this->widget->renderAll();
 }
 
 

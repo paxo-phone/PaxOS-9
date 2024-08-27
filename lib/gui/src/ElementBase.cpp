@@ -48,6 +48,8 @@ gui::ElementBase::~ElementBase()
             delete m_children[i];
         }
     }
+    if (m_parent != nullptr)
+        m_parent->localGraphicalUpdate();
 }
 
 void gui::ElementBase::renderAll(bool onScreen)
