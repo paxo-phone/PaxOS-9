@@ -624,16 +624,21 @@ end
 
 -- Appel à l'API
 function callAPI(url)
---    apiResponse = nil
-    network:callURL(url, getData)
---    if (apiResponse ~= nil) then
---        result = apiResponse
---    end
+    network:callURL(url, callbackGetData)
+--    network:callURL(url, callbackGetData, callbackProgress)
+end
+
+
+-- callback de progress
+-- est appelé quand la réponse est en cours de download
+-- progress est en % (de 0 à 100)
+function callbackProgress(progress)
+    print(progress)
 end
 
 -- callback de reponse
--- est appelé si la réponse à l'API est sucessful
-function getData(apiResponse_) 
+-- est appelé quand la réponse à l'API est sucessfull
+function callbackGetData(apiResponse_) 
 
     if( fonctionAPI == "meteoData") then
         displayMeteoData(apiResponse_)
