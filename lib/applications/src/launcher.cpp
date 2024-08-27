@@ -5,6 +5,8 @@
 #include <gui.hpp>
 #include <GuiManager.hpp>
 
+#include <../../network/network.hpp>
+
 
 /**
  * Helper fonction
@@ -149,6 +151,25 @@ int launcher()
         placementIndex++;
     }
 
+/************************************
+ * test pour le network
+ ***********************************/
+
+
+    Label* networkLabel = new Label(20, 40, 20, 20);
+    networkLabel->setBackgroundColor(COLOR_DARK);
+    networkLabel->setText("Network");
+    networkLabel->setTextColor(COLOR_WHITE);
+    networkLabel->setFontSize(16);
+    win.addChild(networkLabel);
+
+    Label* progressLabel = new Label(10, 420, 0, 20);
+    progressLabel->setBackgroundColor(COLOR_SUCCESS);
+    win.addChild(progressLabel);
+
+
+// //////////////////////////////////////////////////
+
     while (!hardware::getHomeButton() && AppManager::isAnyVisibleApp() == false)
     {
         for (int i = 0; i < apps.size(); i++)
@@ -161,6 +182,76 @@ int launcher()
         }
 
         eventHandlerApp.update();
+
+/************************************
+ * test pour le network
+ ***********************************/
+
+       if (networkLabel->isTouched())
+        {
+            std::cout << "connection status " << network::NetworkManager::sharedInstance->isConnected() << std::endl;
+
+            #ifndef ESP_PLATFORM
+            network::URLSessionDataTask* getTask = network::URLSession::defaultInstance.get()->dataTaskWithURL(network::URL("https://www.youtube.com/s/player/652ba3a2/player_ias.vflset/fr_FR/base.js"), [](const std::string& data)
+            {
+                {
+                    std::cout << "get request data: " << std::endl;
+                }
+            });
+            getTask->downloadProgressHandler = [&](double progress)
+            {
+                std::cout << "Received progress " << progress << std::endl;
+                progressLabel->setWidth(300 * progress);
+
+                if (networkLabel->isTouched())
+                {
+                    if (getTask->state == network::URLSessionTask::State::Running)
+                    {
+                        getTask->cancel();
+                        progressLabel->setWidth(0);
+                    }
+                    
+                }
+
+                win.updateAll();
+            };
+            getTask->uploadProgressHandler = [](double progress)
+            {
+                //std::cout << "Received upload progress " << progress << std::endl;
+            };
+
+            getTask->resume();
+            #endif
+
+            network::URLRequest advancedGETRequest = network::URLRequest(network::URL("https://azerpoiu.requestcatcher.com/test"));
+            advancedGETRequest.httpHeaderFields.insert(std::pair<std::string, std::string>("Custom-Header", "Hello world!"));
+            network::URLSessionDataTask* advancedGetTask = network::URLSession::defaultInstance.get()->dataTaskWithRequest(advancedGETRequest, [](const std::string& data)
+            {
+                {
+                    std::cout << "get advanced request data: " << data << std::endl;
+                }
+            });
+            advancedGetTask->resume();
+
+            network::URLRequest advancedPOSTRequest = network::URLRequest(network::URL("https://azerpoiu.requestcatcher.com/test"));
+            advancedPOSTRequest.method = network::URLRequest::HTTPMethod::POST;
+            advancedPOSTRequest.httpBody = "Hello world!";
+            advancedPOSTRequest.httpHeaderFields.insert(std::pair<std::string, std::string>("Custom-Header", "Hello world!"));
+            network::URLSessionDataTask* postTask = network::URLSession::defaultInstance.get()->dataTaskWithRequest(advancedPOSTRequest, [&](const std::string& data)
+            {
+                {
+                    std::cout << "get advanced post data: " << data << std::endl;
+                    networkLabel->setText(data);
+                    networkLabel->setWidth(100);
+                    networkLabel->setBackgroundColor(COLOR_WHITE);
+                    networkLabel->setTextColor(COLOR_DARK);
+                }
+            });
+
+            postTask->resume();
+        }
+// //////////////////////////////////////////////////
+
         win.updateAll();
 
         AppManager::loop();

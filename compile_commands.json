@@ -1,0 +1,1100 @@
+[
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/IPA/lgfx_font_japan.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/IPA/lgfx_font_japan.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/IPA/lgfx_font_japan.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/IPA/lgfx_font_japan.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_cn.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_cn.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_cn.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_cn.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_ja.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_ja.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_ja.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_ja.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_kr.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_kr.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_kr.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_kr.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_tw.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_tw.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/Fonts/efont/lgfx_efont_tw.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/Fonts/efont/lgfx_efont_tw.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_miniz.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_miniz.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_miniz.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_miniz.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_pngle.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_pngle.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_pngle.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_pngle.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_qoi.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_qoi.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_qoi.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_qoi.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_qrcode.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_qrcode.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_qrcode.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_qrcode.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_tjpgd.o -c -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_tjpgd.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/utility/lgfx_tjpgd.c",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/utility/lgfx_tjpgd.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/LGFXBase.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/LGFXBase.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/LGFXBase.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/LGFXBase.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/LGFX_Button.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/LGFX_Button.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/LGFX_Button.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/LGFX_Button.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/LGFX_Sprite.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/LGFX_Sprite.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/LGFX_Sprite.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/LGFX_Sprite.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/lgfx_fonts.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/lgfx_fonts.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/lgfx_fonts.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/lgfx_fonts.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/DividedFrameBuffer.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/DividedFrameBuffer.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/DividedFrameBuffer.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/DividedFrameBuffer.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/SpriteBuffer.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/SpriteBuffer.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/SpriteBuffer.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/SpriteBuffer.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/common_function.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/common_function.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/common_function.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/common_function.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/pixelcopy.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/pixelcopy.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/misc/pixelcopy.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/misc/pixelcopy.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_Device.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_Device.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_Device.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_Device.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_FlexibleFrameBuffer.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_FlexibleFrameBuffer.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_FlexibleFrameBuffer.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_FlexibleFrameBuffer.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_FrameBufferBase.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_FrameBufferBase.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_FrameBufferBase.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_FrameBufferBase.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_GDEW0154M09.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_GDEW0154M09.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_GDEW0154M09.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_GDEW0154M09.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_HUB75.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_HUB75.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_HUB75.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_HUB75.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_HasBuffer.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_HasBuffer.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_HasBuffer.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_HasBuffer.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_ILI9225.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_ILI9225.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_ILI9225.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_ILI9225.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_IT8951.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_IT8951.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_IT8951.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_IT8951.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_LCD.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_LCD.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_LCD.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_LCD.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_M5HDMI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_M5HDMI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_M5HDMI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_M5HDMI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_M5UnitGLASS.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_M5UnitGLASS.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_M5UnitGLASS.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_M5UnitGLASS.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_M5UnitLCD.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_M5UnitLCD.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_M5UnitLCD.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_M5UnitLCD.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_NT35510.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_NT35510.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_NT35510.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_NT35510.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_RA8875.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_RA8875.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_RA8875.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_RA8875.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_RM68120.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_RM68120.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_RM68120.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_RM68120.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1306.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1306.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1306.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1306.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1327.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1327.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1327.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1327.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1331.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1331.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1331.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1331.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1351.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1351.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1351.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1351.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1963.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1963.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/panel/Panel_SSD1963.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/panel/Panel_SSD1963.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/arduino_default/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/arduino_default/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/arduino_default/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/arduino_default/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/arduino_default/Bus_Stream.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/arduino_default/Bus_Stream.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/arduino_default/Bus_Stream.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/arduino_default/Bus_Stream.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/arduino_default/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/arduino_default/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/arduino_default/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/arduino_default/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_HUB75.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_HUB75.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_HUB75.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_HUB75.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_I2C.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_I2C.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_I2C.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_I2C.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_Parallel8.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_Parallel8.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_Parallel8.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_Parallel8.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Light_PWM.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Light_PWM.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Light_PWM.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Light_PWM.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Panel_CVBS.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Panel_CVBS.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/Panel_CVBS.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/Panel_CVBS.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32c3/Bus_Parallel8.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32c3/Bus_Parallel8.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32c3/Bus_Parallel8.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32c3/Bus_Parallel8.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s2/Bus_Parallel16.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s2/Bus_Parallel16.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s2/Bus_Parallel16.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s2/Bus_Parallel16.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s2/Bus_Parallel8.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s2/Bus_Parallel8.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s2/Bus_Parallel8.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s2/Bus_Parallel8.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Bus_Parallel16.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Bus_Parallel16.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Bus_Parallel16.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Bus_Parallel16.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Bus_Parallel8.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Bus_Parallel8.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Bus_Parallel8.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Bus_Parallel8.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Bus_RGB.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Bus_RGB.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Bus_RGB.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Bus_RGB.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Panel_RGB.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Panel_RGB.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp32s3/Panel_RGB.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp32s3/Panel_RGB.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp8266/Bus_I2C.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp8266/Bus_I2C.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp8266/Bus_I2C.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp8266/Bus_I2C.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp8266/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp8266/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp8266/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp8266/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp8266/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp8266/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/esp8266/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/esp8266/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/framebuffer/Panel_fb.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/framebuffer/Panel_fb.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/framebuffer/Panel_fb.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/framebuffer/Panel_fb.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/framebuffer/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/framebuffer/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/framebuffer/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/framebuffer/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/opencv/Panel_OpenCV.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/opencv/Panel_OpenCV.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/opencv/Panel_OpenCV.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/opencv/Panel_OpenCV.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/opencv/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/opencv/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/opencv/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/opencv/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/Bus_I2C.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/Bus_I2C.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/Bus_I2C.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/Bus_I2C.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/Light_PWM.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/Light_PWM.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/Light_PWM.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/Light_PWM.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/rp2040/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/rp2040/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd21/Bus_I2C.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd21/Bus_I2C.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd21/Bus_I2C.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd21/Bus_I2C.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd21/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd21/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd21/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd21/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd21/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd21/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd21/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd21/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd51/Bus_I2C.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd51/Bus_I2C.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd51/Bus_I2C.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd51/Bus_I2C.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd51/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd51/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd51/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd51/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd51/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd51/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/samd51/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/samd51/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/sdl/Panel_sdl.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/sdl/Panel_sdl.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/sdl/Panel_sdl.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/sdl/Panel_sdl.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/sdl/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/sdl/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/sdl/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/sdl/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/spresense/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/spresense/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/spresense/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/spresense/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/spresense/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/spresense/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/spresense/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/spresense/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/stm32/Bus_SPI.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/stm32/Bus_SPI.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/stm32/Bus_SPI.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/stm32/Bus_SPI.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/stm32/common.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/stm32/common.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/platforms/stm32/common.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/platforms/stm32/common.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_CST816S.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_CST816S.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_CST816S.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_CST816S.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_FT5x06.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_FT5x06.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_FT5x06.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_FT5x06.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_GSLx680.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_GSLx680.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_GSLx680.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_GSLx680.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_GT911.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_GT911.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_GT911.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_GT911.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_NS2009.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_NS2009.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_NS2009.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_NS2009.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_STMPE610.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_STMPE610.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_STMPE610.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_STMPE610.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_TT21xxx.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_TT21xxx.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_TT21xxx.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_TT21xxx.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_XPT2046.o -c -std=c++17 -DPLATFORMIO=60115 -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 .pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_XPT2046.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": ".pio/libdeps/macos/LovyanGFX/src/lgfx/v1/touch/Touch_XPT2046.cpp",
+        "output": ".pio/build/macos/libffa/LovyanGFX/lgfx/v1/touch/Touch_XPT2046.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib160/network/NetworkManager.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/network/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/network/src/NetworkManager.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/network/src/NetworkManager.cpp",
+        "output": ".pio/build/macos/lib160/network/NetworkManager.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib160/network/URL.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/network/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/network/src/URL.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/network/src/URL.cpp",
+        "output": ".pio/build/macos/lib160/network/URL.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib160/network/URLSession.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/network/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/network/src/URLSession.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/network/src/URLSession.cpp",
+        "output": ".pio/build/macos/lib160/network/URLSession.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib160/network/URLSessionDataTask.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/network/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/network/src/URLSessionDataTask.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/network/src/URLSessionDataTask.cpp",
+        "output": ".pio/build/macos/lib160/network/URLSessionDataTask.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib2bd/hardware/clock.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/hardware -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/hardware/clock.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/hardware/clock.cpp",
+        "output": ".pio/build/macos/lib2bd/hardware/clock.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib2bd/hardware/hardware.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/hardware -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/hardware/hardware.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/hardware/hardware.cpp",
+        "output": ".pio/build/macos/lib2bd/hardware/hardware.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libba9/storage/appFile.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/storage/appFile.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/storage/appFile.cpp",
+        "output": ".pio/build/macos/libba9/storage/appFile.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libba9/storage/filestream.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/storage/filestream.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/storage/filestream.cpp",
+        "output": ".pio/build/macos/libba9/storage/filestream.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libba9/storage/path.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/storage/path.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/storage/path.cpp",
+        "output": ".pio/build/macos/libba9/storage/path.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib463/gsm/contacts.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gsm/src/contacts.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gsm/src/contacts.cpp",
+        "output": ".pio/build/macos/lib463/gsm/contacts.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib463/gsm/conversation.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gsm/src/conversation.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gsm/src/conversation.cpp",
+        "output": ".pio/build/macos/lib463/gsm/conversation.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib463/gsm/gsm.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gsm/src/gsm.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gsm/src/gsm.cpp",
+        "output": ".pio/build/macos/lib463/gsm/gsm.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib463/gsm/message.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gsm/src/message.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gsm/src/message.cpp",
+        "output": ".pio/build/macos/lib463/gsm/message.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libf4f/tasks/delay.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/tasks/src/delay.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/tasks/src/delay.cpp",
+        "output": ".pio/build/macos/libf4f/tasks/delay.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libf4f/tasks/standby.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/tasks/src/standby.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/tasks/src/standby.cpp",
+        "output": ".pio/build/macos/libf4f/tasks/standby.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libf4f/tasks/tasks.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/tasks/src/tasks.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/tasks/src/tasks.cpp",
+        "output": ".pio/build/macos/libf4f/tasks/tasks.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libf4f/tasks/threads.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/tasks/src/threads.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/tasks/src/threads.cpp",
+        "output": ".pio/build/macos/libf4f/tasks/threads.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libada/imgdec/imgdec.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/imgdec/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/imgdec/src/imgdec.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/imgdec/src/imgdec.cpp",
+        "output": ".pio/build/macos/libada/imgdec/imgdec.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib236/graphics/Encoder/decodeutf8.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/graphics/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -Ilib/imgdec/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/graphics/src/Encoder/decodeutf8.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/graphics/src/Encoder/decodeutf8.cpp",
+        "output": ".pio/build/macos/lib236/graphics/Encoder/decodeutf8.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib236/graphics/Encoder/gfxlatin1.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/graphics/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -Ilib/imgdec/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/graphics/src/Encoder/gfxlatin1.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/graphics/src/Encoder/gfxlatin1.cpp",
+        "output": ".pio/build/macos/lib236/graphics/Encoder/gfxlatin1.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib236/graphics/Image.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/graphics/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -Ilib/imgdec/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/graphics/src/Image.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/graphics/src/Image.cpp",
+        "output": ".pio/build/macos/lib236/graphics/Image.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib236/graphics/Surface.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/graphics/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -Ilib/imgdec/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/graphics/src/Surface.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/graphics/src/Surface.cpp",
+        "output": ".pio/build/macos/lib236/graphics/Surface.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib236/graphics/color.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/graphics/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -Ilib/imgdec/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/graphics/src/color.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/graphics/src/color.cpp",
+        "output": ".pio/build/macos/lib236/graphics/color.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib236/graphics/graphics.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/graphics/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -Ilib/imgdec/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/graphics/src/graphics.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/graphics/src/graphics.cpp",
+        "output": ".pio/build/macos/lib236/graphics/graphics.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/ElementBase.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/ElementBase.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/ElementBase.cpp",
+        "output": ".pio/build/macos/lib16c/gui/ElementBase.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/GuiManager.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/GuiManager.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/GuiManager.cpp",
+        "output": ".pio/build/macos/lib16c/gui/GuiManager.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Box.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Box.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Box.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Box.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Button.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Button.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Button.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Button.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Canvas.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Canvas.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Canvas.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Canvas.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Checkbox.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Checkbox.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Checkbox.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Checkbox.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Image.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Image.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Image.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Image.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Input.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Input.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Input.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Input.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Keyboard.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Keyboard.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Keyboard.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Keyboard.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Label.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Label.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Label.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Label.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/List.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/List.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/List.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/List.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Radio.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Radio.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Radio.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Radio.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Switch.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Switch.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Switch.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Switch.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/elements/Window.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/elements/Window.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/elements/Window.cpp",
+        "output": ".pio/build/macos/lib16c/gui/elements/Window.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib16c/gui/gui.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/gui/src/gui.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/gui/src/gui.cpp",
+        "output": ".pio/build/macos/lib16c/gui/gui.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lapi.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lapi.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lapi.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lapi.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lauxlib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lauxlib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lauxlib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lauxlib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lbaselib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lbaselib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lbaselib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lbaselib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lcode.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lcode.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lcode.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lcode.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lcorolib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lcorolib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lcorolib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lcorolib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lctype.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lctype.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lctype.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lctype.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/ldblib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/ldblib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/ldblib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/ldblib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/ldebug.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/ldebug.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/ldebug.c",
+        "output": ".pio/build/macos/libd95/lua/lua/ldebug.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/ldo.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/ldo.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/ldo.c",
+        "output": ".pio/build/macos/libd95/lua/lua/ldo.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/ldump.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/ldump.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/ldump.c",
+        "output": ".pio/build/macos/libd95/lua/lua/ldump.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lfunc.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lfunc.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lfunc.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lfunc.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lgc.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lgc.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lgc.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lgc.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/linit.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/linit.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/linit.c",
+        "output": ".pio/build/macos/libd95/lua/lua/linit.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/liolib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/liolib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/liolib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/liolib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/llex.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/llex.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/llex.c",
+        "output": ".pio/build/macos/libd95/lua/lua/llex.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lmathlib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lmathlib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lmathlib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lmathlib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lmem.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lmem.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lmem.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lmem.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/loadlib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/loadlib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/loadlib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/loadlib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lobject.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lobject.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lobject.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lobject.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lopcodes.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lopcodes.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lopcodes.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lopcodes.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/loslib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/loslib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/loslib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/loslib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lparser.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lparser.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lparser.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lparser.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lstate.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lstate.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lstate.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lstate.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lstring.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lstring.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lstring.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lstring.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lstrlib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lstrlib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lstrlib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lstrlib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/ltable.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/ltable.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/ltable.c",
+        "output": ".pio/build/macos/libd95/lua/lua/ltable.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/ltablib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/ltablib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/ltablib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/ltablib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/ltm.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/ltm.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/ltm.c",
+        "output": ".pio/build/macos/libd95/lua/lua/ltm.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lua.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lua.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lua.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lua.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/luac.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/luac.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/luac.c",
+        "output": ".pio/build/macos/libd95/lua/lua/luac.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lundump.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lundump.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lundump.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lundump.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lutf8lib.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lutf8lib.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lutf8lib.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lutf8lib.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lvm.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lvm.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lvm.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lvm.o"
+    },
+    {
+        "command": "/usr/bin/gcc -o .pio/build/macos/libd95/lua/lua/lzio.o -c -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua/lzio.c",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua/lzio.c",
+        "output": ".pio/build/macos/libd95/lua/lua/lzio.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_box.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_box.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_box.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_box.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_button.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_button.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_button.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_button.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_canvas.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_canvas.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_canvas.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_canvas.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_checkbox.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_checkbox.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_checkbox.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_checkbox.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_events.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_events.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_events.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_events.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_file.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_file.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_file.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_file.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_gsm.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_gsm.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_gsm.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_gsm.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_gui.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_gui.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_gui.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_gui.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_hardware.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_hardware.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_hardware.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_hardware.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_image.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_image.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_image.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_image.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_input.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_input.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_input.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_input.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_json.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_json.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_json.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_json.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_label.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_label.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_label.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_label.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_list.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_list.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_list.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_list.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_radio.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_radio.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_radio.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_radio.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_storage.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_storage.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_storage.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_storage.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_storage_file.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_storage_file.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_storage_file.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_storage_file.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_switch.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_switch.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_switch.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_switch.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_widget.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_widget.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_widget.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_widget.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/libd95/lua/lua_window.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -I.pio/libdeps/macos/LovyanGFX/src -Ilib/hardware -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/lua/src/lua_window.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/lua/src/lua_window.cpp",
+        "output": ".pio/build/macos/libd95/lua/lua_window.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib990/applications/app.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/applications/src/app.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/applications/src/app.cpp",
+        "output": ".pio/build/macos/lib990/applications/app.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib990/applications/launcher.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/hardware -I.pio/libdeps/macos/LovyanGFX/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/applications/src/launcher.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/applications/src/launcher.cpp",
+        "output": ".pio/build/macos/lib990/applications/launcher.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/lib5bf/backtrace/backtrace.o -c -std=c++17 -DPLATFORMIO=60115 -Ilib/backtrace/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 lib/backtrace/src/backtrace.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "lib/backtrace/src/backtrace.cpp",
+        "output": ".pio/build/macos/lib5bf/backtrace/backtrace.o"
+    },
+    {
+        "command": "/usr/bin/g++ -o .pio/build/macos/src/main.o -c -std=c++17 -DPLATFORMIO=60115 -Iinclude -Isrc -Ilib/backtrace/src -Ilib/lua/src -Ilib/applications/src -Ilib/gui/src -Ilib/graphics/src -Ilib/imgdec/src -Ilib/gsm/src -Ilib/tasks/src -Ilib/storage -Ilib/json/src -Ilib/hardware -Ilib/network/src -I.pio/libdeps/macos/LovyanGFX/src -I/usr/local/include/SDL2 -I/opt/homebrew/include/SDL2 src/main.cpp",
+        "directory": "/Users/pierre-yves.muzard/dev/PaxOS-9",
+        "file": "src/main.cpp",
+        "output": ".pio/build/macos/src/main.o"
+    }
+]
