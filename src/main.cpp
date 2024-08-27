@@ -45,7 +45,7 @@ void ringingVibrator(void* data)
 void mainLoop(void* data)
 {
     #ifdef ESP_PLATFORM
-    graphics::setBrightness(0xFF/3);
+    graphics::setBrightness(graphics::brightness);
     #endif
     
     GuiManager &guiManager = GuiManager::getInstance();
@@ -100,7 +100,7 @@ void mainLoop(void* data)
             while (hardware::getHomeButton());
             
             StandbyMode::restorePower();
-            graphics::setBrightness(0xFF/3);
+            graphics::setBrightness(graphics::brightness);
         }
 
         AppManager::loop();

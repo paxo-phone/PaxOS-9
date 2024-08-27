@@ -124,6 +124,9 @@ bool gui::ElementBase::updateAll()
 
     for (auto child : m_children)
     {
+        if (!child->getIsEnabled())
+            continue;
+
         if (child->updateAll())
         {
             returnV = true; // if child had an event, ignore local events
