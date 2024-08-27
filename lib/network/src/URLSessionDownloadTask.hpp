@@ -1,0 +1,8 @@
+#ifndef URLSESSIONDOWNLOADTASK_HPP
+#define URLSESSIONDOWNLOADTASK_HPP
+
+namespace network {
+    
+}
+
+#endif // URLSESSIONDDOWNLOADTASK_HPP

@@ -14,6 +14,7 @@
 #include "lua_storage.hpp"
 #include "lua_gsm.hpp"
 #include "lua_json.hpp"
+#include "lua_network.hpp"
 
 
 struct Permissions
@@ -88,7 +89,7 @@ class LuaFile
     LuaGui lua_gui;
     LuaStorage lua_storage;
     LuaTime lua_time;
-    //LuaNetwork lua_network;
+    LuaNetwork lua_network;
 };
 
 #endif

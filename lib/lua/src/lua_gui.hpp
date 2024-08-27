@@ -42,6 +42,8 @@ class LuaGui
     void update();
 
     void setMainWindow(LuaWindow* window);
+    LuaWindow* getMainWindow();
+
     void showInfoMessage(const std::string& msg );
     void showWarningMessage(const std::string& msg );
     void showErrorMessage(const std::string& msg );

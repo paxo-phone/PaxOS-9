@@ -3,11 +3,16 @@ local selectedVille     -- ville sélectionnée pour la météo
 local selectedLatitude  -- latitude de la ville sélectionnée
 local selectedLongitude -- longitude de la ville sélectionnée
 
+local villeRecherchee   -- ville saisie pour la recherche
+
 local vListVilles   -- liste des villes recherchée (dans l'écran de recherche des villes)
 local vDataMeteo    -- liste des données météo affichées
 
 local modeDisplay = "day"
 local lblDate, lblSwitch
+
+
+local fonctionAPI 
 
 -- --------------------------------------------
 --   Main function of the application
@@ -144,7 +149,7 @@ function initMeteo()
     lblTitle:setFontSize(24)
 
     lblCoord = gui:label(win, 15, 38, 200, 20)
-    lblCoord:setFontSize(16)
+    lblCoord:setFontSize(14)
 
     -- Affichage de la ville sélectionnée
     printVille()
@@ -154,7 +159,8 @@ function initMeteo()
 
     -- récupération et affichage des données météo pour la ville sélectionnée
     if (selectedVille ~= nil) then
-        displayMeteoData()
+        --displayMeteoData()
+        callMeteoData()
     end
 
     -- Affichage de la fenetre principale
@@ -174,23 +180,25 @@ function printVille()
 end
 
 
--- Extrait les données météo du json et les affiche
-function displayMeteoData()
-
+function callMeteoData()
     gui:setWindow(win)
     printVille()
 
-    -- On appelle l'API à la journée ou la semaine
     local json_str
     if (modeDisplay == "week") then
         json_str = getMeteoDataWeek()
     elseif(modeDisplay == "day") then
         json_str = getMeteoDataDay()
     else
-        displayError("displayMeteoData : mode "..modeDisplay.." invalide")
+        displayError("callMeteoData : mode "..modeDisplay.." invalide")
         return
     end
- 
+
+end
+
+-- Extrait les données météo du json et les affiche
+--function displayMeteoData()
+function displayMeteoData(json_str)
  
     local json_obj = Json:new(json_str)
     
@@ -350,7 +358,8 @@ function switchDisplayMeteoData()
     else
         modeDisplay = "day"
     end
-    displayMeteoData()
+    --displayMeteoData()
+    callMeteoData()
 
 end
 
@@ -505,12 +514,6 @@ function displayHourlyMeteo(dataToDisplay, day)
             local largeur = 105
             decalage = int(largeur * ( int(temp) - minTemp ) / (maxTemp - minTemp))
 
-
-            -- de 10 à 14: RGB (255, 190, 63)
-            -- de 14 à 20: RGB (230, 148, 61)
-            -- de 20 à 30: RGB (213, 102, 43)
-            -- de 30 à +: RGB (206, 59, 36)
-
             -- gestion de la couleur de la temperature
             if (temp < -10 ) then
                 color = RGB (161, 205, 231)
@@ -526,20 +529,10 @@ function displayHourlyMeteo(dataToDisplay, day)
                 color = RGB (206, 59, 36)
             end
 
-            local strTemp = tostring(int(temp)).."°"
             local cnvTemp = gui:canvas(boxHour, 140+decalage, 0, 30, 30)
             cnvTemp:fillRect(0, 0, 30, 30, colorBackGround)
             cnvTemp:fillRoundRect(1, 1, 28, 28, 14, color)
-            cnvTemp:drawTextCentered(0, 0,strTemp , 65534, true,true, 8)
---            local lblTemperature = gui:label(boxHour, 140+decalage, 2, 28, 28, colorBackGround)
-            -- local lblTemperature = gui:label(boxHour, 140+decalage, 2, 28, 28, colorBackGround)
-
-            --            lblTemperature:setRadius(14)
-            --lblTemperature:setHorizontalAlignment(CENTER_ALIGNMENT)
-            --lblTemperature:setVerticalAlignment(CENTER_ALIGNMENT)
---            lblTemperature:setBackgroundColor(color)
-            --lblTemperature:setFontSize(10)
-            --lblTemperature:setText(tostring(int(temp)).."°")
+            cnvTemp:drawTextCentered(0, 0,tostring(int(temp)).."°" , 65534, true,true, 8)
 
             i=i+1
         end
@@ -601,56 +594,55 @@ function displayHourlyMeteo(dataToDisplay, day)
 
 end
 
-
--- Appel les API de Open Meteo pour la ville sélectionnée
--- Renvoi la retour au format JSON
-function getMeteoData()
-
-    local url = "https://api.open-meteo.com/v1/forecast?latitude="..tostring(selectedLatitude).."&longitude="..tostring(selectedLongitude)
-
-    -- Option à ajouter à l'url
-    local codeInterpretationMeteo = "hourly=weather_code"
-    local codeTimeZoneAuto = "timezone=auto"
-    local codeDataUnJour = "forecast_days=1"
-    local codeTemperature = "hourly=temperature_2m"
-
---    url = url.."&"..codeInterpretationMeteo.."&"..codeTimeZoneAuto.."&"..codeDataUnJour.."&"..codeTemperature.."&"...."&"..
-  
-    local urlDaily = 'https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_hours=24&timezone=auto'
-    local resultDaily = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[22.9,22.6,22.2,0,4,7,12,13,14.3,20.6,20.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
-    -- faire un appel à l'url
-
-    -- url pour vue à 7 jours
-    local url7jours = "https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_hours=24"
-    --local url7jours = 'https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_hours,wind_speed_10m_max,wind_gusts_10m_max'
-    local result7jours = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.09894371032714844,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":43.0,"daily_units":{"time":"iso8601","weather_code":"wmo code","temperature_2m_max":"°C","temperature_2m_min":"°C","precipitation_probability_max":"%"},"daily":{"time":["2024-08-19","2024-08-20","2024-08-21","2024-08-22","2024-08-23","2024-08-24","2024-08-25"],"weather_code":[3,80,3,2,3,81,2],"temperature_2m_max":[23.3,22.6,21.6,25.0,24.9,26.5,20.8],"temperature_2m_min":[13.1,14.8,12.3,12.3,14.6,16.4,13.7],"precipitation_probability_max":[0,94,0,0,3,19,10]}}'
-
-
-    local urlError = 'https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_hours=24&timezone=aut'
-    local resultError = '{"reason":"Invalid timezone","error":true}'
-
-    return result7jours
-
-end
+-- --------------------------------------------
+--   GESTION DES CALL API
+-- --------------------------------------------
 
 -- Appel API pour récupérer les données Météo pour Une Semaine
 function getMeteoDataWeek()
 
-    local url = "https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_hours=24"
-    local result = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.09894371032714844,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":43.0,"daily_units":{"time":"iso8601","weather_code":"wmo code","temperature_2m_max":"°C","temperature_2m_min":"°C","precipitation_probability_max":"%"},"daily":{"time":["2024-08-19","2024-08-20","2024-08-21","2024-08-22","2024-08-23","2024-08-24","2024-08-25"],"weather_code":[3,80,3,2,3,81,2],"temperature_2m_max":[23.3,22.6,21.6,25.0,24.9,26.5,20.8],"temperature_2m_min":[13.1,14.8,12.3,12.3,14.6,16.4,13.7],"precipitation_probability_max":[0,94,0,0,3,19,10]}}'
+    if (selectedLatitude ~=nil and selectedLongitude ~= nil) then
+        local url = 'https://api.open-meteo.com/v1/forecast?latitude='..tostring(selectedLatitude)..'&longitude='..tostring(selectedLongitude)..'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_hours=24'
+        fonctionAPI = "meteoData"
+        callAPI(url)
+        -- result = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[-22.9,-12.6,-2.2,0.6,3.3,6.0,12.7,18.5,20.6,30.6,40.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
+    end
 
-    return result
+--    local result = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.09894371032714844,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":43.0,"daily_units":{"time":"iso8601","weather_code":"wmo code","temperature_2m_max":"°C","temperature_2m_min":"°C","precipitation_probability_max":"%"},"daily":{"time":["2024-08-19","2024-08-20","2024-08-21","2024-08-22","2024-08-23","2024-08-24","2024-08-25"],"weather_code":[3,80,3,2,3,81,2],"temperature_2m_max":[23.3,22.6,21.6,25.0,24.9,26.5,20.8],"temperature_2m_min":[13.1,14.8,12.3,12.3,14.6,16.4,13.7],"precipitation_probability_max":[0,94,0,0,3,19,10]}}'
 end
 
 -- Appel API pour récupérer les données Météo pour Une journée
 function getMeteoDataDay()
 
-    local url = 'https://api.open-meteo.com/v1/forecast?latitude=48.8534&longitude=2.3488&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_hours=24&timezone=auto'
-    local result = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[-22.9,-12.6,-2.2,0.6,3.3,6.0,12.7,18.5,20.6,30.6,40.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
-
-    return result
+    if (selectedLatitude ~=nil and selectedLongitude ~= nil) then
+        local url = 'https://api.open-meteo.com/v1/forecast?latitude='..tostring(selectedLatitude)..'&longitude='..tostring(selectedLongitude)..'&hourly=temperature_2m,precipitation_probability,weather_code,&forecast_hours=24&timezone=auto'
+        fonctionAPI = "meteoData"
+        callAPI(url)
+        -- result = '{"latitude":48.86,"longitude":2.3399997,"generationtime_ms":0.08296966552734375,"utc_offset_seconds":7200,"timezone":"Europe/Paris","timezone_abbreviation":"CEST","elevation":43.0,"hourly_units":{"time":"iso8601","temperature_2m":"°C","precipitation_probability":"%","precipitation":"mm","weather_code":"wmo code","wind_speed_10m":"km/h"},"hourly":{"time":["2024-08-17T00:00","2024-08-17T01:00","2024-08-17T02:00","2024-08-17T03:00","2024-08-17T04:00","2024-08-17T05:00","2024-08-17T06:00","2024-08-17T07:00","2024-08-17T08:00","2024-08-17T09:00","2024-08-17T10:00","2024-08-17T11:00","2024-08-17T12:00","2024-08-17T13:00","2024-08-17T14:00","2024-08-17T15:00","2024-08-17T16:00","2024-08-17T17:00","2024-08-17T18:00","2024-08-17T19:00","2024-08-17T20:00","2024-08-17T21:00","2024-08-17T22:00","2024-08-17T23:00"],"temperature_2m":[-22.9,-12.6,-2.2,0.6,3.3,6.0,12.7,18.5,20.6,30.6,40.3,19.8,20.0,19.9,19.7,19.8,19.8,19.9,19.9,19.0,18.6,18.4,18.1,17.9],"precipitation_probability":[23,41,58,68,77,87,80,72,65,53,41,29,44,59,74,78,83,87,84,80,77,80,84,87],"precipitation":[0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.10,0.80,5.40,4.90,5.60,7.30,4.60,1.60,0.50,0.20,0.50,0.00,0.00,0.00,0.00],"weather_code":[3,3,3,3,3,3,3,3,3,61,61,63,63,63,63,63,61,61,61,61,61,3,3,3],"wind_speed_10m":[4.8,5.2,4.9,4.9,4.8,5.4,4.3,3.5,2.6,3.4,5.2,3.9,3.2,4.2,2.9,9.0,8.2,10.5,7.9,10.8,7.4,6.3,5.7,5.6]}}'
+    end
 end
 
+-- Appel à l'API
+function callAPI(url)
+--    apiResponse = nil
+    network:callURL(url, getData)
+--    if (apiResponse ~= nil) then
+--        result = apiResponse
+--    end
+end
+
+-- callback de reponse
+-- est appelé si la réponse à l'API est sucessful
+function getData(apiResponse_) 
+
+    if( fonctionAPI == "meteoData") then
+        displayMeteoData(apiResponse_)
+    elseif (fonctionAPI == "villeData") then
+        displayVilleRecherchee(apiResponse_)
+    else 
+        print("[getData] fonctionAPI non définit pour le callback")
+    end
+end
 
 
 function interpretWheatherCode(code)
@@ -675,9 +667,9 @@ end
 -- Affiche un message d'erreur
 function displayError(errorTxt)
 
-    if (lblError == nil) then
-        lblError = gui:label(win, 50, 200, 250, 50)
-    end
+    local activeWin = gui:getWindow()
+    lblError = gui:label(activeWin, 0, 200, 320, 100)
+    
     lblError:enable()
     lblError:setTextColor(COLOR_RED)
     lblError:setHorizontalAlignment(CENTER_ALIGNMENT)
@@ -704,13 +696,16 @@ function initRechercheVille()
     end
 
     btnBack = gui:image(winRecherche, "back.png", 20, 20, 18, 18)
-    btnBack:onClick(displayMeteoData)
+--    btnBack:onClick(displayMeteoData)
+    btnBack:onClick(callMeteoData)
 
     inputVille = gui:input(winRecherche, 60, 20)
     if (selectedVille == nil) then
         inputVille:setText("")
+        villeRecherchee = ""
     else
         inputVille:setText(selectedVille)
+        villeRecherchee = selectedVille
     end
     inputVille:setTitle("Ville") 
     inputVille:onClick(saisieVille)
@@ -719,10 +714,7 @@ function initRechercheVille()
     vListVilles:setBackgroundColor(COLOR_LIGHT_GREY)
     vListVilles:setSpaceLine(10)
 
-    if (selectedVille ~= nil and selectedVille ~= "") then
-        rechercherVille(selectedVille)
-    end
-
+    rechercherVille(villeRecherchee)
 
     -- Affichage de l'écran
     gui:setWindow(winRecherche)
@@ -734,30 +726,34 @@ function saisieVille()
 
     local keyboard = gui:keyboard("Ville", inputVille:getText())
     inputVille:setText(keyboard)
-    selectedVille = keyboard
-    if (selectedVille ~= nil and selectedVille ~= "") then
-        rechercherVille(selectedVille)
+    villeRecherchee = keyboard
+    rechercherVille(villeRecherchee)
+
+end
+
+
+function rechercherVille (ville)
+    -- Appel à l'API de recherche des coordonnées de la ville selectionnée
+    -- API geocoding 
+    hideError()
+    clearListVilles()
+    if (ville ~=nil and ville ~= "") then
+        local url = "https://geocoding-api.open-meteo.com/v1/search?name="..ville.."&count=5&language=fr&format=json"
+
+        fonctionAPI = "villeData"
+        callAPI(url)
     end
 
 end
 
 -- gestion de la recherche des coordonées d'une villes
-function rechercherVille(txt)
-
-    if (txt == "") then
-        return
-    end
-    
-    local json_str = getCoordData(ville)
---    print(json_str)
+function displayVilleRecherchee(json_str)
 
     local json_obj = Json:new(json_str)
     local oldSelection = nil
-
+    
     -- check if we have some results
     if (json_obj:has_key("results")) then
---        print("we have some results")
-        clearList()
         json_results = json_obj["results"]
 
         for num = 0, json_results:size()-1 do
@@ -776,32 +772,15 @@ function rechercherVille(txt)
             )
         end
     else
-        print("no results found")
+        print("[displayVilleRecherchee] no results found")
+        --clearListVilles()
+        displayError('Aucune ville "'..villeRecherchee..'" trouvée')
     end
 
 end
 
--- Appel de l'API de geocoding de Open Meteo
--- renvoi le json renvoyé par l'api
-function getCoordData(ville)
-
-    -- API geocoding 
-    local url = "https://geocoding-api.open-meteo.com/v1/search?name="..selectedVille.."&count=5&language=fr&format=json"
-
-    -- Appel de l'URL en HTTP GET
-
-    -- result valid avec Paris
-    local result = '{"results":[{"id":2988507,"name":"Paris","latitude":48.85341,"longitude":2.3488,"elevation":42.0,"feature_code":"PPLC","country_code":"FR","admin1_id":3012874,"admin2_id":2968815,"timezone":"Europe/Paris","population":2138551,"postcodes":["75001","75020","75002","75003","75004","75005","75006","75007","75008","75009","75010","75011","75012","75013","75014","75015","75016","75017","75018","75019"],"country_id":3017382,"country":"France","admin1":"Île-de-France","admin2":"Paris"},{"id":4717560,"name":"Paris","latitude":33.66094,"longitude":-95.55551,"elevation":183.0,"feature_code":"PPLA2","country_code":"US","admin1_id":4736286,"admin2_id":4705086,"timezone":"America/Chicago","population":24782,"postcodes":["75460","75461","75462"],"country_id":6252001,"country":"États Unis","admin1":"Texas","admin2":"Comté de Lamar"},{"id":4647963,"name":"Paris","latitude":36.302,"longitude":-88.32671,"elevation":157.0,"feature_code":"PPLA2","country_code":"US","admin1_id":4662168,"admin2_id":4628829,"timezone":"America/Chicago","population":10150,"postcodes":["38242"],"country_id":6252001,"country":"États Unis","admin1":"Tennessee","admin2":"Comté de Henry"},{"id":4303602,"name":"Paris","latitude":38.2098,"longitude":-84.25299,"elevation":257.0,"feature_code":"PPLA2","country_code":"US","admin1_id":6254925,"admin2_id":4285233,"timezone":"America/New_York","population":9870,"postcodes":["40361","40362"],"country_id":6252001,"country":"États Unis","admin1":"Kentucky","admin2":"Comté de Bourbon"},{"id":4246659,"name":"Paris","latitude":39.61115,"longitude":-87.69614,"elevation":220.0,"feature_code":"PPLA2","country_code":"US","admin1_id":4896861,"admin2_id":4237672,"admin3_id":4246667,"timezone":"America/Chicago","population":8432,"postcodes":["61944"],"country_id":6252001,"country":"États Unis","admin1":"Illinois","admin2":"Comté d Edgar","admin3":"Township of Paris"}],"generationtime_ms":1.429081}'
-    
-    -- result en erreur - sans correspondance des villes
-    -- local result ={'generationtime_ms':0.88202953}
-
-    return result
-
-end
-
 -- vide la liste de villes
-function clearList()
+function clearListVilles()
     vListVilles:clear()
 end
 
@@ -809,15 +788,14 @@ end
 -- ajoute une ville dans la liste de villes sélectionnables
 function displaySelectionVille(row, name, country_code, county, latitude, longitude)
 
-    local boxVille = gui:label(vListVilles, 0, 0, 290, 60)
-    boxVille:setBackgroundColor(COLOR_LIGHT_GREY)
-    boxVille:setRadius(10)
-    boxVille:setFontSize(16)
+    local lblVille = gui:label(vListVilles, 0, 0, 290, 60)
+    lblVille:setBackgroundColor(COLOR_LIGHT_GREY)
+    lblVille:setRadius(10)
+    lblVille:setFontSize(16)
 
-    local txt = name..", "..country_code..", "..county.."\n".."  - latitude: "..latitude.."\n".."  - longitude: "..longitude
-    boxVille:setText(txt)
+    lblVille:setText(name..", "..country_code..", "..county.."\n".."  - latitude: "..latitude.."\n".."  - longitude: "..longitude)
 
-    return boxVille
+    return lblVille
 end
 
 
@@ -832,9 +810,11 @@ function selectionneVille(selected, oldSelected, strVille, strLatitude, strLongi
         selectedVille = strVille
         selectedLatitude = tonumber(strLatitude)
         selectedLongitude = tonumber(strLongitude)
-        --gui:setWindow(win)
+        -- sauvegarde de la ville dans le fichier json
         saveVille()
-        displayMeteoData()
+
+        -- appel à l'API pour récupérer les données météo
+        callMeteoData()
         return
     end
 
@@ -860,7 +840,7 @@ end
 
     local fileMeteo = storage:file ("meteo.json", READ)
     if (not storage:isFile("meteo.json")) then
-        print("pas de fichier")
+        print("[initVille] le fichier meteo.json est introuvable")
         return
     end
 
@@ -876,16 +856,18 @@ end
         selectedLatitude = tonumber(json_meteo["latitude"]:get())
         selectedLongitude = tonumber(json_meteo["longitude"]:get())
     else
-        print("pas json_meteo:has(ville)")
+        print("[InitVille] pas de ville dans le fichier JSON")
     end
 end
 
+
+-- Sauvegarde des données dans un fichier JSON
 function saveVille()
 
     local fileMeteo = storage:file ("meteo.json", WRITE)
 
     if (fileMeteo == nil) then
-        print("error saving meteo file")
+        print("[saveVille] error saving meteo file")
         return
     end
 

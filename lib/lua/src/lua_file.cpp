@@ -47,8 +47,8 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
 LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     :lua_gui(this),
     lua_storage(this),
-    lua_time(this)/*,
-    lua_network(this)*/
+    lua_time(this)
+    //lua_network(this)
 {
     this->filename = filename;
     this->manifest = manifest;
@@ -148,9 +148,13 @@ void LuaFile::load()
 
         lua.open_libraries(sol::lib::string);
 
-    if (perms.acces_web)   // si hardware est autorisé
+    if (perms.acces_web)   // si web est autorisé
     {
-        lua.open_libraries(sol::lib::string);
+//        lua.open_libraries(sol::lib::string);
+       lua.new_usertype<LuaNetwork>("network",
+            "callURL", &LuaNetwork::callURL
+        );
+        lua["network"] = &lua_network;
     }
 
 
@@ -246,6 +250,7 @@ void LuaFile::load()
             "checkbox", &LuaGui::checkbox,
             "del", &LuaGui::del,
             "setWindow", &LuaGui::setMainWindow,
+            "getWindow", &LuaGui::getMainWindow,
             "keyboard", &LuaGui::keyboard,
             "showInfoMessage", &LuaGui::showInfoMessage,
             "showWarningMessage", &LuaGui::showWarningMessage,
