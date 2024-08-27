@@ -91,7 +91,8 @@ namespace gui::elements {
         // m_label->setFont(graphics::ARIAL);
         m_label->setFontSize(24);
         m_label->setCursorEnabled(true);
-        m_label->setCursorIndex(m_buffer.length());
+        m_label->setText(m_buffer);
+        m_label->setCursorIndex(static_cast<int16_t>(m_buffer.length()));
         addChild(m_label);
 
         // Create images box (for better performances ?)
@@ -141,12 +142,19 @@ namespace gui::elements {
         updateCapsIcon();
         updateLayoutIcon();
 
-        m_trackpadFilter = new Filter(0, 120, 480, 200);
-        m_trackpadFilter->disable();
+        m_trackpadActiveBox = new Box(192, 112, 96, 96);
+        m_trackpadActiveBox->setBackgroundColor(TFT_BLACK);
+        m_trackpadActiveBox->setRadius(8);
+        addChild(m_trackpadActiveBox);
 
-        addChild(m_trackpadFilter);
+        m_trackpadActiveIcon = new Image(storage::Path("system/keyboard/trackpad_active_icon.png"), 16, 16, 64, 64);
+        m_trackpadActiveIcon->load(TFT_BLACK);
+        m_trackpadActiveBox->addChild(m_trackpadActiveIcon);
+
+        m_trackpadActiveBox->disable();
 
         m_trackpadTicks = 0;
+        m_trackpadLastDeltaX = 0;
     }
 
     Keyboard::~Keyboard() = default;
@@ -473,8 +481,7 @@ namespace gui::elements {
                 if (m_trackpadTicks == 10) {
                     // Do once, only when trackpad was just enabled
 
-                    m_trackpadFilter->enable();
-                    m_trackpadFilter->apply();
+                    m_trackpadActiveBox->enable();
 
                     m_trackpadLastDeltaX = 0;
 
@@ -484,12 +491,8 @@ namespace gui::elements {
                 const int32_t deltaX = rawTouchX - m_lastTouchX;
                 std::string deltaXString = std::to_string(deltaX);
 
-                // m_trackpadCanvas->fillRect(0, 0, 100, 16, graphics::packRGB565(255, 255, 255));
-                // m_trackpadCanvas->drawText(0, 0, deltaXString, graphics::packRGB565(0, 0, 0), 16);
-
-                const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / 10;
-
-                // std::cout << "Trackpad, to move : " << toMove << std::endl;
+                constexpr int32_t stepsByChar = 8;
+                const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / stepsByChar;
 
                 if (toMove > 0) {
                     for (int i = 0; i < toMove; i++) {
@@ -503,7 +506,7 @@ namespace gui::elements {
 
                 if (abs(toMove) > 0) {
                     m_label->forceUpdate();
-                    // localGraphicalUpdate();
+                    // m_trackpadActiveBox->forceUpdate();
                 }
 
                 m_trackpadLastDeltaX += toMove * 10;
@@ -514,7 +517,8 @@ namespace gui::elements {
             if (wasTrackpadActive) {
                 // Do once
 
-                m_trackpadFilter->disable();
+                // m_trackpadFilter->disable();
+                m_trackpadActiveBox->disable();
 
                 localGraphicalUpdate();
             }

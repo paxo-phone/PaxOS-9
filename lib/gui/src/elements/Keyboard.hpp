@@ -65,14 +65,15 @@ namespace gui::elements {
         Image *m_layoutIcon1;
         Image *m_exitIcon;
         Image *m_confirmIcon;
+        Image* m_trackpadActiveIcon;
 
         Box *m_capsBox;
         Box *m_layoutBox;
         Box *m_backspaceBox;
         Box *m_exitBox;
         Box *m_confirmBox;
+        Box* m_trackpadActiveBox;
 
-        Filter *m_trackpadFilter;
         uint8_t m_trackpadTicks;
         int32_t m_trackpadLastDeltaX;
 
