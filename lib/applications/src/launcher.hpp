@@ -24,6 +24,4 @@ namespace applications::launcher {
     std::shared_ptr<AppManager::App> getApp();
 }
 
-int launcher();
-
 #endif

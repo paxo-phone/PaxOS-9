@@ -18,6 +18,35 @@ std::string getFormatedHour()
     return dayName + " " + std::to_string(GSM::days) + " " + monthName;
 }
 
+std::string getBatteryIconFilename() {
+    const bool isCharging = hardware::isCharging();
+    const double batteryLevel = GSM::getBatteryLevel();
+
+    if (batteryLevel < 0.2) {
+        return isCharging ? "battery_charging_full" : "battery_0_bar";
+    }
+    if (batteryLevel < 0.3) {
+        return isCharging ? "battery_charging_20" : "battery_1_bar";
+    }
+    if (batteryLevel < 0.5) {
+        return isCharging ? "battery_charging_30" : "battery_2_bar";
+    }
+    if (batteryLevel < 0.6) {
+        return isCharging ? "battery_charging_50" : "battery_3_bar";
+    }
+    if (batteryLevel < 0.7) {
+        return isCharging ? "battery_charging_60" : "battery_4_bar";
+    }
+    if (batteryLevel < 0.8) {
+        return isCharging ? "battery_charging_80" : "battery_5_bar";
+    }
+    if (batteryLevel < 0.9) {
+        return isCharging ? "battery_charging_90" : "battery_6_bar";
+    }
+
+    return "battery_full";
+}
+
 namespace applications::launcher {
     std::shared_ptr<Window> launcherWindow = nullptr;
     std::map<gui::ElementBase*, std::shared_ptr<AppManager::App>> applicationsIconsMap;
@@ -29,6 +58,7 @@ namespace applications::launcher {
     Label* clockLabel = nullptr;
     Label* dateLabel = nullptr;
     Label* batteryLabel = nullptr;
+    Image* batteryIcon = nullptr;
     Box* chargingPopupBox = nullptr;
 
     uint64_t lastClockUpdate = 0;
@@ -71,6 +101,7 @@ void applications::launcher::update() {
         lastClockUpdate = millis();
     }
     if (millis() > lastBatteryUpdate + 10000) {
+        // batteryIcon->setImage();
         batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
 
         lastBatteryUpdate = millis();
@@ -131,11 +162,17 @@ void applications::launcher::draw() {
     dateLabel->setFontSize(16);
     launcherWindow->addChild(dateLabel);
 
-    // Battery
-    batteryLabel = new Label(269, 10, 40, 18);
+    // Battery icon
+    const auto batteryIconDarkPath = storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
+    batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32, TFT_WHITE);
+    batteryIcon->load();
+    launcherWindow->addChild(batteryIcon);
+
+    // Battery label
+    batteryLabel = new Label(255, 10, 40, 18);
     batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
     batteryLabel->setVerticalAlignment(Label::Alignement::CENTER);
-    batteryLabel->setHorizontalAlignment(Label::Alignement::CENTER);
+    batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
     batteryLabel->setFontSize(18);
     launcherWindow->addChild(batteryLabel);
 
@@ -202,12 +239,9 @@ void applications::launcher::draw() {
     chargingPopupBox->setRadius(7);
     chargingPopupBox->setBackgroundColor(TFT_BLACK);
 
-    const auto path = storage::Path("system/icons/battery_charging_full_64px.png");
-
-    libsystem::log("Path: " + path.str());
-
+    const auto batteryIconLightPath = storage::Path("system/icons/light/" + getBatteryIconFilename() + "_64px.png");
     const auto chargingIconImage = new Image(
-        path,
+        batteryIconLightPath,
         16,
         16,
         64,
@@ -257,124 +291,4 @@ void applications::launcher::free() {
 
     allocated = false;
     dirty = true;
-}
-
-int launcher()
-{
-    if(AppManager::isAnyVisibleApp()) {
-        return -1;
-    }
-
-    
-    StandbyMode::triggerPower();
-    gui::elements::Window win;
-
-    Label *hour = new Label(86, 42, 148, 41);
-    hour->setText(std::to_string(GSM::hours) + ":" + (GSM::minutes<=9 ? "0" : "") + std::to_string(GSM::minutes));    // hour
-    hour->setVerticalAlignment(Label::Alignement::CENTER);
-    hour->setHorizontalAlignment(Label::Alignement::CENTER);
-    hour->setFontSize(36);
-    win.addChild(hour);
-    
-    Label *date = new Label(55, 89, 210, 18);
-    Date data = {GSM::days, GSM::months, GSM::years};
-    date->setText(getFormatedHour()); 
-    date->setVerticalAlignment(Label::Alignement::CENTER);
-    date->setHorizontalAlignment(Label::Alignement::CENTER);
-    date->setFontSize(16);
-    win.addChild(date);
-
-    Label *batt = new Label(269, 10, 40, 18);
-    batt->setText(std::to_string(GSM::getBatteryLevel()));    // hour
-    batt->setVerticalAlignment(Label::Alignement::CENTER);
-    batt->setHorizontalAlignment(Label::Alignement::CENTER);
-    batt->setFontSize(18);
-    win.addChild(batt);
-
-    if(GSM::getNetworkStatus() == 99)
-    {
-        Label *batt = new Label(10, 10, 100, 18);
-        batt->setText("pas de réseau");    // hour
-        batt->setVerticalAlignment(Label::Alignement::CENTER);
-        batt->setHorizontalAlignment(Label::Alignement::CENTER);
-        batt->setFontSize(18);
-        win.addChild(batt);
-    }
-
-    uint32_t evid = eventHandlerApp.setInterval(
-        [&hour, &date]() { 
-            static int min;
-            if(min!=GSM::minutes)
-            {
-                hour->setText(std::to_string(GSM::hours) + ":" + (GSM::minutes<=9 ? "0" : "") + std::to_string(GSM::minutes));
-                date->setText(getFormatedHour());
-                min = GSM::minutes;
-            }
-         },
-        500
-    );
-
-    std::vector<gui::ElementBase*> apps;
-
-    int placementIndex = 0;
-    for (int i = 0; i < AppManager::appList.size(); i++)
-    {
-        if (!AppManager::appList[i]->visible)
-            continue;
-
-        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 * int(placementIndex/2), 80, 80);
-        
-        Image* img = new Image(AppManager::appList[i]->path / "../icon.png", 20, 6, 40, 40);
-        img->load();
-        box->addChild(img);
-
-        Label* text = new Label(0, 46, 80, 34);
-        text->setText(AppManager::appList[i]->name);
-        text->setVerticalAlignment(Label::Alignement::CENTER);
-        text->setHorizontalAlignment(Label::Alignement::CENTER);
-        text->setFontSize(16);
-        box->addChild(text);
-
-        storage::Path notifs = (AppManager::appList[i]->path / ".." / "unread.txt");
-        if(notifs.exists())
-        {
-            storage::FileStream file(notifs.str(), storage::READ);
-            
-            if(file.size() > 0)
-            {
-                Box* notifBox = new Box(66, 0, 14, 14);
-                notifBox->setRadius(7);
-                notifBox->setBackgroundColor(COLOR_WARNING);
-                box->addChild(notifBox);
-            }
-
-            file.close();
-        }
-
-        win.addChild(box);
-
-        apps.push_back(box);
-        
-        placementIndex++;
-    }
-
-    while (!hardware::getHomeButton() && AppManager::isAnyVisibleApp() == false)
-    {
-        for (int i = 0; i < apps.size(); i++)
-        {
-            if(apps[i]->isTouched())
-            {
-                eventHandlerApp.removeInterval(evid);
-                return i;
-            }
-        }
-
-        eventHandlerApp.update();
-        win.updateAll();
-
-        AppManager::loop();
-    }
-
-    eventHandlerApp.removeInterval(evid);
-    return -1;
 }

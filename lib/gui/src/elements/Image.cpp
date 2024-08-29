@@ -34,8 +34,8 @@ namespace gui::ImagesList
 
         ImageLoaded img = {
             path,
-            i.getWidth(),
-            i.getHeight(),
+            width, // i.getWidth(),
+            height, // i.getHeight(),
             std::make_shared<graphics::Surface>(width, height)
         };
 

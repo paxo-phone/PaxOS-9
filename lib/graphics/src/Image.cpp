@@ -50,7 +50,7 @@ namespace graphics {
         this->m_path = path;
 
         if(!path.exists() || !path.isfile()) {
-            throw libsystem::exceptions::InvalidArgument("Path does not exist.");
+            throw libsystem::exceptions::InvalidArgument("Path does not exist : " + path.str() + ".");
             // m_width = 0;
             // m_height = 0;
             // return;
