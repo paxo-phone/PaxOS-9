@@ -5,7 +5,6 @@
 
 #include "Surface.hpp"
 
-#include <graphics.hpp>
 #include <path.hpp>
 #include <filestream.hpp>
 #include <iostream>
@@ -250,19 +249,22 @@ namespace graphics
             color);
     }
 
-    void Surface::drawImage(const SImage &image, const int16_t x, const int16_t y)
+    void Surface::drawImage(const SImage &image, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
     {
+        float scaleX = static_cast<float>(w) / static_cast<float>(image.getWidth());
+        float scaleY = static_cast<float>(h) / static_cast<float>(image.getHeight());
+
         #ifdef ESP_PLATFORM
             switch (image.getType()) // image size with right format
             {
                 case BMP:
-                    m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y);
+                    m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
                 case PNG:
-                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y);
+                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
                 case JPG:
-                    m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y);
+                    m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
             };
             
@@ -272,13 +274,13 @@ namespace graphics
             switch (image.getType())
             {
                 case BMP:
-                    m_sprite.drawBmpFile(&file, image.getPath().str().c_str(), x, y);
+                    m_sprite.drawBmpFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
                 case PNG:
-                    m_sprite.drawPngFile(&file, image.getPath().str().c_str(), x, y);
+                    m_sprite.drawPngFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
                 case JPG:
-                    m_sprite.drawJpgFile(&file, image.getPath().str().c_str(), x, y);
+                    m_sprite.drawJpgFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
             };
         #endif
