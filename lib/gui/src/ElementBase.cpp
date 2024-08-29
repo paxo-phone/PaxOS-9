@@ -39,7 +39,13 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
 
 gui::ElementBase::~ElementBase()
 {
-    // Libération de la mémoire allouée pour les enfants de l'objet
+ 
+ // force le rafraichisseent sur un delete d'un enfant
+    if (m_parent != nullptr)
+        m_parent->localGraphicalUpdate();
+
+ 
+ // Libération de la mémoire allouée pour les enfants de l'objet
     for (int i = 0; i < m_children.size(); i++)
     {
         if (m_children[i] != nullptr)
