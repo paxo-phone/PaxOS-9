@@ -607,6 +607,10 @@ namespace GSM
 
     void updateHour()
     {
+
+        // si on est sur ESP, alors, on check l'heure via  commande AT
+    #ifdef ESP_PLATFORM
+
         std::string data = send("AT+CCLK?", "+CCLK:");
 
         size_t start = data.find("\"");
@@ -647,7 +651,18 @@ namespace GSM
         {
             return;
         }
+        // si on est pas sur plateform ESP, on récupére l'heure et date system locale
+        #else
+            time_t t = std::time(0);   // get time now
+            tm* local_time = std::localtime(&t);
 
+            years   = local_time->tm_year + 1900;
+            months  = local_time->tm_mon + 1;
+            days   = local_time->tm_mday;
+            hours   = local_time->tm_hour;
+            minutes    = local_time->tm_min;
+            seconds    = local_time->tm_sec;                
+        #endif
         //std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
 
