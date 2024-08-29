@@ -249,7 +249,7 @@ void LuaFile::load()
             "getY", &LuaWidget::getY,
             "getWidth", &LuaWidget::getWidth,
             "getHeight", &LuaWidget::getHeight,
-            "setMainColor", &LuaWidget::setBackgroundColor,
+            "setBackgroundColor", &LuaWidget::setBackgroundColor,
             "enable", &LuaWidget::enable,
             "disable", &LuaWidget::disable,
             "isTouched", &LuaWidget::isTouched,
