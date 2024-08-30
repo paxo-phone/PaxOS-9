@@ -22,6 +22,7 @@ public:
     int get_int(std::string key);
     double get_double(std::string key);
     bool get_bool(std::string key);
+    std::string get_string(std::string key);
 
     void set_int(std::string key, int value);
     void set_double(std::string key, double value);

@@ -56,6 +56,11 @@ int LuaJson::get_int(std::string key)
     return json[key].get<int>();
 }
 
+std::string LuaJson::get_string(std::string key)
+{
+    return json[key].get<std::string>();
+}
+
 double LuaJson::get_double(std::string key)
 {
     return json[key].get<double>();
