@@ -1,10 +1,13 @@
 #include "backtrace.hpp"
 
 #include <sstream>
+
 #include <gsm.hpp>
 #include <path.hpp>
 #include <filestream.hpp>
 #include <gui.hpp>
+#include <iostream>
+#include <threads.hpp>
 
 #ifdef ESP_PLATFORM
 

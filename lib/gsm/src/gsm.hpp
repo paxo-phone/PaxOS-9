@@ -5,8 +5,6 @@
 #include <vector>
 #include <string>
 
-#include "threads.hpp"
-
 extern const char *daysOfWeek[7];
 extern const char *daysOfMonth[12];
 
