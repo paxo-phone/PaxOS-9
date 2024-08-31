@@ -1,9 +1,7 @@
 #ifndef GUI_MANAGER_HPP
-#define  GUI_MANAGER_HPP
+#define GUI_MANAGER_HPP
 
-#include "elements/Canvas.hpp"
 #include "elements/Window.hpp"
-#include "elements/Label.hpp"
 #include "elements/Button.hpp"
 #include <hardware.hpp>
 

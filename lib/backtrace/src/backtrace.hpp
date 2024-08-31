@@ -2,6 +2,7 @@
 #define BACKTRACE_HPP
 
 #ifdef ESP_PLATFORM
+
 #include <backtrace_saver.hpp>
 #include <string>
 

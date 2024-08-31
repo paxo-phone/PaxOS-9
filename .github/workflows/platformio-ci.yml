@@ -35,7 +35,7 @@ jobs:
           # We are unable to run tests on ESP32
 
           - name: Build PlatformIO Project for Paxo ESP32
-            run: pio run -e paxo-v5
+            run: pio run -e paxo-v5 -v
 
           - name: Move files into artifact directory
             shell: bash
