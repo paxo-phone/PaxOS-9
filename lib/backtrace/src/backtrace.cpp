@@ -3,12 +3,12 @@
 #ifdef ESP_PLATFORM
 
 #include <sstream>
+#include <iostream>
 
 #include <gsm.hpp>
 #include <path.hpp>
 #include <filestream.hpp>
 #include <gui.hpp>
-#include <iostream>
 #include <threads.hpp>
 
 namespace backtrace_saver {

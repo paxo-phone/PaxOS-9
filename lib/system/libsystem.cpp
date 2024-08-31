@@ -10,7 +10,6 @@
 
 #ifdef ESP_PLATFORM
 
-#include <backtrace.hpp>
 #include <esp_debug_helpers.h>
 
 #endif
