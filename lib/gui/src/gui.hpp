@@ -1,7 +1,7 @@
 #ifndef GUI_HPP
 #define GUI_HPP
 
-#include <ElementBase.hpp>
+#include "ElementBase.hpp"
 
 #include "elements/Box.hpp"
 #include "elements/Canvas.hpp"

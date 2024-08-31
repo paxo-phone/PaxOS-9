@@ -2,8 +2,9 @@
 #define ELEMENTBASE_HPP
 
 #include <cstdint> // for uint16_t
-#include <Surface.hpp>
 #include <vector>
+
+#include <Surface.hpp>
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
 #define SCROLL_STEP 20
