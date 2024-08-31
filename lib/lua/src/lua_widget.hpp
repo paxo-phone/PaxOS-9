@@ -28,7 +28,7 @@ class LuaWidget
     void setRadius(uint16_t r){this->widget->setRadius(r);}    
     void enable(){this->widget->enable();}
     void disable(){this->widget->disable();}
-    bool isEnabled(){return this->widget->getIsEnabled();}
+    bool isEnabled(){return this->widget->isEnabled();}
     bool isTouched(){return this->widget->isFocused();}
     void onClick(sol::protected_function func){onClickFunc = func;}
     void onScrollUp(sol::protected_function func){onScrollUpFunc = func;}
