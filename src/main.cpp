@@ -5,6 +5,7 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include <esp_system.h>
+#include <backtrace_saver.hpp>
 #include "backtrace.hpp"
 #endif
 
@@ -20,6 +21,9 @@
 #include "contacts.hpp"
 #include <iostream>
 #include <libsystem.hpp>
+#include "GuiManager.hpp"
+#include "unistd.h"
+
 
 using namespace gui::elements;
 
@@ -39,15 +43,16 @@ void ringingVibrator(void* data)
     #endif
 }
 
-void mainLoop(void* data)
-{
-    #ifdef ESP_PLATFORM
-
+void mainLoop(void* data) {
+#ifdef ESP_PLATFORM
     if (!backtrace_saver::isBacktraceEmpty()) {
         backtrace_saver::backtraceMessageGUI();
     }
 
-    #endif
+    graphics::setBrightness(graphics::brightness);
+#endif
+
+    GuiManager& guiManager = GuiManager::getInstance();
 
     // Main loop
     while (true) {
@@ -92,64 +97,27 @@ void mainLoop(void* data)
                 applications::launcher::free();
 
                 // Launch the app
-                app->run(false);
+                try {
+                    app->run(false);
+                } catch (std::runtime_error& e) {
+                    std::cerr << "Erreur: " << e.what() << std::endl;
+                    // Affichage du msg d'erreur
+                    guiManager.showErrorMessage(e.what());
+                    // on kill l'application ?!?
+                    //AppManager::appList[i].kill();
+                }
             }
         }
 
-        // int l = -1;
-        //
-        // if(!AppManager::isAnyVisibleApp() && (l = launcher()) != -1)    // if there is not app running, run launcher, and it an app is choosen, launch it
-        // {
-        //     int search = 0;
-        //
-        //     for (int i = 0; i < AppManager::appList.size(); i++)
-        //     {
-        //         if(AppManager::appList[i]->visible)
-        //         {
-        //             if(search == l)
-        //             {
-        //                 const std::shared_ptr<AppManager::App> app = AppManager::get(i);
-        //
-        //                 // if (!app->auth) {
-        //                 //     app->requestAuth();
-        //                 // }
-        //
-        //                 app->run(false);
-        //
-        //                 while (AppManager::isAnyVisibleApp())
-        //                     AppManager::loop();
-        //
-        //                 break;
-        //             }
-        //             search++;
-        //         }
-        //     }
-        // }
-        //
-        // if(!AppManager::isAnyVisibleApp() && l == -1)   // if the launcher did not launch an app and there is no app running, then sleep
-        // {
-        //     graphics::setBrightness(0);
-        //     StandbyMode::savePower();
-        //
-        //     while (hardware::getHomeButton());
-        //     while (!hardware::getHomeButton() && !AppManager::isAnyVisibleApp()/* && GSM::state.callState != GSM::CallState::RINGING*/)
-        //     {
-        //         eventHandlerApp.update();
-        //         AppManager::loop();
-        //     }
-        //
-        //     while (hardware::getHomeButton());
-        //
-        //     StandbyMode::restorePower();
-        //     graphics::setBrightness(0xFF/3);
-        // }
-        //
-        // AppManager::loop();
+        AppManager::loop();
     }
 }
 
 void setup()
 {
+    /**
+     * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
+     */
     hardware::init();
     hardware::setScreenPower(true);
 
@@ -198,6 +166,10 @@ void setup()
     );
     #endif // ESP_PLATFORM
 
+    // Positionnement de l'écran en mode Portrait
+    graphics::setScreenOrientation(graphics::PORTRAIT);
+
+    // Init de la gestiuon des Threads
     ThreadManager::init();
 
     // Init launcher
@@ -211,11 +183,17 @@ void setup()
         libsystem::restart(true, 10000);
     }
 
+    /**
+     * Gestion des eventHandlers pour les evenements
+     */
+
+    // gestion des appels entrants
     GSM::ExternalEvents::onIncommingCall = []()
     {
         eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run(false);}), 0);
     };
 
+    // Gestion de la réception d'un message
     GSM::ExternalEvents::onNewMessage = []()
     {
         #ifdef ESP_PLATFORM
@@ -234,6 +212,7 @@ void setup()
     ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
     #endif
 
+    // gestion de la détection du toucher de l'écran
     eventHandlerBack.setInterval(
         &graphics::touchUpdate,
         10
@@ -242,17 +221,22 @@ void setup()
     hardware::setVibrator(false);
     GSM::endCall();
 
+    // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
     Contacts::load();
 
     std::vector<Contacts::contact> cc = Contacts::listContacts();
-    
-    for(auto c : cc)
-    {
+
+    /*
+    for(auto c : cc) {
         //std::cout << c.name << " " << c.phone << std::endl;
     }
+    */
 
-    // app::init();
+
+    /**
+     * Gestion des applications
+     */
     AppManager::init();
 
     #ifdef ESP_PLATFORM

@@ -56,6 +56,18 @@ LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     this->directory = filename / storage::Path("..");
 }
 
+LuaFile::~LuaFile()
+{
+    // prevent a crash if the app is deleted and one or more callbacks are defined
+    this->onmessage = sol::nil;
+    this->onmessageerror = sol::nil;
+    this->oncall = sol::nil;
+    this->onlowbattery = sol::nil;
+    this->oncharging = sol::nil;
+
+    // libérer les ressources (events, etc)
+}
+
 void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
     //std::cout << "custom_allocator: " << nsize << std::endl;
     if (nsize == 0) {
@@ -230,7 +242,10 @@ void LuaFile::load()
             "checkbox", &LuaGui::checkbox,
             "del", &LuaGui::del,
             "setWindow", &LuaGui::setMainWindow,
-            "keyboard", &LuaGui::keyboard
+            "keyboard", &LuaGui::keyboard,
+            "showInfoMessage", &LuaGui::showInfoMessage,
+            "showWarningMessage", &LuaGui::showWarningMessage,
+            "showErrorMessage", &LuaGui::showErrorMessage
         );
 
         lua["gui"] = &lua_gui;
@@ -244,11 +259,16 @@ void LuaFile::load()
             "getY", &LuaWidget::getY,
             "getWidth", &LuaWidget::getWidth,
             "getHeight", &LuaWidget::getHeight,
-            "setMainColor", &LuaWidget::setBackgroundColor,
+            "setBackgroundColor", &LuaWidget::setBackgroundColor,
+            "setBorderColor",&LuaWidget::setBorderColor,
+            "setRadius",&LuaWidget::setRadius,
+            "setBorderSize", &LuaWidget::setBorderSize,
             "enable", &LuaWidget::enable,
             "disable", &LuaWidget::disable,
+            "isEnabled", &LuaWidget::isEnabled,
             "isTouched", &LuaWidget::isTouched,
-            "onClick", &LuaWidget::onClick
+            "onClick", &LuaWidget::onClick,
+            "getChildAtIndex", &LuaWidget::getChildAtIndex
         );
 
         lua.new_usertype<LuaWindow>("LuaWindow",
@@ -327,6 +347,7 @@ void LuaFile::load()
 
         lua.new_usertype<LuaVerticalList>("LuaVList",
             "setIndex", &LuaVerticalList::setIndex,
+            "setSpaceLine", &LuaVerticalList::setSpaceLine,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
@@ -341,21 +362,56 @@ void LuaFile::load()
 
         lua.set("COLOR_DARK", COLOR_DARK);
         lua.set("COLOR_LIGHT", COLOR_LIGHT);
-        lua.set("COLOR_WHITE", COLOR_WHITE);
         lua.set("COLOR_SUCCESS", COLOR_SUCCESS);
         lua.set("COLOR_WARNING", COLOR_WARNING);
         lua.set("COLOR_ERROR", COLOR_ERROR);
+
+        lua.set("COLOR_WHITE", COLOR_WHITE);
+        lua.set("COLOR_BLACK", COLOR_BLACK);
+        lua.set("COLOR_RED", COLOR_RED);
+        lua.set("COLOR_GREEN", COLOR_GREEN);
+        lua.set("COLOR_BLUE", COLOR_BLUE);
+
+        lua.set("COLOR_YELLOW", COLOR_YELLOW);
         lua.set("COLOR_GREY", COLOR_GREY);
+        lua.set("COLOR_MAGENTA", COLOR_MAGENTA);
+        lua.set("COLOR_CYAN", COLOR_CYAN);
+        lua.set("COLOR_VIOLET", COLOR_VIOLET);
+        lua.set("COLOR_ORANGE", COLOR_ORANGE);
+        lua.set("COLOR_GREY", COLOR_GREY);
+        lua.set("COLOR_PINK", COLOR_PINK);
+
+        lua.set("COLOR_LIGHT_ORANGE", COLOR_LIGHT_ORANGE);
+        lua.set("COLOR_LIGHT_GREEN", COLOR_LIGHT_GREEN);
+        lua.set("COLOR_LIGHT_BLUE", COLOR_LIGHT_BLUE);
+        lua.set("COLOR_LIGHT_GREY", COLOR_LIGHT_GREY);
 
         lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
             {
-                AppManager::get(name)->run(false, arg);
+                try{
+                    AppManager::get(name)->run(false, arg);
+                }
+                catch(std::runtime_error &e) {
+                    std::cerr << "Erreur: " << e.what() << std::endl;
+                    // Ajout message d'erreur
+                    GuiManager &guiManager = GuiManager::getInstance();
+                    guiManager.showErrorMessage(e.what());
+                }
 
                 return true;
             },
             [&](std::string name)
             {
-                AppManager::get(name)->run(false, {});
+                try{
+                    AppManager::get(name)->run(false, {});
+                }
+                catch(std::runtime_error &e) {
+                    std::cerr << "Erreur: " << e.what() << std::endl;
+                    // Ajout message d'erreur
+                    GuiManager &guiManager = GuiManager::getInstance();
+                    guiManager.showErrorMessage(e.what());
+
+                }
 
                 return true;
             }

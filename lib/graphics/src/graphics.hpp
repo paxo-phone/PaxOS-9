@@ -47,6 +47,7 @@ namespace graphics
     uint16_t getScreenWidth();
     uint16_t getScreenHeight();
 
+    extern int16_t brightness;
     void setBrightness(uint16_t value);
 
     bool isRunning();

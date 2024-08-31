@@ -1,11 +1,21 @@
 #include <launcher.hpp>
 
+#include <graphics.hpp>
+#include <ElementBase.hpp>
 #include <app.hpp>
 #include <gsm.hpp>
 #include <libsystem.hpp>
 #include <memory>
+#include <gui.hpp>
+#include <GuiManager.hpp>
 
-std::string getFormatedHour()
+
+/**
+ * Helper fonction
+ * récupére l'heure du device (ou la locale)
+ * et la renvoie au format "DDDD DD MMMM"
+ */
+std::string getFormatedDate()
 {
     uint16_t day_ = GSM::days;
     uint16_t day = GSM::days;
@@ -60,6 +70,7 @@ namespace applications::launcher {
     Label* batteryLabel = nullptr;
     Image* batteryIcon = nullptr;
     Box* chargingPopupBox = nullptr;
+    Box* brightnessSliderBox = nullptr;
 
     uint64_t lastClockUpdate = 0;
     uint64_t lastBatteryUpdate = 0;
@@ -93,7 +104,7 @@ void applications::launcher::update() {
 
         if(min != GSM::minutes) {
             clockLabel->setText(std::to_string(GSM::hours) + ":" + (GSM::minutes<=9 ? "0" : "") + std::to_string(GSM::minutes));
-            dateLabel->setText(getFormatedHour());
+            dateLabel->setText(getFormatedDate());
 
             min = GSM::minutes;
         }
@@ -128,6 +139,22 @@ void applications::launcher::update() {
     }
 
     // Check touch events
+
+    if (brightnessSliderBox->isFocused(true)) {
+        // TODO: Refactoring
+
+        libsystem::log("Brightness: " + graphics::brightness);
+
+        graphics::brightness = (325 - (gui::ElementBase::touchY - 77)) * 255 / 325;
+        graphics::brightness = std::clamp(
+            graphics::brightness,
+            static_cast<int16_t>(3),
+            static_cast<int16_t>(255)
+        );
+
+        graphics::setBrightness(graphics::brightness);
+    }
+
     targetApp = nullptr;
 
     for (const auto& [icon, app] : applicationsIconsMap) {
@@ -156,7 +183,7 @@ void applications::launcher::draw() {
 
     // Date
     dateLabel = new Label(55, 89, 210, 18);
-    dateLabel->setText(getFormatedHour());
+    dateLabel->setText(getFormatedDate());
     dateLabel->setVerticalAlignment(Label::Alignement::CENTER);
     dateLabel->setHorizontalAlignment(Label::Alignement::CENTER);
     dateLabel->setFontSize(16);
@@ -177,7 +204,7 @@ void applications::launcher::draw() {
     launcherWindow->addChild(batteryLabel);
 
     // Network
-    if(GSM::getNetworkStatus() == 99) {
+    if (GSM::getNetworkStatus() == 99) {
         auto* networkLabel = new Label(10, 10, 100, 18);
         networkLabel->setText("No network");
         networkLabel->setVerticalAlignment(Label::Alignement::CENTER);
@@ -186,8 +213,23 @@ void applications::launcher::draw() {
         launcherWindow->addChild(networkLabel);
     }
 
+    // Brightness slider
+    brightnessSliderBox = new Box(0, 77, 50, 325);
+    //light->setBackgroundColor(COLOR_RED);
+    launcherWindow->addChild(brightnessSliderBox);
+
+    /**
+     * Gestion de l'affichage des applications
+     */
     std::vector<gui::ElementBase*> apps;
 
+
+    // List contenant les app
+    VerticalList* winListApps = new VerticalList(0, 164, 320,316);
+    //winListApps->setBackgroundColor(COLOR_GREY);
+    launcherWindow->addChild(winListApps);
+
+    // Placement des app dans l'écran
     int placementIndex = 0;
 
     for (const auto& app : AppManager::appList) {
@@ -198,7 +240,8 @@ void applications::launcher::draw() {
             continue;
         }
 
-        auto* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 * (placementIndex / 2), 80, 80);
+//        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 * int(placementIndex/2), 80, 80);
+        auto* box = new Box(60 + 119 * (placementIndex%2), 95 * (placementIndex / 2), 80, 80);
 
         auto* img = new Image(app->path / "../icon.png", 20, 6, 40, 40);
         img->load();
@@ -224,7 +267,7 @@ void applications::launcher::draw() {
             file.close();
         }
 
-        launcherWindow->addChild(box);
+        winListApps->addChild(box);
 
         applicationsIconsMap.insert({
             box,
