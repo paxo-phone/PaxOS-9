@@ -1,7 +1,7 @@
-#pragma once
+#ifndef BACKTRACE_HPP
+#define BACKTRACE_HPP
 
 #ifdef ESP_PLATFORM
-
 #include <backtrace_saver.hpp>
 #include <string>
 
@@ -24,5 +24,7 @@ namespace backtrace_saver {
 
     void backtraceMessageGUI();
 }
+
+#endif
 
 #endif

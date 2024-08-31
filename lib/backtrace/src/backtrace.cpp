@@ -1,5 +1,7 @@
 #include "backtrace.hpp"
 
+#ifdef ESP_PLATFORM
+
 #include <sstream>
 
 #include <gsm.hpp>
@@ -8,8 +10,6 @@
 #include <gui.hpp>
 #include <iostream>
 #include <threads.hpp>
-
-#ifdef ESP_PLATFORM
 
 namespace backtrace_saver {
     uint32_t backtraceEventId = -1;
