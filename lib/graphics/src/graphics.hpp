@@ -7,12 +7,12 @@
 #define GRAPHICS_HPP
 
 #define LGFX_USE_V1
-#include <LovyanGFX.hpp>
 
 #include <cstdint>
 
 #ifdef ESP_PLATFORM
 
+#include <LovyanGFX.hpp>
 #include "platforms/LGFX_ESP32_PAXO5.hpp"
 
 #else
