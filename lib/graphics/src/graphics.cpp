@@ -14,6 +14,7 @@
 
 #include <Wire.h>
 
+#include <FT6236G.h>
 FT6236G ct;
 
 #endif
