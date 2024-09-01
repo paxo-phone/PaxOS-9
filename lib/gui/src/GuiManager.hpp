@@ -2,8 +2,6 @@
 #define GUI_MANAGER_HPP
 
 #include "elements/Window.hpp"
-#include "elements/Button.hpp"
-#include <hardware.hpp>
 
 enum WINDOW_TYPE {
     INFO, 

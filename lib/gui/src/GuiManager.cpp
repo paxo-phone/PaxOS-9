@@ -1,6 +1,6 @@
 #include "GuiManager.hpp"
 
-#include <elements/Canvas.hpp>
+#include "elements/Canvas.hpp"
 
 
 GuiManager::GuiManager(){
