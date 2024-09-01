@@ -18,6 +18,7 @@
 
 #include <color.hpp>
 #include <graphics.hpp>
+#include <FT6236G.h>
 
 #include "base64.hpp"
 
