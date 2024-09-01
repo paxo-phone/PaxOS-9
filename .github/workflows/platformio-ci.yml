@@ -22,6 +22,8 @@ jobs:
               path: |
                 ~/.cache/pip
                 ~/.platformio/.cache
+                .pio/build_cache
+                .pio/libdeps
               key: ${{ runner.os }}-pio
 
           - name: Setup Python
@@ -68,6 +70,8 @@ jobs:
               path: |
                 ~/.cache/pip
                 ~/.platformio/.cache
+                .pio/build_cache
+                .pio/libdeps
               key: ${{ runner.os }}-pio
 
           - name: Setup Python
@@ -123,6 +127,8 @@ jobs:
                 path: |
                   ~/.cache/pip
                   ~/.platformio/.cache
+                  .pio/build_cache
+                  .pio/libdeps
                 key: ${{ runner.os }}-pio
 
             - name: Setup Python
@@ -179,6 +185,8 @@ jobs:
                 path: |
                   ~/.cache/pip
                   ~/.platformio/.cache
+                  .pio/build_cache
+                  .pio/libdeps
                 key: ${{ runner.os }}-pio
 
             - name: Setup Python
