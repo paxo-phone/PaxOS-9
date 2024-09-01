@@ -1,28 +1,29 @@
 #ifdef ESP_PLATFORM
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
-#include <esp_system.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <driver/gpio.h>
+#include <esp_log.h>
+
 #include <backtrace_saver.hpp>
-#include "backtrace.hpp"
+#include <backtrace.hpp>
 
 #endif
 
-#include "graphics.hpp"
-#include "hardware.hpp"
-#include "gui.hpp"
-#include "path.hpp"
-#include "threads.hpp"
-#include "lua_file.hpp"
-#include "gsm.hpp"
-#include "app.hpp"
-#include "contacts.hpp"
+#include <unistd.h>
+
+#include <graphics.hpp>
+#include <hardware.hpp>
+#include <gui.hpp>
+#include <path.hpp>
+#include <threads.hpp>
+#include <lua_file.hpp>
+#include <gsm.hpp>
+#include <app.hpp>
+#include <contacts.hpp>
 #include <iostream>
 #include <libsystem.hpp>
-#include "GuiManager.hpp"
-#include "unistd.h"
+#include <GuiManager.hpp>
 
 
 using namespace gui::elements;
