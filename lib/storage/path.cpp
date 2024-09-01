@@ -37,7 +37,7 @@ bool storage::init()
 
     for (int i = 0; i < 4; i++)
     {
-        if (SD.begin(4/*, SPI, 8000000*/))
+        if (SD.begin(4, SPI, 8000000))
             return true;
         std::cout << "Error storage initialization" << std::endl;
     }

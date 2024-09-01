@@ -12,16 +12,10 @@
 
 #ifdef ESP_PLATFORM
 
-#include "platforms/LGFX_ESP32_PAXO5.hpp"
 #include <FT6236G.h>
 FT6236G ct;
 
 #else
-
-#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
-#include "LGFX_AUTODETECT.hpp"
-
-#include "LovyanGFX.hpp"
 
 #endif
 
@@ -71,6 +65,11 @@ void graphics::setBrightness(uint16_t value)
     if(value == 0)
         lcd->fillScreen(0x0000);
     #endif
+}
+
+LGFX* graphics::getLcd()
+{
+    return lcd.get();
 }
 
 void graphics::init()
@@ -309,7 +308,8 @@ void graphics::touchUpdate()
 
     if(liveTouchX != touchX || liveTouchY != touchY)
     {
-        StandbyMode::trigger();
+        if(StandbyMode::state() == false)
+            StandbyMode::trigger();
     }
 }
 

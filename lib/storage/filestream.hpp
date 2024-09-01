@@ -41,6 +41,7 @@ namespace storage
         char readchar(void);
 
         void write(const std::string &str);
+        void write(const char* str, std::size_t len);
         void write(const char c);
 
         bool isopen(void) const;

@@ -11,6 +11,19 @@
 
 #include <cstdint>
 
+#ifdef ESP_PLATFORM
+
+#include "platforms/LGFX_ESP32_PAXO5.hpp"
+
+#else
+
+#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
+#include "LGFX_AUTODETECT.hpp"
+
+#include "LovyanGFX.hpp"
+
+#endif
+
 namespace graphics
 {
     enum EScreenOrientation
@@ -22,6 +35,7 @@ namespace graphics
     class Surface;
 
     void init();
+    LGFX* getLcd();
     void reInit();
 
     uint16_t getScreenWidth();
