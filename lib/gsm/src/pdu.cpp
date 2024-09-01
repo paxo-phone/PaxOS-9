@@ -10,7 +10,7 @@
 
 std::string convert_semi_octet(const std::string& s) {
     std::string o;
-    for (uint i = 0; i < s.size(); i+=2)
+    for (uint32_t i = 0; i < s.size(); i+=2)
     {
         o += s[i+1];
         o += s[i];
