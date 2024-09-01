@@ -16,8 +16,9 @@
 
 #include <standby.hpp>
 
-#include "color.hpp"
-#include "graphics.hpp"
+#include <color.hpp>
+#include <graphics.hpp>
+
 #include "base64.hpp"
 
 namespace libsystem {
