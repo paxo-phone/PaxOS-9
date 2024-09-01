@@ -11,6 +11,7 @@
 #ifdef ESP_PLATFORM
 
 #include <esp_debug_helpers.h>
+#include <FT6236G.h>
 
 #endif
 
@@ -18,7 +19,6 @@
 
 #include <color.hpp>
 #include <graphics.hpp>
-#include <FT6236G.h>
 
 #include "base64.hpp"
 
