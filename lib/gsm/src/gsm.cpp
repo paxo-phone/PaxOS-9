@@ -1,24 +1,23 @@
 #include "gsm.hpp"
-#include "contacts.hpp"
-#include "conversation.hpp"
-#include "pdu.hpp"
-#include <path.hpp>
-#include <filestream.hpp>
-#include <imgdec.hpp>
-#include "graphics.hpp"
+
+#include <sstream>
 #include <iostream>
 #include <ctime>
 #include <codecvt>
 
+#include <path.hpp>
+#include <filestream.hpp>
+#include <imgdec.hpp>
 #include <delay.hpp>
-
 #include <threads.hpp>
-
 #include <graphics.hpp>
+
 #include "Image.hpp"
 #include "Surface.hpp"
 
-#include "../../tasks/src/threads.hpp"
+#include "contacts.hpp"
+#include "conversation.hpp"
+#include "pdu.hpp"
 
 const char *daysOfWeek[7] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
 const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"};
