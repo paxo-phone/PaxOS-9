@@ -2,8 +2,9 @@
 #define ELEMENTBASE_HPP
 
 #include <cstdint> // for uint16_t
-#include <Surface.hpp>
 #include <vector>
+
+#include "Surface.hpp"
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
 #define SCROLL_STEP 20
@@ -18,6 +19,9 @@ namespace gui
 
         virtual void render() = 0;
         void renderAll(bool onScreen = true);
+
+        virtual void preRender() {};
+        virtual void postRender() {};
 
         bool updateAll();
         bool update();
@@ -71,6 +75,9 @@ namespace gui
         bool getIsEnabled() const;
 
         void free();    // free the buffers in the ram to allow more windows to work at the same time
+
+        void setEnabled(bool enabled);
+        [[nodiscard]] bool isEnabled() const;
 
         /**
          * \brief Get the highest parent widget in the hierachy

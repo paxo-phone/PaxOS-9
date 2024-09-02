@@ -2,9 +2,10 @@
 #include <graphics.hpp>
 
 #include "gui.hpp"
-#include <threads.hpp>
 
 #include <iostream>
+#include <libsystem.hpp>
+#include <standby.hpp>
 
 // TODO : Remove this, the user need to define its widget for the screen itself.
 gui::ElementBase *gui::ElementBase::widgetPressed = nullptr;
@@ -41,7 +42,7 @@ gui::ElementBase::~ElementBase()
 {
     if (m_parent != nullptr)
         m_parent->localGraphicalUpdate();
-    
+
     // Libération de la mémoire allouée pour les enfants de l'objet
     for (int i = 0; i < m_children.size(); i++)
     {
@@ -63,6 +64,10 @@ void gui::ElementBase::renderAll(bool onScreen)
     if (!m_isRendered)
     {
         StandbyMode::triggerPower();
+
+        // Use it to initialize data
+        preRender();
+
         // initialiser le buffer ou le clear
         if(m_surface != nullptr && (m_surface->getWidth() != this->getWidth() || m_surface->getHeight() != this->getHeight()))
             m_surface = nullptr;
@@ -70,6 +75,7 @@ void gui::ElementBase::renderAll(bool onScreen)
         if (m_surface == nullptr)
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
 
+        // Render the element
         render();
 
         for (const auto child : m_children)
@@ -78,6 +84,9 @@ void gui::ElementBase::renderAll(bool onScreen)
         }
 
         m_isRendered = true;
+
+        // Use it to clear data
+        postRender();
     }
 
     if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
@@ -127,7 +136,7 @@ bool gui::ElementBase::updateAll()
 
     for (auto child : m_children)
     {
-        if (!child->getIsEnabled())
+        if (!child->isEnabled())
             continue;
 
         if (child->updateAll())
@@ -445,8 +454,12 @@ void gui::ElementBase::disable()
     globalGraphicalUpdate();
 }
 
-bool gui::ElementBase::getIsEnabled() const
-{
+void gui::ElementBase::setEnabled(const bool enabled) {
+    m_isEnabled = enabled;
+    globalGraphicalUpdate();
+}
+
+bool gui::ElementBase::isEnabled() const {
     return m_isEnabled;
 }
 
@@ -474,6 +487,10 @@ gui::ElementBase *gui::ElementBase::getParent() const
 
 void gui::ElementBase::addChild(gui::ElementBase *child)
 {
+    if (child == nullptr) {
+        throw libsystem::exceptions::RuntimeError("Child can't be null.");
+    }
+
     m_children.push_back(child);
     child->m_parent = this;
 }

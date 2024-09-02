@@ -5,13 +5,11 @@
 
 #ifdef ESP_PLATFORM
 
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
-#include <esp_system.h>
 
 #endif
+
+#include <gsm.hpp>
 
 #define TICKS_MS 20
 

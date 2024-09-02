@@ -1,4 +1,5 @@
 #include "gsm.hpp"
+
 #include "contacts.hpp"
 #include "conversation.hpp"
 #include <path.hpp>
@@ -140,7 +141,7 @@ namespace GSM
 #ifdef ESP_PLATFORM
         gsm.println((message + "\r").c_str());
 
-        std::cout << "[GSM] Sending request" << std::endl;
+        std::cout << "[GSM] Sending request: " << message << ", " << answerKey << std::endl;
 
         uint64_t lastChar = millis();
         std::string answer = "";
@@ -307,7 +308,7 @@ namespace GSM
     std::string getCurrentTimestampNoSpaces()
     {
         char buf[20];
-        std::sprintf(buf, "%04d-%02d-%02d_%02d:%02d:%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
+        std::sprintf(buf, "%04d-%02d-%02d_%02d-%02d-%02d", GSM::years, GSM::months, GSM::days, GSM::hours, GSM::minutes, GSM::seconds);
         return std::string(buf);
     }
 
@@ -576,54 +577,65 @@ namespace GSM
         }
     }
 
-    int getBatteryLevel()
-    {
-        float voltage = getVoltage();
+    double getBatteryLevel() {
+#ifdef ESP_PLATFORM
+        const float voltage = getVoltage();
 
-        if(voltage == -1)
+        if (voltage == -1) {
+            // Probably return something else ?
             return 100;
-        if (voltage > 4.12)
-          return 100;
-        else if (voltage > 4.03)
-            return 95;
-        else if (voltage > 3.99)
-            return 90;
-        else if (voltage > 3.94)
-            return 85;
-        else if (voltage > 3.90)
-            return 80;
-        else if (voltage > 3.86)
-            return 75;
-        else if (voltage > 3.82)
-            return 70;
-        else if (voltage > 3.77)
-            return 65;
-        else if (voltage > 3.74)
-            return 60;
-        else if (voltage > 3.70)
-            return 55;
-        else if (voltage > 3.66)
-            return 50;
-        else if (voltage > 3.64)
-            return 45;
-        else if (voltage > 3.63)
-            return 40;
-        else if (voltage > 3.62)
-            return 35;
-        else if (voltage > 3.59)
-            return 30;
-        else if (voltage > 3.58)
-            return 25;
-        else if (voltage > 3.57)
-            return 20;
-        else if (voltage > 3.55)
-            return 15;
-        else if (voltage > 3.52)
-            return 10;
-        else if (voltage > 3.5)
-            return 5;
-        else
-            return 0;
+        }
+
+        // Thanks NumWorks for the regression app
+        const double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
+
+        return std::clamp(batteryLevel, 0.0, 1.0);
+
+        // if (voltage > 4.12)
+        //   return 100;
+        // else if (voltage > 4.03)
+        //     return 95;
+        // else if (voltage > 3.99)
+        //     return 90;
+        // else if (voltage > 3.94)
+        //     return 85;
+        // else if (voltage > 3.90)
+        //     return 80;
+        // else if (voltage > 3.86)
+        //     return 75;
+        // else if (voltage > 3.82)
+        //     return 70;
+        // else if (voltage > 3.77)
+        //     return 65;
+        // else if (voltage > 3.74)
+        //     return 60;
+        // else if (voltage > 3.70)
+        //     return 55;
+        // else if (voltage > 3.66)
+        //     return 50;
+        // else if (voltage > 3.64)
+        //     return 45;
+        // else if (voltage > 3.63)
+        //     return 40;
+        // else if (voltage > 3.62)
+        //     return 35;
+        // else if (voltage > 3.59)
+        //     return 30;
+        // else if (voltage > 3.58)
+        //     return 25;
+        // else if (voltage > 3.57)
+        //     return 20;
+        // else if (voltage > 3.55)
+        //     return 15;
+        // else if (voltage > 3.52)
+        //     return 10;
+        // else if (voltage > 3.5)
+        //     return 5;
+        // else
+        //     return 0;
+#else
+        return 1;
+#endif
     }
 
     void updateHour()

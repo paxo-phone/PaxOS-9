@@ -4,7 +4,6 @@
 #include <functional>
 #include <vector>
 #include <string>
-#include <threads.hpp>
 
 extern const char *daysOfWeek[7];
 extern const char *daysOfMonth[12];
@@ -99,7 +98,7 @@ namespace GSM
     void acceptCall();
     void rejectCall();
 
-    int getBatteryLevel();
+    double getBatteryLevel();
     void getHour();
 
     int getNetworkStatus();

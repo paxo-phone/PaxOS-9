@@ -1,4 +1,6 @@
 #include "tasks.hpp"
+
+#include <iostream>
 #include <clock.hpp>
 
 EventHandler::~EventHandler()
