@@ -225,9 +225,22 @@ namespace gui::elements {
 
     uint16_t Label::getTextHeight()
     {
-        const auto [lines, cursorIndex, cursorLine] = parse();
+        bool allocatedSprite = false;
+        if(m_surface == nullptr)
+        {
+            m_surface = std::make_shared<graphics::Surface>(1, 1);
+            allocatedSprite = true;
+        }
 
-        return getRadius() + getBorderSize()*2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+        m_surface->setFontSize(this->m_fontSize);
+
+        const auto [lines, cursorIndex, cursorLine] = parse();
+        uint16_t out = getRadius() + getBorderSize()*2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+
+        if(allocatedSprite)
+            m_surface = nullptr;
+
+        return out;
     }
 
     bool Label::isCursorEnabled() const

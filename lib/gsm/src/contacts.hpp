@@ -5,8 +5,6 @@
 #include <vector>
 
 #define CONTACTS_LOCATION "/apps/contacts"
-#define MESSAGES_LOCATION "/apps/messages/data"
-
 
 namespace Contacts
 {
@@ -27,4 +25,4 @@ namespace Contacts
     contact getByNumber(std::string number);
 };
 
-#endif
+#endif // CONTACTS_HPP

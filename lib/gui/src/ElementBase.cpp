@@ -2,17 +2,21 @@
 #include <graphics.hpp>
 
 #include "gui.hpp"
-#include <threads.hpp>
 
 #include <iostream>
+#include <libsystem.hpp>
+#include <standby.hpp>
 
 // TODO : Remove this, the user need to define its widget for the screen itself.
-gui::ElementBase *gui::ElementBase::m_widgetPressed = nullptr;
+gui::ElementBase *gui::ElementBase::widgetPressed = nullptr;
 gui::ElementBase *gui::ElementBase::masterOfRender = nullptr;
 gui::ElementBase *gui::ElementBase::mainWindow = nullptr;
 int16_t gui::ElementBase::touchX, gui::ElementBase::touchY = -1;
 int16_t gui::ElementBase::originTouchX, gui::ElementBase::originTouchY = -1;
+int16_t gui::ElementBase::m_lastTouchX, gui::ElementBase::m_lastTouchY;
+int16_t gui::ElementBase::lastEventTouchX, gui::ElementBase::lastEventTouchY;
 bool gui::ElementBase::scrolling = false;
+gui::ElementBase::PressedState gui::ElementBase::globalPressedState = gui::ElementBase::PressedState::NOT_PRESSED;
 
 gui::ElementBase::ElementBase() : m_x(0), m_y(0),
                                   m_width(0), m_height(0),
@@ -36,6 +40,9 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
 
 gui::ElementBase::~ElementBase()
 {
+    if (m_parent != nullptr)
+        m_parent->localGraphicalUpdate();
+
     // Libération de la mémoire allouée pour les enfants de l'objet
     for (int i = 0; i < m_children.size(); i++)
     {
@@ -46,57 +53,55 @@ gui::ElementBase::~ElementBase()
     }
 }
 
-void gui::ElementBase::renderAll()
+void gui::ElementBase::renderAll(bool onScreen)
 {
+    if(!isInside())
+        return;
+
     if (!m_isEnabled)
         return;
 
     if (!m_isRendered)
     {
         StandbyMode::triggerPower();
+
+        // Use it to initialize data
+        preRender();
+
         // initialiser le buffer ou le clear
         if(m_surface != nullptr && (m_surface->getWidth() != this->getWidth() || m_surface->getHeight() != this->getHeight()))
             m_surface = nullptr;
 
         if (m_surface == nullptr)
-        {
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
-            //m_surface->clear(COLOR_WHITE);
-        }
-        else
-        {
-            //m_surface->clear(COLOR_WHITE);
-        }
 
+        // Render the element
         render();
 
         for (const auto child : m_children)
         {
-            // restreindre l'écriture de child sur le buffer local a ses coordonées
-            child->renderAll();
+            child->renderAll(false);
         }
 
         m_isRendered = true;
+
+        // Use it to clear data
+        postRender();
     }
 
     if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
     {
         StandbyMode::triggerPower();
-        if (m_parent != nullptr && m_parent->m_isDrawn == false) // le parent demande le rendu
+        if (!onScreen) // le parent demande le rendu
         {
-            // push le buffer local vers le buffer du parent
-            // TODO : Change position
             m_parent->m_surface->pushSurface(m_surface.get(), getX(), getY());
         }
         else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
-            // restreindre l'écriture sur l'écran en fonction du buffer local
-
-            // push le buffer local vers l'écran
-            // TODO : Change position
             graphics::setWindow(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
             graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
             graphics::setWindow();
+
             setChildrenDrawn();
         }
     }
@@ -105,6 +110,13 @@ void gui::ElementBase::renderAll()
 
 bool gui::ElementBase::updateAll()
 {
+    if(!isInside())
+    {
+        if(m_surface != nullptr)
+            free();
+        return false;
+    }
+
     if (m_parent == nullptr)
     {
         StandbyMode::wait();
@@ -120,18 +132,57 @@ bool gui::ElementBase::updateAll()
     if (!m_isDrawn)
         renderAll();
 
+    bool returnV = false;
+
     for (auto child : m_children)
     {
+        if (!child->isEnabled())
+            continue;
+
         if (child->updateAll())
         {
-            return true; // if child had an event, ignore local events
+            returnV = true; // if child had an event, ignore local events
+            break;
         }
     }
 
-    bool returnV = update();
+    update();
+
+
     if(this->m_parent == nullptr)
         graphics::touchIsRead();
+
     return returnV;
+}
+
+gui::ElementBase* gui::ElementBase::getHigestXScrollableParent()
+{
+    if(m_horizontalScrollEnabled)
+    {
+        return this;
+    }
+    else
+    {
+        if(m_parent != nullptr)
+            return m_parent->getHigestXScrollableParent();
+        else
+            return nullptr;
+    }
+}
+
+gui::ElementBase* gui::ElementBase::getHigestYScrollableParent()
+{
+    if(m_verticalScrollEnabled)
+    {
+        return this;
+    }
+    else
+    {
+        if(m_parent != nullptr)
+            return m_parent->getHigestYScrollableParent();
+        else
+            return nullptr;
+    }
 }
 
 bool gui::ElementBase::update()
@@ -140,104 +191,127 @@ bool gui::ElementBase::update()
 
     widgetUpdate();
 
-    if (!m_hasEvents)
+    if (!m_hasEvents && widgetPressed != this)
         return false;
 
 
-    if (m_widgetPressed != nullptr && m_widgetPressed != this)
+    if (widgetPressed != nullptr && widgetPressed != this)
         return false;
 
-    // check if the finger is currently on the widget
-    if (graphics::isTouched())
+    bool isScreenTouched = graphics::isTouched();
+    bool isWidgetTouched = isScreenTouched && (getAbsoluteX()-10 < touchX && touchX < getAbsoluteX() + getWidth() +10 &&
+                            getAbsoluteY()-10 < touchY && touchY < getAbsoluteY() + getHeight() +10);
+
+    bool returnValue = false;
+
+    //std::cout << "globalPressedState: " << globalPressedState << std::endl;
+    //std::cout << "widgetPressed: " << int(widgetPressed != nullptr) << std::endl;
+
+    if (isScreenTouched)
     {
-        StandbyMode::triggerPower();
-        if (getAbsoluteX()-10 < touchX && touchX < getAbsoluteX() + getWidth() +10 && // l'objet est touché
-            getAbsoluteY()-10 < touchY && touchY < getAbsoluteY() + getHeight() +10)
+        if (isWidgetTouched && globalPressedState == NOT_PRESSED)
         {
-            if (m_widgetPressed == nullptr && m_pressedState == PressedState::NOT_PRESSED) // l'objet est touché pour la première fois
-            {
-                m_widgetPressed = this;
+            globalPressedState = PRESSED;
+            widgetPressed = this;
 
-                m_pressedState = PressedState::PRESSED;
+            originTouchX = touchX;
+            originTouchY = touchY;
 
-                originTouchX = touchX; // sauvegarder les coordonnées du premier point (pour le scroll)
-                originTouchY = touchY;
+            m_lastTouchX = touchX;
+            m_lastTouchY = touchY;
 
-                // Store the last touch position
-                m_lastTouchX = touchX;
-                m_lastTouchY = touchY;
-
-                return true;
-            }
+            returnValue = true;
         }
-        else if (m_pressedState == PressedState::NOT_PRESSED)
+        else if (widgetPressed == this)
         {
-            return false;
-        }
+            bool isScrollingX = abs(m_lastTouchX - touchX) > SCROLL_STEP;
+            bool isScrollingY = abs(m_lastTouchY - touchY) > SCROLL_STEP;
+            bool isScrolling = isScrollingX || isScrollingY;
 
-        // scroll
-
-        if(abs(m_lastTouchX - touchX) > 5 || abs(m_lastTouchY - touchY) > 5)
-        {
-            /*std::cout << "Scroll: " << m_verticalScrollEnabled << std::endl;
-                    std::cout << "-: " << getHeight() << std::endl;*/
-            if(m_verticalScrollEnabled)
+            if(isScrollingX)
             {
-                if (abs(m_lastTouchX - touchX) > 5) // todo: ajout d'une constante de seuil
+                gui::ElementBase* nearScrollableObject = getHigestXScrollableParent();
+                globalPressedState = SCROLLX;
+
+                if(nearScrollableObject == this)
                 {
-                    m_pressedState = PressedState::SLIDED;
-                    if(originTouchX < touchX)
+                    while(m_lastTouchX + SCROLL_STEP < touchX)
+                    {
                         onScrollRight();
-                    else
+                        m_lastTouchY += SCROLL_STEP;
+                    }
+                    while(m_lastTouchX - SCROLL_STEP > touchX)
+                    {
                         onScrollLeft();
+                        m_lastTouchY -= SCROLL_STEP;
+                    }
                 }
-
-                if (abs(m_lastTouchY - touchY) > 5)
+                else if(nearScrollableObject == nullptr)
                 {
-                    //std::cout << "onScroll: " << m_verticalScroll << std::endl;
-                    m_pressedState = PressedState::SLIDED;
-                    if(m_lastTouchY < touchY)
-                        onScrollUp();
-                    else
-                        onScrollDown();
+                    globalPressedState = LOCKED;
+                }
+                else
+                {
+                    widgetPressed = getHigestXScrollableParent();
                 }
 
+                globalPressedState = SCROLLX;
                 m_lastTouchX = touchX;
-                m_lastTouchY = touchY;
-                return true;
+
+                returnValue = true;
             }
-            else
+
+            if(isScrollingY)
             {
-                m_pressedState = PressedState::NOT_PRESSED;
-                if(m_parent != nullptr)
+                gui::ElementBase* nearScrollableObject = getHigestYScrollableParent();
+                globalPressedState = SCROLLY;
+
+                if(nearScrollableObject == this)
                 {
-                    m_widgetPressed = m_parent;
-                    m_parent->m_pressedState = PressedState::SLIDED;
-                    /*std::cout << "parent is now " << std::endl;*/
+                    while(m_lastTouchY + SCROLL_STEP < touchY)
+                    {
+                        onScrollUp();
+                        m_lastTouchY += SCROLL_STEP;
+                    }
+                    while(m_lastTouchY - SCROLL_STEP > touchY)
+                    {
+                        onScrollDown();
+                        m_lastTouchY -= SCROLL_STEP;
+                    }
                 }
-                
-                return true;
+                else if(nearScrollableObject == nullptr)
+                {
+                    globalPressedState = LOCKED;
+                }
+                else
+                {
+                    widgetPressed = getHigestYScrollableParent();
+                }
+
+                globalPressedState = SCROLLY;
+                m_lastTouchY = touchY;
+
+                returnValue = true;
             }
         }
     }
     else
     {
-        originTouchX = -1;
-        originTouchY = -1;
-    }
-
-    if (touchX == -1 && touchY == -1 && m_widgetPressed == this && m_pressedState != PressedState::RELEASED)
-    {
-        if (m_pressedState == PressedState::PRESSED)
+        if(globalPressedState == PRESSED)
         {
-            m_pressedState = PressedState::RELEASED;
+            this->m_pressedState = RELEASED;
+            lastEventTouchX = originTouchX;
+            lastEventTouchY = originTouchY;
             onReleased();
         }
 
-        m_widgetPressed = nullptr;
+        globalPressedState = NOT_PRESSED;
+        widgetPressed = nullptr;
+
+        returnValue = true;
     }
 
-    return false;
+    return returnValue;
 }
 
 void gui::ElementBase::setX(uint16_t x)
@@ -380,6 +454,15 @@ void gui::ElementBase::disable()
     globalGraphicalUpdate();
 }
 
+void gui::ElementBase::setEnabled(const bool enabled) {
+    m_isEnabled = enabled;
+    globalGraphicalUpdate();
+}
+
+bool gui::ElementBase::isEnabled() const {
+    return m_isEnabled;
+}
+
 gui::ElementBase *gui::ElementBase::getMaster()
 {
     // We shoud probably remove this function.
@@ -404,6 +487,10 @@ gui::ElementBase *gui::ElementBase::getParent() const
 
 void gui::ElementBase::addChild(gui::ElementBase *child)
 {
+    if (child == nullptr) {
+        throw libsystem::exceptions::RuntimeError("Child can't be null.");
+    }
+
     m_children.push_back(child);
     child->m_parent = this;
 }
@@ -496,17 +583,38 @@ void gui::ElementBase::getLastTouchPosAbs(int16_t* x, int16_t* y) const
  */
 void gui::ElementBase::getLastTouchPosRel(int16_t* x, int16_t* y) const
 {
-    *x = m_lastTouchX - getAbsoluteX();
-    *y = m_lastTouchY - getAbsoluteY();
+    *x = lastEventTouchX - getAbsoluteX();
+    *y = lastEventTouchY - getAbsoluteY();
 }
 
 void gui::ElementBase::free()
 {
-    m_surface.reset();
-    /*for (auto child : m_children)
+    if(m_surface != nullptr)
+        m_surface.reset();
+
+    setParentNotRendered();
+
+    for (auto child : m_children)
     {
         child->free();
-    }*/
+    }
+}
+
+bool gui::ElementBase::isInside()
+{
+    if(m_parent == nullptr)
+        return true;
+
+    if(getX() + getWidth() < 0)
+        return false;
+    if(getY() + getHeight() < 0)
+        return false;
+    if(getX() > m_parent->getWidth())
+        return false;
+    if(getY() > m_parent->getHeight())
+        return false;
+
+    return true;
 }
 
 std::shared_ptr<graphics::Surface> gui::ElementBase::getSurface() {

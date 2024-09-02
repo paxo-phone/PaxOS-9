@@ -2,10 +2,12 @@
 #define ELEMENTBASE_HPP
 
 #include <cstdint> // for uint16_t
-#include <Surface.hpp>
 #include <vector>
 
+#include "Surface.hpp"
+
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
+#define SCROLL_STEP 20
 
 namespace gui
 {
@@ -16,7 +18,10 @@ namespace gui
         virtual ~ElementBase();
 
         virtual void render() = 0;
-        void renderAll();
+        void renderAll(bool onScreen = true);
+
+        virtual void preRender() {};
+        virtual void postRender() {};
 
         bool updateAll();
         bool update();
@@ -67,7 +72,12 @@ namespace gui
 
         void enable();
         void disable();
+        bool getIsEnabled() const;
+
         void free();    // free the buffers in the ram to allow more windows to work at the same time
+
+        void setEnabled(bool enabled);
+        [[nodiscard]] bool isEnabled() const;
 
         /**
          * \brief Get the highest parent widget in the hierachy
@@ -80,6 +90,7 @@ namespace gui
         ElementBase *m_parent;
         std::vector<ElementBase *> m_children;
         static int16_t touchX, touchY;
+        static int16_t lastEventTouchX, lastEventTouchY;
 
         uint16_t m_x, m_y;
 
@@ -122,15 +133,24 @@ namespace gui
             NOT_PRESSED,
             PRESSED,
             SLIDED,
-            RELEASED
+            RELEASED,
+            SCROLLX,
+            SCROLLY,
+            LOCKED
         };
 
         PressedState m_pressedState;
 
-        static ElementBase *m_widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
+        static PressedState globalPressedState;
+        static ElementBase *widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
         static int16_t originTouchX, originTouchY;
 
-        int16_t m_lastTouchX, m_lastTouchY;
+        ElementBase* getHigestXScrollableParent();
+        ElementBase* getHigestYScrollableParent();
+
+        bool isInside(); // si le widget est visible dans son parent
+
+        static int16_t m_lastTouchX, m_lastTouchY;
         void getLastTouchPosAbs(int16_t* x, int16_t* y) const;
         void getLastTouchPosRel(int16_t* x, int16_t* y) const;
 

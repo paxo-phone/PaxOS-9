@@ -5,6 +5,69 @@
 #include <path.hpp>
 
 #include <iostream>
+#include <libsystem.hpp>
+
+namespace gui::ImagesList
+{
+    struct ImageLoaded
+    {
+        storage::Path path;
+        uint16_t width;
+        uint16_t height;
+        std::shared_ptr<graphics::Surface> surface;
+        color_t backgroundColor;
+    };
+
+    std::vector<ImageLoaded> images;
+
+    std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF) {
+        // ReSharper disable once CppUseStructuredBinding
+        for (const auto& image : images) {
+            if (image.path.str() == path.str() && image.width == width && image.height == height) {
+                return image.surface;
+            }
+        }
+
+        const auto i = graphics::SImage(path);
+
+        // libsystem::log("Image: " + std::to_string(i.getType()) + ", " + std::to_string(i.getWidth()) + ", " + std::to_string(i.getHeight()) + ", " + i.getPath().str());
+
+        ImageLoaded img = {
+            path,
+            width, // i.getWidth(),
+            height, // i.getHeight(),
+            std::make_shared<graphics::Surface>(width, height)
+        };
+
+        // Clear the background if it's a transparent image ?
+        // I guess so ?
+        if(i.getType() != graphics::ImageType::BMP) {
+            img.surface->clear(backgroundColor);
+        }
+
+        img.surface->drawImage(i, 0, 0, width, height);
+
+        images.push_back(img);
+
+        return img.surface;
+    }
+
+    void updateImageList()
+    {
+        for (auto img = images.begin(); img != images.end();)
+        {
+            if (img->surface.use_count() == 1)
+            {
+                img = images.erase(img);
+                //std::cout << "[Image] image deleted" << std::endl;
+            }
+            else
+            {
+                ++img;
+            }
+        }
+    }
+}
 
 namespace gui::elements
 {
@@ -19,23 +82,20 @@ namespace gui::elements
         this->m_backgroundColor = backgroundColor;
     }
 
-    Image::~Image() = default;
+    Image::~Image()
+    {
+        ImagesList::updateImageList();
+    }
 
     void Image::render()
     {
+        if(m_isRendered == false)
+            load(m_backgroundColor);
     }
 
     void Image::load(color_t background)
     {
-        graphics::SImage i = graphics::SImage(this->m_path);
-        
-        m_surface = std::make_shared<graphics::Surface>(i.getWidth(), i.getHeight());
-        this->m_width = i.getWidth();
-        this->m_height = i.getHeight();
-        m_surface->clear(background);
-
-        m_surface->drawImage(i, 0, 0);
-
+        m_surface = gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
         localGraphicalUpdate();
     }
 }

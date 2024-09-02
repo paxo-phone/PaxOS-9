@@ -9,6 +9,7 @@
 #include <fstream>
 #include <path.hpp>
 #include <filestream.hpp>
+#include <libsystem.hpp>
 #include <memory>
 
 // TODO: Replace this with "storage"
@@ -29,7 +30,6 @@ std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
 
     if(!stream.isopen())
     {
-        std::cout << "Error: " << path.str() << std::endl;
         return data;
     }
 
@@ -49,11 +49,11 @@ namespace graphics {
     {
         this->m_path = path;
 
-        if(!path.exists() || !path.isfile())
-        {
-            m_width = 0;
-            m_height = 0;
-            return;
+        if(!path.exists() || !path.isfile()) {
+            throw libsystem::exceptions::InvalidArgument("Path does not exist : " + path.str() + ".");
+            // m_width = 0;
+            // m_height = 0;
+            // return;
         }
 
         m_data = getFileData(path);
@@ -63,9 +63,10 @@ namespace graphics {
         switch (imageData.type)
         {
         case imgdec::ERROR:
-            m_width = 0;
-            m_height = 0;
-            return;
+            throw libsystem::exceptions::InvalidArgument("Invalid image data.");
+            // m_width = 0;
+            // m_height = 0;
+            // return;
         case imgdec::BMP:
             m_type = BMP;
             break;
@@ -88,12 +89,12 @@ namespace graphics {
         return m_type;
     }
 
-    uint32_t SImage::getWidth() const
+    uint16_t SImage::getWidth() const
     {
         return m_width;
     }
 
-    uint32_t SImage::getHeight() const
+    uint16_t SImage::getHeight() const
     {
         return m_height;
     }

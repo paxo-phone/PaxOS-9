@@ -14,6 +14,10 @@
 
 #include "storage/storage_test.cpp"
 
+#include "gsm/gsm_test.cpp"
+#include "gsm/conversation_test.cpp"
+#include "gsm/contacts_test.cpp"
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

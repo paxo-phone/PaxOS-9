@@ -1,5 +1,7 @@
+garg = nil
+
 function hangOn()
-    if(#arg == 0) then
+    if(#garg == 0) then
         gui:setWindow(win)
     end
     print("hang on")
@@ -35,18 +37,19 @@ function callPage()
 
     hangOnB=gui:button(win2, 35, 394, 250, 38)
     hangOnB:setText("Raccrocher")
-    --hangOnB:onClick(function() gsm:endCall() if(#arg == 1) then gui:setWindow(nil) end end)
+    --hangOnB:onClick(function() gsm:endCall() if(#garg == 1) then gui:setWindow(nil) end end)
     
-    time:setTimeout(checkHangOn, 5000)
+    time:setTimeout(checkHangOn, 0)
 
     gui:setWindow(win2)
     print("end callpage")
 end
 
-function run()
-    print("start call " .. #arg)
-    if(#arg == 1) then
-        gsm.newCall(arg[1])
+function run(arg)
+    garg = arg
+    print("start call " .. #garg)
+    if(#garg == 1) then
+        gsm.newCall(garg[1])
         print("Success")
         callPage()
         return

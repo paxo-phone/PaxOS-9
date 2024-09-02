@@ -9,7 +9,7 @@ class LuaStorageFile
 {
     public:
     LuaStorageFile(storage::Path filename, uint8_t mode = 0);
-    ~LuaStorageFile(){std::cout << "LuaStorageFile destruct" << std::endl;}
+    ~LuaStorageFile(){}
 
     void open();
     void close();

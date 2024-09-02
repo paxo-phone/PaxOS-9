@@ -67,7 +67,7 @@ namespace graphics
 
         void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
-        void drawImage(const SImage &image, int16_t x, int16_t y);
+        void drawImage(const SImage &image, int16_t x, int16_t y, uint16_t w = 0, uint16_t h = 0);
 
         void setFont(EFont font);
         void setFontSize(float fontSize);

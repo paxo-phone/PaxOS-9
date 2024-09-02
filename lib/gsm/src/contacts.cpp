@@ -13,16 +13,18 @@ namespace Contacts
 
     void load()
     {
-        storage::FileStream stream((Path(CONTACTS_LOCATION) / "list.json").str(), storage::Mode::READ);
+        storage::Path path(CONTACTS_LOCATION);
+        storage::FileStream stream((path / "list.json").str(), storage::Mode::READ);
         std::string file = stream.read();
         stream.close();
 
         nlohmann::json json;
-        if(nlohmann::json::accept(file))
+        if (nlohmann::json::accept(file))
         {
-            try {
+            try
+            {
                 json = nlohmann::json::parse(file);
-                for (const auto& contact : json)
+                for (const auto &contact : json)
                 {
                     Contacts::contact newContact;
                     newContact.name = contact["name"];
@@ -30,7 +32,9 @@ namespace Contacts
 
                     contactList.push_back(newContact);
                 }
-            } catch (const nlohmann::json::exception& e) {
+            }
+            catch (const nlohmann::json::exception &e)
+            {
                 std::cerr << "Error parsing contacts: " << e.what() << std::endl;
             }
         }
@@ -40,7 +44,7 @@ namespace Contacts
     {
         nlohmann::json json;
 
-        for (const auto& contact : contactList)
+        for (const auto &contact : contactList)
         {
             nlohmann::json contactJson;
             contactJson["name"] = contact.name;
@@ -51,7 +55,8 @@ namespace Contacts
 
         std::string file = json.dump();
 
-        storage::FileStream stream((Path(CONTACTS_LOCATION) / "list.json").str(), storage::Mode::WRITE);
+        storage::Path path(CONTACTS_LOCATION);
+        storage::FileStream stream((path / "list.json").str(), storage::Mode::WRITE);
         stream.write(file);
         stream.close();
     }
@@ -72,15 +77,14 @@ namespace Contacts
             std::remove_if(
                 contactList.begin(),
                 contactList.end(),
-                [name](const contact& c) { return c.name == name; }
-            ),
-            contactList.end()
-        );
+                [name](const contact &c)
+                { return c.name == name; }),
+            contactList.end());
     }
 
     void editContact(std::string name, contact c)
     {
-        for (auto& contact : contactList)
+        for (auto &contact : contactList)
         {
             if (contact.name == name)
             {
@@ -92,7 +96,7 @@ namespace Contacts
 
     contact getContact(std::string name)
     {
-        for (const auto& contact : contactList)
+        for (const auto &contact : contactList)
         {
             if (contact.name == name)
             {
@@ -101,12 +105,12 @@ namespace Contacts
         }
 
         // Return an empty contact if no match is found
-        return {};
+        return {"",""};
     }
 
     contact getByNumber(std::string number)
     {
-        for (const auto& contact : contactList)
+        for (const auto &contact : contactList)
         {
             if (contact.phone == number)
             {
@@ -115,6 +119,6 @@ namespace Contacts
         }
 
         // Return an empty contact if no match is found
-        return {};
+        return {"",""};
     }
 };

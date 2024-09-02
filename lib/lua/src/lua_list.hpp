@@ -10,6 +10,7 @@ class LuaVerticalList : public LuaWidget
     
     void addChild(LuaWidget* widget){ this->children.push_back(widget); widget->parent = this; this->widget->add(widget->widget); }
     void setSpaceLine(int line){  this->widget->setSpaceLine(line); }
+    void setIndex(int i = 0) { this->widget->setIndex(i); };
 
     VerticalList* widget = nullptr;
 };

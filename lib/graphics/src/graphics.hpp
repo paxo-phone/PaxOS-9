@@ -6,8 +6,8 @@
 #ifndef GRAPHICS_HPP
 #define GRAPHICS_HPP
 
-#define LGFX_USE_V1
-#include <LovyanGFX.hpp>
+// #define LGFX_USE_V1
+// #include <LovyanGFX.hpp>
 
 #ifdef ESP_PLATFORM
 
@@ -24,6 +24,9 @@
 
 #include <cstdint>
 
+
+class FT6236G;
+
 namespace graphics
 {
     enum EScreenOrientation
@@ -34,12 +37,18 @@ namespace graphics
 
     class Surface;
 
-    void init();
-    void reInit();
+    enum GraphicsInitCode {
+        SUCCESS,
+        ERROR_NO_TOUCHSCREEN,
+        ERROR_FAULTY_TOUCHSCREEN
+    };
+
+    GraphicsInitCode init();
 
     uint16_t getScreenWidth();
     uint16_t getScreenHeight();
 
+    extern int16_t brightness;
     void setBrightness(uint16_t value);
 
     bool isRunning();
@@ -58,8 +67,10 @@ namespace graphics
     EScreenOrientation getScreenOrientation();
     void setScreenOrientation(EScreenOrientation screenOrientation);
 
-    // Please do not use it
-    std::shared_ptr<LGFX> getLCD();
+    LGFX* getLCD();
+#ifdef ESP_PLATFORM
+    FT6236G* getTouchController();
+#endif
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());

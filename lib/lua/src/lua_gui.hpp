@@ -40,7 +40,11 @@ class LuaGui
 
     void update();
 
-    void setMainWindow(LuaWindow* window) {this->mainWindow = window; }
+    void setMainWindow(LuaWindow* window);
+    void showInfoMessage(const std::string& msg );
+    void showWarningMessage(const std::string& msg );
+    void showErrorMessage(const std::string& msg );
+
     LuaWindow* mainWindow = nullptr;
     LuaFile* lua = nullptr;
     std::vector<LuaWidget*> widgets;

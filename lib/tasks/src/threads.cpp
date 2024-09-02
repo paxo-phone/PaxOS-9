@@ -1,6 +1,6 @@
 #include "threads.hpp"
 #include "delay.hpp"
-#include <clock.hpp>
+#include <gsm.hpp>
 
 #ifndef THREAD_HANDLER
     #define THREAD_HANDLER
@@ -23,16 +23,16 @@
 
 void ThreadManager::init()
 {
-    new_thread(CORE_BACK, &ThreadManager::simcom_thread);
-    new_thread(CORE_BACK, &ThreadManager::background_thread);
+    new_thread(CORE_BACK, &ThreadManager::simcom_thread, 16*1024);
+    new_thread(CORE_BACK, &ThreadManager::background_thread, 16*1024);
 }
 
-void ThreadManager::new_thread(bool core, void(*func)(void*))
+void ThreadManager::new_thread(bool core, void(*func)(void*), int stackSize)
 {
     #ifdef ESP_PLATFORM
         xTaskCreate(func,
                     "thread",
-                    50000,
+                    stackSize,
                     nullptr,
                     0,
                     nullptr);

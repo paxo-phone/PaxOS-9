@@ -3,6 +3,8 @@
 #include <graphics.hpp>
 #include <threads.hpp>
 #include "lua_file.hpp"
+#include "app.hpp"
+
 
 LuaGui::LuaGui(LuaFile* lua)
 {
@@ -21,10 +23,9 @@ LuaGui::~LuaGui()
             hasParent.push_back(false);
     }
 
-    for (int i = 0; i < widgets.size(); i++)
+    while (widgets.size())
     {
-        if(!hasParent[i])
-            delete widgets[i];
+        delete widgets[0];
     }
 }
 
@@ -107,7 +108,7 @@ LuaHorizontalList* LuaGui::horizontalList(LuaWidget* parent, int x, int y, int w
 
 LuaSwitch* LuaGui::switchb(LuaWidget* parent, int x, int y)
 {
-    LuaSwitch* w = new LuaSwitch(parent, x, y);
+    LuaSwitch* w = new LuaSwitch(parent, x, y, this);
     widgets.push_back(w);
     w->gui = this;
     return w;
@@ -156,20 +157,46 @@ void LuaGui::update()
 
 std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText)
 {
-    gui::elements::Window win;
-
     graphics::setScreenOrientation(graphics::LANDSCAPE);
 
-    auto key = Keyboard(defaultText);
-    key.setPlaceholder(placeholder);
+    auto key = new Keyboard(defaultText);
+    key->setPlaceholder(placeholder);
 
-    while (!hardware::getHomeButton() && !key.quitting())
+    while (!hardware::getHomeButton() && !key->quitting())
     {
         eventHandlerApp.update();
-        key.updateAll();
+        key->updateAll();
     }
 
     graphics::setScreenOrientation(graphics::PORTRAIT);
 
-    return key.getText();
+    std::string o = key->getText();
+
+    delete key;
+    return o;
+}
+
+void LuaGui::setMainWindow(LuaWindow* window) {
+    this->mainWindow = window; 
+    AppManager::askGui(this->lua); 
+}
+
+void LuaGui::showErrorMessage(const std::string& msg ){
+
+        GuiManager &guiManager = GuiManager::getInstance();
+        guiManager.showErrorMessage(msg);
+
+}
+
+void LuaGui::showWarningMessage(const std::string& msg ){
+
+        GuiManager &guiManager = GuiManager::getInstance();
+        guiManager.showWarningMessage(msg);
+
+}
+void LuaGui::showInfoMessage(const std::string& msg ){
+
+        GuiManager &guiManager = GuiManager::getInstance();
+        guiManager.showInfoMessage(msg);
+
 }

@@ -1,9 +1,10 @@
+#include "path.hpp"
+
 #include <string>
 #include <cstdint>
 #include <vector>
-
-#include <stdlib.h>
 #include <iostream>
+#include <libsystem.hpp>
 
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 #include <filesystem>
@@ -11,12 +12,9 @@
 #else
 #include <Arduino.h>
 #include <SD.h>
-#include <stdbool.h>
 #include <dirent.h>   // for Dir and Files
 #include <sys/stat.h> // to check files
 #endif
-
-#include "path.hpp"
 
 #define MOUNT_POINT "/sd"
 
@@ -30,24 +28,33 @@
 #define SYSTEM_PATH_SEPARATOR '/'
 #endif
 
-bool storage::init()
-{
+bool storage::init() {
 #ifdef ESP_PLATFORM
 
-    while(true)
-    {
-        if (SD.begin(4))
+    constexpr uint8_t sdBeginTryCount = 4;
+
+    for (int i = 0; i < sdBeginTryCount; i++) {
+        if (SD.begin(4/*, SPI, 8000000*/)) {
+            libsystem::log("SD card initialized.");
             return true;
-        std::cout << "Error storage initialization" << std::endl;
+        }
+
+        libsystem::log("SD card initialization failed, try " + std::to_string(i + 1) + " of " + std::to_string(sdBeginTryCount) + ".");
     }
+
+    // esp_restart();
 
     // Show error message on the screen?
 
+    libsystem::log("SD card initialization failed.");
+
     return false;
 
-#endif
+#else
 
     return true;
+
+#endif
 }
 
 namespace storage
@@ -95,7 +102,8 @@ namespace storage
         {
             o += m_steps[i];
             if (i != m_steps.size() - 1)
-                o += SYSTEM_PATH_SEPARATOR;
+                o += "/";
+                // o += SYSTEM_PATH_SEPARATOR;
         }
 
         return o;
@@ -146,6 +154,12 @@ namespace storage
     Path &Path::operator=(const std::string &other)
     {
         return ((*this) = Path(other));
+    }
+
+    
+    bool Path::operator==(const Path &other) const
+    {
+        return this->str() == other.str();
     }
 
     void Path::assign(const Path &other)

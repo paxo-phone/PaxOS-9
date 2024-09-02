@@ -1,11 +1,8 @@
 #ifndef TASKS_HPP
 #define TASKS_HPP
 
-#include <stdlib.h>
 #include <functional>
 #include <vector>
-#include <algorithm>
-#include <iostream>
 #include <tuple>
 #include "../../hardware/hardware.hpp"
 #include "invoke.hpp"
@@ -80,12 +77,12 @@ public:
 
 class Interval {
 public:
-    Function* callback;
+    std::function<void ()> callback;
     uint64_t interval;
     uint64_t lastTrigger;
     uint64_t id;
 
-    Interval(Function* ca, uint64_t interval, uint64_t id)
+    Interval(std::function<void ()> ca, uint64_t interval, uint64_t id)
     {
         this->callback = ca;
         this->interval = interval;
@@ -95,7 +92,6 @@ public:
 
     ~Interval()
     {
-        delete callback;
     }
 };
 
@@ -124,7 +120,7 @@ class EventHandler
     public:
     std::vector<Event*> events;
     std::vector<Timeout*> timeouts;
-    std::vector<Interval*> intervals;
+    std::vector<Interval> intervals;
 
     ~EventHandler();
 
@@ -134,7 +130,7 @@ class EventHandler
     void removeEventListener(uint32_t id);
     uint32_t setTimeout(Function* callback, uint64_t timeout);
     void removeTimeout(uint32_t id);
-    uint32_t setInterval(Function* callback, uint64_t interval);
+    uint32_t setInterval(std::function<void ()> callback, uint64_t interval);
     void removeInterval(uint32_t id);
 
 private:    

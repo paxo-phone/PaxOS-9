@@ -14,6 +14,7 @@ namespace gui::elements
         void render() override;
 
         void add(ElementBase* widget);
+        void setIndex(int index);
 
         void setSpaceLine(uint16_t y);
 

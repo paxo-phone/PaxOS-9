@@ -5,13 +5,11 @@
 
 #ifdef ESP_PLATFORM
 
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
-#include <esp_system.h>
 
 #endif
+
+#include <gsm.hpp>
 
 #define TICKS_MS 20
 
@@ -78,8 +76,10 @@ namespace StandbyMode
     void savePower()
     {
         #ifdef ESP_PLATFORM
+        Serial.end();
         setCpuFrequencyMhz(20);
         GSM::reInit();
+        Serial.begin(115200);
         powerMode = false;
         #endif
     }
@@ -87,8 +87,10 @@ namespace StandbyMode
     void restorePower()
     {
         #ifdef ESP_PLATFORM
+        Serial.end();
         setCpuFrequencyMhz(240);
         GSM::reInit();
+        Serial.begin(115200);
         powerMode = true;
         #endif
     }
@@ -113,7 +115,7 @@ namespace StandbyMode
         }
 
         #ifdef ESP_PLATFORM
-        //std::cout << "CPU USAGE: " << int(100*(dt/TICKS_MS)) << "%" << std::endl;
+        //std::cout << "CPU USAGE: " << (float) (100*(dt/TICKS_MS)) << "%" << std::endl;
         #endif
 
         timer = millis();

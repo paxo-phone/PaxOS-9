@@ -8,22 +8,34 @@ class LuaFile;
 class LuaTimeInterval
 {
     public:
-    LuaTimeInterval(LuaFile* lua, sol::function func, uint32_t interval);
+    LuaTimeInterval(LuaFile* lua, sol::protected_function func, uint32_t interval);
     int getId();
     void call();
     ~LuaTimeInterval();
 
     private:
     LuaFile* lua;
-    sol::function func;
+    sol::protected_function func;
     uint32_t interval;
     int id;
+};
+
+class LuaTimeEvent
+{
+    public:
+        uint32_t addEventListener(LuaFile* lua, sol::protected_function condition, sol::protected_function callback);
+        void call();
+    private:
+        int id;
+        sol::protected_function condition;
+        sol::protected_function callback;
+
 };
 
 class LuaTimeTimeout
 {
     public:
-    LuaTimeTimeout(LuaFile* lua, sol::function func, uint32_t timeout);
+    LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint32_t timeout);
     int getId();
     void call();
     ~LuaTimeTimeout();
@@ -32,7 +44,7 @@ class LuaTimeTimeout
 
     private:
     LuaFile* lua;
-    sol::function func;
+    sol::protected_function func;
     uint32_t timeout;
     int id;
 };
@@ -46,8 +58,9 @@ class LuaTime
     
     uint32_t monotonic();
     sol::table get(std::string format);
-    int setInterval(sol::function func, uint32_t interval);
-    int setTimeout(sol::function func, uint32_t timeout);
+    int setInterval(sol::protected_function func, uint32_t interval);
+    int setTimeout(sol::protected_function func, uint32_t timeout);
+
     void removeInterval(int id);
     void removeTimeout(int id);
 
