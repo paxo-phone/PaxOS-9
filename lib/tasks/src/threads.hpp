@@ -1,15 +1,10 @@
 #ifndef THREADS_HPP
 #define THREADS_HPP
 
-#include "tasks.hpp"
-#include "standby.hpp"
-
+#include <tasks.hpp>
 
 extern EventHandler eventHandlerBack;
 extern EventHandler eventHandlerApp;
-
-#include <stdint.h>
-#include <string.h>
 
 #define CORE_APP 1
 #define CORE_BACK 0

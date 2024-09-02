@@ -1,8 +1,9 @@
-#include <string>
-
-#include <fstream>
 #include "filestream.hpp"
 #include <sstream>
+
+#ifdef ESP_PLATFORM
+#include <SD.h>
+#endif
 
 namespace storage
 {

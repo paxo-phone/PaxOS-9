@@ -4,7 +4,6 @@
 #include <functional>
 #include <vector>
 #include <string>
-#include <threads.hpp>
 
 #define BAUDRATE 921600
 
@@ -101,7 +100,7 @@ namespace GSM
     void acceptCall();
     void rejectCall();
 
-    int getBatteryLevel();
+    double getBatteryLevel();
     void getHour();
 
     std::string getHttpMMS(std::string url);

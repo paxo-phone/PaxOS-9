@@ -10,7 +10,6 @@
 
 #include <cstdint>
 
-
 #ifdef ESP_PLATFORM
 
 #include "platforms/LGFX_ESP32_PAXO5.hpp"
@@ -22,6 +21,8 @@
 
 #endif
 
+class FT6236G;
+
 namespace graphics
 {
     enum EScreenOrientation
@@ -32,9 +33,16 @@ namespace graphics
 
     class Surface;
 
-    void init();
     LGFX* getLcd();
     void reInit();
+
+  enum GraphicsInitCode {
+        SUCCESS,
+        ERROR_NO_TOUCHSCREEN,
+        ERROR_FAULTY_TOUCHSCREEN
+    };
+
+    GraphicsInitCode init();
 
     uint16_t getScreenWidth();
     uint16_t getScreenHeight();
@@ -57,6 +65,11 @@ namespace graphics
 
     EScreenOrientation getScreenOrientation();
     void setScreenOrientation(EScreenOrientation screenOrientation);
+
+    LGFX* getLGFX();
+#ifdef ESP_PLATFORM
+    FT6236G* getTouchController();
+#endif
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());

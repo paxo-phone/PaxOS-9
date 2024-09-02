@@ -8,6 +8,8 @@
 #include <json.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
+#include <libsystem.hpp>
+#include <standby.hpp>
 
 
 /*
@@ -99,10 +101,10 @@ int sol_exception_handler(lua_State* L, sol::optional<const std::exception&> may
 }
 
 int custom_panic_handler(lua_State* L) {
-    AppManager::App& app = AppManager::get(L);
+    std::shared_ptr<AppManager::App> app = AppManager::get(L);
 
-    app.errors += std::string(lua_tostring(L, -1)) + "\n";
-    app.app_state = AppManager::App::AppState::NOT_RUNNING;
+    app->errors += std::string(lua_tostring(L, -1)) + "\n";
+    app->app_state = AppManager::App::AppState::NOT_RUNNING;
 
     const char* msg = lua_tostring(L, -1);
     std::cerr << "Lua panic: " << msg << std::endl;
@@ -390,7 +392,7 @@ void LuaFile::load()
         lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
             {
                 try{
-                    AppManager::get(name).run(false, arg);
+                    AppManager::get(name)->run(false, arg);
                 }
                 catch(std::runtime_error &e) {
                     std::cerr << "Erreur: " << e.what() << std::endl;
@@ -404,7 +406,7 @@ void LuaFile::load()
             [&](std::string name)
             {
                 try{
-                    AppManager::get(name).run(false, {});
+                    AppManager::get(name)->run(false, {});
                 }
                 catch(std::runtime_error &e) {
                     std::cerr << "Erreur: " << e.what() << std::endl;
@@ -547,7 +549,7 @@ void LuaFile::wakeup(std::vector<std::string> arg)
 
 void LuaFile::stop(std::vector<std::string> arg)
 {
-    sol::protected_function func = lua["quit"];
+    const sol::protected_function func = lua.get<sol::protected_function>("quit");;
     if (!func.valid())
         return;
 
