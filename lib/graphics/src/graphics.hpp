@@ -10,17 +10,15 @@
 
 #include <cstdint>
 
+
 #ifdef ESP_PLATFORM
 
-#include <LovyanGFX.hpp>
 #include "platforms/LGFX_ESP32_PAXO5.hpp"
 
 #else
 
 #include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
 #include "LGFX_AUTODETECT.hpp"
-
-#include "LovyanGFX.hpp"
 
 #endif
 
