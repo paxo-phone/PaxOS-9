@@ -29,7 +29,7 @@ namespace gui::elements
         StandbyMode::triggerPower();
 
         // Get screen
-        const std::shared_ptr<LGFX> lcd = graphics::getLCD();
+        LGFX* lcd = graphics::getLCD();
 
         // Copy screen zone to buffer
         lcd->readRect(m_x, m_y, m_width, m_height, static_cast<uint16_t *>(m_screenSurface->getBuffer()));

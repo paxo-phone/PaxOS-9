@@ -114,7 +114,7 @@ namespace gui::elements {
             {
                 if (m_cursorIndex == charIndex)
                 {
-                    std::cout << "CURSOR POSITION MATCH ! " << charIndex << ", " << lineCharIndex << ", " << lineIndex << std::endl;
+                    // std::cout << "CURSOR POSITION MATCH ! " << charIndex << ", " << lineCharIndex << ", " << lineIndex << std::endl;
 
                     // TODO : Better implementation
                     currentLine += '|';

@@ -6,6 +6,9 @@
 
 namespace gui::elements
 {
+    /**
+     * @deprecated Not compatible with device.
+     */
     class Filter final : public ElementBase
     {
     public:

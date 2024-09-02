@@ -54,7 +54,7 @@ void libsystem::panic(const std::string &message, const bool restart) {
     const uint16_t screenWidth = graphics::getScreenWidth();
     const uint16_t screenHeight = graphics::getScreenHeight();
 
-    LGFX* lcd = graphics::getLGFX();
+    LGFX* lcd = graphics::getLCD();
 #ifdef ESP_PLATFORM
     FT6236G* touchController = graphics::getTouchController();
 #endif
@@ -183,7 +183,7 @@ bool libsystem::hasBootErrors() {
 }
 
 void libsystem::displayBootErrors() {
-    LGFX* lcd = graphics::getLGFX();
+    LGFX* lcd = graphics::getLCD();
 
     lcd->setFont(&DejaVu18);
     lcd->setTextColor(graphics::packRGB565(255, 100, 100));
