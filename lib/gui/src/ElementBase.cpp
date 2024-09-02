@@ -39,6 +39,9 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
 
 gui::ElementBase::~ElementBase()
 {
+    if (m_parent != nullptr)
+        m_parent->localGraphicalUpdate();
+    
     // Libération de la mémoire allouée pour les enfants de l'objet
     for (int i = 0; i < m_children.size(); i++)
     {
@@ -124,6 +127,9 @@ bool gui::ElementBase::updateAll()
 
     for (auto child : m_children)
     {
+        if (!child->getIsEnabled())
+            continue;
+
         if (child->updateAll())
         {
             returnV = true; // if child had an event, ignore local events
