@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <cstdint>
 
 extern const char *daysOfWeek[7];
 extern const char *daysOfMonth[12];
