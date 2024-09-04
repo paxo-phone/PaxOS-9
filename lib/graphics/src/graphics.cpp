@@ -275,6 +275,8 @@ int getTouch(uint16_t *pPoints)
 
 void graphics::touchUpdate()
 {
+    if(StandbyMode::state() == true)
+        return;
     bool touchState = true;
     int16_t liveTouchX = 0, liveTouchY = 0;
 

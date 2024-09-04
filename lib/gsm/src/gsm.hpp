@@ -107,6 +107,9 @@ namespace GSM
 
     int getNetworkStatus();
 
+    bool isFlightMode();
+    void setFlightMode(bool mode);
+
     std::string getCurrentTimestamp();
     std::string getCurrentTimestampNoSpaces();
     void clearFrom(const std::string &from, const std::string &to);

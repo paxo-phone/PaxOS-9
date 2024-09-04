@@ -81,6 +81,12 @@ namespace StandbyMode
         graphics::setBrightness(0);
         StandbyMode::savePower();
 
+        while(AppManager::isAnyVisibleApp())
+        {
+            AppManager::appStack[AppManager::appStack.size() - 1]->kill();
+            AppManager::appStack.pop_back();
+        }
+
         while (hardware::getHomeButton());
         while (!hardware::getHomeButton() && !AppManager::isAnyVisibleApp() && millis() - sleepTime > lastTrigger)
         {

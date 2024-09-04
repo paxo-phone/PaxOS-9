@@ -11,6 +11,7 @@
 #include <delay.hpp>
 #include <threads.hpp>
 #include <graphics.hpp>
+#include <standby.hpp>
 
 #include "Image.hpp"
 #include "Surface.hpp"
@@ -41,6 +42,7 @@ namespace GSM
     uint16_t seconds, minutes, hours, days, months, years = 0;
     float voltage = -1;
     int networkQuality = 0;
+    bool flightMode = false;
 
     namespace ExternalEvents
     {
@@ -988,12 +990,14 @@ namespace GSM
 
         try
         {
-            return std::stof(voltage_str);
+            voltage = std::stof(voltage_str);
         }
         catch (std::exception)
         {
-            return 0;
+            voltage = -1;
         }
+
+        return 0;
     }
 
     double getBatteryLevel() {
@@ -1126,6 +1130,32 @@ namespace GSM
     void getNetworkQuality()
     {
         requests.push_back({&GSM::updateNetworkQuality, priority::normal});
+    }
+
+    void updateFlightMode()
+    {
+        if(flightMode)
+        {
+            std::cout << "Flight Mode ON" << std::endl;
+            std::cout << send("AT+CFUN=4", "AT+CFUN", 1000) << std::endl;
+        }
+        else
+        {
+            std::cout << "Flight Mode OFF" << std::endl;
+            //std::cout << send("AT+CFUN=6", "AT+CFUN", 1000) << std::endl;
+            std::cout << send("AT+CFUN=1", "AT+CFUN", 1000) << std::endl;
+        }
+    }
+
+    bool isFlightMode()
+    {
+        return flightMode;
+    }
+
+    void setFlightMode(bool mode)
+    {
+        eventHandlerBack.setTimeout(new Callback<>([mode](){ appendRequest({updateFlightMode}); }), 0);
+        flightMode = mode;
     }
 
     void run()

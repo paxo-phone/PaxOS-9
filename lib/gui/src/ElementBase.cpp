@@ -110,6 +110,9 @@ void gui::ElementBase::renderAll(bool onScreen)
 
 bool gui::ElementBase::updateAll()
 {
+    if(!m_isEnabled)
+        return false;
+    
     if(!isInside())
     {
         if(m_surface != nullptr)
@@ -188,6 +191,9 @@ gui::ElementBase* gui::ElementBase::getHigestYScrollableParent()
 bool gui::ElementBase::update()
 {
     // algorithme de mise a jour des interactions tactiles
+
+    if(!this->m_isEnabled)
+        return false;
 
     widgetUpdate();
 
