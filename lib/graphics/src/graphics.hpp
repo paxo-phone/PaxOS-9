@@ -6,8 +6,9 @@
 #ifndef GRAPHICS_HPP
 #define GRAPHICS_HPP
 
-// #define LGFX_USE_V1
-// #include <LovyanGFX.hpp>
+#define LGFX_USE_V1
+
+#include <cstdint>
 
 #ifdef ESP_PLATFORM
 
@@ -18,12 +19,7 @@
 #include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
 #include "LGFX_AUTODETECT.hpp"
 
-#include "LovyanGFX.hpp"
-
 #endif
-
-#include <cstdint>
-
 
 class FT6236G;
 
@@ -37,7 +33,10 @@ namespace graphics
 
     class Surface;
 
-    enum GraphicsInitCode {
+    LGFX* getLcd();
+    void reInit();
+
+  enum GraphicsInitCode {
         SUCCESS,
         ERROR_NO_TOUCHSCREEN,
         ERROR_FAULTY_TOUCHSCREEN

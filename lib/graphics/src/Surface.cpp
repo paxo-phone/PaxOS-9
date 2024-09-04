@@ -7,11 +7,20 @@
 
 #include <path.hpp>
 #include <filestream.hpp>
+//#include <JPEGENC.h>
 #include <iostream>
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
 #include <SD.h>
+#endif
+
+#ifndef JPEG_PIXEL_RGB565
+#define JPEG_PIXEL_RGB565 4
+#endif
+
+#ifndef JPEG_SUBSAMPLE_444
+#define JPEG_SUBSAMPLE_444 0
 #endif
 
 #include "color.hpp"
@@ -65,13 +74,14 @@
 
 namespace graphics
 {
-    Surface::Surface(const uint16_t width, const uint16_t height) : m_color(0xFFFF),
+    Surface::Surface(const uint16_t width, const uint16_t height, const uint8_t color_depth) : m_color(0xFFFF),
                                                                     m_transparent(false),
                                                                     m_transparent_color(0xFFFF),
                                                                     m_font(ARIAL),
-                                                                    m_fontSize(PT_12)
+                                                                    m_fontSize(PT_12),
+                                                                    m_color_depth(color_depth)
     {
-        m_sprite.setColorDepth(16);
+        m_sprite.setColorDepth(m_color_depth);
         m_sprite.setPsram(true);
 
         m_sprite.createSprite(width, height);
@@ -286,6 +296,98 @@ namespace graphics
         #endif
     }
 
+    bool Surface::saveAsJpg(const storage::Path filename)
+    {
+        /*JPEG jpg;
+        int quality = 90;
+
+        LGFX_Sprite sprite = &m_sprite;
+
+        if (sprite.getBuffer() == nullptr || !filename.str().size()) {
+            Serial.println("Invalid sprite or filename");
+            return false;
+        }
+
+        int width = sprite.width();
+        int height = sprite.height();
+        
+        // Open the file for writing
+        std::ofstream outFile(filename.str(), std::ios::binary);
+        if (!outFile.is_open()) {
+            Serial.println("Failed to open file for writing");
+            return false;
+        }
+
+        // JPEG encoder object
+        JPEGENCODE jpe;
+
+        // Start the JPEG encoding process
+        int rc = jpg.encodeBegin(&jpe, width, height, JPEG_PIXEL_RGB565, JPEG_SUBSAMPLE_444, quality);
+        if (rc != 0) {
+            Serial.println("Failed to start JPEG encoding");
+            outFile.close();
+            return false;
+        }
+
+        // Calculate MCU dimensions
+        int mcu_w = (width + jpe.cx - 1) / jpe.cx;
+        int mcu_h = (height + jpe.cy - 1) / jpe.cy;
+
+        // Buffer for one MCU
+        uint8_t ucMCU[64 * 3]; // 8x8 pixels, 3 channels (RGB)
+
+        // Process each MCU
+        for (int y = 0; y < mcu_h; y++) {
+            for (int x = 0; x < mcu_w; x++) {
+                // Extract MCU data from sprite
+                for (int j = 0; j < 8; j++) {
+                    for (int i = 0; i < 8; i++) {
+                        int px = x * 8 + i;
+                        int py = y * 8 + j;
+                        if (px < width && py < height) {
+                            uint16_t pixel = sprite.readPixel(px, py);
+                            // Convert RGB565 to RGB888
+                            uint8_t r = ((pixel >> 11) & 0x1F) << 3;
+                            uint8_t g = ((pixel >> 5) & 0x3F) << 2;
+                            uint8_t b = (pixel & 0x1F) << 3;
+                            ucMCU[(j * 8 + i) * 3] = r;
+                            ucMCU[(j * 8 + i) * 3 + 1] = g;
+                            ucMCU[(j * 8 + i) * 3 + 2] = b;
+                        } else {
+                            // Fill with black if outside sprite bounds
+                            ucMCU[(j * 8 + i) * 3] = 0;
+                            ucMCU[(j * 8 + i) * 3 + 1] = 0;
+                            ucMCU[(j * 8 + i) * 3 + 2] = 0;
+                        }
+                    }
+                }
+                
+                // Add MCU to JPEG
+                rc = jpg.addMCU(&jpe, ucMCU, 8);
+                if (rc != 0) {
+                    Serial.println("Failed to add MCU");
+                    outFile.close();
+                    return false;
+                }
+            }
+        }
+
+        // Finish encoding and get the compressed data
+        int jpegSize = jpg.close();
+        
+        // Write JPEG data to file
+        outFile.write(reinterpret_cast<const char*>(jpe.pOutput), jpegSize);
+        outFile.close();
+
+        Serial.print("JPEG file created: ");
+        Serial.println(filename);
+        Serial.print("File size: ");
+        Serial.print(jpegSize);
+        Serial.println(" bytes");*/
+
+        return true;
+    }
+
     void Surface::setFont(const EFont font)
     {
         m_font = font;
@@ -463,6 +565,7 @@ namespace graphics
     {
         // Copy
         auto copy = lgfx::LGFX_Sprite();
+        copy.setColorDepth(m_color_depth);
         copy.createSprite(getWidth(), getHeight());
 
         // Apply blur effect

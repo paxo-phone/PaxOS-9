@@ -131,7 +131,9 @@ void LuaFile::load()
 
     if(!nlohmann::json::accept(conf))
     {
-        throw libsystem::exceptions::RuntimeError("Invalid app permissions.");
+        std::cerr << "Les permissions de l'app ne sont pas définies ou sont invalides" << std::endl;
+        std::cerr << "Conf: " << conf << " in " << manifest.str() << std::endl;
+        return;
     }
 
     nlohmann::json confJson = nlohmann::json::parse(conf);

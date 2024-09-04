@@ -1,35 +1,36 @@
 #include "gsm.hpp"
 
-#include "contacts.hpp"
-#include "conversation.hpp"
-#include <path.hpp>
-#include <filestream.hpp>
+#include <sstream>
 #include <iostream>
 #include <ctime>
 #include <codecvt>
+
+#include <path.hpp>
+#include <filestream.hpp>
+#include <imgdec.hpp>
 #include <delay.hpp>
-#include "../../tasks/src/threads.hpp"
-#include <codecvt>
+#include <threads.hpp>
+#include <graphics.hpp>
+#include <standby.hpp>
+
+#include "Image.hpp"
+#include "Surface.hpp"
+
+#include "contacts.hpp"
+#include "conversation.hpp"
+#include "pdu.hpp"
 
 const char *daysOfWeek[7] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
 const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"};
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
-#include <HardwareSerial.h>
-#include "driver/uart.h"
-#include "soc/uart_struct.h"
-#include "esp_system.h"
 
 #define RX 26
 #define TX 27
 
-#define GSM_UART UART_NUM_2
 #define gsm Serial2
 #endif
-
-#include <delay.hpp>
-
 
 namespace GSM
 {
@@ -41,6 +42,7 @@ namespace GSM
     uint16_t seconds, minutes, hours, days, months, years = 0;
     float voltage = -1;
     int networkQuality = 0;
+    bool flightMode = false;
 
     namespace ExternalEvents
     {
@@ -52,47 +54,66 @@ namespace GSM
     void init()
     {
 #ifdef ESP_PLATFORM
+
+        Serial.println("GSM initializing");
         pinMode(32, OUTPUT); // define pin mode
 
-        digitalWrite(32, 1); // power on the module
-        delay(1000);
-        digitalWrite(32, 0);
+        /*digitalWrite(32, 1); // power on the module
+        delay(60);  // according to the datasheet t > 50ms
+        digitalWrite(32, 0);*/
 
-        gsm.begin(115200, SERIAL_8N1, RX, TX);
+        gsm.setRxBufferSize(1024*30);
 
-        // Get the UART number (in this case, UART2 for Serial2)
-        uart_port_t uart_num = UART_NUM_2;
-
-        // Configure UART to use REF_TICK as clock source
-        UART2.conf0.tick_ref_always_on = 1;
-
-        // Set the UART clock divider
-        uint32_t sclk_freq = 1000000; // REF_TICK frequency is 1MHz
-        uint32_t baud_rate = 115200;  // Or whatever baud rate you're using
-        uint32_t clk_div = ((sclk_freq + baud_rate / 2) / baud_rate);
-
-        UART2.clk_div.div_int = clk_div;
-        UART2.clk_div.div_frag = 0;
-
-        // Reconfigure the baud rate
-        Serial2.updateBaudRate(baud_rate);
-
-        while (true)
+        bool rebooted = false;
+        
+        while(true)
         {
-
-            while (gsm.available())
-                gsm.read();
-
+            gsm.begin(115200, SERIAL_8N1, RX, TX);
             gsm.println("AT\r");
-            delay(1000);
-
-            if (gsm.available())
+            delay(100);
+            String data = gsm.readString();
+            if (data.indexOf("OK") != -1)
             {
-                std::cout << "[GSM] Connected!" << std::endl;
+                Serial.println("GSM responding at 115200");
+
+                gsm.println("AT+IPR=921600");
+                gsm.flush();
+                gsm.updateBaudRate(921600);
+
                 return;
             }
             else
-                std::cout << "[GSM] [Error] Disconnected" << std::endl;
+            {
+                Serial.println("GSM not responding at 115200, trying 921600");
+                Serial.println(data);
+
+                gsm.updateBaudRate(921600);
+            
+                gsm.println("AT\r");
+                delay(100);
+                String data = gsm.readString();
+                if (data.indexOf("OK") != -1)
+                {
+                    Serial.println("GSM responding at 921600");
+                    return;
+                }
+                else
+                {
+                    Serial.println("GSM not responding at 115200 and 921600");
+                    Serial.println(data);
+
+
+                    if(!rebooted)
+                    {
+                        Serial.println("Powering on the module");
+                        digitalWrite(32, 1); // power on the module
+                        delay(60);  // according to the datasheet t > 50ms
+                        digitalWrite(32, 0);
+                        rebooted = true;
+                    }
+                }
+            }
+            gsm.end();
         }
 #endif
     }
@@ -102,22 +123,7 @@ namespace GSM
 #ifdef ESP_PLATFORM
         download();
 
-        // Get the UART number (in this case, UART2 for Serial2)
-        uart_port_t uart_num = UART_NUM_2;
-
-        // Configure UART to use REF_TICK as clock source
-        UART2.conf0.tick_ref_always_on = 1;
-
-        // Set the UART clock divider
-        uint32_t sclk_freq = 1000000; // REF_TICK frequency is 1MHz
-        uint32_t baud_rate = 115200;  // Or whatever baud rate you're using
-        uint32_t clk_div = ((sclk_freq + baud_rate / 2) / baud_rate);
-
-        UART2.clk_div.div_int = clk_div;
-        UART2.clk_div.div_frag = 0;
-
-        // Reconfigure the baud rate
-        Serial2.updateBaudRate(baud_rate);
+        gsm.updateBaudRate(BAUDRATE);
 #endif
     }
 
@@ -336,7 +342,7 @@ namespace GSM
         }
     }
 
-    void onMessage()
+    /*void onMessage()
     {
         std::cout << "onMessage data: " << data << std::endl;
         clearFrom("+CMTI:", "\n");
@@ -427,6 +433,421 @@ namespace GSM
 
         if (ExternalEvents::onNewMessage)
             ExternalEvents::onNewMessage();
+    }*/
+
+    #ifdef ESP_PLATFORM
+
+    namespace Stream {
+        struct Chunk
+        {
+            char* data;
+            int size;
+        };
+
+        std::vector<Chunk> chunks;
+        bool running = false;
+
+        void stream(storage::FileStream& stream, int size) {
+            running = true;
+
+            std::cout << "Streaming chunks: " << size << std::endl;
+
+            while (running)
+            {
+                while ((chunks.empty() && running)) {
+                    delay(5);
+                }
+
+                if(!chunks.empty())
+                {
+                    std::cout << "Writing chunk of size: " << int(chunks[0].size/1000) << "Ko" << std::endl;
+                    stream.write(chunks[0].data, chunks[0].size);
+                    delete[] chunks[0].data;
+                    chunks.erase(chunks.begin());
+                    std::cout << "Writing chunk ended: " << int(chunks[0].size/1000) << "Ko" << std::endl;
+                }
+            }
+        }
+
+        void end()
+        {
+            running = false;
+            while(!chunks.empty()) delay(1);
+        }
+
+        void addChunk(char* chunk, int size) {
+            chunks.push_back({chunk, size});
+        }
+    }
+
+    #endif
+
+    std::string getHttpMMS(std::string number, std::string url) {
+        #ifdef ESP_PLATFORM
+        StandbyMode::triggerPower();
+
+        // sending the AT command to initialize the HTTP session
+        send("AT+HTTPINIT", "AT+HTTPINIT", 500);
+        send("AT+HTTPPARA=\"URL\",\"" + url + "\"\r", "AT+HTTPPARA", 500);
+        send("AT+HTTPACTION=0", "AT+HTTPACTION", 500);
+
+        // recovering the size of the data
+        bool result = false;
+        uint64_t timeout = millis() + 10000;
+        while (millis() < timeout) {
+            StandbyMode::triggerPower();
+            download();
+
+            uint i = data.find("+HTTPACTION: ");
+            if(i != std::string::npos)
+            {
+                if(data.find("\r\n", i) != std::string::npos)
+                {
+                    result = true;
+                    std::cout << "Request to mms succeeded" << std::endl;
+                    break;
+                }
+            }
+        }
+
+        if (!result || data.find("+HTTPACTION: 0,200,") == std::string::npos) {
+            std::cerr << "Request to mms failed" << std::endl;
+            std::cout << data << std::endl;
+            return "";
+        }
+
+        std::string sizedata = "";
+
+        sizedata = data.substr(data.find("+HTTPACTION: 0,200,") + sizeof("+HTTPACTION: 0,200,") - 1);
+        sizedata = sizedata.substr(0, sizedata.find("\r\n"));
+
+        std::cout << "Size of the Data 0: " << data << std::endl;
+
+        std::cout << "Size of the Data: " << sizedata << std::endl;
+        int size = atoi(sizedata.c_str());
+
+
+        // initialisation des fichiers
+        auto list = storage::Path(MESSAGES_IMAGES_LOCATION).listdir();  // liste les images déjà présentes
+        std::sort(list.begin(), list.end());    // trier par ordre croissant
+        int lastIndex = (list.size()==0) ? 0 : atoi(list[list.size() - 1].substr(0, list[list.size() - 2].find("p.jpg")).c_str());   // récupere l'index de l'image la plus recente
+        std::string filename = std::to_string(++lastIndex) + ".jpg";    // ajoute a l'index 1, et voila le nom de l'image
+        std::string filename_preview = std::to_string(lastIndex) + "p.jpg";    // ajoute a l'index 1, et voila le nom de l'image
+
+        while (filename.size() < 8) filename = "0" + filename;
+        while (filename_preview.size() < 9) filename_preview = "0" + filename_preview;
+
+        std::cout << "List of images: ";
+        for (auto& file : list) {
+            std::cout << file << " ";
+        }
+        std::cout << std::endl;
+
+        storage::FileStream filestream((storage::Path(MESSAGES_IMAGES_LOCATION) / filename).str(), storage::Mode::WRITE); // ouvre le fichier de l'image en écriture
+        eventHandlerApp.setTimeout(new Callback<>([&](){ Stream::stream(filestream, size / 1024 + 1); }), 0);   // ouvre un autre thread pour le stream
+        StandbyMode::triggerPower();
+
+        gsm.readString();   // vide le buffer
+        
+        uint64_t timer = millis();  // pour le timeout
+        uint64_t timeout_block = 10000;    // timeout de 1 secondes
+
+        uint8_t jpg = 0;    // 0 = no jpeg, 1 = jpeg found, 2 = jpeg done
+        char lastChar = 0;  // dernier caractère lu
+        int bufferIndex = 0;    // index d'écriture dans le buffer
+        int bufferSize = 1024 * 100;    // taille du buffer
+        int blockIndex = 0;    // index de lecture du bloc
+        int blockSize = 1024;    // taille d'un bloc
+        int numberOfBlocks = 10;    // nombre de blocs à lire en une fois (dépend de la taille du buffer serie pour éviter les overflows)
+        char* buffer = new char[bufferSize];    // allocation du buffer de lecture // ne contient que du jpeg
+
+        gsm.println("AT+HTTPREAD=0," + String(1024*numberOfBlocks) + "\r");    // Requette au module pour envoyer les premiers blocs de données
+
+        graphics::Surface loading(320, 5);    // affiche le chargement parce que l'app en cours est figée
+            loading.fillRect(0, 0, loading.getWidth(), loading.getHeight(), 0xFFFF);
+        
+        for(uint i = 0; i < size;) {    // pour tous les caractères de données brutes annoncés
+            for (uint r = 0; r < numberOfBlocks +1 && i < size; r++)    // pour tous les blocs envoyés en une fois
+            {
+                while ((gsm.available() && timer + timeout_block > millis())?(gsm.read() != ':'):(true));   // wait for the garbage data to be ignored
+                while ((gsm.available() && timer + timeout_block > millis())?(gsm.read() != '\n'):(true));
+
+                if(r == numberOfBlocks)
+                    break;
+
+                int nextBlockSize = (size - i >= blockSize) ? 1024 : (size - i);    // size of the current block, that is equal or less than 1024
+                while (gsm.available() < nextBlockSize && timer + timeout_block > millis());    // wait for the next block to be downloaded
+
+                timer = millis();
+
+                if(jpg == 0)    // no jpeg for the moment
+                {
+                    for (uint j = 0; j < nextBlockSize; j++)    // parse the block
+                    {
+                        char c = gsm.read();    // read the next char
+                        
+                        if(lastChar == '\xFF' && c == '\xD8')   // if a jpg header is found
+                        {
+                            std::cout << "Found JPEG" << std::endl;
+
+                            jpg = 1;                // set the state to reading jpg
+                            buffer[0] = lastChar;   // 0xFF
+                            buffer[1] = c;          // 0xD8
+
+                            gsm.readBytes(buffer+2, nextBlockSize - j - 1); // read the rest of the block into the buffer -> buffer = 0xFF 0xD8 [rest of the data...]
+                            bufferIndex = 2 + nextBlockSize - j - 1;        // set the writing index to the size that has been written
+                            break;                // no need to search for jpg in the rest of the block
+                        }
+
+                        lastChar = c;    // save the last char if the jpg header is split in two blocks
+                    }
+                }
+                else if(jpg == 1)   // if is reading the jpg
+                {
+                    if(bufferIndex + blockSize*2 >= bufferSize)   // if the buffer is full, create a new one, and send the other to the stream
+                    {
+                        Stream::addChunk(buffer, bufferIndex);  // add the buffer to the stream
+                        bufferIndex = 0;                        // reset the index
+                        buffer = new char[bufferSize];    // create a new buffer
+                    }
+
+                    gsm.readBytes(buffer + bufferIndex, nextBlockSize); // read the next block, and add it to the buffer (after the last block so ```+ bufferIndex```)
+
+                    for (int j = (bufferIndex==0)?(0):(-1); j < nextBlockSize - 1 && bufferIndex + j + 1 < bufferSize; j++)    // search for the end header; initialise j to -1 if the buffer is not empty, so it can check the header in the last char of the last buffer
+                    {
+                        if(buffer[bufferIndex + j] == 0xFF && buffer[bufferIndex + j + 1] == 0xD9)   // if the end header is found
+                        {
+                            std::cout << "End of JPEG" << std::endl;
+
+                            jpg = 2;            // set the state to ignore the rest of the data
+                            bufferIndex += j + 2;    // set the writing index to the end of the end header, so ignore the rest of the data
+
+                            Stream::addChunk(buffer, bufferIndex);  // add the buffer to the stream
+                            bufferIndex = 0;
+                            
+                            break;
+                        }
+                    }
+
+                    if(jpg == 1)    // if no end header is found, adding the size of the block to the writing index
+                        bufferIndex += nextBlockSize;   
+                } else  // jpg == 2
+                {
+                    for (uint j = 0; j < nextBlockSize; j++)    // ignore the rest of the data
+                        gsm.read();
+                }
+
+                i += nextBlockSize;
+            }
+
+            gsm.println("AT+HTTPREAD=0," + String(1024*numberOfBlocks) + "\r");    // Read the data
+
+            // loading bar in the terminal
+            std::cout << "[";
+            for (uint j = 0; j < 20; j++)
+            {
+                if(i < j*size/20)
+                    std::cout << " ";
+                else
+                    std::cout << "=";
+            }
+            std::cout << "] " << int(i/1024) << "Ko" << std::endl;
+
+            // update the graphical update bar
+            loading.fillRect(0, 0, 320 * i / size, loading.getHeight(), 0);
+            graphics::showSurface(&loading, 0, 480-5);
+
+            StandbyMode::triggerPower();
+        }
+
+        Stream::end();
+        filestream.close();
+        send("AT+HTTPTERM", "AT+HTTPTERM", 100);    // close http connection
+
+        StandbyMode::triggerPower();
+
+        ///////////////////////////////////////// FULLSCREEN IMAGE PROCESSING /////////////////////////////////////////
+
+        storage::Path path = (storage::Path(MESSAGES_IMAGES_LOCATION) / filename);  // path to the new image
+
+        graphics::SImage i = graphics::SImage(path);    // get the size of the image
+        uint16_t m_width = i.getWidth();
+        uint16_t m_height = i.getHeight();
+
+        float scale_width = 320.0 / m_width;    // calculate the scaling factor of the image to fit in the screen
+        float scale_height = 480.0 / m_height;
+        float scale = std::min(scale_width, scale_height);
+
+        graphics::Surface sprite(m_width * scale, m_height * scale, 24);    // create a surface to draw the image on, to compress it then
+        sprite.m_sprite.drawJpgFile(path.str().c_str(), 0, 0, 0, 0, 0, 0, scale, scale);    // draw the image (can take several seconds)
+
+        StandbyMode::triggerPower();
+
+        imgdec::encodeJpg(reinterpret_cast<uint8_t*>(sprite.m_sprite.getBuffer()), sprite.getWidth(), sprite.getHeight(), (storage::Path(MESSAGES_IMAGES_LOCATION) / filename));    // compress the image and save it (take less than 2s)
+
+        sprite.m_sprite.deleteSprite();
+        
+        ///////////////////////////////////////// PREVIEW IMAGE PROCESSING /////////////////////////////////////////
+
+        scale_width = 60.0 / 320;    // calculate the scaling factor of the image to fit in the preview
+        scale_height = 60.0 / 480;
+        scale = std::min(scale_width, scale_height);
+
+        StandbyMode::triggerPower();
+
+        graphics::Surface sprite_preview(60, 60, 24);    // create a surface to draw the image on, to compress it then
+        sprite_preview.fillRect(0, 0, 60, 60, 0xFFFF);
+        sprite_preview.m_sprite.drawJpgFile(path.str().c_str(), 0, 0, 0, 0, 0, 0, scale, scale);    // draw the image (can take several seconds)
+        //graphics::showSurface(&sprite_preview, 0, 0);
+
+        StandbyMode::triggerPower();
+
+        path = (storage::Path(MESSAGES_IMAGES_LOCATION) / filename_preview);  // path to the new image preview
+        imgdec::encodeJpg(reinterpret_cast<uint8_t*>(sprite_preview.m_sprite.getBuffer()), sprite_preview.getWidth(), sprite_preview.getHeight(), path);    // compress the image and save it (take less than 2s)
+        
+        sprite_preview.m_sprite.deleteSprite();
+
+        ////////////////////////////////////////// END /////////////////////////////////////////
+
+        // same procedure as saving message
+        auto contact = Contacts::getByNumber(number);
+
+        Conversations::Conversation conv;
+        storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + number + ".json");
+        if (convPath.exists())
+        {
+            Conversations::loadConversation(convPath, conv);
+        }
+        else
+        {
+            conv.number = number;
+        }
+
+        conv.messages.push_back({"/" + filename, true, getCurrentTimestamp()}); // true = message de l'autre
+        Conversations::saveConversation(convPath, conv);
+
+        storage::FileStream file(std::string(MESSAGES_NOTIF_LOCATION), storage::Mode::READ);
+        std::string content = file.read();
+        file.close();
+
+        std::cerr << content << std::endl;
+
+        if(content.find(number) == std::string::npos)
+        {
+            storage::FileStream file2(storage::Path(std::string(MESSAGES_NOTIF_LOCATION)).str(), storage::Mode::APPEND);
+            file2.write(number + "\n");
+            file2.close();
+        }
+
+        #endif
+
+        return "";
+    }
+
+    void onMessage()
+    {
+        send("AT+CMGF=0", "AT+CMGF=0", 100);
+
+        std::string input = send("AT+CMGL=0", "AT+CMGL", 500);
+
+        std::vector<std::string> pdus;
+
+        std::istringstream iss(input);
+        std::string line;
+
+        while (std::getline(iss, line)) {
+            // Remove \r if present at the end of the line
+            if (!line.empty() && line.back() == '\r') {
+                line.pop_back();
+            }
+
+            // Check if the line starts with "+CMGL:"
+            if (line.find("+CMGL:") == 0) {
+                // The next line should contain the PDU
+                if (std::getline(iss, line)) {
+                    // Remove \r if present at the end of the line
+                    if (!line.empty() && line.back() == '\r') {
+                        line.pop_back();
+                    }
+                    // Remove any whitespace
+                    line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
+                    // Add the PDU to the vector
+                    pdus.push_back(line);
+                }
+            }
+        }
+
+        // Print the extracted PDUs
+        for (const auto& pdu : pdus) {
+            std::cout << pdu << std::endl;
+        }
+
+        for (auto pdu : pdus)
+        {
+            std::cout << "PDU: " << pdu << std::endl;
+            try
+            {
+                PDU decoder = decodePDU(pdu);
+
+                if(decoder.type != PDU_type::UNKNOWN)
+                {
+                    std::cout << "Phone number: " << decoder.sender << std::endl;
+
+                    if(decoder.type == PDU_type::MMS)
+                    {
+                        std::cout << "MMS: " << decoder.url << std::endl;
+                        std::string number = decoder.sender;
+                        std::string link = decoder.url;
+                        getHttpMMS(number, link);
+                    }
+                    else // PDU_type::SMS
+                    {
+                        std::cout << "Message: " << decoder.message << std::endl;
+
+                        auto contact = Contacts::getByNumber(decoder.sender);
+
+                        // Ajout du message à la conversation
+                        Conversations::Conversation conv;
+                        storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + decoder.sender + ".json");
+                        if (convPath.exists())
+                        {
+                            Conversations::loadConversation(convPath, conv);
+                        }
+                        else
+                        {
+                            conv.number = decoder.sender;
+                        }
+
+                        conv.messages.push_back({decoder.message, true, getCurrentTimestamp()}); // true = message de l'autre
+                        Conversations::saveConversation(convPath, conv);
+
+                        storage::FileStream file(std::string(MESSAGES_NOTIF_LOCATION), storage::Mode::READ);
+                        std::string content = file.read();
+                        file.close();
+
+                        std::cerr << content << std::endl;
+
+                        if(content.find(decoder.sender) == std::string::npos)
+                        {
+                            storage::FileStream file2(storage::Path(std::string(MESSAGES_NOTIF_LOCATION)).str(), storage::Mode::APPEND);
+                            file2.write(decoder.sender + "\n");
+                            file2.close();
+                        }
+                    }
+                }
+            }
+            catch (const std::out_of_range& e) {
+                std::cerr << "Erreur : " << e.what() << std::endl;
+            }
+        }
+
+        if(pdus.size())
+        {
+            if (ExternalEvents::onNewMessage)
+                ExternalEvents::onNewMessage();
+        }
+
+        send("AT+CMGD=1,1", "AT+CMGD", 1000);
     }
 
     void sendMessage(const std::string &number, const std::string &message)
@@ -569,12 +990,14 @@ namespace GSM
 
         try
         {
-            return std::stof(voltage_str);
+            voltage = std::stof(voltage_str);
         }
         catch (std::exception)
         {
-            return 0;
+            voltage = -1;
         }
+
+        return 0;
     }
 
     double getBatteryLevel() {
@@ -709,6 +1132,32 @@ namespace GSM
         requests.push_back({&GSM::updateNetworkQuality, priority::normal});
     }
 
+    void updateFlightMode()
+    {
+        if(flightMode)
+        {
+            std::cout << "Flight Mode ON" << std::endl;
+            std::cout << send("AT+CFUN=4", "AT+CFUN", 1000) << std::endl;
+        }
+        else
+        {
+            std::cout << "Flight Mode OFF" << std::endl;
+            //std::cout << send("AT+CFUN=6", "AT+CFUN", 1000) << std::endl;
+            std::cout << send("AT+CFUN=1", "AT+CFUN", 1000) << std::endl;
+        }
+    }
+
+    bool isFlightMode()
+    {
+        return flightMode;
+    }
+
+    void setFlightMode(bool mode)
+    {
+        eventHandlerBack.setTimeout(new Callback<>([mode](){ appendRequest({updateFlightMode}); }), 0);
+        flightMode = mode;
+    }
+
     void run()
     {
         init();
@@ -720,11 +1169,12 @@ namespace GSM
         updateHour();
         getNetworkQuality();
         onMessage();
+        getVoltage();
 
         eventHandlerBack.setInterval(&GSM::getHour, 5000);
         eventHandlerBack.setInterval(&GSM::getNetworkQuality, 10000);
         eventHandlerBack.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
-        // eventHandlerBack.setInterval(new Callback<>([](){if(send("AT", "AT").find("OK") == std::string::npos) init(); }), 15000);
+        eventHandlerBack.setInterval([](){ requests.push_back({&GSM::onMessage, GSM::priority::normal}); }, 5000);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});

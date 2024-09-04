@@ -33,9 +33,10 @@ namespace graphics
         EFont m_font;
         float m_fontSize;
         color_t m_text_color;
+        uint8_t m_color_depth;
 
     public:
-        Surface(uint16_t width, uint16_t height);
+        Surface(uint16_t width, uint16_t height, const uint8_t color_depth = 16);
         ~Surface();
 
         [[nodiscard]] uint16_t getWidth() const;
@@ -67,6 +68,7 @@ namespace graphics
 
         void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
+        bool saveAsJpg(const storage::Path filename);
         void drawImage(const SImage &image, int16_t x, int16_t y, uint16_t w = 0, uint16_t h = 0);
 
         void setFont(EFont font);
