@@ -315,8 +315,16 @@ function clickCase(x,y)
     end
 
     local box = grid[x][y].box
-    -- si on a activé l'action Flag, on affiche/masque le drapeau et on désactive l'action Flag
+    -- si on a activé l'action Flag, on affiche/masque le drapeau
     if (flagAction) then
+
+        local nbMine = tonumber(lblNbMine:getText())
+        -- si on veut mettre un flag et que le nombre de flag dispo est à 0, ou que la case est déjà revealed, on sort
+        if not grid[x][y].flag and nbMine == 0 or grid[x][y].revealed then
+            
+            return
+        end
+
         -- setFlagAction()
         if (grid[x][y].flag) then
             grid[x][y].flag = false
