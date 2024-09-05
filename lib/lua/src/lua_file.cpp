@@ -155,6 +155,20 @@ void LuaFile::load()
     lua.set_function("nonothing", []() {
     });
 
+    lua["require"] = [&](const std::string& filename) -> sol::object {
+        storage::Path lib(filename);
+
+        // Load the file
+        sol::load_result chunk = lua.load_file(this->lua_storage.convertPath(lib).str());
+        if (!chunk.valid()) {
+            sol::error err = chunk;
+            throw std::runtime_error("Error loading module '" + filename + "': " + err.what());
+        }
+
+        // 4. Execute the loaded chunk and return its results
+        return chunk(); 
+    };
+
     if (perms.acces_hardware)   // si hardware est autorisé
     {
         lua.new_usertype<LuaHardware>("hardware",
