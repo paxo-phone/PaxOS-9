@@ -23,6 +23,7 @@ public:
     double get_double(std::string key);
     bool get_bool(std::string key);
     std::string get_string(std::string key);
+    LuaJson at(int position);
 
     void set_int(std::string key, int value);
     void set_double(std::string key, double value);

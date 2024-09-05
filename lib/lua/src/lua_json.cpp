@@ -85,3 +85,8 @@ void LuaJson::set_bool(std::string key, bool value)
 {
     json[key] = value;
 }
+
+LuaJson LuaJson::at(int position)
+{
+    return LuaJson(json.at(position));
+}

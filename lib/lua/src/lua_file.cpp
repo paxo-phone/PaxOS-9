@@ -188,6 +188,8 @@ void LuaFile::load()
             "size", &LuaJson::size,
             "has_key", &LuaJson::has_key,
             "remove", &LuaJson::remove,
+            "at",&LuaJson::at,
+            "op",&LuaJson::op,
             "get_int", &LuaJson::get_int,
             "get_double", &LuaJson::get_double,
             "get_bool", &LuaJson::get_bool,

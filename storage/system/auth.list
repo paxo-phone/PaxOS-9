@@ -7,3 +7,4 @@
 ./storage/apps/keyboard_test/app.lua
 ./storage/apps/.keyboard_test/app.lua
 ./storage/apps/demineur/app.lua
+./storage/apps/calendrier/app.lua
