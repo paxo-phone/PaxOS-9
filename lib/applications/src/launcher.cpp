@@ -9,6 +9,7 @@
 #include <gui.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
+#include <threads.hpp>
 
 
 /**
@@ -138,6 +139,9 @@ void applications::launcher::update() {
     if (launcherWindow != nullptr) {
         launcherWindow->updateAll();
     }
+
+    // Update all events
+    eventHandlerApp.update();
 
     // Check touch events
 
