@@ -69,6 +69,11 @@ namespace storage
         m_stream << str;
     }
 
+    void FileStream::write(const char* str, std::size_t len)
+    {
+        m_stream.write(str, len);
+    }
+
     void FileStream::write(const char c)
     {
         m_stream << c;

@@ -12,6 +12,7 @@ namespace gui::elements
         ~VerticalList() override;
 
         void render() override;
+        void postRender();
 
         void add(ElementBase* widget);
         void setIndex(int index);
@@ -22,9 +23,19 @@ namespace gui::elements
         void onScrollUp();
         void onScrollDown();
 
+        enum SelectionFocus
+        {
+            UP,
+            CENTER
+        };
+
+        void setSelectionFocus(SelectionFocus focus);
+        int getFocusedElement();
+
     private:
         int16_t m_focusedIndex = 0;
         uint16_t m_lineSpace = 0;
+        SelectionFocus m_selectionFocus = SelectionFocus::UP;
     };
 
     class HorizontalList final : public ElementBase

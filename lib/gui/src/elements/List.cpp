@@ -13,6 +13,7 @@ namespace gui::elements
         m_lineSpace = 25;
         m_verticalScrollEnabled = true;
         m_hasEvents = true;
+        m_selectionFocus == SelectionFocus::UP;
     }
 
     VerticalList::~VerticalList() = default;
@@ -20,6 +21,14 @@ namespace gui::elements
     void VerticalList::render()
     {
         m_surface->fillRect(0, 0, m_width, m_height, COLOR_WHITE);
+    }
+
+    void VerticalList::postRender()
+    {
+        if(m_selectionFocus == SelectionFocus::CENTER && m_children.size())
+        {
+            m_surface->fillRect(0, getHeight()/2 - m_children[m_focusedIndex]->getHeight()/2, 1, m_children[m_focusedIndex]->getHeight(), COLOR_BLACK);
+        }
     }
 
     void VerticalList::add(ElementBase* widget)
@@ -46,6 +55,7 @@ namespace gui::elements
     void VerticalList::updateFocusedIndex()
     {
         eventHandlerApp.setTimeout(new Callback<>([&](){
+            std::cout << "updateFocusedIndex" << std::endl;
             if(m_children.size() == 0)
             {
                 m_focusedIndex = 0;
@@ -53,7 +63,11 @@ namespace gui::elements
             }
             
             m_verticalScroll = m_children[m_focusedIndex]->m_y;
+            if(m_selectionFocus == SelectionFocus::CENTER)
+                m_verticalScroll = m_verticalScroll - getHeight() / 2 + m_children[m_focusedIndex]->getHeight() / 2;
+            
             localGraphicalUpdate();
+            std::cout << "updateFocusedIndex end: " << m_selectionFocus << std::endl;
 
             // for (int i = 0; i < m_children.size(); i++)
             // {
@@ -81,6 +95,17 @@ namespace gui::elements
             m_focusedIndex++;
             updateFocusedIndex();
         }
+    }
+
+    void VerticalList::setSelectionFocus(SelectionFocus focus)
+    {
+        m_selectionFocus = focus;
+        updateFocusedIndex();
+    }
+
+    int VerticalList::getFocusedElement()
+    {
+        return m_focusedIndex;
     }
     
 

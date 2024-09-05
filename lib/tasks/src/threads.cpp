@@ -1,5 +1,6 @@
 #include "threads.hpp"
 #include "delay.hpp"
+#include <clock.hpp>
 #include <gsm.hpp>
 
 #ifndef THREAD_HANDLER
@@ -23,7 +24,7 @@
 
 void ThreadManager::init()
 {
-    new_thread(CORE_BACK, &ThreadManager::simcom_thread, 16*1024);
+    new_thread(CORE_BACK, &ThreadManager::simcom_thread, 32*1024);
     new_thread(CORE_BACK, &ThreadManager::background_thread, 16*1024);
 }
 

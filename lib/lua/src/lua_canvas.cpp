@@ -14,8 +14,8 @@ sol::table LuaCanvas::getTouch()
     int16_t x = gui::ElementBase::touchX, y = gui::ElementBase::touchY;
 
     sol::table result = lua->lua.create_table();
-    result.set(1, x);
-    result.set(2, y);
+    result.set(1, x - widget->getAbsoluteX());
+    result.set(2, y - widget->getAbsoluteY());
 
     return result;
 }

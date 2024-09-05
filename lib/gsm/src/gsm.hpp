@@ -6,6 +6,8 @@
 #include <string>
 #include <cstdint>
 
+#define BAUDRATE 921600
+
 extern const char *daysOfWeek[7];
 extern const char *daysOfMonth[12];
 
@@ -102,7 +104,12 @@ namespace GSM
     double getBatteryLevel();
     void getHour();
 
+    std::string getHttpMMS(std::string url);
+
     int getNetworkStatus();
+
+    bool isFlightMode();
+    void setFlightMode(bool mode);
 
     std::string getCurrentTimestamp();
     std::string getCurrentTimestampNoSpaces();

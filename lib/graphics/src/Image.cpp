@@ -24,7 +24,7 @@ uint64_t getFileSize(storage::Path& path)
 // TODO : Use "Path"
 std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
 {
-    auto data = std::shared_ptr<uint8_t[]>(new uint8_t[30]);    // just for headers
+    auto data = std::shared_ptr<uint8_t[]>(new uint8_t[2000]);    // just for headers
 
     storage::FileStream stream(path.str(), storage::Mode::READ);
 
@@ -34,7 +34,7 @@ std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
     }
 
     size_t i = 0;
-    while (i < 30)
+    while (i < 2000)
     {
         data.get()[i++] = stream.readchar();
     }
@@ -50,10 +50,11 @@ namespace graphics {
         this->m_path = path;
 
         if(!path.exists() || !path.isfile()) {
-            throw libsystem::exceptions::InvalidArgument("Path does not exist : " + path.str() + ".");
-            // m_width = 0;
-            // m_height = 0;
-            // return;
+            std::cerr << "Path does not exist : " << path.str() << std::endl;
+            //throw libsystem::exceptions::InvalidArgument("Path does not exist : " + path.str() + ".");    // trop radical
+            m_width = 0;
+            m_height = 0;
+            return;
         }
 
         m_data = getFileData(path);
