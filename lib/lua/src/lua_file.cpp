@@ -365,6 +365,8 @@ void LuaFile::load()
         lua.new_usertype<LuaVerticalList>("LuaVList",
             "setIndex", &LuaVerticalList::setIndex,
             "setSpaceLine", &LuaVerticalList::setSpaceLine,
+            "setSelectionFocus", &LuaVerticalList::setFocus,
+            "getSelected", &LuaVerticalList::getSelected,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
