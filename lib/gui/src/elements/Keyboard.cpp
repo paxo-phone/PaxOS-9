@@ -499,7 +499,7 @@ namespace gui::elements {
                 std::string deltaXString = std::to_string(deltaX);
 
                 constexpr int32_t stepsByChar = 8;
-                const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / 10;
+                const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / stepsByChar;
 
                 // libsystem::log("[TRACKPAD] Delta X : " + std::to_string(deltaX) + ".");
                 // libsystem::log("[TRACKPAD] To Move : " + std::to_string(toMove) + ".");
@@ -519,7 +519,7 @@ namespace gui::elements {
                     // m_trackpadActiveBox->forceUpdate();
                 }
 
-                m_trackpadLastDeltaX += toMove * 10;
+                m_trackpadLastDeltaX += toMove * stepsByChar;
             }
         } else {
             m_trackpadTicks = 0;
