@@ -125,7 +125,7 @@ graphics::GraphicsInitCode graphics::init()
     if (i2cDevicesCount == 0) {
         return ERROR_NO_TOUCHSCREEN;
     }
-    
+
     if (i2cDevicesCount >= 2) {
         return ERROR_FAULTY_TOUCHSCREEN;
     }
@@ -370,7 +370,7 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
     }
 }
 
-LGFX* graphics::getLGFX() {
+LGFX* graphics::getLCD() {
     return lcd.get();
 }
 

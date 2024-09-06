@@ -6,6 +6,7 @@
 #include "elements/Box.hpp"
 #include "elements/Canvas.hpp"
 #include "elements/Window.hpp"
+#include "elements/Filter.hpp"
 #include "elements/Label.hpp"
 #include "elements/Input.hpp"
 #include "elements/Image.hpp"

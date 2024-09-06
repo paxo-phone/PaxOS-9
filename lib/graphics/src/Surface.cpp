@@ -146,7 +146,7 @@ namespace graphics
                 &m_sprite,
                 x,
                 y,
-                m_transparent_color);
+                surface->m_transparent_color);
         }
         else
         {
@@ -174,7 +174,7 @@ namespace graphics
                 0,
                 scale,
                 scale,
-                m_transparent_color);
+                surface->m_transparent_color);
         }
         else
         {
@@ -310,7 +310,7 @@ namespace graphics
 
         int width = sprite.width();
         int height = sprite.height();
-        
+
         // Open the file for writing
         std::ofstream outFile(filename.str(), std::ios::binary);
         if (!outFile.is_open()) {
@@ -361,7 +361,7 @@ namespace graphics
                         }
                     }
                 }
-                
+
                 // Add MCU to JPEG
                 rc = jpg.addMCU(&jpe, ucMCU, 8);
                 if (rc != 0) {
@@ -374,7 +374,7 @@ namespace graphics
 
         // Finish encoding and get the compressed data
         int jpegSize = jpg.close();
-        
+
         // Write JPEG data to file
         outFile.write(reinterpret_cast<const char*>(jpe.pOutput), jpegSize);
         outFile.close();
@@ -561,7 +561,45 @@ namespace graphics
         drawText(text, textPositionX, textPositionY, color);
     }
 
-    void Surface::blur(uint8_t radius)
+    Surface Surface::clone() const {
+        auto output = Surface(getWidth(), getHeight());
+
+        output.m_sprite.setBuffer(m_sprite.getBuffer(), m_sprite.width(), m_sprite.height());
+
+        return output;
+    }
+
+    void * Surface::getBuffer() const {
+        return m_sprite.getBuffer();
+    }
+
+    void Surface::setBuffer(void *buffer, int32_t w, int32_t h) {
+        if (w == -1) {
+            w = getWidth();
+        }
+        if (h == -1) {
+            h = getHeight();
+        }
+
+        m_sprite.setBuffer(buffer, w, h, m_sprite.getColorDepth());
+    }
+
+    void Surface::applyFilter(const Filter filter, const int32_t intensity) {
+        switch (filter) {
+            case BLUR:
+                blur(intensity);
+                break;
+            case LIGHTEN:
+                lighten(intensity);
+                break;
+            case DARKEN:
+                darken(intensity);
+                break;
+            default:;
+        }
+    }
+
+    void Surface::blur(const int32_t radius)
     {
         // Copy
         auto copy = lgfx::LGFX_Sprite();
@@ -569,9 +607,9 @@ namespace graphics
         copy.createSprite(getWidth(), getHeight());
 
         // Apply blur effect
-        for (uint16_t x = radius; x < getWidth() - radius; x++)
+        for (int32_t x = radius; x < m_sprite.width(); x++)
         {
-            for (uint16_t y = radius; y < getHeight() - radius; y++)
+            for (int32_t y = radius; y < m_sprite.height(); y++)
             {
                 uint64_t sumR = 0;
                 uint64_t sumG = 0;
@@ -607,5 +645,28 @@ namespace graphics
 
         // Update the Surface
         copy.pushSprite(&m_sprite, 0, 0);
+    }
+
+    void Surface::fastBlur(int32_t radius) {
+        // TODO
+    }
+
+    void Surface::lighten(const int32_t intensity) {
+        for (int32_t x = 0; x < getWidth(); x++) {
+            for (int32_t y = 0; y < getHeight(); y++) {
+                uint8_t r, g, b;
+                unpackRGB565(m_sprite.readPixel(x, y), &r, &g, &b);
+
+                r = std::clamp(r + intensity, 0, 255);
+                g = std::clamp(g + intensity, 0, 255);
+                b = std::clamp(b + intensity, 0, 255);
+
+                m_sprite.writePixel(x, y, packRGB565(r, g, b));
+            }
+        }
+    }
+
+    void Surface::darken(const int32_t intensity) {
+        lighten(-intensity);
     }
 } // graphics

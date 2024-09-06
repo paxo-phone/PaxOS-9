@@ -150,8 +150,8 @@ bool gui::ElementBase::updateAll()
     }
 
     update();
-    
-    
+
+
     if(this->m_parent == nullptr)
         graphics::touchIsRead();
 
@@ -233,7 +233,7 @@ bool gui::ElementBase::update()
             bool isScrollingX = abs(m_lastTouchX - touchX) > SCROLL_STEP;
             bool isScrollingY = abs(m_lastTouchY - touchY) > SCROLL_STEP;
             bool isScrolling = isScrollingX || isScrollingY;
-    
+
             if(isScrollingX)
             {
                 gui::ElementBase* nearScrollableObject = getHigestXScrollableParent();
@@ -310,7 +310,7 @@ bool gui::ElementBase::update()
             lastEventTouchY = originTouchY;
             onReleased();
         }
-        
+
         globalPressedState = NOT_PRESSED;
         widgetPressed = nullptr;
 
@@ -599,7 +599,7 @@ void gui::ElementBase::free()
         m_surface.reset();
 
     setParentNotRendered();
-    
+
     for (auto child : m_children)
     {
         child->free();
@@ -621,4 +621,12 @@ bool gui::ElementBase::isInside()
         return false;
 
     return true;
+}
+
+std::shared_ptr<graphics::Surface> gui::ElementBase::getSurface() {
+    return getAndSetSurface();
+}
+
+void gui::ElementBase::forceUpdate() {
+    localGraphicalUpdate();
 }

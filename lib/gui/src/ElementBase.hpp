@@ -93,6 +93,12 @@ namespace gui
         static int16_t lastEventTouchX, lastEventTouchY;
 
         uint16_t m_x, m_y;
+
+        // WARNING : Don't ever expose this to the Lua API
+        std::shared_ptr<graphics::Surface> getSurface();
+
+        void forceUpdate();
+
     protected:
         // variables générales
         uint16_t m_width, m_height;

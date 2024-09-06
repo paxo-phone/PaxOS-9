@@ -81,7 +81,24 @@ namespace graphics
         // w and h are the width and height of the bounding box where the text will be centered
         void drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w = -1, const uint16_t h = -1, const bool horizontallyCentered = true, const bool verticallyCentered = true, const std::optional<color_t> color = std::nullopt);
 
-        void blur(uint8_t radius);
+        [[nodiscard]] Surface clone() const;
+
+        [[nodiscard]] void * getBuffer() const;
+        void setBuffer(void* buffer, int32_t w = -1, int32_t h = -1);
+
+        enum Filter {
+            BLUR,
+            LIGHTEN,
+            DARKEN
+        };
+
+        void applyFilter(Filter filter, int32_t intensity);
+
+    private:
+        void blur(int32_t radius);
+        void fastBlur(int32_t radius);
+        void lighten(int32_t intensity);
+        void darken(int32_t intensity);
     };
 } // graphics
 
