@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <graphics.hpp>
+#include <libsystem.hpp>
 #include <Surface.hpp>
 
 #include "Box.hpp"
@@ -472,7 +473,11 @@ namespace gui::elements {
         const bool wasTrackpadActive = isTrackpadActive();
 
         // Check if finger is on screen
-        if ((rawTouchX != -1 && rawTouchY != -1) && isPointInTrackpad(m_lastTouchX, m_lastTouchY)) {
+        if ((rawTouchX != -1 && rawTouchY != -1) && isPointInTrackpad(originTouchX, originTouchY)) {
+            // libsystem::log("[TRACKPAD] Raw Touch : " + std::to_string(rawTouchX) + ", " + std::to_string(rawTouchY) + ".");
+            // libsystem::log("[TRACKPAD] Last Touch : " + std::to_string(m_lastTouchX) + ", " + std::to_string(m_lastTouchY) + ".");
+            // libsystem::log("[TRACKPAD] Origin Touch : " + std::to_string(originTouchX) + ", " + std::to_string(originTouchY) + ".");
+
             if (m_trackpadTicks < UINT8_MAX) {
                 m_trackpadTicks++;
             }
@@ -481,6 +486,8 @@ namespace gui::elements {
                 if (m_trackpadTicks == 10) {
                     // Do once, only when trackpad was just enabled
 
+                    // libsystem::log("[TRACKPAD] Reset.");
+
                     m_trackpadActiveBox->enable();
 
                     m_trackpadLastDeltaX = 0;
@@ -488,11 +495,14 @@ namespace gui::elements {
                     localGraphicalUpdate();
                 }
 
-                const int32_t deltaX = rawTouchX - m_lastTouchX;
+                const int32_t deltaX = rawTouchX - originTouchX;
                 std::string deltaXString = std::to_string(deltaX);
 
                 constexpr int32_t stepsByChar = 8;
-                const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / stepsByChar;
+                const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / 10;
+
+                // libsystem::log("[TRACKPAD] Delta X : " + std::to_string(deltaX) + ".");
+                // libsystem::log("[TRACKPAD] To Move : " + std::to_string(toMove) + ".");
 
                 if (toMove > 0) {
                     for (int i = 0; i < toMove; i++) {
