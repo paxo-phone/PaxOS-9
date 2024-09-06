@@ -549,6 +549,9 @@ namespace gui::elements {
     void Keyboard::addChar(const char value) {
         m_buffer.insert(m_label->getCursorIndex(), 1, value);
 
+        // Update cursor position
+        // TODO: Remove m_buffer and use only label ?
+        m_label->setText(m_buffer);
         m_label->setCursorIndex(m_label->getCursorIndex() + 1);
     }
 
