@@ -51,13 +51,24 @@ namespace serialcom {
             this->buffer->write(log);
         }
 
-        void directLog(const std::string& log)
+        void directLog(const std::string& log, bool newLine)
         {
             if (!this->stream || !this->originalBuffer)
                 return;
             this->stream->rdbuf(originalBuffer);
-            *(this->stream) << log << std::endl;
+            *(this->stream) << log;
+            if (newLine)
+                *(this->stream) << std::endl;
+            else
+                *(this->stream) << std::flush;
             this->stream->rdbuf(this);
+        }
+
+        std::streambuf* changeDefaultBuffer(std::streambuf* buffer)
+        {
+            std::streambuf* oldBuffer = this->originalBuffer;
+            this->originalBuffer = buffer;
+            return oldBuffer;
         }
     private:
         int_type overflow(int_type ch) override

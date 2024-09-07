@@ -8,4 +8,5 @@
 #include <bitset>
 
 #include "Commands/Command.hpp"
-#include "Commands/InfoCommand.hpp"
+#include "Commands/InfoCommandTests.hpp"
+#include "Commands/FileCommandTests.hpp"

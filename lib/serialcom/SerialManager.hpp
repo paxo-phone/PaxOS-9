@@ -18,6 +18,14 @@ namespace serialcom {
 
         void commandLog(const std::string& message); // log by a command result only
 
+        void forceFlushBuffers();
+
+        // Returns the previous buffer
+        std::streambuf* changeDefaultCoutBuffer(std::streambuf* buffer);
+
+        // Returns the previous buffer
+        std::streambuf* changeDefaultCerrBuffer(std::streambuf* buffer);
+
         #ifdef ESP_PLATFORM
         static void serialLoop(void *);
         #else

@@ -6,6 +6,7 @@
 #include <json.hpp>
 #include <base64.hpp>
 #include <string>
+#include <delay.hpp>
 using json = nlohmann::json;
 
 namespace serialcom
@@ -30,8 +31,7 @@ namespace serialcom
             }
         } else {
             if (lsPath.exists()) {
-                json output = json::array();
-                output.push_back(files);
+                json output = files;
                 SerialManager::sharedInstance->commandLog(output.dump());
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
@@ -57,9 +57,10 @@ namespace serialcom
             {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
-                } else {
                     SerialManager::sharedInstance->commandLog("File " + firstArgument + " created.");
+
+                } else {
+                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                 }
             } else {
                 if (this->shellMode)
@@ -91,9 +92,9 @@ namespace serialcom
             {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
-                } else {
                     SerialManager::sharedInstance->commandLog("Directory " + firstArgument + " created.");
+                } else {
+                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                 }
             } else {
                 if (this->shellMode)
@@ -117,9 +118,9 @@ namespace serialcom
             if (rmPath.remove())
             {
                 if (this->shellMode) {
-                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
-                } else {
                     SerialManager::sharedInstance->commandLog("File or directory " + firstArgument + " removed.");
+                } else {
+                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                 }
             } else {
                 if (this->shellMode) {
@@ -163,9 +164,9 @@ namespace serialcom
                 {
                     if (this->shellMode)
                     {
-                        SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
-                    } else {
                         SerialManager::sharedInstance->commandLog("File or directory " + firstArgument + " copied to " + secondArgument);
+                    } else {
+                        SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);                    
                     }
                 } else {
                     if (this->shellMode)
@@ -212,9 +213,9 @@ namespace serialcom
                 {
                     if (this->shellMode)
                     {
-                        SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
-                    } else {
                         SerialManager::sharedInstance->commandLog("File or directory " + firstArgument + " moved to " + secondArgument);
+                    } else {
+                        SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                     }
                 } else {
                     if (this->shellMode)
@@ -258,39 +259,48 @@ namespace serialcom
 
         if (!fileStream.isopen())
         {
-            SerialManager::sharedInstance->commandLog("Error: file couldn't be opened.");
+            if (this->shellMode)
+                SerialManager::sharedInstance->commandLog("Error: file couldn't be opened.");
+            else
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             return;
         }
         #define BOOL_STR(b) (b?"true":"false")
 
-        std::cout << "File size " << std::to_string(fileStream.size()) << " : " << std::to_string(fileStream.size() + 1) << " : " << BOOL_STR(fileStream.size() == 0) << std::endl; 
+        if (this->shellMode)
+            //SerialManager::sharedInstance->commandLog("File size " + std::to_string(fileStream.size()) + " : " + std::to_string(fileStream.size() + 1) + " : " + BOOL_STR(fileStream.size() == 0));
+            SerialManager::sharedInstance->commandLog("File size " + std::to_string(fileStream.size()));
+        else
+            SerialManager::sharedInstance->commandLog(std::to_string(fileStream.size()));
 
         if (fileStream.size() == 0)
         {
-            SerialManager::sharedInstance->commandLog("Nothing in the file");
+            if (this->shellMode)
+                SerialManager::sharedInstance->commandLog("Nothing in the file");
             return;
         }
 
-        SerialManager::sharedInstance->commandLog(std::to_string(fileStream.size()));
+        if (!this->shellMode)
+            SerialManager::sharedInstance->commandLog("\n");
 
         char nextChar = fileStream.readchar();
         while (nextChar != std::char_traits<char>::eof() && fileStream.sizeFromCurrentPosition() > 0)
         {
-            SerialManager::sharedInstance->commandLog("chunk");
-            SerialManager::sharedInstance->commandLog(std::to_string((uint8_t)nextChar));
-            SerialManager::sharedInstance->commandLog("size till end");
-            SerialManager::sharedInstance->commandLog(std::to_string(fileStream.sizeFromCurrentPosition()));
+            //SerialManager::sharedInstance->commandLog(std::to_string((uint8_t)nextChar));
+            //SerialManager::sharedInstance->commandLog(std::to_string(fileStream.sizeFromCurrentPosition()));
             std::string chunk = nextChar + fileStream.read(2047);
             std::string encodedChunk = base64::to_base64(chunk);
             SerialManager::sharedInstance->commandLog(encodedChunk);
             
             nextChar = fileStream.readchar();
         }
-
-        SerialManager::sharedInstance->commandLog("finished");
-
     
         fileStream.close();
+
+        if (this->shellMode)
+            SerialManager::sharedInstance->commandLog("No error.");
+        else
+            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
     }
 
     // arg1 = fileName to upload
@@ -300,20 +310,80 @@ namespace serialcom
     {
         storage::Path uploadPath(command.arguments[0]);
         SerialManager::sharedInstance->commandLog("Uploading file to " + uploadPath.str() + " with size " + command.arguments[1] + " bytes");
-        size_t fileSize = std::stoi(command.arguments[1]);
-
-        uploadPath.newfile();
-
-        storage::FileStream fileStream(uploadPath.str(), storage::WRITE);
-
-        for (size_t i = 0; i < fileSize; i += 2048)
+        try
         {
-            std::string encodedChunk;
-            std::cin >> encodedChunk;
-            std::string chunk = base64::from_base64(encodedChunk).c_str();
-            fileStream.write(chunk);
-        }
+            size_t fileSize = std::stoi(command.arguments[1]);
+            uploadPath.newfile();
 
-        fileStream.close();
+            storage::FileStream fileStream(uploadPath.str(), storage::WRITE);
+
+            for (size_t i = 0; i < fileSize; i += 2048)
+            {
+                //SerialManager::sharedInstance->commandLog("Getting encoded chunk");
+                std::string encodedChunk;
+                while (encodedChunk.empty())
+                {
+                    static size_t ndx = 0;
+                    bool newData = false;
+                    char endMarker = '\n';
+                    char rc;
+                    
+                    #ifdef ESP_PLATFORM
+                    #define dataAvailable Serial.available() > 0
+                    #else
+                    #define dataAvailable std::cin.peek() != EOF
+                    #endif
+                    while (dataAvailable && newData == false) {
+                        #ifdef ESP_PLATFORM
+                        rc = Serial.read();
+                        #else
+                        rc = std::cin.get();
+                        #endif
+
+                        if (rc != endMarker)
+                            encodedChunk += rc;     
+                        else
+                            newData = true;
+                    }
+                }
+
+                encodedChunk.pop_back(); // remove the last '\n' character
+                /*
+                while (true)
+                {
+                    SerialManager::sharedInstance->commandLog("Waiting for chunk");
+                    std::getline(std::cin, encodedChunk);
+                    if (encodedChunk.size() != 0)
+                    {
+                        SerialManager::sharedInstance->commandLog("Got a chunk whose size is not null.");
+                        break;
+                    }
+
+                    PaxOS_Delay(100);
+                }
+                */
+                //SerialManager::sharedInstance->commandLog("Got chunk");
+                //SerialManager::sharedInstance->commandLog(std::to_string(encodedChunk.size()));
+                //SerialManager::sharedInstance->commandLog(encodedChunk);
+                std::string chunk = base64::from_base64(encodedChunk).c_str();
+                //SerialManager::sharedInstance->commandLog(chunk);
+                fileStream.write(chunk);
+            }
+
+            fileStream.close();
+
+            if (this->shellMode)
+                SerialManager::sharedInstance->commandLog("File " + uploadPath.str() + " with size " + std::to_string(fileSize) + " uploaded successfully.");
+            else
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+        }
+        catch(const std::exception& e)
+        {
+            if (this->shellMode)
+                SerialManager::sharedInstance->commandLog("Error uploading file: " + std::string(e.what()));
+            else
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+            return;
+        }
     }
 } // namespace serialcom

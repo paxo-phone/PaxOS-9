@@ -19,6 +19,21 @@
 #include "gsm/contacts_test.cpp"
 #include "serialcom/command.cpp"
 
+#if ESP_PLATFORM
+
+void setup() {
+    ::testing::InitGoogleTest();
+    
+    if (RUN_ALL_TESTS())
+    {}
+    
+    return;
+}
+
+void loop() {}
+
+#else
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
@@ -28,3 +43,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+#endif

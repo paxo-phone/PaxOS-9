@@ -29,7 +29,23 @@ namespace serialcom {
     }
     
     void SerialManager::commandLog(const std::string& message) { // should only be called in the serialLoop thread
-        this->coutBuffer.directLog(message);
+        this->coutBuffer.directLog(message, CommandsManager::defaultInstance->shellMode);
+    }
+
+    void SerialManager::forceFlushBuffers()
+    {
+        this->coutBuffer.flushBuffer();
+        this->cerrBuffer.flushBuffer();
+    }
+
+    std::streambuf* SerialManager::changeDefaultCoutBuffer(std::streambuf* buffer)
+    { 
+        return this->coutBuffer.changeDefaultBuffer(buffer);
+    }
+
+    std::streambuf* SerialManager::changeDefaultCerrBuffer(std::streambuf* buffer)
+    {
+        return this->cerrBuffer.changeDefaultBuffer(buffer);
     }
 
     #ifdef ESP_PLATFORM
