@@ -32,3 +32,13 @@ void graphics::unpackRGB565(const color_t rgb, uint8_t* r, uint8_t* g, uint8_t* 
     *g = ((((rgb >> 5) & 0x3F) * 259) + 33) >> 6;
     *b = (((rgb & 0x1F) * 527) + 23) >> 6;
 }
+
+constexpr color_t graphics::constPackRGB565(const uint8_t r, const uint8_t g, const uint8_t b) {
+    uint16_t rgb = 0;
+
+    rgb |= (r >> 3) << 11;
+    rgb |= (g >> 2) << 5;
+    rgb |= (b >> 3);
+
+    return rgb;
+}
