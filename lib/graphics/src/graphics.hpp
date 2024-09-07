@@ -25,50 +25,97 @@ class FT6236G;
 
 namespace graphics
 {
+    class Surface;
+
     enum EScreenOrientation
     {
         PORTRAIT,
         LANDSCAPE
     };
 
-    class Surface;
-
-    LGFX* getLcd();
-    void reInit();
-
-  enum GraphicsInitCode {
+    enum GraphicsInitCode {
         SUCCESS,
         ERROR_NO_TOUCHSCREEN,
         ERROR_FAULTY_TOUCHSCREEN
     };
 
+    /**
+     * Initialize the graphics library and returns 0 if initialized with success.
+     * @return The initialization code, if greater than 0, an error occurred.
+     */
     GraphicsInitCode init();
 
-    uint16_t getScreenWidth();
-    uint16_t getScreenHeight();
+    [[nodiscard]] uint16_t getScreenWidth();
+    [[nodiscard]] uint16_t getScreenHeight();
 
-    extern int16_t brightness;
-    void setBrightness(uint16_t value);
+    /**
+     * Get the current brightness of the screen.
+     * @return The current brightness of the screen.
+     */
+    [[nodiscard]] uint16_t getBrightness();
 
+    /**
+     * Set the current screen brightness with a smooth animation (abs(newValue - oldValue) ms).
+     * @param value The new brightness of the screen.
+     * @param temp If true, the brightness value will not be saved (getBrightness() will still return the old value).
+     */
+    void setBrightness(uint16_t value, bool temp = false);
+
+    /**
+     * @return The current running status.
+     * @deprecated Please do not use graphics as your main logic.
+     */
+    [[deprecated("Please do not use graphics as your main logic.")]]
+    [[nodiscard]]
     bool isRunning();
 
+    /**
+     * Show a surface on the screen.
+     * You should probably send every surface to the screen using directly this call,
+     * but with a smart use of Surface::pushSurface.
+     * @param surface The surface to push to the screen.
+     * @param x The x position of the surface, default is 0.
+     * @param y The y position of the surface, default is 0.
+     */
     void showSurface(const Surface *surface, int x = 0, int y = 0);
+
+    /**
+     * Set a clip rect for the screen, only the provided zone will be sent to the LCD.
+     * @param x The x of the clip rect.
+     * @param y The y of the clip rect.
+     * @param width The width of the clip rect.
+     * @param height The height of the clip rect.
+     */
     void setWindow(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
+
+    /**
+     * Reset the previously defined clip rect.
+     */
     void setWindow();
 
+    /**
+     * Do nothing.
+     * Previously used to manually request a screen update.
+     * @deprecated Useless.
+     */
+    [[deprecated("Useless.")]]
     void flip();
 
     void getTouchPos(int16_t *x, int16_t *y);
     void touchIsRead();
     void touchUpdate();
-    bool isTouched();
+    [[nodiscard]] bool isTouched();
 
-    EScreenOrientation getScreenOrientation();
+    [[nodiscard]] EScreenOrientation getScreenOrientation();
     void setScreenOrientation(EScreenOrientation screenOrientation);
 
-    LGFX* getLCD();
+    /**
+     * Get direct access to the LGFX layer. Please use with a lot of care.
+     * @return The LGFX screen instance.
+     */
+    [[nodiscard]] LGFX* getLCD();
 #ifdef ESP_PLATFORM
-    FT6236G* getTouchController();
+    [[nodiscard]] FT6236G* getTouchController();
 #endif
 
 #ifndef ESP_PLATFORM

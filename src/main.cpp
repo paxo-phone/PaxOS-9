@@ -50,7 +50,8 @@ void mainLoop(void* data) {
         backtrace_saver::backtraceMessageGUI();
     }
 
-    graphics::setBrightness(graphics::brightness);
+    // Initialize brightness in some way
+    graphics::setBrightness(graphics::getBrightness());
 #endif
 
     GuiManager& guiManager = GuiManager::getInstance();
