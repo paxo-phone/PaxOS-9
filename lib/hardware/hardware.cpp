@@ -191,3 +191,12 @@ bool hardware::input::getButtonDown(const Button button) {
             throw libsystem::exceptions::InvalidArgument("Unknown button.");
     }
 }
+
+bool hardware::input::getButtonUp(const Button button) {
+    switch (button) {
+        case HOME:
+            return lastFrame.homeButtonState == PRESSED && frame.homeButtonState == RELEASED;
+        default:
+            throw libsystem::exceptions::InvalidArgument("Unknown button.");
+    }
+}
