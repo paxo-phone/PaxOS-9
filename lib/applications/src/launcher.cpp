@@ -85,23 +85,27 @@ void applications::launcher::init() {
 }
 
 void applications::launcher::update() {
+    std::cout << "Launcher update" << std::endl;
+
     if (dirty) {
         // If dirty, free to force redraw it
         free();
+        std::cout << "Launcher free" << std::endl;
     }
 
     if (!allocated) {
         // If launcher has been freed, redraw it
         draw();
+        std::cout << "Launcher redraw" << std::endl;
     }
 
     // Update dynamic elements
     // Do this before updating the window (so drawing it)
     // Because it can cause weird "blinking" effects
 
-    // TODO : Refactor this
-    if (millis() > lastClockUpdate + 1000) {
-        // What ???
+    std::cout << "launcher::update 1" << std::endl;
+
+    {
         static int min;
 
         if(min != GSM::minutes) {
@@ -110,15 +114,19 @@ void applications::launcher::update() {
 
             min = GSM::minutes;
         }
-
-        lastClockUpdate = millis();
     }
+
+    std::cout << "launcher::update 2" << std::endl;
+
     if (millis() > lastBatteryUpdate + 10000) {
         // batteryIcon->setImage();
         batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
 
         lastBatteryUpdate = millis();
     }
+
+
+    std::cout << "launcher::update 3" << std::endl;
 
     if (hardware::isCharging()) {
         if (chargingStartTime == 0) {
@@ -135,13 +143,12 @@ void applications::launcher::update() {
         chargingPopupBox->disable();
     }
 
+    libsystem::log("launcher::update -");
+
     // Update, draw AND update touch events
     if (launcherWindow != nullptr) {
         launcherWindow->updateAll();
     }
-
-    // Update all events
-    eventHandlerApp.update();
 
     // Check touch events
 
@@ -176,6 +183,8 @@ void applications::launcher::draw() {
         launcherWindow = std::make_shared<Window>();
     }
 
+    std::cout << "launcher::update 1.1" << std::endl;
+
     StandbyMode::triggerPower();
 
     // Clock
@@ -186,6 +195,9 @@ void applications::launcher::draw() {
     clockLabel->setFontSize(36);
     launcherWindow->addChild(clockLabel);
 
+
+    std::cout << "launcher::update 1.2" << std::endl;
+
     // Date
     dateLabel = new Label(55, 89, 210, 18);
     dateLabel->setText(getFormatedDate());
@@ -194,11 +206,17 @@ void applications::launcher::draw() {
     dateLabel->setFontSize(16);
     launcherWindow->addChild(dateLabel);
 
+
+    std::cout << "launcher::update 1.3" << std::endl;
+
     // Battery icon
     const auto batteryIconDarkPath = storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
     batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32, TFT_WHITE);
     batteryIcon->load();
     launcherWindow->addChild(batteryIcon);
+
+
+    //std::cout << "launcher::update 1.4" << std::endl;
 
     // Battery label
     batteryLabel = new Label(255, 10, 40, 18);
@@ -207,6 +225,9 @@ void applications::launcher::draw() {
     batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
     batteryLabel->setFontSize(18);
     launcherWindow->addChild(batteryLabel);
+
+
+    //std::cout << "launcher::update 1.5" << std::endl;
 
     // Network
     if (GSM::getNetworkStatus() == 99) {
@@ -217,6 +238,9 @@ void applications::launcher::draw() {
         networkLabel->setFontSize(18);
         launcherWindow->addChild(networkLabel);
     }
+
+
+    //std::cout << "launcher::update 1.6" << std::endl;
 
     // Brightness slider
     brightnessSliderBox = new Box(0, 77, 50, 325);
@@ -307,9 +331,6 @@ void applications::launcher::draw() {
 
     lastClockUpdate = millis();
     lastBatteryUpdate = millis();
-
-    // Is this the inverse of "triggerPower()" ?
-    StandbyMode::restorePower();
 }
 
 bool applications::launcher::iconTouched() {

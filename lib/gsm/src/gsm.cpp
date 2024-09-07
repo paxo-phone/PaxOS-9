@@ -976,7 +976,7 @@ namespace GSM
         endCall();
     }
 
-    float getVoltage()
+    void getVoltage()       // THIS IS A TASK, DO NOT CALL IT!
     {
         std::string answer = send("AT+CBC", "OK");
 
@@ -984,7 +984,7 @@ namespace GSM
         int end = answer.find("V", start);
 
         if (start == std::string::npos || end == std::string::npos) // maybe wrong
-            return 0;
+            return;
 
         std::string voltage_str = answer.substr(start, end - start);
 
@@ -994,19 +994,14 @@ namespace GSM
         }
         catch (std::exception)
         {
-            voltage = -1;
         }
-
-        return 0;
     }
 
     double getBatteryLevel() {
 #ifdef ESP_PLATFORM
-        const float voltage = getVoltage();
-
         if (voltage == -1) {
             // Probably return something else ?
-            return 100;
+            return 1;
         }
 
         // Thanks NumWorks for the regression app

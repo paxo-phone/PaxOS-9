@@ -450,12 +450,16 @@ bool gui::ElementBase::isFocused(bool forced)
 
 void gui::ElementBase::enable()
 {
+    if(m_isEnabled)
+        return;
     m_isEnabled = true;
     globalGraphicalUpdate();
 }
 
 void gui::ElementBase::disable()
 {
+    if(!m_isEnabled)
+        return;
     m_isEnabled = false;
     globalGraphicalUpdate();
 }

@@ -120,7 +120,8 @@ namespace AppManager
     /**
      * Update every application.
      */
-    void update();
+    void updateForeground();    // easy to understand
+    void updateBackground();
 
     /**
      * Quit the currently foreground running application.

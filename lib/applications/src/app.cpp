@@ -373,69 +373,48 @@ namespace AppManager {
     }
 
     void loop() {
-        threadsync.lock();
-        // Implementation for the main loop
-        if (!appStack.empty() && hardware::getHomeButton())
-        // if the home button is pressed, remove the app from the stack, and kill it if it's not running in the background
-        {
-            while (hardware::getHomeButton()) {}
-
-            if (!appStack.empty()) {
-                if (appStack.back()->background == false) {
-                    const auto app = appStack.back();
-                    int count = 0; // TODO: Use ?
-
-                    for (const auto& it : appStack) {
-                        if (it == app) {
-                            count++;
-                        }
-                    }
-
-                    app->kill();
-                } else {
-                    std::cerr << "Error: app is in background" << std::endl;
-                }
-
-                appStack.pop_back();
-            }
-        }
-
-        for (const auto& app: appList) {
-            if (app->isRunning()) {
-                app->luaInstance->loop();
-            } else if (app->luaInstance != nullptr) {
-                app->kill();
-            }
-        }
-
-        if (!appStack.empty()) {
-            appStack.back()->luaInstance->lua_gui.update();
-        }
-
-        threadsync.unlock();
-
-        StandbyMode::wait();
+        updateForeground();
+        updateBackground();
     }
 
-    void update() {
+    void updateForeground() {
         threadsync.lock();
 
         // Run tick on every app
         for (const auto& app: appList) {
-            if (app->isRunning()) {
-                app->luaInstance->loop();
-            } else if (app->luaInstance != nullptr) {
-                app->kill();
+            if(app->background == false)    // app is not in background
+            {
+                if (app->isRunning()) { // app is running
+                    app->luaInstance->loop();
+                } else if (std::find(appStack.begin(), appStack.end(), app.get()) != appStack.end()) // if app is no longer in the stack (no gui is running) -> kill it
+                {
+                    app->kill();
+                }
             }
         }
 
         // Update foreground app GUI
-        // TODO : What happens if a background app is on top of a foreground app on the stack ?
         if (!appStack.empty()) {
             const App* app = appStack.back();
 
             if (app->luaInstance != nullptr) {
                 app->luaInstance->lua_gui.update();
+            }
+        }
+
+        threadsync.unlock();
+    }
+
+    void updateBackground() {
+        threadsync.lock();
+
+        // Run tick on every app
+        for (const auto& app: appList) {
+            if(app->background == true)    // app is in background
+            {
+                if (app->isRunning()) { // app is running
+                    app->luaInstance->loop();
+                }
             }
         }
 
