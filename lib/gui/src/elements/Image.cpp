@@ -98,4 +98,13 @@ namespace gui::elements
         m_surface = gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
         localGraphicalUpdate();
     }
+
+        void Image::setTransparentColor(color_t color){
+        if ( ! m_surface) {
+            //std::cout << "[Image] m_surface is null";
+            load(color);
+        }
+        m_surface->setTransparentColor(color);
+        m_surface->setTransparency(true);
+    }
 }
