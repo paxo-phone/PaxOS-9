@@ -417,6 +417,7 @@ void LuaFile::load()
             "checkbox", &LuaGui::checkbox,
             "del", &LuaGui::del,
             "setWindow", &LuaGui::setMainWindow,
+            "getWindow", &LuaGui::getMainWindow,            
             "keyboard", &LuaGui::keyboard,
             "showInfoMessage", &LuaGui::showInfoMessage,
             "showWarningMessage", &LuaGui::showWarningMessage,
