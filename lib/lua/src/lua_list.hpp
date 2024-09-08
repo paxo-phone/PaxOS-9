@@ -13,6 +13,9 @@ class LuaVerticalList : public LuaWidget
     void setIndex(int i = 0) { this->widget->setIndex(i); };
     void setFocus(VerticalList::SelectionFocus focus) { std::cout << "setFocus: " << focus << std::endl; this->widget->setSelectionFocus(focus); };
     int getSelected() { return this->widget->getFocusedElement(); };
+    void select(int index) { this->widget->select(index); };
+    void setSelectionColor(color_t color) { this->widget->setSelectionColor( color); };
+    void setAutoSelect(bool autoSelect) { this->widget->setAutoSelect(autoSelect); };
 
     VerticalList* widget = nullptr;
 };

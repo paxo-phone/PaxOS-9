@@ -87,6 +87,8 @@ namespace gui
         ElementBase *getParent() const;
         void addChild(ElementBase *child);
 
+        ElementBase *getElementAt(int index);
+
         ElementBase *m_parent;
         std::vector<ElementBase *> m_children;
         static int16_t touchX, touchY;

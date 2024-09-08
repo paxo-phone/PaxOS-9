@@ -528,11 +528,18 @@ void LuaFile::load()
             "setSpaceLine", &LuaVerticalList::setSpaceLine,
             "setSelectionFocus", &LuaVerticalList::setFocus,
             "getSelected", &LuaVerticalList::getSelected,
+            "select", &LuaVerticalList::select,
+            "setSelectionColor", &LuaVerticalList::setSelectionColor,
+            "setAutoSelect", &LuaVerticalList::setAutoSelect,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
             //"add", &LuaHorizontalList::add,
+            "setSpaceLine", &LuaHorizontalList::setSpaceLine,
             sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.set("SELECTION_UP", VerticalList::SelectionFocus::UP);
+        lua.set("SELECTION_CENTER", VerticalList::SelectionFocus::CENTER);
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);
         lua.set("RIGHT_ALIGNMENT", Label::Alignement::RIGHT);

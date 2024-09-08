@@ -31,11 +31,20 @@ namespace gui::elements
 
         void setSelectionFocus(SelectionFocus focus);
         int getFocusedElement();
+        void select(int index);
+        void setSelectionColor(color_t color);
+        void setAutoSelect(bool autoSelect);
+
 
     private:
         int16_t m_focusedIndex = 0;
+        int16_t m_oldFocusedIndex = 0;
+
         uint16_t m_lineSpace = 0;
         SelectionFocus m_selectionFocus = SelectionFocus::UP;
+        color_t m_selectionColor;
+        bool m_autoSelect;
+
     };
 
     class HorizontalList final : public ElementBase
