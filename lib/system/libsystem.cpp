@@ -8,6 +8,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <string>
+#include <vector>
+
 #ifdef ESP_PLATFORM
 
 #include <esp_debug_helpers.h>
