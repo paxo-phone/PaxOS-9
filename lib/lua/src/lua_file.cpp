@@ -372,6 +372,7 @@ void LuaFile::load()
             "get_int", &LuaJson::get_int,
             "get_double", &LuaJson::get_double,
             "get_bool", &LuaJson::get_bool,
+            "get_string", &LuaJson::get_string,
             "set_int", &LuaJson::set_int,
             "set_double", &LuaJson::set_double,
             "set_bool", &LuaJson::set_bool,
