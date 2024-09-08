@@ -63,6 +63,12 @@ void mainLoop(void* data) {
         AppManager::loop();
         eventHandlerApp.update();
 
+        if(AppManager::isAnyVisibleApp() && launcher)
+        {
+            applications::launcher::free();
+            launcher = false;
+        }
+
         if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())
         {
             if(!launcher)   // si pas de launcher -> afficher un launcher
@@ -100,21 +106,38 @@ void mainLoop(void* data) {
             if(libsystem::getDeviceMode() == libsystem::SLEEP)
             {
                 setDeviceMode(libsystem::NORMAL);
+                StandbyMode::disable();
             } else if(launcher)
             {
                 applications::launcher::free();
                 launcher = false;
                 libsystem::setDeviceMode(libsystem::SLEEP);
+                StandbyMode::enable();
             } else if(AppManager::isAnyVisibleApp())
             {
                 AppManager::quitApp();
             }
         }
 
-        std::cout << "Main loop" << std::endl;
+        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
+        {
+            if(launcher)
+            {
+                applications::launcher::free();
+                launcher = false;
+            }
+            for (uint i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
+            {
+                AppManager::quitApp();
+            }
+            libsystem::setDeviceMode(libsystem::SLEEP);
+            StandbyMode::enable();
+        }
+
+        /*std::cout << "Main loop" << std::endl;
         std::cout << "Launcher: " << launcher << std::endl;
         std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
-        std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
+        std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;*/
 
         StandbyMode::wait();
     }

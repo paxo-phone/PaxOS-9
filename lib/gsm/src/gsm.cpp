@@ -23,6 +23,8 @@
 const char *daysOfWeek[7] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
 const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"};
 
+EventHandler eventHandlerGsm;
+
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
 
@@ -198,7 +200,7 @@ namespace GSM
         if (!request.function)
             std::cout << "request.function is invalid -> can't run the new request" << std::endl;
         else
-            eventHandlerBack.setTimeout(new Callback<>(std::bind([](Request r){ GSM::requests.push_back(r); }, request)), 0);
+            eventHandlerGsm.setTimeout(new Callback<>(std::bind([](Request r){ GSM::requests.push_back(r); }, request)), 0);
     }
 
     void process()
@@ -1007,6 +1009,8 @@ namespace GSM
         // Thanks NumWorks for the regression app
         const double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
 
+        std::cout << "Battery level: " << batteryLevel << std::endl;
+
         return std::clamp(batteryLevel, 0.0, 1.0);
 
         // if (voltage > 4.12)
@@ -1109,6 +1113,7 @@ namespace GSM
 
     int getNetworkStatus()
     {
+        std::cout << "networkQuality: " << networkQuality << std::endl;
         return networkQuality;
     }
 
@@ -1149,7 +1154,7 @@ namespace GSM
 
     void setFlightMode(bool mode)
     {
-        eventHandlerBack.setTimeout(new Callback<>([mode](){ appendRequest({updateFlightMode}); }), 0);
+        eventHandlerGsm.setTimeout(new Callback<>([mode](){ appendRequest({updateFlightMode}); }), 0);
         flightMode = mode;
     }
 
@@ -1166,10 +1171,10 @@ namespace GSM
         onMessage();
         getVoltage();
 
-        eventHandlerBack.setInterval(&GSM::getHour, 5000);
-        eventHandlerBack.setInterval(&GSM::getNetworkQuality, 10000);
-        eventHandlerBack.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
-        eventHandlerBack.setInterval([](){ requests.push_back({&GSM::onMessage, GSM::priority::normal}); }, 5000);
+        eventHandlerGsm.setInterval(&GSM::getHour, 5000);
+        eventHandlerGsm.setInterval(&GSM::getNetworkQuality, 10000);
+        eventHandlerGsm.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
+        eventHandlerGsm.setInterval([](){ requests.push_back({&GSM::onMessage, GSM::priority::normal}); }, 5000);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});
@@ -1179,6 +1184,8 @@ namespace GSM
         while (true)
         {
             PaxOS_Delay(5);
+
+            eventHandlerGsm.update();
 
             download();
 

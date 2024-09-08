@@ -27,6 +27,8 @@ namespace StandbyMode
 
     void trigger()
     {
+        if(enabled == true)
+            return;
         lastTrigger = millis();
 
         graphics::setBrightness(graphics::brightness);
@@ -42,16 +44,21 @@ namespace StandbyMode
         }
     }
 
+    bool expired()
+    {
+        return millis() - lastTrigger > sleepTime;
+    }
+
+    void reset()
+    {
+        lastTrigger = millis();
+    }
+
     void update()
     {
         if (!enabled && millis() - lastTrigger > sleepTime - 10000)
         {
             graphics::setBrightness(graphics::brightness/3 + 3);
-        }
-
-        if (!enabled && millis() - lastTrigger > sleepTime)
-        {
-            enable();
         }
 
         if (millis() - lastPowerTrigger > 5000)
@@ -76,30 +83,7 @@ namespace StandbyMode
     void enable()
     {
         enabled = true;
-        lastTrigger = millis() - sleepTime;
-
-        graphics::setBrightness(0);
-        StandbyMode::savePower();
-
-        while(AppManager::isAnyVisibleApp())
-        {
-            AppManager::appStack[AppManager::appStack.size() - 1]->kill();
-            AppManager::appStack.pop_back();
-        }
-
-        while (hardware::getHomeButton());
-        while (!hardware::getHomeButton() && !AppManager::isAnyVisibleApp() && millis() - sleepTime > lastTrigger)
-        {
-            eventHandlerApp.update();
-            AppManager::loop();
-        }
-
-        while (hardware::getHomeButton());
-        
-        StandbyMode::restorePower();
-        graphics::setBrightness(graphics::brightness);
-
-        disable();
+        lastTrigger = millis();
     }
     
     void disable()

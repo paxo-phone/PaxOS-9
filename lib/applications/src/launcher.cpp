@@ -73,6 +73,12 @@ namespace applications::launcher {
     Image* batteryIcon = nullptr;
     Box* chargingPopupBox = nullptr;
     Box* brightnessSliderBox = nullptr;
+    Label* networkLabel = nullptr;
+
+    Box *flightModeBox = nullptr;
+    Label* flightModeText = nullptr;
+    Switch* flightModeSwitch = nullptr;
+    Button* flightModeButton = nullptr;
 
     uint64_t lastClockUpdate = 0;
     uint64_t lastBatteryUpdate = 0;
@@ -103,7 +109,7 @@ void applications::launcher::update() {
     // Do this before updating the window (so drawing it)
     // Because it can cause weird "blinking" effects
 
-    std::cout << "launcher::update 1" << std::endl;
+    //std::cout << "launcher::update 1" << std::endl;
 
     {
         static int min;
@@ -116,17 +122,40 @@ void applications::launcher::update() {
         }
     }
 
-    std::cout << "launcher::update 2" << std::endl;
+    //std::cout << "launcher::update 2" << std::endl;
 
-    if (millis() > lastBatteryUpdate + 10000) {
-        // batteryIcon->setImage();
-        batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
+    {
+        static double lastBattery = GSM::getBatteryLevel();
+        if(lastBattery != GSM::getBatteryLevel())
+        {
+            batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
 
-        lastBatteryUpdate = millis();
+            lastBattery = GSM::getBatteryLevel();
+        }
+    }
+
+    {
+        if(clockLabel->isTouched())
+        {
+            flightModeBox->enable();
+            clockLabel->disable();
+            dateLabel->disable();
+        }
+        if(flightModeButton->isTouched())
+        {
+            flightModeBox->disable();
+            clockLabel->enable();
+            dateLabel->enable();
+        }
+
+        if(flightModeSwitch->isTouched())
+        {
+            GSM::setFlightMode(flightModeSwitch->getState());
+        }
     }
 
 
-    std::cout << "launcher::update 3" << std::endl;
+    //std::cout << "launcher::update 3" << std::endl;
 
     if (hardware::isCharging()) {
         if (chargingStartTime == 0) {
@@ -143,7 +172,20 @@ void applications::launcher::update() {
         chargingPopupBox->disable();
     }
 
-    libsystem::log("launcher::update -");
+    {
+        static int lastNetwork = GSM::getNetworkStatus();
+        if(lastNetwork != GSM::getNetworkStatus())
+        {
+            if(GSM::getNetworkStatus() == 99)
+                networkLabel->setText("X");
+            else
+                networkLabel->setText(std::to_string((int) GSM::getNetworkStatus() * 100 / 31) + "%");
+
+            lastNetwork = GSM::getNetworkStatus();
+        }
+    }
+
+    //libsystem::log("launcher::update -");
 
     // Update, draw AND update touch events
     if (launcherWindow != nullptr) {
@@ -229,22 +271,46 @@ void applications::launcher::draw() {
 
     //std::cout << "launcher::update 1.5" << std::endl;
 
-    // Network
-    if (GSM::getNetworkStatus() == 99) {
-        auto* networkLabel = new Label(10, 10, 100, 18);
-        networkLabel->setText("No network");
+    
+    {   // Network
+        networkLabel = new Label(2, 2, 30, 18);
+        if(GSM::getNetworkStatus() == 99)
+            networkLabel->setText("X");
+        else
+            networkLabel->setText(std::to_string((int) GSM::getNetworkStatus() * 100 / 31) + "%");
         networkLabel->setVerticalAlignment(Label::Alignement::CENTER);
         networkLabel->setHorizontalAlignment(Label::Alignement::CENTER);
         networkLabel->setFontSize(18);
         launcherWindow->addChild(networkLabel);
     }
 
+    {   // Flight mode
+        flightModeBox = new Box(50, 25, 220, 59);
+        flightModeBox->setBorderColor(0xCF3D);
+        flightModeBox->setBorderSize(1);
+        flightModeBox->setRadius(17);
+        flightModeBox->disable();
+        launcherWindow->addChild(flightModeBox);
+    
+        flightModeText = new Label(14, 8, 46, 39);
+            flightModeText->setText("Mode\nAvion");
+            flightModeText->setVerticalAlignment(Label::Alignement::CENTER);
+            flightModeText->setFontSize(14);
+        flightModeBox->addChild(flightModeText);
+
+        flightModeSwitch = new Switch(89, 19);
+            flightModeSwitch->setState(GSM::isFlightMode());
+        flightModeBox->addChild(flightModeSwitch);
+
+        flightModeButton = new Button(169, 10, 38, 38);
+            flightModeButton->setText("OK");
+        flightModeBox->addChild(flightModeButton);
+    }
 
     //std::cout << "launcher::update 1.6" << std::endl;
 
     // Brightness slider
-    brightnessSliderBox = new Box(0, 77, 50, 325);
-    //light->setBackgroundColor(COLOR_RED);
+    brightnessSliderBox = new Box(0, 77, 40, 325);
     launcherWindow->addChild(brightnessSliderBox);
 
     /**
