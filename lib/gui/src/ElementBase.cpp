@@ -641,5 +641,6 @@ gui::ElementBase *gui::ElementBase::getElementAt(int index) {
     if (index >=0 && index < m_children.size()) {
         return m_children[index];
     }
+    return nullptr;
 
 }
