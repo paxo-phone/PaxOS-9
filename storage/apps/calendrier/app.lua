@@ -6,16 +6,7 @@ local menu
 local currentMode
 local winDay, winNewEvent
 
-
--- variable newEvent
-local vListeDateNewEvent
-local selectedDateHeure = {}
-
-local daysOfWeek = { "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche" }
-local daysOfWeekShort = { "lun", "mar", "mer", "jeu", "ven", "sam", "dim" }
-
 local affichageTop = 60
-
 
 -- Parametrage du calendrier
 local config = {}
@@ -49,10 +40,7 @@ function run()
     else 
         displayMonth(year, month)
     end
-    
 end -- run
-
-
 
 -- chargement du fichier de configuration de l'application
 function loadConfig()
@@ -160,7 +148,6 @@ function displayConfig()
     radioDefaultViewWeek:onClick(function() selectGroupRadio(radioDefaultViewWeek, groupRadio) end)
     radioDefaultViewMonth:onClick(function() selectGroupRadio(radioDefaultViewMonth, groupRadio) end)
 
-
     local lblDebutJour = gui:label(winConfig, 20, 280, 150, 20)
     lblDebutJour:setText("Début de journée")
 
@@ -172,9 +159,6 @@ function displayConfig()
     vLstHeureDebut:setSelectionFocus(SELECTION_CENTER)
     vLstHeureDebut:setSelectionColor(COLOR_LIGHT_ORANGE)
     vLstHeureDebut:setAutoSelect(true)
-
-    vLstHeureDebut:onSelect(function() print("onSelect OK") end)
-
 
     local vLstHeureFin = gui:vlist(winConfig, 160, 305, 150, 100)
     vLstHeureFin:setSpaceLine(0)
@@ -196,6 +180,7 @@ function displayConfig()
         lblHeureDebut:setHorizontalAlignment(CENTER_ALIGNMENT)
         lblHeureFin:setHorizontalAlignment(CENTER_ALIGNMENT)
     end
+    print("config.day.heureFin = ")
     vLstHeureDebut:select(config.day.heureDebut)
     vLstHeureFin:select(config.day.heureFin)
 
@@ -238,27 +223,20 @@ function displayConfig()
         --retour à l'écran précédent 
         switchScreen(year, month, day)
     end)
-
-
 end -- displayConfig
-
 
 -- Gère la sélection unique d'un groupe de bouton radio
 function selectGroupRadio(selected, groupRadio)
-
     if type(groupRadio) ~= "table" then
         return
     end
-
     for _, radio in ipairs(groupRadio) do
         radio:setState(radio == selected)
     end
-
 end
 
 -- sauvegarde la config en fichier json
 function saveConfig()
-
 
     local fileConfig = storage:file ("config.json", WRITE)
 
@@ -273,15 +251,11 @@ function saveConfig()
 
     fileConfig:close()
     fileConfig = nil
-
-
 end
-
 
 -- ---------------------------------------
 -- AFFICHAGE D'UN MOIS
 -- ---------------------------------------
-
 
 function displayWeek(year, month, day)
 
@@ -409,15 +383,12 @@ function displayWeek(year, month, day)
                 boxHour:setBorderSize(1)
                 boxHour:setRadius(1)
 
-                -- affichage des heures
                 local boxLabelHeure = gui:box(boxHour, 0, 0, leftMonth-decalageHeure, sizeBoxHeure)
                 boxLabelHeure:setBorderColor(COLOR_LIGHT_GREY)
                 boxLabelHeure:setBorderSize(1)
                 boxLabelHeure:setRadius(1)
 
                 local lblHeure = gui:label(boxLabelHeure, 0 , 1, 20, sizeBoxHeure-2)
-                --lblHeure:setBackgroundColor(COLOR)    
-                --lblHeure:setTextColor(COLOR_)
                 lblHeure:setHorizontalAlignment(RIGHT_ALIGNMENT)
                 lblHeure:setFontSize(14)
                 lblHeure:setText(tostring(i)..":")
@@ -425,7 +396,6 @@ function displayWeek(year, month, day)
                 local lblMin = gui:label(boxLabelHeure, 20,1, 18, sizeBoxHeure-2)
                 lblMin:setHorizontalAlignment(LEFT_ALIGNMENT)
                 lblMin:setTextColor(COLOR_GREY)
-                --lblMin:setBackgroundColor(colorBackGround)    
                 lblMin:setFontSize(10)
                 lblMin:setText("00")
             else
@@ -439,7 +409,7 @@ function displayWeek(year, month, day)
             if config.day.heureDebut >i or config.day.heureFin < i then
                 lblCase:setBackgroundColor(COLOR_LIGHT_BLUE)
             end
-        -- ------------------------
+            -- ------------------------
             -- Affichage des evenements 
             -- ------------------------
 
@@ -466,11 +436,7 @@ function displayWeek(year, month, day)
                         elseif ev.fin.heure > i then
                             positionBas = sizeBoxHeure
                         end
-                        --local lblEvent = gui:label(winWeek, leftMonth + (j-1)*(widthBoxJour+espacementBox) , topHeader, widthBoxJour, heigthHeader)
-                        -- local lblEvent = gui:label(boxHour, 41, positionHaut, widthBox - 50, positionBas - positionHaut)
-                        
                         local lblEvent = gui:label(boxHour, leftMonth-decalageHeure+(j-1)*(widthBoxJour+espacementBox) , positionHaut, widthBoxJour, positionBas - positionHaut)
-                   --   local lblEvent = gui:label(winWeek, leftMonth + (j-1)*(widthBoxJour+espacementBox) , topHeader, widthBoxJour, heigthHeader)
 
                         lblEvent:setBackgroundColor(COLOR_LIGHT_ORANGE)
                         lblEvent:setFontSize(14)
@@ -486,15 +452,10 @@ function displayWeek(year, month, day)
                 end
 
             end -- if lstEvent
-
         end
-
         -- on positionne la vliste sur la 1ere heure du jour
         vListeHeure:setIndex(config.day.heureDebut)
-
-end
-
-
+    end
 
 end -- displayWeek
 
@@ -513,7 +474,6 @@ function displayMonth (year, month)
     displayTopBarre()
     -- sélection du menu actif
     selectMenu(boxImgMonth)
-
 
     -- chargement des données du mois 
     loadDataMonth(year, month)
@@ -584,7 +544,6 @@ function displayMonth (year, month)
     local heightEvent = 10
     
     -- AMELIORATION POSSIBLE - Calculer le nombre d'event affichable possible
-    --    local nbMaxEventDisplay = int((heightSemaine - 16) / heightEvent)
 
     -- Affichage du header
     for i=1, NbJourstoDisplay do
@@ -594,7 +553,6 @@ function displayMonth (year, month)
         lblHearder:setVerticalAlignment(CENTER_ALIGNMENT)
         lblHearder:setText(getDayOfWeekShortName(i))
     end
-
     local weekNum = getWeekNum(year, month, 1)
 
     -- Affichage des cellules
@@ -651,26 +609,15 @@ function displayMonth (year, month)
                 --lblJourMonth:setBackgroundColor(COLOR_LIGHT_BLUE)
             end
 
-            lblJourMonth:onClick(
-                function()
-                    displayDay(dateCellule[1], dateCellule[2], dateCellule[3])
-                end
-            )
-
-
+            lblJourMonth:onClick( function() displayDay(dateCellule[1], dateCellule[2], dateCellule[3]) end)
         end
-
     end
-
 end --displayMonth
-
 
 
 -- ---------------------------------------
 -- GESTION DES DATA 
 -- ---------------------------------------
-
-
 
 -- Enregistrement d'un event dans la structure Data
 function saveEvent(event)
@@ -685,7 +632,6 @@ function saveEvent(event)
     data[event.debut.year][event.debut.month][event.debut.day][event.UID] = event
 
     saveDataFile(event.debut.year,event.debut.month)
-
 end
 
 
@@ -814,43 +760,16 @@ function loadDataMonth(year, month, noLoadingAdjacent)
 
     -- check if a data file exists
     if storage:isFile(filename) then
---[[
-        -- lecture du fichier
-        fileData = storage:file (filename, READ)
-        fileData:open()
-        strData = fileData:readAll()
-        fileData:close()
-        fileData = nil
 
---        dataLoad = json_to_array(strData)
-        local dataLoad = unserialize(strData)
-
-        if not dataLoad or not dataLoad[1] then return end
-
-        -- ajout du json dans la structure data
-        if not data[year] then data[year] = {} end
-        if not data[year][month] then data[year][month] = {} end
-]]--
-    
-    -- data[year][month]=dataLoad[1]
-    -- **********************
-
-    -- dataLoad = {}
     local dataLoad = loadTable(filename)
 
     if not data[year] then data[year] = {} end 
     if not data[year][month] then data[year][month] = {} end 
     
-    --debugPrint(dataLoad)
-    --print(#dataLoad)
     data[year][month]=dataLoad
 
-        -- data[year][month]=dataLoad[1]
-    --debugPrint(data)
-        
         if (not noLoadingAdjacent) then
             -- chargement des données du mois précédent
-
             local previousMonth, previousYear
             if month == 1 then
                 previousMonth = 12
@@ -861,7 +780,6 @@ function loadDataMonth(year, month, noLoadingAdjacent)
             end
 
             loadDataMonth(previousYear, previousMonth, true)
-
             -- chargement des données du mois suivant
             local nextMonth, nextYear
             if month == 12 then
@@ -949,7 +867,7 @@ function createEventObject(name, yearDebut, monthDebut, dayDebut, heureDebut, mi
     if not minuteDebut then event.debut.minute = 0 else event.debut.day = minuteDebut end
 
     if not yearFin then event.fin.year = year else event.fin.year = yearFin end
-    if not monthFin then event.fin.month = month else event.fin.month = monthDFin end
+    if not monthFin then event.fin.month = month else event.fin.month = monthFin end
     if not dayFin then event.fin.day = day else event.fin.day = dayFin end
     if not heureFin then event.fin.heure = heure+1 else event.fin.day = heureFin end
     if not minuteFin then event.fin.minute = 0 else event.fin.day = minuteFin end
@@ -965,9 +883,7 @@ function displayDay(year, month, day)
     currentMode = "day"
 
     -- création d'une nouvelle fenetre pour le jour
-    -- if not winDay then
-        winDay = gui:window()
-    --end
+    winDay = gui:window()
     gui:setWindow(winDay)
 
     -- cration de la top barre
@@ -1013,11 +929,20 @@ function displayDay(year, month, day)
     -- Affichage des heures
     for i=0,23 do
         local boxHour = gui:box(vListeHeure, 0, 0, widthBox, sizeBoxHeure)
-        if (i==currentHour) then
-            boxHour:setBackgroundColor(COLOR_RED)
-        else
-            boxHour:setBackgroundColor(COLOR_GREY)
+
+        local colorBackGround = COLOR_WHITE
+        local colorTextHeure = COLOR_BLACK
+        local colorTextMin = COLOR_GREY
+        local colorLine = COLOR_GREY
+
+        if (i==currentHour and today[1] == year and today[2] == month and today[3] == day ) then
+            colorLine = COLOR_RED
+            colorBackGround = COLOR_RED
+            colorTextHeure = COLOR_WHITE
+            colorTextMin = COLOR_WHITE
         end
+
+        boxHour:setBackgroundColor(colorLine)
 
         local lblDummy = gui:label(boxHour, 0 , 1, widthBox, sizeBoxHeure-1)
         if (i < config.day.heureDebut or i>config.day.heureFin) then
@@ -1025,16 +950,6 @@ function displayDay(year, month, day)
         else
             lblDummy:setBackgroundColor(COLOR_WHITE)
         end
-
-        local colorBackGround = COLOR_WHITE
-        local colorTextHeure = COLOR_BLACK
-        local colorTextMin = COLOR_GREY
-
-        if (i==currentHour) then
-             colorBackGround = COLOR_RED
-             colorTextHeure = COLOR_WHITE
-             colorTextMin = COLOR_WHITE
-        end    
 
         local lblHeure = gui:label(boxHour, 0 , 1, 20, sizeBoxHeure-2)
         lblHeure:setBackgroundColor(colorBackGround)    
@@ -1056,7 +971,6 @@ function displayDay(year, month, day)
 
         if lstEvent ~= nil then
             for _, ev in pairs(lstEvent) do
-
                 -- il y a un un event ou troncon d'event sur cette plage horaire
                 if i>= ev.debut.heure and (i < ev.fin.heure or ( ev.fin.heure==i and ev.fin.minute >0 )) then
                     local nomEvent = ""
@@ -1093,9 +1007,7 @@ function displayDay(year, month, day)
                     )
                 end
             end
-
         end -- if lstEvent
-
     end
 
     -- on positionne la vliste sur la 1ere heure du jour
@@ -1123,12 +1035,9 @@ function displayDay(year, month, day)
     local imgNextWeek = gui:image(winDay, "fleche_droite.png", 300, 440, 20, 35)
     imgNextWeek:onClick(function() displayDay(dateNextWeek[1], dateNextWeek[2], dateNextWeek[3]) end)
 
-
     for i=1, nbDaysWeekToDisplay do
         local date = addDaysToDate({year, month, day}, i-currentDayWeek)
-
         local boxDayWeek = gui:box(vListDays, 0, 5, widthBoxDay, 35)
-
         local lblDayOfWeek = gui:label(boxDayWeek, 2, 2, widthBoxDay-4, 12, COLOR_WHITE)
         lblDayOfWeek:setFontSize(9)
         lblDayOfWeek:setHorizontalAlignment(CENTER_ALIGNMENT)
@@ -1149,20 +1058,7 @@ function displayDay(year, month, day)
             boxDayWeek:onClick(function() displayDay(date[1], date[2], date[3]) end)
         end
     end
-
-
 end --displayDay
-
-
-
-function printEvent(event)
-
-    print("event: ".. event.name)
-    print("date debut: ".. tostring(event.debut.day).."/".. tostring(event.debut.month).."/".. tostring(event.debut.year))
-    print(  " debut: "..tostring(event.debut.heure)..":"..tostring(event.debut.minute) )
-    print(  " fin: "..tostring(event.fin.heure)..":"..tostring(event.fin.minute) )
-
-end
 
 -- ---------------------------------------
 -- ECRAN DETAIL / NOUVEL EVENEMENT
@@ -1187,14 +1083,17 @@ function displayEvent(event)
         isNew = true
     end
 
+    -- Message d'erreur
     local lblMsgError = gui:label(winNewEvent, 30, 380, 260, 40)
     lblMsgError:setFontSize(14)
     lblMsgError:setHorizontalAlignment(CENTER_ALIGNMENT)
     lblMsgError:setTextColor(COLOR_RED)
 
+    -- Bouton retour arrière
     imgBack = gui:image(winNewEvent, "back.png", 20, 30, 18, 18)
     imgBack:onClick(function () switchScreen(year, month, day) end)
 
+    -- input  Nom de l'event
     local inputName = gui:input(winNewEvent, 60, 10, 250, 40)
     inputName:setTitle(titre)
     inputName:setText(event.name)
@@ -1219,117 +1118,6 @@ function displayEvent(event)
     local lblTraitDebut = gui:label(winNewEvent, 20, 101, 280, 1)
     lblTraitDebut:setBackgroundColor(COLOR_GREY)
 
-    local vListeDateDebutNewEvent = gui:vlist(winNewEvent, 20, 110, 140, 100)
-    vListeDateDebutNewEvent:setSpaceLine(0)
-    vListeDateDebutNewEvent:setAutoSelect(true)
-
-    local oldSelectionDateDebut
-    local nbJourToDisplay = 30
-
-    -- Affichage des dates
-    for i=0, 2*nbJourToDisplay do
-        local date = addDaysToDate({event.debut.year, event.debut.month, event.debut.day}, i-nbJourToDisplay)
-        local lblDateDebut = gui:label(vListeDateDebutNewEvent, 0, 0, 140, 13)
-        lblDateDebut:setFontSize(12)
-        lblDateDebut:setHorizontalAlignment(RIGHT_ALIGNMENT)
-        lblDateDebut:setText(formatDate(date, "DD dd sh").." ")
-        lblDateDebut:onClick(
-            function() 
-
-                if oldSelectionDateDebut == lblDateDebut then return end
-
-                event.debut.year = date[1]
-                event.debut.month = date[2]
-                event.debut.day = date[3]
-                lblDateHeureDebut:setText(formatDate(event.debut,"DD dd sh hh:mi"))
-
-                oldSelectionDateDebut:setBackgroundColor(COLOR_WHITE)
-                lblDateDebut:setBackgroundColor(COLOR_LIGHT_GREY)
-                oldSelectionDateDebut = lblDateDebut
-
-                lblMsgError:setText("")
-            end
-        )
-        
-        if i == nbJourToDisplay then
-            lblDateDebut:setBackgroundColor(COLOR_LIGHT_GREY)
-            vListeDateDebutNewEvent:setIndex(i)
-            oldSelectionDateDebut = lblDateDebut
-        end
-    end
-
-    local vListeHeureDebutNewEvent = gui:vlist(winNewEvent, 200, 110, 40, 100)
-    vListeHeureDebutNewEvent:setSpaceLine(0)
-    local oldLblHeureDebutNewEvent
-    -- Affichage des Heures
-    for i=0, 23 do
-
-        local lblHeureDebutNewEvent = gui:label(vListeHeureDebutNewEvent, 0, 0, 40, 13)
-        lblHeureDebutNewEvent:setFontSize(12)
-        lblHeureDebutNewEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
-        lblHeureDebutNewEvent:setText(tostring(i))
-        lblHeureDebutNewEvent:onClick(
-            function()
-
-                if lblHeureDebutNewEvent == oldLblHeureDebutNewEvent then return end
-
-                -- set de l'heure sélectionnée et affichage sur le label Debut
-                event.debut.heure = i
-                lblDateHeureDebut:setText(formatDate(event.debut,"DD dd sh hh:mi"))
-
-                lblHeureDebutNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-                oldLblHeureDebutNewEvent:setBackgroundColor(COLOR_WHITE)
-                oldLblHeureDebutNewEvent = lblHeureDebutNewEvent
-
-                lblMsgError:setText("")
-            end
-        )
-
-        if i == event.debut.heure then
-            lblHeureDebutNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-            vListeHeureDebutNewEvent:setIndex(i)
-            oldLblHeureDebutNewEvent = lblHeureDebutNewEvent
-        end
-    
-    end
-
-    local vListeMinDebutNewEvent = gui:vlist(winNewEvent, 260, 110, 40, 100)
-    vListeMinDebutNewEvent:setSpaceLine(0)
-    local oldLblMinDebutNewEvent
-
-    -- Affichage des Minutes
-    for i=0, 55, 5 do
-        local lblMinuteDebutNewEvent = gui:label(vListeMinDebutNewEvent, 0, 0, 40, 13)
-        lblMinuteDebutNewEvent:setFontSize(12)
-        lblMinuteDebutNewEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
-        lblMinuteDebutNewEvent:setText(tostring(i))
-
-        lblMinuteDebutNewEvent:onClick(
-            function()
-                -- set de la minute de début et affichage sur le label Debut
-                if lblMinuteDebutNewEvent == oldLblMinDebutNewEvent then return end
-
-                event.debut.minute = i
-                lblDateHeureDebut:setText(formatDate(event.debut,"DD dd sh hh:mi"))
-
-                lblMinuteDebutNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-                oldLblMinDebutNewEvent:setBackgroundColor(COLOR_WHITE)
-                oldLblMinDebutNewEvent = lblMinuteDebutNewEvent
-
-                lblMsgError:setText("")
-            end
-        )
-
-        if i == event.debut.minute then
-            lblMinuteDebutNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-            vListeMinDebutNewEvent:setIndex(int(i/5))
-            oldLblMinDebutNewEvent = lblMinuteDebutNewEvent
-        end
-    end
-
-    -- -----------------------------------
-    -- Gestion de la date & heure de fin
-
     local lblFin = gui:label(winNewEvent, 20, 230, 100, 20)
     lblFin:setText("Fin")
 
@@ -1340,112 +1128,147 @@ function displayEvent(event)
     local lblTraitFin = gui:label(winNewEvent, 20, 251, 280, 1)
     lblTraitFin:setBackgroundColor(COLOR_GREY)
 
+    -- Liste des dates de début
+    local vListeDateDebutNewEvent = gui:vlist(winNewEvent, 20, 110, 140, 100)
+    vListeDateDebutNewEvent:setSpaceLine(0)
+    vListeDateDebutNewEvent:setAutoSelect(true)
+    vListeDateDebutNewEvent:setSelectionFocus(SELECTION_CENTER)
+    vListeDateDebutNewEvent:setSelectionColor(COLOR_LIGHT_ORANGE)
 
+    -- Liste des dates de Fin
     local vListeDateFinNewEvent = gui:vlist(winNewEvent, 20, 260, 140, 100)
     vListeDateFinNewEvent:setSpaceLine(0)
-    local oldSelectionDateFin
+    vListeDateFinNewEvent:setAutoSelect(true)
+    vListeDateFinNewEvent:setSelectionFocus(SELECTION_CENTER)
+    vListeDateFinNewEvent:setSelectionColor(COLOR_LIGHT_ORANGE)
 
-    -- Affichage des dates
-    for i=0, 2*nbJourToDisplay do
-        local date = addDaysToDate({event.fin.year, event.fin.month, event.fin.day}, i-nbJourToDisplay)
-        local lblDateFin = gui:label(vListeDateFinNewEvent, 0, 0, 140, 13)
-        lblDateFin:setFontSize(12)
-        lblDateFin:setHorizontalAlignment(RIGHT_ALIGNMENT)
-        lblDateFin:setText(formatDate(date, "DD dd sh").." ")
-        lblDateFin:onClick(
-            function() 
-
-                if oldSelectionDateFin == lblDateFin then return end
-
-                event.fin.year = date[1]
-                event.fin.month = date[2]
-                event.fin.day = date[3]
-                lblDateHeureFin:setText(formatDate(event.fin,"DD dd sh hh:mi"))
-
-                oldSelectionDateFin:setBackgroundColor(COLOR_WHITE)
-                lblDateFin:setBackgroundColor(COLOR_LIGHT_GREY)
-                oldSelectionDateFin = lblDateFin
-
-                lblMsgError:setText("")
-            end
-        )
+    local nbJourToDisplay = 30
+    local lstDates ={}
+    
+    vListeDateDebutNewEvent:onSelect(function ()
+        local date = lstDates[vListeDateDebutNewEvent:getSelected()]
+        event.debut.year = date[1]
+        event.debut.month = date[2]
+        event.debut.day = date[3]
         
-        if i == nbJourToDisplay then
-            lblDateFin:setBackgroundColor(COLOR_LIGHT_GREY)
-            vListeDateFinNewEvent:setIndex(i)
-            oldSelectionDateFin = lblDateFin
-        end
-    end
+        lblDateHeureDebut:setText(formatDate(event.debut,"DD dd sh hh:mi"))
+        lblMsgError:setText("")
+    end)
 
-    -- Affichage des Heures
+    vListeDateFinNewEvent:onSelect(function ()
+        local date = lstDates[vListeDateFinNewEvent:getSelected()]
+        event.fin.year = date[1]
+        event.fin.month = date[2]
+        event.fin.day = date[3]
+        
+        lblDateHeureFin:setText(formatDate(event.fin,"DD dd sh hh:mi"))
+        lblMsgError:setText("")
+    end)
+
+
+    -- Affichage des dates Debut et Fin
+    for i=0, 2*nbJourToDisplay do
+        local date = addDaysToDate({event.debut.year, event.debut.month, event.debut.day}, i-nbJourToDisplay)
+        lstDates[i] = date
+        local strDate = formatDate(date, "DD dd sh").." "
+
+        local lblDateDebut = gui:label(vListeDateDebutNewEvent, 0, 0, 140, 17)
+        lblDateDebut:setFontSize(16)
+        lblDateDebut:setHorizontalAlignment(RIGHT_ALIGNMENT)
+        lblDateDebut:setText(strDate)
+
+        local lblDateFin = gui:label(vListeDateFinNewEvent, 0, 0, 140, 17)
+        lblDateFin:setFontSize(16)
+        lblDateFin:setHorizontalAlignment(RIGHT_ALIGNMENT)
+        lblDateFin:setText(strDate)
+
+    end
+    
+    -- selection de la date du jour de début
+    vListeDateDebutNewEvent:select(nbJourToDisplay)
+    vListeDateFinNewEvent:select(nbJourToDisplay)
+
+    -- Liste des heures de Début et Fin de l'event
+    local vListeHeureDebutNewEvent = gui:vlist(winNewEvent, 200, 110, 40, 100)
+    vListeHeureDebutNewEvent:setSpaceLine(0)
+    vListeHeureDebutNewEvent:setAutoSelect(true)
+    vListeHeureDebutNewEvent:setSelectionFocus(SELECTION_CENTER)
+    vListeHeureDebutNewEvent:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vListeHeureDebutNewEvent:onSelect(function ()
+        event.debut.heure = vListeHeureDebutNewEvent:getSelected()
+        lblDateHeureDebut:setText(formatDate(event.debut,"DD dd sh hh:mi"))
+        lblMsgError:setText("")
+    end
+)
     local vListeHeureFinNewEvent = gui:vlist(winNewEvent, 200, 260, 40, 100)
     vListeHeureFinNewEvent:setSpaceLine(0)
-    local oldLblHeureFinNewEvent
-
-    for i=0, 23 do
-
-        local lblHeureFintNewEvent = gui:label(vListeHeureFinNewEvent, 0, 0, 40, 13)
-        lblHeureFintNewEvent:setFontSize(12)
-        lblHeureFintNewEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
-        lblHeureFintNewEvent:setText(tostring(i))
-        lblHeureFintNewEvent:onClick(
-            function()
-                -- set de l'heure de fin
-                if lblHeureFintNewEvent == oldLblHeureFinNewEvent then return end
-
-                event.fin.heure = i
-                lblHeureFintNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-
-                oldLblHeureFinNewEvent:setBackgroundColor(COLOR_WHITE)
-                lblDateHeureFin:setText(formatDate(event.fin,"DD dd sh hh:mi"))
-                oldLblHeureFinNewEvent = lblHeureFintNewEvent
-
-                lblMsgError:setText("")
-    
-            end
-        )
-
-        if i == event.fin.heure then
-            lblHeureFintNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-            vListeHeureFinNewEvent:setIndex(i)
-            oldLblHeureFinNewEvent = lblHeureFintNewEvent
+    vListeHeureFinNewEvent:setAutoSelect(true)
+    vListeHeureFinNewEvent:setSelectionFocus(SELECTION_CENTER)
+    vListeHeureFinNewEvent:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vListeHeureFinNewEvent:onSelect(
+        function ()
+            event.fin.heure = vListeHeureFinNewEvent:getSelected()
+            lblDateHeureFin:setText(formatDate(event.fin,"DD dd sh hh:mi"))
+            lblMsgError:setText("")
         end
-    
+    )
+    -- Affichage des Heures
+    for i=0, 23 do
+        local lblHeureDebutNewEvent = gui:label(vListeHeureDebutNewEvent, 0, 0, 40, 16)
+        lblHeureDebutNewEvent:setFontSize(16)
+        lblHeureDebutNewEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
+        lblHeureDebutNewEvent:setText(tostring(i))
+
+        local lblHeureFinNewEvent = gui:label(vListeHeureFinNewEvent, 0, 0, 40, 16)
+        lblHeureFinNewEvent:setFontSize(16)
+        lblHeureFinNewEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
+        lblHeureFinNewEvent:setText(tostring(i))
     end
 
-    -- Affichage des Minutes
+    vListeHeureDebutNewEvent:select(event.debut.heure)
+    vListeHeureFinNewEvent:select(event.fin.heure)
+
+    -- gestion des heures du début de l'évent
+    local vListeMinDebutNewEvent = gui:vlist(winNewEvent, 260, 110, 40, 100)
+    vListeMinDebutNewEvent:setSpaceLine(0)
+    vListeMinDebutNewEvent:setAutoSelect(true)
+    vListeMinDebutNewEvent:setSelectionFocus(SELECTION_CENTER)
+    vListeMinDebutNewEvent:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vListeMinDebutNewEvent:onSelect(
+        function ()
+            event.debut.minute = vListeMinDebutNewEvent:getSelected()*5
+            lblDateHeureDebut:setText(formatDate(event.debut,"DD dd sh hh:mi"))
+            lblMsgError:setText("")
+        end
+    )
     local vListeMinFinNewEvent = gui:vlist(winNewEvent, 260, 260, 40, 100)
     vListeMinFinNewEvent:setSpaceLine(0)
-    local oldLblMinFinNewEvent
-
-    for i=0, 55, 5 do
-        local lblMinuteFinNewEvent = gui:label(vListeMinFinNewEvent, 0, 0, 40, 13)
-        lblMinuteFinNewEvent:setFontSize(12)
-        lblMinuteFinNewEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
-        lblMinuteFinNewEvent:setText(tostring(i))
-
-        lblMinuteFinNewEvent:onClick(
-            function()
-
-                if oldLblMinFinNewEvent == lblMinuteFinNewEvent then return end
-
-                event.fin.minute = i
-                lblDateHeureFin:setText(formatDate(event.debut,"DD dd sh hh:mi"))
-                
-                lblMinuteFinNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-                oldLblMinFinNewEvent:setBackgroundColor(COLOR_WHITE)
-                oldLblMinFinNewEvent = lblMinuteFinNewEvent
-
-                lblMsgError:setText("")
-            end
-        )
-
-        if i == event.fin.minute then
-            lblMinuteFinNewEvent:setBackgroundColor(COLOR_LIGHT_GREY)
-            vListeMinFinNewEvent:setIndex(int(i/5))
-            oldLblMinFinNewEvent = lblMinuteFinNewEvent
+    vListeMinFinNewEvent:setAutoSelect(true)
+    vListeMinFinNewEvent:setSelectionFocus(SELECTION_CENTER)
+    vListeMinFinNewEvent:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vListeMinFinNewEvent:onSelect(
+        function ()
+            event.fin.minute = vListeMinFinNewEvent:getSelected()*5
+            lblDateHeureFin:setText(formatDate(event.fin,"DD dd sh hh:mi"))
+            lblMsgError:setText("")
         end
+    )
+
+    -- Affichage des Minutes
+    for i=0, 55, 5 do
+        local lblMinuteDebutNewEvent = gui:label(vListeMinDebutNewEvent, 0, 0, 40, 13)
+        lblMinuteDebutNewEvent:setFontSize(16)
+        lblMinuteDebutNewEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
+        lblMinuteDebutNewEvent:setText(tostring(i))
+
+        local lblMinuteDebutFinEvent = gui:label(vListeMinFinNewEvent, 0, 0, 40, 13)
+        lblMinuteDebutFinEvent:setFontSize(16)
+        lblMinuteDebutFinEvent:setHorizontalAlignment(CENTER_ALIGNMENT)
+        lblMinuteDebutFinEvent:setText(tostring(i))
     end
+
+    vListeMinDebutNewEvent:select(int(event.debut.minute / 5))
+    vListeMinFinNewEvent:select(int(event.fin.minute / 5))
 
     if not isNew then
         local btnSupprimer = gui:label(winNewEvent, 60, 425, 200, 22)
@@ -1455,13 +1278,12 @@ function displayEvent(event)
         btnSupprimer:setHorizontalAlignment(CENTER_ALIGNMENT)
         btnSupprimer:setVerticalAlignment (CENTER_ALIGNMENT)
         btnSupprimer:setText("Supprimer")
-        btnSupprimer:onClick(function () 
-            local oldEvent = deleteEvent(event.UID, event.debut.year, event.debut.month, event.debut.day)
-            
-            -- sauvegarde les modifs en fichier
-            saveDataFile(oldEvent.debut.year, oldEvent.debut.month)
-            switchScreen(oldEvent.debut.year, oldEvent.debut.month, oldEvent.debut.day)
-        end
+        btnSupprimer:onClick(
+            function () 
+                local oldEvent = deleteEvent(event.UID, event.debut.year, event.debut.month, event.debut.day)
+                saveDataFile(oldEvent.debut.year, oldEvent.debut.month)
+                switchScreen(oldEvent.debut.year, oldEvent.debut.month, oldEvent.debut.day)
+            end
         )
     end
 
@@ -1487,6 +1309,7 @@ function displayEvent(event)
 
         end
     )
+
 end --newEvent
 
 
@@ -1651,5 +1474,3 @@ function formatDate (date, pattern)
         return result
     
 end --formatDate
-
-
