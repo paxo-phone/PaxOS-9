@@ -55,6 +55,15 @@ namespace gui::elements
         
     }
 
+    void VerticalList::setIsSelected(bool selected) {
+        isSelected = selected;
+    }
+
+    bool VerticalList::getIsSelected() {
+        return isSelected;
+    }
+
+
     void VerticalList::select(int index)
     {
         if(index >= 0 && index < m_children.size())
@@ -68,7 +77,8 @@ namespace gui::elements
             if (selection != nullptr)
                 selection->setBackgroundColor(m_selectionColor);
 
-            m_oldFocusedIndex = index;
+            m_oldFocusedIndex = m_focusedIndex;
+            setIsSelected(true);
 
             updateFocusedIndex();
         }

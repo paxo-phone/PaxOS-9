@@ -1113,7 +1113,7 @@ namespace GSM
 
     int getNetworkStatus()
     {
-        std::cout << "networkQuality: " << networkQuality << std::endl;
+        // std::cout << "networkQuality: " << networkQuality << std::endl;
         return networkQuality;
     }
 
@@ -1124,7 +1124,7 @@ namespace GSM
         {
             networkQuality = atoi(o.substr(o.find("+CSQ: ") + 5, o.find(",") - o.find("+CSQ: ") - 5).c_str());
         }
-        std::cout << "networkQuality: " << networkQuality << std::endl;
+        //std::cout << "networkQuality: " << networkQuality << std::endl;
     }
 
     void getNetworkQuality()

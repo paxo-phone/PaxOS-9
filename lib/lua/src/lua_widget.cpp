@@ -162,3 +162,11 @@ void LuaWidget::update()
         children[i]->update();
     }
 }
+
+
+    void LuaWidget::addChild(LuaWidget* child)
+    {
+        this->children.push_back(child); 
+        child->parent = this;
+        this->widget->addChild(child->widget);
+    }

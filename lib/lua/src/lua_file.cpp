@@ -531,6 +531,7 @@ void LuaFile::load()
             "select", &LuaVerticalList::select,
             "setSelectionColor", &LuaVerticalList::setSelectionColor,
             "setAutoSelect", &LuaVerticalList::setAutoSelect,
+            "onSelect", &LuaVerticalList::onSelect,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",

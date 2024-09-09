@@ -1,4 +1,5 @@
-
+require "gestionDate.lua"
+require "gestionDebug.lua"
 
 local boxImgDay, boxImgWeek, boxImgMonth, boxImgParametre, boxImgAdd
 local menu
@@ -9,9 +10,6 @@ local winDay, winNewEvent
 -- variable newEvent
 local vListeDateNewEvent
 local selectedDateHeure = {}
-
-local monthsName = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Decembre"}
-local monthsShortName = {"Jan", "Fev", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Dec"}
 
 local daysOfWeek = { "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche" }
 local daysOfWeekShort = { "lun", "mar", "mer", "jeu", "ven", "sam", "dim" }
@@ -171,49 +169,35 @@ function displayConfig()
 
     local vLstHeureDebut = gui:vlist(winConfig, 20, 305, 150, 100)
     vLstHeureDebut:setSpaceLine(0)
+    vLstHeureDebut:setSelectionFocus(SELECTION_CENTER)
+    vLstHeureDebut:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vLstHeureDebut:setAutoSelect(true)
+
+    vLstHeureDebut:onSelect(function() print("onSelect OK") end)
+
+
     local vLstHeureFin = gui:vlist(winConfig, 160, 305, 150, 100)
     vLstHeureFin:setSpaceLine(0)
-
-    local heureDebut, heureFin
-    local oldHeureDebut, oldHeureFin
-
+    vLstHeureFin:setSelectionFocus(SELECTION_CENTER)
+    vLstHeureFin:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vLstHeureFin:setAutoSelect(true)
 
     for i=0,23 do
-        local lblHeureDebut = gui:label(vLstHeureDebut, 50, 0, 40, 18)
-        local lblHeureFin = gui:label(vLstHeureFin, 30, 0, 40, 18)
-        lblHeureDebut:setText(tostring(i)..":00")
-        lblHeureFin:setText(tostring(i)..":00")
-        lblHeureDebut:setHorizontalAlignment(RIGHT_ALIGNMENT)
-        lblHeureFin:setHorizontalAlignment(RIGHT_ALIGNMENT)
+        local lblHeureDebut = gui:label(vLstHeureDebut, 30, 0, 80, 18)
+        local lblHeureFin = gui:label(vLstHeureFin, 30, 0, 80, 18)
 
-        lblHeureDebut:onClick(function () 
-            oldHeureDebut:setBackgroundColor(COLOR_WHITE)
-            lblHeureDebut:setBackgroundColor(COLOR_LIGHT_GREY)
-            oldHeureDebut = lblHeureDebut
-            heureDebut = i
-        end)
-
-        lblHeureFin:onClick(function () 
-            oldHeureFin:setBackgroundColor(COLOR_WHITE)
-            lblHeureFin:setBackgroundColor(COLOR_LIGHT_GREY)
-            oldHeureFin = lblHeureFin
-            heureFin = i
-        end)
-
-    -- sélection initiale des listes
-        if config.day.heureDebut == i then
-            lblHeureDebut:setBackgroundColor(COLOR_LIGHT_GREY)
-            oldHeureDebut = lblHeureDebut
-            heureDebut = i
-            vLstHeureDebut:setIndex(i)
+        if i<10 then
+            lblHeureDebut:setText("  "..tostring(i)..":00")
+            lblHeureFin:setText("  "..tostring(i)..":00")
+        else
+            lblHeureDebut:setText(tostring(i)..":00")
+            lblHeureFin:setText(tostring(i)..":00")
         end
-        if config.day.heureFin == i then
-            lblHeureFin:setBackgroundColor(COLOR_LIGHT_GREY)
-            oldHeureFin = lblHeureFin
-            heureFin = i
-            vLstHeureFin:setIndex(i)
-        end
+        lblHeureDebut:setHorizontalAlignment(CENTER_ALIGNMENT)
+        lblHeureFin:setHorizontalAlignment(CENTER_ALIGNMENT)
     end
+    vLstHeureDebut:select(config.day.heureDebut)
+    vLstHeureFin:select(config.day.heureFin)
 
     -- selection initiale des boutons radio
     if config.defaultView =="day" then
@@ -231,6 +215,7 @@ function displayConfig()
     btnEnregistrer:setHorizontalAlignment(CENTER_ALIGNMENT)
     btnEnregistrer:setVerticalAlignment (CENTER_ALIGNMENT)
     btnEnregistrer:setText("Enregistrer")
+
     btnEnregistrer:onClick(function()
 
         config.displayWeekNum = chkWeekNum:getState()
@@ -243,9 +228,9 @@ function displayConfig()
         else
             config.defaultView = "month"
         end
-        config.day={}
-        config.day.heureFin = heureFin
-        config.day.heureDebut = heureDebut
+        --config.day={}
+        config.day.heureFin = vLstHeureFin:getSelected()
+        config.day.heureDebut = vLstHeureDebut:getSelected()
         
         -- sauvegarde de la config en fichier
         saveConfig()
@@ -327,9 +312,9 @@ function displayWeek(year, month, day)
 
     local strTitre = "Semaine "..tostring(numWeek).."  du "..tostring(dateDebutSemaine[3])
     if dateDebutSemaine[2] ~= dateFinSemaine[2] then
-        strTitre = strTitre .. " "..monthsShortName[dateDebutSemaine[2]]
+        strTitre = strTitre .. " "..getMonthShortName(dateDebutSemaine[2])
     end
-    strTitre = strTitre .." au "..tostring(dateFinSemaine[3]).." "..monthsShortName[dateFinSemaine[2]]
+    strTitre = strTitre .." au "..tostring(dateFinSemaine[3]).." "..getMonthShortName(dateFinSemaine[2])
     
     lblWeek:setText(strTitre)
 
@@ -404,7 +389,7 @@ function displayWeek(year, month, day)
         headerJour:setFontSize(12)
         headerJour:setBackgroundColor(colorHeader)
         headerJour:setHorizontalAlignment(CENTER_ALIGNMENT)
-        headerJour:setText(daysOfWeekShort[j])
+        headerJour:setText(getDayOfWeekShortName(j))
 
         local headerJourNum = gui:label(lblHeader, 0, 12, widthBoxJour, 18)
         headerJourNum:setFontSize(18)
@@ -493,7 +478,7 @@ function displayWeek(year, month, day)
                         lblEvent:onClick(
                             function()
                                 local ev = getEventByID(ev.UID, dateCellule[1], dateCellule[2], dateCellule[3])
-                                if not ev then ev = createEventObject (dateCellule[1], dateCellule[2], dateCellule[3]) end
+                                if not ev then ev = createEventObject (nil, dateCellule[1], dateCellule[2], dateCellule[3]) end
                                 displayEvent(ev)
                             end                        
                         )
@@ -607,7 +592,7 @@ function displayMonth (year, month)
         lblHearder:setBackgroundColor(COLOR_LIGHT_GREY)
         lblHearder:setHorizontalAlignment(CENTER_ALIGNMENT)
         lblHearder:setVerticalAlignment(CENTER_ALIGNMENT)
-        lblHearder:setText(daysOfWeekShort[i])
+        lblHearder:setText(getDayOfWeekShortName(i))
     end
 
     local weekNum = getWeekNum(year, month, 1)
@@ -783,6 +768,14 @@ function saveDataFile(year, month)
 
     if data[year] then
         if data[year][month] then
+            local filename = PATH_DATA.."/"..tostring(year)..tostring(month)..".dat"
+            debugPrint(data[year][month])
+            saveTable(filename, data[year][month])
+        end
+    end
+
+--[[    if data[year] then
+        if data[year][month] then
             local strData = serialize (data[year][month])
             local filename = PATH_DATA.."/"..tostring(year)..tostring(month)..".dat"
             fileData = storage:file (filename, WRITE)
@@ -796,7 +789,7 @@ function saveDataFile(year, month)
     end
 
     print("saveDataFile - aucune donnée à sauvegarder pour le mois "..tostring(month).." de "..tostring(year))
-
+]]--
 
 end
 
@@ -821,7 +814,7 @@ function loadDataMonth(year, month, noLoadingAdjacent)
 
     -- check if a data file exists
     if storage:isFile(filename) then
-
+--[[
         -- lecture du fichier
         fileData = storage:file (filename, READ)
         fileData:open()
@@ -837,9 +830,23 @@ function loadDataMonth(year, month, noLoadingAdjacent)
         -- ajout du json dans la structure data
         if not data[year] then data[year] = {} end
         if not data[year][month] then data[year][month] = {} end
+]]--
+    
+    -- data[year][month]=dataLoad[1]
+    -- **********************
 
-        data[year][month]=dataLoad[1]
-        --debugPrint(data)
+    -- dataLoad = {}
+    local dataLoad = loadTable(filename)
+
+    if not data[year] then data[year] = {} end 
+    if not data[year][month] then data[year][month] = {} end 
+    
+    --debugPrint(dataLoad)
+    --print(#dataLoad)
+    data[year][month]=dataLoad
+
+        -- data[year][month]=dataLoad[1]
+    --debugPrint(data)
         
         if (not noLoadingAdjacent) then
             -- chargement des données du mois précédent
@@ -915,7 +922,7 @@ function deleteEvent(UID, year, month, day)
 end
 
 -- Créer un nouvel événement 
-function createEventObject(name, description, yearDebut, monthDebut, dayDebut, heureDebut, minuteDebut, yearFin, monthFin, dayFin, heureFin, minuteFin)
+function createEventObject(name, yearDebut, monthDebut, dayDebut, heureDebut, minuteDebut, yearFin, monthFin, dayFin, heureFin, minuteFin)
 
     event = {}
     event.debut = {}
@@ -933,7 +940,7 @@ function createEventObject(name, description, yearDebut, monthDebut, dayDebut, h
     -- TODO: gestion de la cohérence des dates & heures entre début et fin
 
     if not name then event.name = "" else event.name = name end
-    if not description then event.description = "" else event.description = description end
+--    if not description then event.description = "" else event.description = description end
 
     if not yearDebut then event.debut.year = year else event.debut.year = yearDebut end
     if not monthDebut then event.debut.month = month else event.debut.month = monthDebut end
@@ -1080,7 +1087,7 @@ function displayDay(year, month, day)
                     lblEvent:onClick(
                         function()
                             local ev = getEventByID(ev.UID, year, month, day)
-                            if not ev then ev = createEventObject (year, month, day) end
+                            if not ev then ev = createEventObject (nil, year, month, day) end
                             displayEvent(ev)
                         end                        
                     )
@@ -1125,7 +1132,7 @@ function displayDay(year, month, day)
         local lblDayOfWeek = gui:label(boxDayWeek, 2, 2, widthBoxDay-4, 12, COLOR_WHITE)
         lblDayOfWeek:setFontSize(9)
         lblDayOfWeek:setHorizontalAlignment(CENTER_ALIGNMENT)
-        lblDayOfWeek:setText(daysOfWeek[i])
+        lblDayOfWeek:setText(getDayOfWeekName(i))
 
         local lblDay = gui:label(boxDayWeek, 4, 11, widthBoxDay-8, 20, COLOR_WHITE)
         lblDay:setHorizontalAlignment(CENTER_ALIGNMENT)
@@ -1214,6 +1221,7 @@ function displayEvent(event)
 
     local vListeDateDebutNewEvent = gui:vlist(winNewEvent, 20, 110, 140, 100)
     vListeDateDebutNewEvent:setSpaceLine(0)
+    vListeDateDebutNewEvent:setAutoSelect(true)
 
     local oldSelectionDateDebut
     local nbJourToDisplay = 30
@@ -1451,7 +1459,7 @@ function displayEvent(event)
             local oldEvent = deleteEvent(event.UID, event.debut.year, event.debut.month, event.debut.day)
             
             -- sauvegarde les modifs en fichier
-            saveDataFile(oldEvent.debut.year, oldEvent.debut.month, oldEvent.debut.day)
+            saveDataFile(oldEvent.debut.year, oldEvent.debut.month)
             switchScreen(oldEvent.debut.year, oldEvent.debut.month, oldEvent.debut.day)
         end
         )
@@ -1534,7 +1542,7 @@ function displayTopBarre()
     local imgAdd = gui:image(boxImgAdd, "plus.png", 6, 6, 12, 12, COLOR_DARK)
     boxImgAdd:onClick(
         function()
-            local event = createEventObject(nil, nil, today[1], today[2], today[3])
+            local event = createEventObject(nil, today[1], today[2], today[3])
             displayEvent(event) 
         end
     )
@@ -1559,62 +1567,6 @@ end
 
 
 
--- ------------------
--- FONCTION DE DEBUG
--- ------------------
-
-
-function debugPrint(t, indent)
-
-
-    local debugType = true
-
-    if not indent then print("[DEBUG] "..getVariableName(t))end
-    indent = indent or 0
-    local spacing = string.rep("  ", indent)
-
-    if type(t) == "table" then
-        for k, v in pairs(t) do
-            if type(v) == "table" then
-                if debugType then
-                    print(spacing .."("..type(k)..") "..tostring(k) .. ":")
-                else
-                    print(spacing ..tostring(k))
-                end
-                debugPrint(v, indent + 1)
-            else
-                if debugType then
-                    print(spacing .."("..type(k)..") "..tostring(k) .. ": " .. tostring(v) .." ("..type(v)..")")
-                else
-                    print(spacing ..tostring(k) .. ": " .. tostring(v))
-                end
-            end
-        end
-    else
-        if debugType then
-            print(spacing .. "("..type(t)..") "..tostring(t))
-        else
-            print(spacing ..tostring(t))            
-        end
-    end
-end
-
-
-function getVariableName(var)
-    local name
---    for k, v in pairs(_G) do
-    for k, v in pairs(_G) do
-            if v == var then
-            name = k
-            break
-        end
-    end
-    if name then
-        return name
-    else
-        return "Variable not found"
-    end
-end
 
 
 
@@ -1684,9 +1636,9 @@ function formatDate (date, pattern)
     local day = string.format("%02d", m_day)
     local heure = string.format("%02d", m_heure)
     local minute = string.format("%02d", m_minute)
-    local dayOfWeek = daysOfWeek[getDayOfWeek(m_year, m_month, m_day)]        
-    local monthName = monthsName[m_month]
-    local monthShortName = monthsShortName[m_month]
+    local dayOfWeek = getDayOfWeekName(getDayOfWeek(m_year, m_month, m_day))      --  PYM
+    local monthName = getMonthName(m_month)
+    local monthShortName = getMonthShortName(m_month)
     
         local result = pattern:gsub("yyyy", year)
                       :gsub("mm", month)
@@ -1700,308 +1652,4 @@ function formatDate (date, pattern)
     
 end --formatDate
 
--- Retourne le numero de la semaine d'une date donnée
-function getWeekNum(year, month, day)
-    local daysInMonth = {31, isLeapYear(year) and 29 or 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-    local totalDays = 0
 
-    for m = 1, month - 1 do
-        totalDays = totalDays + daysInMonth[m]
-    end
-
-    totalDays = totalDays + day
-
-    return int((totalDays - 1) / 7) + 1
-end
-
--- Add days "dayToAdd" to the "originalDate" 
--- return new date to and array year, month, day
-function addDaysToDate(originalDate, daysToAdd)
-
-    local year = originalDate[1]
-    local month = originalDate[2]
-    local day = originalDate[3]
-
-    -- Ensure input date is valid
-    if year < 1 or month < 1 or month > 12 or day < 1 or day > getDaysInMonth(year, month) then
-        return nil, "Invalid input date"
-    end
-
-    local newYear, newMonth, newDay = year, month, day
-
-    while daysToAdd ~= 0 do
-        if daysToAdd > 0 then
-            -- Adding days
-            local daysInCurrentMonth = getDaysInMonth(newYear, newMonth)
-            if newDay + daysToAdd <= daysInCurrentMonth then
-                newDay = newDay + daysToAdd
-                break
-            else
-                daysToAdd = daysToAdd - (daysInCurrentMonth - newDay + 1)
-                newDay = 1
-                newMonth = newMonth + 1
-                if newMonth > 12 then
-                    newMonth = 1
-                    newYear = newYear + 1
-                end
-            end
-        else
-            -- Subtracting days
-            if newDay + daysToAdd >= 1 then
-                newDay = newDay + daysToAdd
-                break
-            else
-                daysToAdd = daysToAdd + newDay
-                newMonth = newMonth - 1
-                if newMonth < 1 then
-                    newMonth = 12
-                    newYear = newYear - 1
-                end
-                newDay = getDaysInMonth(newYear, newMonth)
-            end
-        end
-    end
-
-    return {newYear, newMonth, newDay}
-end -- addDaysToDate
-
-
--- return an array with the current year, month and day
-function getToday()
-
-    local today = time:get("y,mo,d")
-    return {today[1], today[2], today[3]}
-
-end
-
--- récupère le jour de la semaine en fonction de la date
--- format européen : le 1er jours est le lundi
-function getDayOfWeek(yy, mm, dd) 
-    local mmx = mm
-  
-    if (mm == 1) then  mmx = 13; yy = yy-1  end
-    if (mm == 2) then  mmx = 14; yy = yy-1  end
-  
-    local val8 = dd -1 + (mmx*2) +  math.floor(((mmx+1)*3)/5)   + yy + math.floor(yy/4)  - math.floor(yy/100)  + math.floor(yy/400) + 2
-    local val9 = math.floor(val8/7)
-    local dw = val8-(val9*7)
-  
-    if (dw == 0) then
-      dw = 7
-    end
-    
-    return dw
-end
-
-
-  -- Détermine si year est une année bixestile ou non
-function isLeapYear(year)
-    return year % 4 == 0 and (year % 100 ~= 0 or year % 400 == 0)
-end
-
-
--- renvoi le nombre de jours d'un mois et année donnée
-function getDaysInMonth(year, month)
-    local days_in_month = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }   
-    local d = days_in_month[month]
-    
-    if month == 2 and isLeapYear(year) then d=29 end
-    return d  
-end
-
-
-
-
--- -------------------------------------
---    LUA SERIALIZER
---      From Rochet2 <https://github.com/Rochet2
---      https://github.com/Rochet2/LuaSerializer/blob/master/LuaSerializer.lua
--- -------------------------------------
-
--- LuaSerializer main table
--- LuaSerializer = {}
-
--- ID characters for the serialization
-local LuaSerializer_True            = 'T'
-local LuaSerializer_False           = 'F'
-local LuaSerializer_Nil             = 'N'
-local LuaSerializer_Table           = 't'
-local LuaSerializer_String          = 's'
-local LuaSerializer_Number          = 'n'
-local LuaSerializer_pInf            = 'i'
-local LuaSerializer_nInf            = 'I'
-local LuaSerializer_nNan            = 'a'
-local LuaSerializer_pNan            = 'A'
-local LuaSerializer_CodeChar        = '&' -- some really rare character in serialized data
-local LuaSerializer_CodeEscaper     = LuaSerializer_CodeChar..'~'
-local LuaSerializer_TableSep        = LuaSerializer_CodeChar..'D'
-local LuaSerializer_EndData         = LuaSerializer_CodeChar..'E'
-
-local assert = assert
-local type = type
-local tonumber = tonumber
-local pairs = pairs
-local sub = string.sub
-local gsub = string.gsub
-local gmatch = string.gmatch
-local find = string.find
-local len = string.len
-local tconcat = table.concat
--- Some lua compatibility between 5.1 and 5.2
-local unpack = unpack or table.unpack
-
--- This is not required for serializing, but it will help you keep your data smaller
---local TLibCompress = TLibCompress or require("LibCompress")
-
-local LuaSerializer_ToMsgVal
-local LuaSerializer_ToRealVal
-
--- Functions for handling converting table to string and from string
--- local s = LuaSerializer_Table_tostring(t), local t = LuaSerializer_Table_fromstring(s)
--- Does not support circular table relation which will cause stack overflow
-local function LuaSerializer_Table_tostring( tbl )
-    -- assert(type(tbl) == "table", "#1 table expected")
-    local result = {}
-    for k, v in pairs( tbl ) do
-        result[#result+1] = LuaSerializer_ToMsgVal( k )
-        result[#result+1] = LuaSerializer_ToMsgVal( v )
-    end
-    return tconcat( result, LuaSerializer_TableSep )..LuaSerializer_TableSep
-end
-local function LuaSerializer_Table_fromstring( str )
-    -- assert(type(str) == "string", "#1 string expected")
-    local res = {}
-    for k, v in gmatch(str, "(.-)"..LuaSerializer_TableSep.."(.-)"..LuaSerializer_TableSep) do
-        local _k, _v = LuaSerializer_ToRealVal(k), LuaSerializer_ToRealVal(v)
-        if _k ~= nil then
-            res[_k] = _v
-        end
-    end
-    return res
-end
-
--- Escapes special characters
-local function LuaSerializer_Encode(str)
-    assert(type(str) == "string", "#1 string expected")
-    return (gsub(str, LuaSerializer_CodeChar, LuaSerializer_CodeEscaper))
-end
--- Unescapes special characters
-local function LuaSerializer_Decode(str)
-    assert(type(str) == "string", "#1 string expected")
-    return (gsub(str, LuaSerializer_CodeEscaper, LuaSerializer_CodeChar))
-end
-
--- Converts a value to string using special characters to represent the value
-function LuaSerializer_ToMsgVal(val)
-    local ret
-    local Type = type(val)
-    if Type == "string" then
-        return LuaSerializer_String..val
-    elseif Type == "number" then
-        if val == math.huge then      -- test for +inf
-            ret = LuaSerializer_pInf
-        elseif val == -math.huge then -- test for -inf
-            ret = LuaSerializer_nInf
-        elseif val ~= val then        -- test for nan and -nan
-            if find(''..val, '-', 1, true) == 1 then
-                ret = LuaSerializer_nNan
-            end
-            ret = LuaSerializer_pNan
-        end
-        ret = LuaSerializer_Number..val
-    elseif Type == "boolean" then
-        if val then
-            ret = LuaSerializer_True
-        else
-            ret = LuaSerializer_False
-        end
-    elseif Type == "nil" then
-        ret = LuaSerializer_Nil
-    elseif Type == "table" then
-        ret = LuaSerializer_Table..LuaSerializer_Table_tostring(val)
-    end
-    if not ret then
-        error("#1 Invalid value type ".. Type)
-    end
-    return LuaSerializer_Encode(ret)
-end
-
--- Converts a string value from a message to the actual value it represents
-function LuaSerializer_ToRealVal(val)
-    local decoded = LuaSerializer_Decode(val)
-    local Type = sub(decoded,1,1)
-    if Type == LuaSerializer_Nil then
-        return nil
-    elseif Type == LuaSerializer_True then
-        return true
-    elseif Type == LuaSerializer_False then
-        return false
-    elseif Type == LuaSerializer_String then
-        return sub(decoded, 2)
-    elseif Type == LuaSerializer_Number then
-        return tonumber(sub(decoded, 2))
-    elseif Type == LuaSerializer_pInf then
-        return math.huge
-    elseif Type == LuaSerializer_nInf then
-        return -math.huge
-    elseif Type == LuaSerializer_pNan then
-        return -(0/0)
-    elseif Type == LuaSerializer_nNan then
-        return 0/0
-    elseif Type == LuaSerializer_Table then
-        return LuaSerializer_Table_fromstring(sub(decoded, 2))
-    end
-    return nil
-end
-
--- Takes in values and returns a string with them serialized
--- Does not compress the result
--- function LuaSerializer.serialize_nocompress(...)
-    function serialize(...)
-        -- convert values into string form
-    local n = select('#', ...)
-    local serializeddata = {...}
-    for i = 1, n do
-        serializeddata[i] = LuaSerializer_ToMsgVal(serializeddata[i])
-    end
-    serializeddata = tconcat(serializeddata, LuaSerializer_EndData)..LuaSerializer_EndData
-
-    return serializeddata
-end
-
---local LuaSerializer_serialize_nocompress = LuaSerializer.serialize_nocompress
-
--- Takes in a string of serialized data and returns a table with the values in it and the amount of values
--- The data must have been serialized with LuaSerializer.serialize_nocompress
-
---function LuaSerializer.unserialize_nocompress(serializeddata)
-function unserialize(serializeddata)
-        assert(type(serializeddata) == 'string', "#1 string expected")
-
-    -- parse all data and convert it to real values
-    local res = {}
-    local i = 1
-    for data in gmatch(serializeddata, "(.-)"..LuaSerializer_EndData) do
-        -- tinsert is not used here since it ignores nil values
-        res[i] = LuaSerializer_ToRealVal(data)
-        i = i+1
-    end
-
-    return res, i-1
-end
---local LuaSerializer_unserialize_nocompress = LuaSerializer.unserialize_nocompress
-
--- Takes in values and returns a string with them serialized
--- Uses LZW compression, use LuaSerializer.serialize_nocompress if you dont want this
---function LuaSerializer.serialize(...)
-    -- Serialize and compress data
---    return (assert(TLibCompress.CompressLZW(LuaSerializer_serialize_nocompress(...))))
---end
-
--- Takes in a string of serialized data and returns a table with the values in it and the amount of values
--- The data must have been serialized with LuaSerializer.serialize
---function LuaSerializer.unserialize(serializeddata)
---    assert(type(serializeddata) == 'string', "#1 string expected")
---    -- uncompress and unserialize data
---    return LuaSerializer_unserialize_nocompress(assert(TLibCompress.DecompressLZW(serializeddata)))
---end

@@ -34,6 +34,10 @@ namespace gui::elements
         void select(int index);
         void setSelectionColor(color_t color);
         void setAutoSelect(bool autoSelect);
+        void setIsSelected(bool autoSelect);
+        bool getIsSelected();
+
+        //virtual void onSelect() {}
 
 
     private:
@@ -44,6 +48,7 @@ namespace gui::elements
         SelectionFocus m_selectionFocus = SelectionFocus::UP;
         color_t m_selectionColor;
         bool m_autoSelect;
+        bool isSelected = false;
 
     };
 

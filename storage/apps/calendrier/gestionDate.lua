@@ -1,15 +1,51 @@
+local monthsName = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Decembre"}
+local monthsShortName = {"Jan", "Fev", "Mars", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Dec"}
 
+local daysOfWeek = { "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche" }
+local daysOfWeekShort = { "lun", "mar", "mer", "jeu", "ven", "sam", "dim" }
+
+
+function getDayOfWeekName (m_day)
+    return daysOfWeek[m_day]
+end
+
+function getDayOfWeekShortName (m_day)
+    return daysOfWeekShort[m_day]
+end
+
+function getMonthName(m_month)
+    return monthsName[m_month]
+end
+
+
+function getMonthShortName(m_month)
+    return monthsShortName[m_month]
+end
+
+-- Retourne le numero de la semaine d'une date donnée
+function getWeekNum(year, month, day)
+    local daysInMonth = {31, isLeapYear(year) and 29 or 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+    local totalDays = 0
+
+    for m = 1, month - 1 do
+        totalDays = totalDays + daysInMonth[m]
+    end
+
+    totalDays = totalDays + day
+
+    return int((totalDays - 1) / 7) + 1
+end
 
 -- Add days "dayToAdd" to the "originalDate" 
 -- return new date to and array year, month, day
 function addDaysToDate(originalDate, daysToAdd)
 
-    year = originalDate[1]
-    month = originalDate[2]
-    day = originalDate[3]
+    local year = originalDate[1]
+    local month = originalDate[2]
+    local day = originalDate[3]
 
     -- Ensure input date is valid
-    if year < 1 or month < 1 or month > 12 or day < 1 or day > getDaysInMonth(month, year) then
+    if year < 1 or month < 1 or month > 12 or day < 1 or day > getDaysInMonth(year, month) then
         return nil, "Invalid input date"
     end
 
@@ -18,7 +54,7 @@ function addDaysToDate(originalDate, daysToAdd)
     while daysToAdd ~= 0 do
         if daysToAdd > 0 then
             -- Adding days
-            local daysInCurrentMonth = getDaysInMonth(newMonth, newYear)
+            local daysInCurrentMonth = getDaysInMonth(newYear, newMonth)
             if newDay + daysToAdd <= daysInCurrentMonth then
                 newDay = newDay + daysToAdd
                 break
@@ -43,13 +79,13 @@ function addDaysToDate(originalDate, daysToAdd)
                     newMonth = 12
                     newYear = newYear - 1
                 end
-                newDay = getDaysInMonth(newMonth, newYear)
+                newDay = getDaysInMonth(newYear, newMonth)
             end
         end
     end
 
     return {newYear, newMonth, newDay}
-end
+end -- addDaysToDate
 
 
 -- return an array with the current year, month and day
@@ -87,31 +123,10 @@ end
 
 
 -- renvoi le nombre de jours d'un mois et année donnée
-function getDaysInMonth(month, year)
+function getDaysInMonth(year, month)
     local days_in_month = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }   
     local d = days_in_month[month]
-     
-    -- check for leap year
-    if (month == 2) then
-        if (math.mod(year,4) == 0) then
-            if (math.mod(year,100) == 0)then                
-                if (math.mod(year,400) == 0) then                    
-                    d = 29
-                end
-            else                
-                d = 29
-            end
-        end
-    end
-  
+    
+    if month == 2 and isLeapYear(year) then d=29 end
     return d  
-end
-
-
--- Renvoi la date au format 
-function formatLongDate(year, month, day)
-
-    numDay = getDayOfWeek(year, month, day)
-    str = daysOfWeek[numDay].." "..tostring(day).." "..monthsName[month]
-    return str
 end
