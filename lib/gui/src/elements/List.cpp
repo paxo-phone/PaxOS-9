@@ -61,10 +61,12 @@ namespace gui::elements
         {
             m_focusedIndex = index;
             ElementBase *oldSelection = this->getElementAt(m_oldFocusedIndex);
-            oldSelection->setBackgroundColor(m_backgroundColor);
+            if (oldSelection != nullptr)
+                oldSelection->setBackgroundColor(m_backgroundColor);
 
             ElementBase *selection = this->getElementAt(index);
-            selection->setBackgroundColor(m_selectionColor);
+            if (selection != nullptr)
+                selection->setBackgroundColor(m_selectionColor);
 
             m_oldFocusedIndex = index;
 
