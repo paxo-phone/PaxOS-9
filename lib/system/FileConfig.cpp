@@ -51,6 +51,23 @@ namespace libsystem {
         closeFileStream();
     }
 
+    bool FileConfig::has(const std::string &key) const {
+        std::vector<std::string> keySplit = getSplicedNamespacedKey(key);
+
+        std::shared_ptr<NamespaceNode> namespaceNode = m_mainNode;
+        while (keySplit.size() > 1) {
+            if (const std::string namespaceName = keySplit.front(); namespaceNode->hasNamespace(namespaceName)) {
+                namespaceNode = namespaceNode->getNamespace(namespaceName);
+            } else {
+                return false;
+            }
+
+            keySplit.erase(keySplit.begin());
+        }
+
+        return namespaceNode->hasValue(keySplit[0]);
+    }
+
     FileConfig::file_config_types_t FileConfig::getRaw(const std::string &key) const {
         const std::shared_ptr<NamespaceNode> namespaceNode = getNamespaceNodeFromNamespaceKey(key);
 
@@ -65,12 +82,18 @@ namespace libsystem {
     void FileConfig::setRaw(const std::string &key, const file_config_types_t& value) const {
         const std::shared_ptr<NamespaceNode> namespaceNode = getNamespaceNodeFromNamespaceKey(key, true);
 
-        // Get only the last part of the key
-        const std::string keySuffix = key.substr(key.find_last_of('.') + 1);
+        // keySuffix: Get only the last part of the key
+        if (const std::string keySuffix = key.substr(key.find_last_of('.') + 1); namespaceNode->hasValue(keySuffix)) {
+            // Update value
+            const std::shared_ptr<ValueNode> valueNode = namespaceNode->getValue(keySuffix);
 
-        const auto valueNode = std::make_shared<ValueNode>(keySuffix, value);
+            valueNode->setValue(value);
+        } else {
+            // Create value
+            const auto valueNode = std::make_shared<ValueNode>(keySuffix, value);
 
-        namespaceNode->addValueNode(valueNode);
+            namespaceNode->addValueNode(valueNode);
+        }
     }
 
     std::string FileConfig::toString() const {
@@ -295,6 +318,10 @@ namespace libsystem {
 
     FileConfig::file_config_types_t FileConfig::ValueNode::getValue() {
         return m_value;
+    }
+
+    void FileConfig::ValueNode::setValue(const file_config_types_t &value) {
+        m_value = value;
     }
 
     std::string FileConfig::ValueNode::getPath() {

@@ -41,6 +41,8 @@ namespace libsystem {
          */
         void write();
 
+        [[nodiscard]] bool has(const std::string &key) const;
+
         // Can't implement in .cpp
         /**
          * Get a value from the configuration.
@@ -114,7 +116,9 @@ namespace libsystem {
 
             std::string getKey();
             Type getType() const;
+
             file_config_types_t getValue();
+            void setValue(const file_config_types_t &value);
 
             std::string getPath() override;
 
