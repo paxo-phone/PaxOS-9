@@ -9,6 +9,42 @@
 #include <delay.hpp>
 using json = nlohmann::json;
 
+// General use
+#define PATH_DOES_NOT_EXIST(PATH) "Path " + std::string(PATH) + " does not exist."
+#define PATH_ALREADY_EXISTS(PATH) "Path " + std::string(PATH) + " already exists."
+#define DIRECTORY_DOES_NOT_EXIST(PATH) "Directory " + std::string(PATH) + " does not exist."
+#define DIRECTORY_ALREADY_EXISTS(PATH) "Directory " + std::string(PATH) + " already exists."
+#define FILE_DOES_NOT_EXIST(PATH) "File " + std::string(PATH) + " already exists."
+#define FILE_ALREADY_EXISTS(PATH) "File " + std::string(PATH) + " already exists."
+
+#define COMMAND_NOT_IMPLEMENTED(NAME) "Command " + std::string(NAME) + " is not implemented." 
+
+// LS
+#define LS_SUCCESS_OUPUT_HEADER(PATH) "Files and directories in " + std::string(PATH) + ":"
+
+// TOUCH
+#define FILE_CREATION_SUCCESS(PATH) "File " + std::string(PATH) + " created."
+#define FILE_CREATION_FAILED(PATH) "Error creating file " + std::string(PATH) + "."
+
+// MKDIR
+#define DIRECTORY_CREATION_SUCCESS(PATH) "Directory " + std::string(PATH) + " created."
+#define DIRECTORY_CREATION_FAILED(PATH) "Error creating directory " + std::string(PATH) + "."
+
+// RM
+#define PATH_REMOVAL_SUCCESS(PATH) "File or directory " + std::string(PATH) + " removed."
+#define PATH_REMOVAL_FAILED(PATH) "Error removing file or directory " + std::string(PATH) + "."
+
+// CP
+#define COPY_SUCCESS(ORIGIN, DESTINATION) "File or directory " + std::string(ORIGIN) + " copied to " + std::string(DESTINATION) + "."
+#define COPY_FAILED(ORIGIN, DESTINATION) "Error copying file or directory " + std::string(ORIGIN) + " to " + std::string(DESTINATION) + "."
+
+// MV
+#define MOVE_SUCCESS(ORIGIN, DESTINATION) "File or directory " + std::string(ORIGIN) + " moved to " + std::string(DESTINATION) + "."
+#define MOVE_FAILED(ORIGIN, DESTINATION) "Error moving file or directory " + std::string(ORIGIN) + " to " + std::string(DESTINATION) + "."
+
+// DOWNLOAD
+#define FILE_CANNOT_BE_OPENED(PATH) "File " + std::string(PATH) + " cannot be opened."
+
 namespace serialcom
 {
     // arg1 = path to get children from
@@ -22,12 +58,12 @@ namespace serialcom
 
         if (this->shellMode) {
             if (lsPath.exists()) {
-                SerialManager::sharedInstance->commandLog("Files and directories in " + firstArgument + ":");
+                SerialManager::sharedInstance->commandLog(LS_SUCCESS_OUPUT_HEADER(firstArgument));
                 for (const auto& file : files) {
                     SerialManager::sharedInstance->commandLog(file);
                 }
             } else {
-                SerialManager::sharedInstance->commandLog("Directory " + firstArgument + " does not exist.");
+                SerialManager::sharedInstance->commandLog(DIRECTORY_DOES_NOT_EXIST(firstArgument));
             }
         } else {
             if (lsPath.exists()) {
@@ -48,7 +84,7 @@ namespace serialcom
 
         if (touchPath.exists()) {
             if (this->shellMode) {
-                SerialManager::sharedInstance->commandLog("File " + firstArgument + " already exists.");
+                SerialManager::sharedInstance->commandLog(FILE_ALREADY_EXISTS(firstArgument));
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             }
@@ -57,7 +93,7 @@ namespace serialcom
             {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog("File " + firstArgument + " created.");
+                    SerialManager::sharedInstance->commandLog(FILE_CREATION_SUCCESS(firstArgument));
 
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
@@ -65,7 +101,7 @@ namespace serialcom
             } else {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog("Error creating file " + firstArgument);
+                    SerialManager::sharedInstance->commandLog(FILE_CREATION_FAILED(firstArgument));
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                 }
@@ -83,7 +119,7 @@ namespace serialcom
         if (mkdirPath.exists()) {
             if (this->shellMode)
             {
-                SerialManager::sharedInstance->commandLog("Directory " + firstArgument + " already exists.");
+                SerialManager::sharedInstance->commandLog(DIRECTORY_ALREADY_EXISTS(firstArgument));
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             }
@@ -92,14 +128,14 @@ namespace serialcom
             {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog("Directory " + firstArgument + " created.");
+                    SerialManager::sharedInstance->commandLog(DIRECTORY_CREATION_SUCCESS(firstArgument));
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                 }
             } else {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog("Error creating directory " + firstArgument);
+                    SerialManager::sharedInstance->commandLog(DIRECTORY_CREATION_FAILED(firstArgument));
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                 }
@@ -118,20 +154,20 @@ namespace serialcom
             if (rmPath.remove())
             {
                 if (this->shellMode) {
-                    SerialManager::sharedInstance->commandLog("File or directory " + firstArgument + " removed.");
+                    SerialManager::sharedInstance->commandLog(PATH_REMOVAL_SUCCESS(firstArgument));
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                 }
             } else {
                 if (this->shellMode) {
-                    SerialManager::sharedInstance->commandLog("Error removing file or directory " + firstArgument);
+                    SerialManager::sharedInstance->commandLog(PATH_REMOVAL_FAILED(firstArgument));
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                 }
             }
         } else {
             if (this->shellMode) {
-                SerialManager::sharedInstance->commandLog("Error: " + firstArgument + " does not exist.");
+                SerialManager::sharedInstance->commandLog(PATH_DOES_NOT_EXIST(firstArgument));
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             }
@@ -155,7 +191,7 @@ namespace serialcom
             {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog("Error: " + secondArgument + " already exist.");
+                    SerialManager::sharedInstance->commandLog(PATH_ALREADY_EXISTS(secondArgument));
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                 }
@@ -164,14 +200,14 @@ namespace serialcom
                 {
                     if (this->shellMode)
                     {
-                        SerialManager::sharedInstance->commandLog("File or directory " + firstArgument + " copied to " + secondArgument);
+                        SerialManager::sharedInstance->commandLog(COPY_SUCCESS(firstArgument, secondArgument));
                     } else {
                         SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);                    
                     }
                 } else {
                     if (this->shellMode)
                     {
-                        SerialManager::sharedInstance->commandLog("Error copying file or directory " + firstArgument + " to " + secondArgument);
+                        SerialManager::sharedInstance->commandLog(COPY_FAILED(firstArgument, secondArgument));
                     } else {
                         SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                     }
@@ -179,7 +215,7 @@ namespace serialcom
             }
         } else {
             if (this->shellMode) {
-                SerialManager::sharedInstance->commandLog("Error: " + firstArgument + " does not exist.");
+                SerialManager::sharedInstance->commandLog(PATH_DOES_NOT_EXIST(firstArgument));
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             }
@@ -204,7 +240,7 @@ namespace serialcom
             {
                 if (this->shellMode)
                 {
-                    SerialManager::sharedInstance->commandLog("Error: " + secondArgument + " already exist.");
+                    SerialManager::sharedInstance->commandLog(PATH_ALREADY_EXISTS(secondArgument));
                 } else {
                     SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                 }
@@ -213,14 +249,14 @@ namespace serialcom
                 {
                     if (this->shellMode)
                     {
-                        SerialManager::sharedInstance->commandLog("File or directory " + firstArgument + " moved to " + secondArgument);
+                        SerialManager::sharedInstance->commandLog(MOVE_SUCCESS(firstArgument, secondArgument));
                     } else {
                         SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                     }
                 } else {
                     if (this->shellMode)
                     {
-                        SerialManager::sharedInstance->commandLog("Error moving file or directory " + firstArgument + " to " + secondArgument);
+                        SerialManager::sharedInstance->commandLog(MOVE_FAILED(firstArgument, secondArgument));
                     } else {
                         SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
                     }
@@ -228,7 +264,7 @@ namespace serialcom
             }
         } else {
             if (this->shellMode) {
-                SerialManager::sharedInstance->commandLog("Error: " + firstArgument + " does not exist.");
+                SerialManager::sharedInstance->commandLog(PATH_DOES_NOT_EXIST(firstArgument));
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             }
@@ -242,7 +278,7 @@ namespace serialcom
 
         if (this->shellMode)
         {
-            SerialManager::sharedInstance->commandLog("Error: command not implemented.");
+            SerialManager::sharedInstance->commandLog(COMMAND_NOT_IMPLEMENTED(std::string("cat")));
         } else {
             SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
         }
@@ -252,15 +288,25 @@ namespace serialcom
     // output = file content in chunks of 2048 bytes (or less for the last chunk), each one encoded in base64
     void CommandsManager::processDownloadCommand(const Command& command) const
     {
-        storage::Path downloadPath = storage::Path(command.arguments[0]);
+        std::string firstArgument = command.arguments[0];
 
-        std::cout << downloadPath.str() << std::endl << std::endl;
+        storage::Path downloadPath = storage::Path(firstArgument);
+
+        if (!downloadPath.exists())
+        {
+            if (this->shellMode)
+                SerialManager::sharedInstance->commandLog(PATH_DOES_NOT_EXIST(firstArgument));
+            else
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+            return;
+        }
+
         storage::FileStream fileStream(downloadPath.str(), storage::READ);
 
         if (!fileStream.isopen())
         {
             if (this->shellMode)
-                SerialManager::sharedInstance->commandLog("Error: file couldn't be opened.");
+                SerialManager::sharedInstance->commandLog(FILE_CANNOT_BE_OPENED(firstArgument));
             else
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             return;
@@ -296,11 +342,6 @@ namespace serialcom
         }
     
         fileStream.close();
-
-        if (this->shellMode)
-            SerialManager::sharedInstance->commandLog("No error.");
-        else
-            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
     }
 
     // arg1 = fileName to upload

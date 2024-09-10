@@ -36,6 +36,10 @@ void testCommand(std::string commandText, bool shellMode, Command::CommandType e
 
     // Use the string value of buffer to compare against expected output
     std::string text = buffer.str();
+
+    if (shellMode)
+      text.pop_back(); // remove the last '\n' character printed if the shellMode is enabled
+
     int result = text.compare(expectedOutput);
 
     // Restore original buffer before exiting

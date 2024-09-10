@@ -386,7 +386,11 @@ namespace storage
             storage::FileStream destination(destinationPath.str(), storage::Mode::WRITE);
 
             if (!source.isopen() || !destination.isopen())
+            {
+                source.close();
+                destination.close();
                 return false;
+            }
 
             char nextChar = source.readchar();
             while (!nextChar)
@@ -396,6 +400,9 @@ namespace storage
 
                 nextChar = source.readchar();
             }
+
+            source.close();
+            destination.close();
 
             return true;
         }
@@ -433,6 +440,7 @@ namespace storage
 
     bool Path::remove(void) const
     {
+        std::cout << "Remove action" << std::endl;
         if (!this->exists())
             return false;
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
@@ -441,7 +449,26 @@ namespace storage
 
 #ifdef ESP_PLATFORM
         if (this->isdir())
+        {
+            //serialcom::SerialManager::sharedInstance->commandLog("Remove dir");
+            std::cout << "Remove dir" << std::endl;
+            std::vector<std::string> children = this->listdir();
+            if (!children.empty())
+            {
+                //serialcom::SerialManager::sharedInstance->commandLog("Remove children");
+                std::cout << "Remove children" << std::endl;
+                for (std::string child : children)
+                {
+                    Path childPath = *this / child;
+                    if (!childPath.remove())
+                        return false;
+                    //serialcom::SerialManager::sharedInstance->commandLog("Removing child " + child);
+                    childPath.remove();
+                    std::cout << "Removing child " << childPath.str() << std::endl;
+                }
+            }
             return ::rmdir(this->str().c_str()) == 0;
+        }
         else
             return ::remove(this->str().c_str()) == 0;
 #endif
