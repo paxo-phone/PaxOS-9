@@ -126,7 +126,7 @@ void mainLoop(void* data) {
                 applications::launcher::free();
                 launcher = false;
             }
-            for (uint i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
+            for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
             {
                 AppManager::quitApp();
             }
