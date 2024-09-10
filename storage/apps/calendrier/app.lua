@@ -715,28 +715,9 @@ function saveDataFile(year, month)
     if data[year] then
         if data[year][month] then
             local filename = PATH_DATA.."/"..tostring(year)..tostring(month)..".dat"
-            debugPrint(data)
-            debugPrint(data[year][month])
             saveTable(filename, data[year][month])
         end
     end
-
---[[    if data[year] then
-        if data[year][month] then
-            local strData = serialize (data[year][month])
-            local filename = PATH_DATA.."/"..tostring(year)..tostring(month)..".dat"
-            fileData = storage:file (filename, WRITE)
-            fileData:open()
-            fileData:write(strData)
-            fileData:close()
-            fileData = nil
-
-            return
-        end
-    end
-
-    print("saveDataFile - aucune donnée à sauvegarder pour le mois "..tostring(month).." de "..tostring(year))
-]]--
 
 end
 
@@ -764,7 +745,7 @@ function loadDataMonth(year, month, noLoadingAdjacent)
     local dataLoad = loadTable(filename)
 
     if not dataLoad then 
-        print("Error loading data File")
+        print("Error loading data from "..filename)
         return
      end
 
