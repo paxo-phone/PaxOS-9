@@ -170,8 +170,19 @@ void save_lua_table(sol::state& lua, const std::string& path, sol::table table) 
     }
 
     std::cout << tableToString(table) << std::endl;
-
-    file << tableToString(table);
+    try{
+        file << tableToString(table);
+    }
+    catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Handle other standard exceptions
+        std::cerr << "Standard error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
+    }
     file.close();
 }
 
@@ -186,13 +197,25 @@ sol::table load_lua_table(sol::state& lua, const std::string& path) {
     std::stringstream content;
     content << file.rdbuf();
 
-    lua.script("returntable=" + content.str());
+    sol::table resultTable;
+    try {
+        lua.script("returntable=" + content.str());
+         std::string tableName = "returntable"; // Adjust if your table has a different name
+        // Retrieve the created table from the Lua state
+         resultTable= lua[tableName];
+    }
+    catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error on table serialisation" << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Handle other standard exceptions
+        std::cerr << "Error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
+    }
 
     // Get the global table name (assuming the string defines a table named 'resultTable')
-    std::string tableName = "returntable"; // Adjust if your table has a different name
-
-    // Retrieve the created table from the Lua state
-    sol::table resultTable = lua[tableName];
 
     return resultTable;
 }
