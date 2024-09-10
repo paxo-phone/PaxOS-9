@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <unordered_map>
 #include <optional>
+#include <string>
 
 namespace serialcom {
     const size_t MAX_COMMMAND_TYPE_SIZE = 16;

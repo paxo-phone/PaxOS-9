@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Command.hpp"
-#include <shared_mutex>
+#include <memory>
 
 namespace serialcom {
     class CommandsManager {
