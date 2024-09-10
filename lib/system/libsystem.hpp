@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <stdexcept>
 
+#include <FileConfig.hpp>
+
 // Replace this in "platformio.ini" ?
 #define OS_NAME "PaxOS"
 
@@ -39,6 +41,8 @@ namespace libsystem {
 
     void setDeviceMode(DeviceMode mode);
     [[nodiscard]] DeviceMode getDeviceMode();
+
+    FileConfig getSystemConfig();
 
     namespace exceptions {
         class RuntimeError final : public std::runtime_error {

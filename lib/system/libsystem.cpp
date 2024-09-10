@@ -25,6 +25,7 @@
 namespace libsystem {
     std::vector<std::string> bootErrors;
     DeviceMode deviceMode = NORMAL;
+    auto systemConfig = FileConfig(storage::Path("system/config.bfc"));
 }
 
 class Restart final : public std::exception {
@@ -237,6 +238,10 @@ void libsystem::setDeviceMode(const DeviceMode mode) {
 
 libsystem::DeviceMode libsystem::getDeviceMode() {
     return deviceMode;
+}
+
+libsystem::FileConfig libsystem::getSystemConfig() {
+    return systemConfig;
 }
 
 libsystem::exceptions::RuntimeError::RuntimeError(const std::string &message): runtime_error(message) {

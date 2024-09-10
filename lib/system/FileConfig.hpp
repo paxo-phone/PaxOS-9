@@ -26,7 +26,7 @@ namespace libsystem {
          * Available types for values.
          * Logic needs to be implemented before adding any new value.
          */
-        typedef std::variant<nullptr_t, uint8_t, uint16_t, uint32_t, uint64_t, std::string> file_config_types_t;
+        typedef std::variant<std::nullptr_t, uint8_t, uint16_t, uint32_t, uint64_t, std::string> file_config_types_t;
 
     public:
         /**
