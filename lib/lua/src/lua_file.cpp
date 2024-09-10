@@ -118,15 +118,21 @@ int custom_panic_handler(lua_State* L) {
 std::string tableToString(const sol::table& table) {
     std::stringstream ss;
     ss << "{";
-    bool first = true;
     
+    int size = 0;
+    for (const auto& pair : table) { size++;}    
+    
+    int i=0;
     for (const auto& pair : table) {
         if (pair.first.is<std::string>()) {
             ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
-        } else { // Assuming it's an identifier
-            ss << pair.first.as<std::string>(); 
+        } else if(pair.first.is<int>()) { 
+            ss << "["  <<pair.first.as<int>()<< "]"; 
         }
-
+            else { // Assuming it's an identifier
+            ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
+        }
+        i++;
         ss << "=";
 
         // Handle different value types carefully
@@ -143,7 +149,8 @@ std::string tableToString(const sol::table& table) {
 
         //std::cout << std::endl;
 
-        ss << ", ";
+//        if (size != i)
+            ss << ", ";
     }
 
     ss << "}";
