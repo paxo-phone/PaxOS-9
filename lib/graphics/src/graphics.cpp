@@ -55,6 +55,8 @@ void graphics::setBrightness(uint16_t value, const bool temp)
         brightness = value;
     }
 
+    libsystem::log("Brightness: " + std::to_string(value));
+
     #ifdef ESP_PLATFORM
     static uint16_t oldValue = 0;
 

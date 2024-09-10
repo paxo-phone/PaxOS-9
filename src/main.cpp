@@ -21,6 +21,7 @@
 #include <gsm.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
+#include <FileConfig.hpp>
 #include <iostream>
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
@@ -168,11 +169,19 @@ void setup()
     );
     #endif // ESP_PLATFORM
 
-    // Positionnement de l'écran en mode Portrait
-    graphics::setScreenOrientation(graphics::PORTRAIT);
-
     // Init de la gestiuon des Threads
     ThreadManager::init();
+
+    libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
+    if (!systemConfig.has("settings.brightness")) {
+        systemConfig.set<uint8_t>("settings.brightness", 69);
+        systemConfig.write();
+    }
+
+    libsystem::log("settings.brightness: " + std::to_string(systemConfig.get<uint8_t>("settings.brightness")));
+
+    graphics::setBrightness(systemConfig.get<uint8_t>("settings.brightness"));
 
     // Init launcher
     applications::launcher::init();

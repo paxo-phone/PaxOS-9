@@ -17,8 +17,13 @@
 
 namespace libsystem {
     /**
+     * @brief Class to store user preferences in a binary format.
+     *
      * File config is a binary file format (.bfc).
      * It is used to store simple data like user preferences (E.g. screen brightness).
+     * Should be faster than JSON.
+     *
+     * @todo Add lists support.
      */
     class FileConfig {
         // Need to match "FileConfig::Type" !
