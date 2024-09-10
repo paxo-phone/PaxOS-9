@@ -715,6 +715,7 @@ function saveDataFile(year, month)
     if data[year] then
         if data[year][month] then
             local filename = PATH_DATA.."/"..tostring(year)..tostring(month)..".dat"
+            debugPrint(data)
             debugPrint(data[year][month])
             saveTable(filename, data[year][month])
         end
@@ -760,8 +761,12 @@ function loadDataMonth(year, month, noLoadingAdjacent)
 
     -- check if a data file exists
     if storage:isFile(filename) then
-
     local dataLoad = loadTable(filename)
+
+    if not dataLoad then 
+        print("Error loading data File")
+        return
+     end
 
     if not data[year] then data[year] = {} end 
     if not data[year][month] then data[year][month] = {} end 
