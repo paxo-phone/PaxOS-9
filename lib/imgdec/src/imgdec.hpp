@@ -6,6 +6,7 @@
 #define IMGDEC_HPP
 
 #include <cstdint>
+#include <path.hpp>
 
 namespace imgdec
 {
@@ -27,6 +28,8 @@ namespace imgdec
     };
 
     IMGData decodeHeader(const uint8_t *rawData);
+
+    void encodeJpg(const uint8_t *rawData, uint32_t width, uint32_t heigth, storage::Path filename);
 }
 
 #endif //IMGDEC_HPP

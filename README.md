@@ -2,7 +2,7 @@
 
 If you are using CLion, please use the [CLion Instructions](#clion-instructions).
 
-## Install dependencies
+[![PlatformIO CI](https://github.com/paxo-phone/PaxOS-9/actions/workflows/platformio-ci.yml/badge.svg)](https://github.com/paxo-phone/PaxOS-9/actions/workflows/platformio-ci.yml)
 
 ### Install PlatformIO Core
 

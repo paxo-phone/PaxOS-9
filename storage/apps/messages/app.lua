@@ -19,6 +19,13 @@ function eraseNotif(number)
     listUpdated = true
 end
 
+function openImage(path)
+    win3=gui:window()
+
+    local image = gui:image(win3, "images/" .. path, 0, 0, 320, 480)
+    gui:setWindow(win3)
+end
+
 function newMessage(number)
     local msg = gui:keyboard("Message au " .. number, "")
 
@@ -84,27 +91,38 @@ function converation(number)
     --print("getMessages returned " .. tostring(messages))
 
     for i, message in pairs(messages) do
-        --print("message " .. tostring(i) .. " : " .. tostring(message))
-        local bull = gui:box(list, 0, 0, 184, 30)
-        
-        local label = gui:label(bull, 0, 0, 184, 0)
-        label:setHorizontalAlignment(CENTER_ALIGNMENT)
-        label:setText(message.message)
-        label:setFontSize(18)
+        local numberPart = message.message:match("/(%d+)%.jpg")  -- Extract the number part
 
-        local labelHeight = label:getTextHeight() + 8
+        if(numberPart) then -- image
+            print("image " .. numberPart)
+            local image = gui:image(list, "images/" .. numberPart .. "p.jpg" , 0, 0, 60, 60)
 
-        label:setHeight(labelHeight)
+            image:onClick(function ()
+                openImage(string.sub(message.message, 2))
+            end)
+        else
+            print("message " .. message.message)
+            local bull = gui:box(list, 0, 0, 184, 30)
+            
+            local label = gui:label(bull, 0, 0, 184, 0)
+            label:setHorizontalAlignment(CENTER_ALIGNMENT)
+            label:setText(message.message)
+            label:setFontSize(18)
 
-        local canva = gui:canvas(bull, 0, labelHeight, 68, 1)
-        canva:fillRect(0, 0, 68, 1, COLOR_DARK)
-        canva:setX(57)
+            local labelHeight = label:getTextHeight() + 8
 
-        if(message.who == false) then
-            bull:setX(96)
+            label:setHeight(labelHeight)
+
+            local canva = gui:canvas(bull, 0, labelHeight, 68, 1)
+            canva:fillRect(0, 0, 68, 1, COLOR_DARK)
+            canva:setX(57)
+
+            if(message.who == false) then
+                bull:setX(96)
+            end
+
+            bull:setHeight(labelHeight + 9)
         end
-
-        bull:setHeight(labelHeight + 9)
     end
 
     list:setIndex(#messages -1)

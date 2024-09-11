@@ -2,9 +2,10 @@
 #include <graphics.hpp>
 
 #include "gui.hpp"
-#include <threads.hpp>
 
 #include <iostream>
+#include <libsystem.hpp>
+#include <standby.hpp>
 
 // TODO : Remove this, the user need to define its widget for the screen itself.
 gui::ElementBase *gui::ElementBase::widgetPressed = nullptr;
@@ -39,6 +40,9 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
 
 gui::ElementBase::~ElementBase()
 {
+    if (m_parent != nullptr)
+        m_parent->localGraphicalUpdate();
+
     // Libération de la mémoire allouée pour les enfants de l'objet
     for (int i = 0; i < m_children.size(); i++)
     {
@@ -60,6 +64,10 @@ void gui::ElementBase::renderAll(bool onScreen)
     if (!m_isRendered)
     {
         StandbyMode::triggerPower();
+
+        // Use it to initialize data
+        preRender();
+
         // initialiser le buffer ou le clear
         if(m_surface != nullptr && (m_surface->getWidth() != this->getWidth() || m_surface->getHeight() != this->getHeight()))
             m_surface = nullptr;
@@ -67,6 +75,7 @@ void gui::ElementBase::renderAll(bool onScreen)
         if (m_surface == nullptr)
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
 
+        // Render the element
         render();
 
         for (const auto child : m_children)
@@ -75,6 +84,9 @@ void gui::ElementBase::renderAll(bool onScreen)
         }
 
         m_isRendered = true;
+
+        // Use it to clear data
+        postRender();
     }
 
     if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
@@ -98,6 +110,9 @@ void gui::ElementBase::renderAll(bool onScreen)
 
 bool gui::ElementBase::updateAll()
 {
+    if(!m_isEnabled)
+        return false;
+    
     if(!isInside())
     {
         if(m_surface != nullptr)
@@ -124,7 +139,7 @@ bool gui::ElementBase::updateAll()
 
     for (auto child : m_children)
     {
-        if (!child->getIsEnabled())
+        if (!child->isEnabled())
             continue;
 
         if (child->updateAll())
@@ -135,8 +150,8 @@ bool gui::ElementBase::updateAll()
     }
 
     update();
-    
-    
+
+
     if(this->m_parent == nullptr)
         graphics::touchIsRead();
 
@@ -177,6 +192,9 @@ bool gui::ElementBase::update()
 {
     // algorithme de mise a jour des interactions tactiles
 
+    if(!this->m_isEnabled)
+        return false;
+
     widgetUpdate();
 
     if (!m_hasEvents && widgetPressed != this)
@@ -215,7 +233,7 @@ bool gui::ElementBase::update()
             bool isScrollingX = abs(m_lastTouchX - touchX) > SCROLL_STEP;
             bool isScrollingY = abs(m_lastTouchY - touchY) > SCROLL_STEP;
             bool isScrolling = isScrollingX || isScrollingY;
-    
+
             if(isScrollingX)
             {
                 gui::ElementBase* nearScrollableObject = getHigestXScrollableParent();
@@ -292,7 +310,7 @@ bool gui::ElementBase::update()
             lastEventTouchY = originTouchY;
             onReleased();
         }
-        
+
         globalPressedState = NOT_PRESSED;
         widgetPressed = nullptr;
 
@@ -432,18 +450,26 @@ bool gui::ElementBase::isFocused(bool forced)
 
 void gui::ElementBase::enable()
 {
+    if(m_isEnabled)
+        return;
     m_isEnabled = true;
     globalGraphicalUpdate();
 }
 
 void gui::ElementBase::disable()
 {
+    if(!m_isEnabled)
+        return;
     m_isEnabled = false;
     globalGraphicalUpdate();
 }
 
-bool gui::ElementBase::getIsEnabled() const
-{
+void gui::ElementBase::setEnabled(const bool enabled) {
+    m_isEnabled = enabled;
+    globalGraphicalUpdate();
+}
+
+bool gui::ElementBase::isEnabled() const {
     return m_isEnabled;
 }
 
@@ -471,6 +497,10 @@ gui::ElementBase *gui::ElementBase::getParent() const
 
 void gui::ElementBase::addChild(gui::ElementBase *child)
 {
+    if (child == nullptr) {
+        throw libsystem::exceptions::RuntimeError("Child can't be null.");
+    }
+
     m_children.push_back(child);
     child->m_parent = this;
 }
@@ -573,7 +603,7 @@ void gui::ElementBase::free()
         m_surface.reset();
 
     setParentNotRendered();
-    
+
     for (auto child : m_children)
     {
         child->free();
@@ -595,4 +625,22 @@ bool gui::ElementBase::isInside()
         return false;
 
     return true;
+}
+
+std::shared_ptr<graphics::Surface> gui::ElementBase::getSurface() {
+    return getAndSetSurface();
+}
+
+void gui::ElementBase::forceUpdate() {
+    localGraphicalUpdate();
+}
+
+
+gui::ElementBase *gui::ElementBase::getElementAt(int index) {
+
+    if (index >=0 && index < m_children.size()) {
+        return m_children[index];
+    }
+    return nullptr;
+
 }
