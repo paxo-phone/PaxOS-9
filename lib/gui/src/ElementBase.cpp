@@ -633,3 +633,13 @@ std::shared_ptr<graphics::Surface> gui::ElementBase::getSurface() {
 void gui::ElementBase::forceUpdate() {
     localGraphicalUpdate();
 }
+
+
+gui::ElementBase *gui::ElementBase::getElementAt(int index) {
+
+    if (index >=0 && index < m_children.size()) {
+        return m_children[index];
+    }
+    return nullptr;
+
+}

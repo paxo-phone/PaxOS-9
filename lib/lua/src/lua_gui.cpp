@@ -181,6 +181,11 @@ void LuaGui::setMainWindow(LuaWindow* window) {
     AppManager::askGui(this->lua); 
 }
 
+
+LuaWindow* LuaGui::getMainWindow() {
+    return this->mainWindow; 
+}
+
 void LuaGui::showErrorMessage(const std::string& msg ){
 
         GuiManager &guiManager = GuiManager::getInstance();

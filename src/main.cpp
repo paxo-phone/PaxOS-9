@@ -25,6 +25,7 @@
 #include <iostream>
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
+#include <standby.hpp>
 
 
 using namespace gui::elements;
@@ -51,8 +52,7 @@ void mainLoop(void* data) {
         backtrace_saver::backtraceMessageGUI();
     }
 
-    // Initialize brightness in some way
-    graphics::setBrightness(graphics::getBrightness());
+    libsystem::setDeviceMode(libsystem::NORMAL);
 #endif
 
     GuiManager& guiManager = GuiManager::getInstance();
@@ -76,10 +76,97 @@ void mainLoop(void* data) {
         }
     }
 
+    bool launcher = false;
+    while (true)    // manage the running apps, the launcher and the sleep mode
+    {
+        hardware::input::update();
+        AppManager::loop();
+        eventHandlerApp.update();
+
+        if(AppManager::isAnyVisibleApp() && launcher)
+        {
+            applications::launcher::free();
+            launcher = false;
+        }
+
+        if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())
+        {
+            if(!launcher)   // si pas de launcher -> afficher un launcher
+            {
+                applications::launcher::init();
+                launcher = true;
+            }
+            else    // si launcher -> l'update et peut être lancer une app
+            {
+                applications::launcher::update();
+
+                if(applications::launcher::iconTouched())
+                {
+                    // run the app
+                    const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
+
+                    // Free the launcher resources
+                    applications::launcher::free();
+                    launcher = false;
+
+                    // Launch the app
+                    try {
+                        app->run(false);
+                    } catch (std::runtime_error& e) {
+                        std::cerr << "Erreur: " << e.what() << std::endl;
+                        // Affichage du msg d'erreur
+                        guiManager.showErrorMessage(e.what());
+                    }
+                }
+            }
+        }
+
+        if(getButtonDown(hardware::input::HOME))    // si on appuie sur HOME
+        {
+            if(libsystem::getDeviceMode() == libsystem::SLEEP)
+            {
+                setDeviceMode(libsystem::NORMAL);
+                StandbyMode::disable();
+            } else if(launcher)
+            {
+                applications::launcher::free();
+                launcher = false;
+                libsystem::setDeviceMode(libsystem::SLEEP);
+                StandbyMode::enable();
+            } else if(AppManager::isAnyVisibleApp())
+            {
+                AppManager::quitApp();
+            }
+        }
+
+        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
+        {
+            if(launcher)
+            {
+                applications::launcher::free();
+                launcher = false;
+            }
+            for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
+            {
+                AppManager::quitApp();
+            }
+            libsystem::setDeviceMode(libsystem::SLEEP);
+            StandbyMode::enable();
+        }
+
+        /*std::cout << "Main loop" << std::endl;
+        std::cout << "Launcher: " << launcher << std::endl;
+        std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
+        std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;*/
+
+        StandbyMode::wait();
+    }
+/*
     // Main loop
     while (true) {
         // Update inputs
         hardware::input::update();
+        std::cout << "Update inputs" << std::endl;
 
         // Update running apps
         AppManager::update();
@@ -108,6 +195,8 @@ void mainLoop(void* data) {
                 continue;
             }
 
+            std::cout << "Update launcher" << std::endl;
+
             // Update, show and allocate launcher
             applications::launcher::update();
 
@@ -132,7 +221,7 @@ void mainLoop(void* data) {
         }
 
         AppManager::loop();
-    }
+    }*/
 }
 
 void setup()

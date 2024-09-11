@@ -27,7 +27,17 @@ namespace Conversations
         std::vector<Message> messages;
     };
 
+    /**
+     * @brief Load a conversation from a file
+     * @param filePath The file path containing the conversation to load
+     * @param conv The conversation to load into
+     */
     void loadConversation(const storage::Path &filePath, Conversation &conv);
+    /**
+     * @brief Save a conversation to a file
+     * @param filePath The file path to save the conversation to
+     * @param conv The conversation to save
+     */
     void saveConversation(const storage::Path &filePath, const Conversation &conv);
 }
 

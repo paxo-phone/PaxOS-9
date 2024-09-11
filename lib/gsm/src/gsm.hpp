@@ -74,47 +74,61 @@ namespace GSM
         extern std::function<void(void)> onNewMessageError;
     }
 
+    // received data = RX buffer
     extern std::string data;
+    // list of pending requests
     extern std::vector<Request> requests;
+    // list of keys watched in the data received to run events
     extern std::vector<Key> keys;
-    // extern std::vector<Message> messages;        // received messages
-    // extern std::vector<Message> pendingMessages; // messages pending
-    extern std::vector<Message> messages;
+    // module state: 
     extern State state;
     extern uint16_t seconds, minutes, hours, days, months, years;
     extern float voltage;
     extern int networkQuality;
 
+    // initialize the modem, power it on is required
     void init();
+    // reinitialize the serial when the clock speed change to stay in sync
     void reInit();
+    // download data from the modem, with a timeout
     void download(uint64_t timeout = 50);
+    // send a request and return the answer
     std::string send(const std::string &message, const std::string &answerKey, uint64_t timeout = 200);
+    // process the received data and run the related functions if needed (ex: calls, messages, ...)
     void process();
+    // check if the data contains a request to be processed
     void checkRequest();
+    // run the loop of the GSM thread
     void run();
 
-    void newMessage(std::string number, std::string message);
-    void onMessage();
+    // Message related functions
+    void newMessage(std::string number, std::string message);   // send message
+    void onMessage();    // run the onMessage event -> save the messages
 
-    void newCall(std::string number);
-    void endCall();
-    void acceptCall();
-    void rejectCall();
+    // Call related functions
+    void newCall(std::string number);    // send a call
+    void endCall();                      // end a call
+    void acceptCall();                   // accept a call
+    void rejectCall();                   // reject a call
 
-    double getBatteryLevel();
+    // get the battery level from 0 to 1. TODO: moyenne sur plusieurs mesures
+    double getBatteryLevel();            // get the battery level from 0 to 1. TODO: moyenne sur plusieurs mesures
+
+    // Force to update the time
     void getHour();
 
-    std::string getHttpMMS(std::string url);
-
+    // return the network quality (0-31) and 99 if not available
     int getNetworkStatus();
-
+    
+    // return true if we are in flight mode
     bool isFlightMode();
+    // set flight mode
     void setFlightMode(bool mode);
 
-    std::string getCurrentTimestamp();
-    std::string getCurrentTimestampNoSpaces();
-    void clearFrom(const std::string &from, const std::string &to);
-    void appendRequest(Request request);
+    std::string getCurrentTimestamp();  // return the current timestamp formated
+    std::string getCurrentTimestampNoSpaces();  // return the current timestamp formated without spaces
+    void clearFrom(const std::string &from, const std::string &to);  // remove data between from and to: used to remove processed commands from the buffer
+    void appendRequest(Request request);    // ask the GSM thread to run a request
 }
 
 #endif // GSM_HPP

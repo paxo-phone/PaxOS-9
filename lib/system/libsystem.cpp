@@ -227,7 +227,7 @@ void libsystem::setDeviceMode(const DeviceMode mode) {
     switch (mode) {
         case NORMAL:
             StandbyMode::restorePower();
-            graphics::setBrightness(0xFF);
+            graphics::setBrightness(graphics::brightness);
             break;
         case SLEEP:
             graphics::setBrightness(0x00);

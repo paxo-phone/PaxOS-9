@@ -116,149 +116,111 @@ int custom_panic_handler(lua_State* L) {
     return 0;
 }
 
-template <typename T>
-void writeBinaryValue(std::ofstream& file, const T& value) {
-    file.write(reinterpret_cast<const char*>(&value), sizeof(T));
-}
-
-void saveTableToBinaryFile(std::ofstream& file, const sol::table& table) {
-    // Write the number of key-value pairs
-    size_t numPairs = table.size();
-    writeBinaryValue(file, numPairs);
-
+std::string tableToString(const sol::table& table) {
+    std::stringstream ss;
+    ss << "{";
+    
+    int size = 0;
+    for (const auto& pair : table) { size++;}    
+    
+    int i=0;
     for (const auto& pair : table) {
-        sol::object key = pair.first;
-        sol::object value = pair.second;
+        if (pair.first.is<std::string>()) {
+            ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
+        } else if(pair.first.is<int>()) { 
+            ss << "["  <<pair.first.as<int>()<< "]"; 
+        }
+            else { // Assuming it's an identifier
+            ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
+        }
+        i++;
+        ss << "=";
 
-        // Write the key type
-        if (key.is<std::string>()) {
-            writeBinaryValue(file, static_cast<uint8_t>(1)); // 1 for string key
-            std::string keyStr = key.as<std::string>();
-            size_t keySize = keyStr.size();
-            writeBinaryValue(file, keySize);
-            file.write(keyStr.c_str(), keySize);
-        } else if (key.is<double>() || key.is<int>()) {
-            writeBinaryValue(file, static_cast<uint8_t>(2)); // 2 for numeric key
-            double numericKey = key.as<double>();
-            writeBinaryValue(file, numericKey);
+        // Handle different value types carefully
+        if (pair.second.is<std::string>()) {
+            ss << "\"" << pair.second.as<std::string>() << "\"";
+        } else if (pair.second.is<int>()) {
+            ss << pair.second.as<int>();
+        } else if (pair.second.is<sol::table>()) {
+            ss << tableToString(pair.second); 
+            // You might want to recursively list nested tables here
         } else {
-            throw std::runtime_error("Unsupported table key type for binary serialization");
+            //ss << "(Unknown type)";
         }
 
-        // Write the value type and value
-        if (value.is<std::string>()) {
-            writeBinaryValue(file, static_cast<uint8_t>(1)); // 1 for string
-            std::string valueStr = value.as<std::string>();
-            size_t valueSize = valueStr.size();
-            writeBinaryValue(file, valueSize);
-            file.write(valueStr.c_str(), valueSize);
-        } else if (value.is<double>() || value.is<int>()) {
-            writeBinaryValue(file, static_cast<uint8_t>(2)); // 2 for number
-            double numericValue = value.as<double>();
-            writeBinaryValue(file, numericValue);
-        } else if (value.is<bool>()) {
-            writeBinaryValue(file, static_cast<uint8_t>(3)); // 3 for boolean
-            bool boolValue = value.as<bool>();
-            writeBinaryValue(file, boolValue);
-        } else if (value.is<sol::nil_t>()) {
-            writeBinaryValue(file, static_cast<uint8_t>(4)); // 4 for nil
-        } else if (value.is<sol::table>()) {
-            writeBinaryValue(file, static_cast<uint8_t>(5)); // 5 for table
-            saveTableToBinaryFile(file, value.as<sol::table>()); // Recursively save
-        } else {
-            throw std::runtime_error("Unsupported table value type for binary serialization");
-        }
+        //std::cout << std::endl;
+
+//        if (size != i)
+            ss << ", ";
     }
+
+    ss << "}";
+
+    //std::cout << ss.str() << std::endl;
+
+    return ss.str();
 }
 
-void saveTableToBinaryFile(const std::string& filename, const sol::table& table) {
-    std::ofstream file(filename, std::ios::binary);
+
+// Function to save a Lua table to a file
+void save_lua_table(sol::state& lua, const std::string& path, sol::table table) {
+    std::ofstream file(path);
     if (!file.is_open()) {
-        throw std::runtime_error("Error opening file for writing: " + filename);
+        std::cerr << "Error: Could not open file for writing: " << path << std::endl;
+        return;
     }
 
-    try {
-        saveTableToBinaryFile(file, table);
+    std::cout << tableToString(table) << std::endl;
+    try{
+        file << tableToString(table);
+    }
+    catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error: " << e.what() << std::endl;
     } catch (const std::exception& e) {
-        file.close();
-        throw std::runtime_error(std::string("Error while writing to file: ") + e.what());
+        // Handle other standard exceptions
+        std::cerr << "Standard error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
     }
-
     file.close();
 }
 
-template <typename T>
-T readBinaryValue(std::ifstream& file) {
-    T value;
-    file.read(reinterpret_cast<char*>(&value), sizeof(T));
-    return value;
-}
-
-sol::table loadTableFromBinaryFile(sol::state& lua, std::ifstream& file) {
-    sol::table table = lua.create_table();
-
-    size_t numPairs = readBinaryValue<size_t>(file);
-
-    for (size_t i = 0; i < numPairs; ++i) {
-        // Read key
-        uint8_t keyType = readBinaryValue<uint8_t>(file);
-        sol::object key;
-
-        if (keyType == 1) { // String key
-            size_t keySize = readBinaryValue<size_t>(file);
-            std::vector<char> keyBuffer(keySize);
-            file.read(keyBuffer.data(), keySize);
-            key = sol::make_object(lua, std::string(keyBuffer.data(), keySize));
-        } else if (keyType == 2) { // Numeric key
-            key = sol::make_object(lua, readBinaryValue<double>(file));
-        } else {
-            throw std::runtime_error("Unsupported key type in binary file");
-        }
-
-        // Read value
-        uint8_t valueType = readBinaryValue<uint8_t>(file);
-
-        switch (valueType) {
-            case 1: { // String
-                size_t valueSize = readBinaryValue<size_t>(file);
-                std::vector<char> valueBuffer(valueSize);
-                file.read(valueBuffer.data(), valueSize);
-                table[key] = std::string(valueBuffer.data(), valueSize);
-                break;
-            }
-            case 2: // Number
-                table[key] = readBinaryValue<double>(file);
-                break;
-            case 3: // Boolean
-                table[key] = readBinaryValue<bool>(file);
-                break;
-            case 4: // Nil
-                table[key] = sol::nil;
-                break;
-            case 5: // Nested table
-                table[key] = loadTableFromBinaryFile(lua, file);
-                break;
-            default:
-                throw std::runtime_error("Unsupported value type in binary file");
-        }
-    }
-
-    return table;
-}
-
-sol::table loadTableFromBinaryFile(sol::state& lua, const std::string& filename) {
-    std::ifstream file(filename, std::ios::binary);
+// Function to load a Lua table from a file
+sol::table load_lua_table(sol::state& lua, const std::string& path) {
+    std::ifstream file(path);
     if (!file.is_open()) {
-        throw std::runtime_error("Error opening file for reading: " + filename);
+        std::cerr << "Error: Could not open file for reading: " << path << std::endl;
+        return sol::table{};
     }
 
+    std::stringstream content;
+    content << file.rdbuf();
+
+    sol::table resultTable;
     try {
-        return loadTableFromBinaryFile(lua, file);
-    } catch (const std::exception& e) {
-        file.close();
-        throw std::runtime_error(std::string("Error while reading from file: ") + e.what());
+        lua.script("returntable=" + content.str());
+         std::string tableName = "returntable"; // Adjust if your table has a different name
+        // Retrieve the created table from the Lua state
+         resultTable= lua[tableName];
     }
+    catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error on table serialisation" << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Handle other standard exceptions
+        std::cerr << "Error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
+    }
+
+    // Get the global table name (assuming the string defines a table named 'resultTable')
+
+    return resultTable;
 }
+
 
 void LuaFile::load()
 {
@@ -319,12 +281,12 @@ void LuaFile::load()
 
     lua["saveTable"] = [&](const std::string& filename, const sol::table& table)
     {
-        saveTableToBinaryFile(lua_storage.convertPath(filename).str(), table);
+        save_lua_table(lua, lua_storage.convertPath(filename).str(), table);
     };
 
     lua["loadTable"] = [&](const std::string& filename)
     {
-        return loadTableFromBinaryFile(lua, lua_storage.convertPath(filename).str());
+        return load_lua_table(lua, lua_storage.convertPath(filename).str());
     };
 
     if (perms.acces_hardware)   // si hardware est autorisé
@@ -373,6 +335,7 @@ void LuaFile::load()
             "get_int", &LuaJson::get_int,
             "get_double", &LuaJson::get_double,
             "get_bool", &LuaJson::get_bool,
+            "get_string", &LuaJson::get_string,
             "set_int", &LuaJson::set_int,
             "set_double", &LuaJson::set_double,
             "set_bool", &LuaJson::set_bool,
@@ -417,6 +380,7 @@ void LuaFile::load()
             "checkbox", &LuaGui::checkbox,
             "del", &LuaGui::del,
             "setWindow", &LuaGui::setMainWindow,
+            "getWindow", &LuaGui::getMainWindow,            
             "keyboard", &LuaGui::keyboard,
             "showInfoMessage", &LuaGui::showInfoMessage,
             "showWarningMessage", &LuaGui::showWarningMessage,
@@ -477,6 +441,8 @@ void LuaFile::load()
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaImage>("LuaImage",
+            "setTransparentColor", &LuaImage::setTransparentColor,
+
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaLabel>("LuaLabel",
@@ -525,11 +491,19 @@ void LuaFile::load()
             "setSpaceLine", &LuaVerticalList::setSpaceLine,
             "setSelectionFocus", &LuaVerticalList::setFocus,
             "getSelected", &LuaVerticalList::getSelected,
+            "select", &LuaVerticalList::select,
+            "setSelectionColor", &LuaVerticalList::setSelectionColor,
+            "setAutoSelect", &LuaVerticalList::setAutoSelect,
+            "onSelect", &LuaVerticalList::onSelect,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
             //"add", &LuaHorizontalList::add,
+            "setSpaceLine", &LuaHorizontalList::setSpaceLine,
             sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.set("SELECTION_UP", VerticalList::SelectionFocus::UP);
+        lua.set("SELECTION_CENTER", VerticalList::SelectionFocus::CENTER);
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);
         lua.set("RIGHT_ALIGNMENT", Label::Alignement::RIGHT);

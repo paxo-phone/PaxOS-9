@@ -13,6 +13,11 @@
 namespace gui::elements
 {
     /**
+     * @brief Clickable widget containing a label or/and an image.
+     *
+     * This widget can contain a label or/and an image and is clickable.
+     * It follows the theme designed by Paxo on figma.
+     *
      * @todo Move source code to .cpp.
      */
     class Button final : public ElementBase

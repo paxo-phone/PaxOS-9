@@ -3,109 +3,6 @@
 #include <libsystem.hpp>
 #include <standby.hpp>
 
-// namespace app {
-//     std::vector<App> appList;
-//
-//     bool request;
-//     AppRequest requestingApp;
-//
-//     void init() {
-//         std::vector<std::string> dirs = storage::Path(APP_DIR).listdir();
-//
-//         storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
-//         const std::string allowedFiles = stream.read();
-//         stream.close();
-//
-//         for (const auto& dir: dirs) {
-//             std::cout << (storage::Path(APP_DIR) / dir).str() << std::endl;
-//             if (allowedFiles.find((storage::Path(APP_DIR) / dir).str()) != std::string::npos) {
-//                 appList.push_back({
-//                     dir, storage::Path(APP_DIR) / dir / "app.lua", storage::Path(PERMS_DIR) / (dir + ".json"), true
-//                 });
-//             } else {
-//                 appList.push_back({
-//                     dir, storage::Path(APP_DIR) / dir / "app.lua", storage::Path(APP_DIR) / dir / "manifest.json", false
-//                 });
-//             }
-//         }
-//     }
-//
-//     App getApp(const std::string& appName) {
-//         for (auto &app: appList) {
-//             if (app.name == appName) {
-//                 return app;
-//             }
-//         }
-//
-//         return {"", storage::Path(), storage::Path(), false};
-//     }
-//
-//     bool askPerm(App &app) {
-//         gui::elements::Window win;
-//         auto *label = new Label(0, 0, 320, 400);
-//
-//         storage::FileStream stream(app.manifest.str(), storage::READ);
-//         std::string data = stream.read();
-//         stream.close();
-//
-//         label->setText(data);
-//         win.addChild(label);
-//
-//         auto *btn = new Button(35, 420, 250, 38);
-//         btn->setText("Accepter");
-//         win.addChild(btn);
-//
-//         // TODO: Add "Cancel" button
-//
-//         while (true) {
-//             win.updateAll();
-//
-//             if (btn->isTouched()) {
-//                 storage::FileStream streamP((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
-//                 streamP.write(app.path.str() + "\n");
-//                 streamP.close();
-//
-//                 app.manifest = storage::Path(PERMS_DIR) / (app.name + ".json");
-//                 app.auth = true;
-//
-//                 storage::FileStream newPermCopy(app.manifest.str(), storage::WRITE);
-//                 newPermCopy.write(data);
-//                 newPermCopy.close();
-//
-//                 return true;
-//             }
-//         }
-//     }
-//
-//     void runApp(const storage::Path& path) {
-//         for (auto &app: appList) {
-//             if (app.path.str() == path.str()) {
-//                 if (app.auth) {
-//                     std::cout << "Succes: running app" << std::endl;
-//                     LuaFile luaApp(path, app.manifest);
-//                     luaApp.run();
-//                 } else {
-//                     std::cout << "Asking for permissions" << std::endl;
-//
-//                     if (askPerm(app)) {
-//                         LuaFile luaApp(path, app.manifest);
-//                         luaApp.run();
-//                     }
-//                 }
-//
-//                 return;
-//             }
-//         }
-//
-//         std::cout << "Error: no such app" << std::endl;
-//     }
-//
-//     void runApp(const AppRequest& app) {
-//         LuaFile luaApp(app.app.path, app.app.manifest);
-//         luaApp.run(app.parameters);
-//     }
-// };
-
 namespace AppManager {
     App::App(const std::string& name, const storage::Path& path, const storage::Path& manifest, const bool auth)
         : name(name), fullName(name), path(path), manifest(manifest),
@@ -377,69 +274,48 @@ namespace AppManager {
     }
 
     void loop() {
-        threadsync.lock();
-        // Implementation for the main loop
-        if (!appStack.empty() && hardware::getHomeButton())
-        // if the home button is pressed, remove the app from the stack, and kill it if it's not running in the background
-        {
-            while (hardware::getHomeButton()) {}
-
-            if (!appStack.empty()) {
-                if (appStack.back()->background == false) {
-                    const auto app = appStack.back();
-                    int count = 0; // TODO: Use ?
-
-                    for (const auto& it : appStack) {
-                        if (it == app) {
-                            count++;
-                        }
-                    }
-
-                    app->kill();
-                } else {
-                    std::cerr << "Error: app is in background" << std::endl;
-                }
-
-                appStack.pop_back();
-            }
-        }
-
-        for (const auto& app: appList) {
-            if (app->isRunning()) {
-                app->luaInstance->loop();
-            } else if (app->luaInstance != nullptr) {
-                app->kill();
-            }
-        }
-
-        if (!appStack.empty()) {
-            appStack.back()->luaInstance->lua_gui.update();
-        }
-
-        threadsync.unlock();
-
-        StandbyMode::wait();
+        updateForeground();
+        updateBackground();
     }
 
-    void update() {
+    void updateForeground() {
         threadsync.lock();
 
         // Run tick on every app
         for (const auto& app: appList) {
-            if (app->isRunning()) {
-                app->luaInstance->loop();
-            } else if (app->luaInstance != nullptr) {
-                app->kill();
+            if(app->background == false)    // app is not in background
+            {
+                if (app->isRunning()) { // app is running
+                    app->luaInstance->loop();
+                } else if (std::find(appStack.begin(), appStack.end(), app.get()) != appStack.end()) // if app is no longer in the stack (no gui is running) -> kill it
+                {
+                    app->kill();
+                }
             }
         }
 
         // Update foreground app GUI
-        // TODO : What happens if a background app is on top of a foreground app on the stack ?
         if (!appStack.empty()) {
             const App* app = appStack.back();
 
             if (app->luaInstance != nullptr) {
                 app->luaInstance->lua_gui.update();
+            }
+        }
+
+        threadsync.unlock();
+    }
+
+    void updateBackground() {
+        threadsync.lock();
+
+        // Run tick on every app
+        for (const auto& app: appList) {
+            if(app->background == true)    // app is in background
+            {
+                if (app->isRunning()) { // app is running
+                    app->luaInstance->loop();
+                }
             }
         }
 
