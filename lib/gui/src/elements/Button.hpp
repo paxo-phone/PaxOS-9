@@ -12,6 +12,9 @@
 
 namespace gui::elements
 {
+    /**
+     * @brief This witget can contain a label or an image and is clickable. It follows the theme designed by paxo on figma
+     */
     class Button final : public ElementBase
     {
     public:

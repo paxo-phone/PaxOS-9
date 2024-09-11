@@ -6,6 +6,9 @@
 
 namespace gui::elements
 {
+    /**
+     * @brief Widget image: can load an image from a path with a background or not. Support png, jpeg and bmp
+    **/
     class Image final : public ElementBase
     {
     public:

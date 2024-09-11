@@ -484,6 +484,7 @@ namespace GSM
 
     #endif
 
+    // MMS: download a MMS from a URL, then decode the jpeg in it, and add it to the related conversation
     std::string getHttpMMS(std::string number, std::string url) {
         #ifdef ESP_PLATFORM
         StandbyMode::triggerPower();

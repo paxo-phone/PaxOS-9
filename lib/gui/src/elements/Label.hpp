@@ -11,6 +11,9 @@
 
 namespace gui::elements
 {
+    /**
+     * @brief Widget label displays text
+    **/
     class Label final : public ElementBase
     {
     public:
