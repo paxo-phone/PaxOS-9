@@ -68,57 +68,72 @@ function init()
     --Affichage des images de fonctions
 
     -- Box Horloge
-    boxHorloge = gui:box (win, 65, 410, 30, 60)
-    boxHorloge:onClick(function() initHorloge() end )
-    imgHorloge = gui:image(boxHorloge, "img_horloge.png", 0, 0, 30, 30)
-    lblHorloge = gui:label(boxHorloge, 0, 30, 30, 30)
-    lblHorloge:setFontSize(8)
+    boxHorloge = gui:box (win, 65, 410, 40, 50)
+    boxHorloge:onClick(initHorloge )
+
+    lblSelectHorloge = gui:label(boxHorloge,0,boxHorloge:getHeight()-2,boxHorloge:getWidth(),2)
+    lblSelectHorloge:setBackgroundColor(COLOR_BLACK)
+    
+    imgHorloge = gui:image(boxHorloge, "img_horloge.png", 5, 0, 30, 30)
+    lblHorloge = gui:label(boxHorloge, 0, 30, 40, 12)
+    lblHorloge:setHorizontalAlignment(CENTER_ALIGNMENT)
+    lblHorloge:setFontSize(11)
     lblHorloge:setText("Horloge")   
 
     -- Box Chrono
-    boxChrono= gui:box (win, 145, 410, 30, 60)
-    boxChrono:onClick(function() initChrono() end)
-    imgChrono = gui:image(boxChrono, "img_chrono.png", 0, 0, 30, 30)
-    lblChrono = gui:label(boxChrono, 0, 30, 30, 30)
-    lblChrono:setFontSize(8)
+    boxChrono= gui:box (win, 145, 410, 40, 50)
+    boxChrono:onClick(initChrono)
+    lblSelectChrono = gui:label(boxChrono,0,boxChrono:getHeight()-2,boxChrono:getWidth(),2)
+    lblSelectChrono:setBackgroundColor(COLOR_BLACK)
+
+    imgChrono = gui:image(boxChrono, "img_chrono.png", 5, 0, 30, 30)
+    lblChrono = gui:label(boxChrono, 0, 30, 40, 12)
+    lblChrono:setHorizontalAlignment(CENTER_ALIGNMENT)
+    lblChrono:setFontSize(11)
     lblChrono:setText("Chrono")   
 
     -- Box Minuteur
-    boxMinuteur = gui:box (win, 225, 410, 30, 60)
-    boxMinuteur:onClick(function() initMinuteur() end)
+    boxMinuteur = gui:box (win, 225, 410, 40, 50)
+    boxMinuteur:onClick(initMinuteur)
+    lblSelectMinuteur = gui:label(boxMinuteur,0,boxMinuteur:getHeight()-2,boxMinuteur:getWidth(),2)
+    lblSelectMinuteur:setBackgroundColor(COLOR_BLACK)
 
-    imgMinuteur = gui:image(boxMinuteur, "img_minuteur.png", 0, 0, 30, 30)
-    lblMinuteur= gui:label(boxMinuteur, 0, 30, 30, 30)
+    imgMinuteur = gui:image(boxMinuteur, "img_minuteur.png", 5, 0, 30, 30)
+    lblMinuteur= gui:label(boxMinuteur, 0, 30, 40, 12)
+    lblMinuteur:setHorizontalAlignment(CENTER_ALIGNMENT)
     lblMinuteur:setText("Minuteur")   
-    lblMinuteur:setFontSize(8)
+    lblMinuteur:setFontSize(11)
     
     -- -------------
     -- Specificité pour le chrono
     -- -------------
     
     -- affichage des boutons de gestion du chrono et du minuteur
-    btnStartPause = gui:button(win, 40, 360, 80, 30)
+    btnStartPause = gui:label(win, 40, 360, 80, 30)
+    btnStartPause:setBackgroundColor(COLOR_LIGHT_GREY)
+    btnStartPause:setRadius(15)
+    btnStartPause:setBorderSize(1)
+    btnStartPause:setBorderColor(COLOR_BLACK)
+    btnStartPause:setHorizontalAlignment(CENTER_ALIGNMENT)
+    btnStartPause:setVerticalAlignment(CENTER_ALIGNMENT)
     btnStartPause:setText("Start")
-    btnStartPause:onClick(
-        function()
-            runChronoMinuteur()
-        end
-    )
+    btnStartPause:onClick(runChronoMinuteur)
 
-    btnReset = gui:button(win, 200, 360, 80, 30)
+    btnReset = gui:label(win, 200, 360, 80, 30)
+    btnReset:setBackgroundColor(COLOR_LIGHT_GREY)
+    btnReset:setRadius(15)
+    btnReset:setBorderSize(1)
+    btnReset:setBorderColor(COLOR_BLACK)
+    btnReset:setHorizontalAlignment(CENTER_ALIGNMENT)
+    btnReset:setVerticalAlignment(CENTER_ALIGNMENT)
     btnReset:setText("Reset")
-    btnReset:onClick(
-        function()
-            resetChronoMinuteur()
-        end
-    )
+    btnReset:onClick(resetChronoMinuteur)
 
     --Affichage du label pour le décompte du minuteur
     decompteMinuteur = gui:label(win, 0, 100, 320, 140)
     decompteMinuteur:setFontSize(40)
     decompteMinuteur:setHorizontalAlignment(CENTER_ALIGNMENT)
     
-
     -- -----------------------------
     -- Spécificité pour le Minuteur
     -- -----------------------------
@@ -129,16 +144,23 @@ function init()
     -- Gestion des heures
     vListHeure = gui:vlist(minuteur, 55, 10, 50, 250)
     vListHeure:setSpaceLine(3)
+    vListHeure:setSelectionFocus(SELECTION_UP)
+    vListHeure:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vListHeure:setAutoSelect(true)
 
     -- Gestion des minutes
     vListMinute = gui:vlist(minuteur, 135, 10, 50, 250)
     vListMinute:setSpaceLine(3)
+    vListMinute:setSelectionFocus(SELECTION_UP)
+    vListMinute:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vListMinute:setAutoSelect(true)
 
     -- Gestion des secondes
     vListSeconde = gui:vlist(minuteur, 215, 10, 50, 250)
     vListSeconde:setSpaceLine(3)
-
-
+    vListSeconde:setSelectionFocus(SELECTION_UP)
+    vListSeconde:setSelectionColor(COLOR_LIGHT_ORANGE)
+    vListSeconde:setAutoSelect(true)
 
     --Activation de la fenetre
     gui:setWindow(win)
@@ -166,14 +188,15 @@ function setEcranMode()
         if (MinuteurEnCours) then
             pauseMinuteur()
         end
-
+        lblSelectHorloge:setBackgroundColor(COLOR_BLACK)
+        lblSelectChrono:setBackgroundColor(COLOR_WHITE)
+        lblSelectMinuteur:setBackgroundColor(COLOR_WHITE)
     end
     if (Mode == "Chrono") then
-
         -- Affiche les boutons start / reset
         btnStartPause:enable()
         btnReset:enable()
-    
+
         -- masque le minuteur 
         minuteur:disable()
         
@@ -185,6 +208,9 @@ function setEcranMode()
         if (HorlogeEnCours) then
             pauseHorloge()
         end
+        lblSelectHorloge:setBackgroundColor(COLOR_WHITE)
+        lblSelectChrono:setBackgroundColor(COLOR_BLACK)
+        lblSelectMinuteur:setBackgroundColor(COLOR_WHITE)
 
     end
     
@@ -203,8 +229,11 @@ function setEcranMode()
         -- Affiche les boutons start / reset
         btnStartPause:enable()
         btnReset:enable()
-
         minuteur:enable()
+
+        lblSelectHorloge:setBackgroundColor(COLOR_WHITE)
+        lblSelectChrono:setBackgroundColor(COLOR_WHITE)
+        lblSelectMinuteur:setBackgroundColor(COLOR_BLACK)
 
     end
 end
@@ -412,7 +441,6 @@ function afficheHorloge()
     HorlogeEnCours = true
 end -- afficheHorloge
 
-
 -- InitHorloge: Initialisation de l'écran pour l'horloge
 function initHorloge()
     -- Modification du titre
@@ -423,7 +451,6 @@ function initHorloge()
 
     -- affiche l'horloge
     afficheHorloge()
-
 end
 
 ----------------------------------------------------------------------
@@ -441,7 +468,6 @@ function initChrono()
 
     Mode = "Chrono"
     setEcranMode()
-
 
     -- Initialisation du chrono
     tChrono = 0
@@ -530,28 +556,15 @@ function initMinuteur()
         lblHeure:setFontSize(20)
         lblHeure:setHorizontalAlignment(CENTER_ALIGNMENT)
         lblHeure:setText(tostring(i))
-        lblHeure:onClick(
-            function() 
-                if (lbOldlHeure) then
-                    lbOldlHeure:setBackgroundColor(COLOR_WHITE)
-                end
-                lblHeure:setBackgroundColor(COLOR_LIGHT_GREY)
-                lbOldlHeure = lblHeure
-                vListHeure:setIndex(i)
-                minuteurHeure = i
-                local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
-                heure_label:setText(strTimer) 
-                tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 +minuteurSeconde
-            end
-        )
-        -- gestion de l'init
-        if (i==minuteurHeure) then
-            vListHeure:setIndex(i)
-            lblHeure:setBackgroundColor(COLOR_LIGHT_GREY)
-            lbOldlHeure = lblHeure
-            --minuteurHeure = 0
-        end
     end
+    vListHeure:onSelect(function() 
+            minuteurHeure = vListHeure:getSelected()
+            local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
+            heure_label:setText(strTimer) 
+            tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 +minuteurSeconde
+        end
+    )
+    vListHeure:select(0)
 
     -- rempli les minutes
     for i=0, 59 do
@@ -559,35 +572,16 @@ function initMinuteur()
         lblMinute:setFontSize(20)
         lblMinute:setHorizontalAlignment(CENTER_ALIGNMENT)
         lblMinute:setText(tostring(i))
-        lblMinute:onClick(
-            function() 
-                if (lbOldMinute) then
-                    -- on supprime le "focus" de l'ancienne sélection
-                    lbOldMinute:setBackgroundColor(COLOR_WHITE) 
-                end
-                -- coloriage de la nouvelle sélection
-                lblMinute:setBackgroundColor(COLOR_LIGHT_GREY)
-                -- sauvegarde de la sélection
-                lbOldMinute = lblMinute
-                -- sélection dans la liste (on remat la liste en haut)
-                vListMinute:setIndex(i)
-                -- sauvegarde de la minute sélectionnée
-                minuteurMinute = i
-                -- calcul du timer en seconde et affichage au format heure
-                local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
-                tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 + minuteurSeconde
-                heure_label:setText(strTimer) 
-            end
-        )
-        -- gestion de l'init
-        if (i==minuteurMinute) then
-            vListMinute:setIndex(i)
-            lblMinute:setBackgroundColor(COLOR_LIGHT_GREY)
-            lbOldMinute = lblMinute
-            --minuteurMinute = 0
-        end
-        
     end
+
+    vListMinute:onSelect(function()
+            minuteurMinute = vListMinute:getSelected()
+            local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
+            tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 + minuteurSeconde
+            heure_label:setText(strTimer) 
+        end
+    )
+    vListMinute:select(0)
 
     -- rempli les secondes
     for i=0, 59 do
@@ -595,52 +589,26 @@ function initMinuteur()
         lblSeconde:setFontSize(20)
         lblSeconde:setHorizontalAlignment(CENTER_ALIGNMENT)
         lblSeconde:setText(tostring(i))
-        lblSeconde:onClick(
-            function() 
-                if (lbOldSeconde) then
-                    lbOldSeconde:setBackgroundColor(COLOR_WHITE)
-                end
-                lblSeconde:setBackgroundColor(COLOR_LIGHT_GREY)
-                lbOldSeconde = lblSeconde
-                minuteurSeconde = i
-                vListSeconde:setIndex(i)
-                local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
-                heure_label:setText(strTimer) 
-                tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 +minuteurSeconde
-            end
-        )
-        -- gestion de l'init
-        if (i==minuteurSeconde) then
-            vListSeconde:setIndex(i)
-            lblSeconde:setBackgroundColor(COLOR_LIGHT_GREY)
-            lbOldSeconde = lblSeconde
-            --minuteurSeconde = 0
-        end
     end
-    
+
+    vListSeconde:onSelect(
+        function() 
+            minuteurSeconde = vListSeconde:getSelected()
+            local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
+            heure_label:setText(strTimer) 
+            tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 +minuteurSeconde
+        end
+    )
+    vListSeconde:select(0)
     local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
     heure_label:setText(strTimer) 
 
 end -- initMinuteur
 
 function resetSelectionMinuteur()
-    if (lbOldlHeure) then
-        lbOldlHeure:setBackgroundColor(COLOR_WHITE)
-    end
-    if (lbOldMinute) then
-        lbOldMinute:setBackgroundColor(COLOR_WHITE)
-    end
-    if (lbOldSeconde) then
-        lbOldSeconde:setBackgroundColor(COLOR_WHITE)
-    end
-
-    vListHeure:setIndex(0)
-    vListMinute:setIndex(0)
-    vListSeconde:setIndex(0)
-
-    vListHeure:getChildAtIndex(0):setBackgroundColor(COLOR_LIGHT_GREY)
-    vListMinute:getChildAtIndex(0):setBackgroundColor(COLOR_LIGHT_GREY)
-    vListSeconde:getChildAtIndex(0):setBackgroundColor(COLOR_LIGHT_GREY)
+    vListHeure:select(0)
+    vListMinute:select(0)
+    vListSeconde:select(0)
 
     minuteurHeure = 0
     minuteurMinute = 0
@@ -660,31 +628,24 @@ function runMinuteur()
         minuteur:enable()
         decompteMinuteur:disable()
 
-
     else -- sinon, on affiche le minuteur et on repart pour 1 sec
         afficheMinuteur()
         idTimerMinuteur = time:setTimeout(runMinuteur, 1000)
         MinuteurEnCours = true
     end  
-
     tMinuteur = tMinuteur - 1
-
 
 end --runMinuteur
 
 function afficheMinuteur()
-
     local heure = int(tMinuteur / 3600)
     local minute = int(60* (tMinuteur / 3600 - int(tMinuteur / 3600)))
     local seconde = tMinuteur % 60
     local now = convert_to_time(heure, minute, seconde) 
 
     -- Affichage du chrono dans le label
-    --heure_label:setText(now)
     decompteMinuteur:setText(now)
-    
 end
-
 
 -- appel lorsque le minuteur arrive à zéro
 function ringMinuteur()
@@ -692,23 +653,11 @@ function ringMinuteur()
     gui:showInfoMessage("Fin minuteur !")
     resetMinuteur()
     btnStartPause:setText("Start")
-    btnStartPause:onClick(
-        function() 
-            --decompteMinuteur:enable()
-            --minuteur:disable()
-            runChronoMinuteur() 
-        end)
-
+    btnStartPause:onClick(runChronoMinuteur)
 end --ringMinuteur
 
 
 function resetMinuteur()
---    minuteur:enable()
-    -- heure_label:enable()
-    -- local strTimer = convert_to_time(minuteurHeure, minuteurMinute, minuteurSeconde) 
-    -- heure_label:setText(strTimer) 
-
-    --decompteMinuteur:disable()
     tMinuteur = minuteurHeure * 3600 + minuteurMinute*60 +minuteurSeconde
 
     if (heure_label:isEnabled()) then -- on ne reset la sélection que si la sélection est active
@@ -731,14 +680,9 @@ end
 
 -- lance les fonctions run pour le chrono ou le minuteur
 function runChronoMinuteur()
-
     -- Si le chrono / moniteur est en route, modifie le texte du bouton et prépare le stop
     btnStartPause:setText("Pause")
-    btnStartPause:onClick(
-        function()
-            pauseChronoMinuteur()
-        end
-    )
+    btnStartPause:onClick(pauseChronoMinuteur)
 
     if (Mode == "Chrono") then
         runChrono()
@@ -746,30 +690,22 @@ function runChronoMinuteur()
         decompteMinuteur:enable()
         minuteur:disable()
         heure_label:disable()
-
         runMinuteur()
     end
-
 end -- run
 
-
 function resetChronoMinuteur()
-
     if (Mode == "Chrono") then
         resetChrono()
     elseif (Mode == "Minuteur") then
         resetMinuteur()
-    else
-        -- ras
     end
-
 end
-
 
 function pauseChronoMinuteur()
     --Si le chrono est en route, modifie le texte et le callback
     btnStartPause:setText("Start")
-    btnStartPause:onClick(function() runChronoMinuteur() end)
+    btnStartPause:onClick(runChronoMinuteur)
 
     if (Mode == "Chrono") then
         pauseChrono()
