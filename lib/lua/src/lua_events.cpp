@@ -45,8 +45,22 @@ sol::table LuaTime::get(std::string format)
     result.push_back(format.substr(start));
 
     std::vector<std::string> identifiers = {"s","mi","h","d","mo","y"};
-    std::vector<int> date = {GSM::seconds,GSM::minutes,GSM::hours,GSM::days,GSM::months,GSM::years};
+    #ifdef ESP_PLATFORM
+        std::vector<int> date = {GSM::seconds,GSM::minutes,GSM::hours,GSM::days,GSM::months,GSM::years};
 
+    #else
+        time_t t = std::time(0);   // get time now
+        tm* local_time = std::localtime(&t);
+
+        uint16_t years   = local_time->tm_year + 1900;
+        uint16_t months  = local_time->tm_mon + 1;
+        uint16_t days   = local_time->tm_mday;
+        uint16_t hours   = local_time->tm_hour;
+        uint16_t minutes    = local_time->tm_min;
+        uint16_t seconds    = local_time->tm_sec;                
+
+        std::vector<int> date = {seconds,minutes,hours,days,months,years};
+    #endif
     
     // ajouter les valeurs aux index des identifiers
 
@@ -72,6 +86,18 @@ LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::protected_function func, uin
     this->interval = interval;
     this->id = eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)), interval);
 }
+
+
+uint32_t LuaTimeEvent::addEventListener(LuaFile* lua, sol::protected_function condition, sol::protected_function callback) {
+//    this->lua = lua;
+    this->condition = condition;
+    this->callback = callback;
+//    this->interval = interval;
+    // this->id = eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)),);
+    return  0; //eventHandlerApp.addEventListener( (Function *) condition, (Function *) callback);
+}
+
+
 
 int LuaTimeInterval::getId()
 {
@@ -116,7 +142,16 @@ int LuaTimeTimeout::getId()
 void LuaTimeTimeout::call()
 {
     if(func)
-        func();
+    {
+        sol::protected_function_result result = func();
+
+        // Check for errors
+        if (!result.valid()) {
+            sol::error err = result;
+            std::cerr << "Lua Error: " << err.what() << std::endl;
+        }
+    }
+
     done = true;
 }
 
@@ -163,6 +198,8 @@ void LuaTime::removeInterval(int id)
         {
             delete intervals[it];
             intervals.erase(intervals.begin() + it);
+
+            break;
         }
     }
 }
@@ -175,6 +212,8 @@ void LuaTime::removeTimeout(int id)
         {
             delete timeouts[it];
             timeouts.erase(timeouts.begin() + it);
+
+            break;
         }
     }
 }

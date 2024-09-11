@@ -2,12 +2,7 @@
 #define FILE_STREAM_HPP
 
 #include <string>
-
 #include <fstream>
-
-#ifdef ESP_PLATFORM
-#include "SD.h"
-#endif
 
 namespace storage
 {
@@ -41,6 +36,7 @@ namespace storage
         char readchar(void);
 
         void write(const std::string &str);
+        void write(const char* str, std::size_t len);
         void write(const char c);
 
         bool isopen(void) const;

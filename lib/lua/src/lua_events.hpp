@@ -20,6 +20,18 @@ class LuaTimeInterval
     int id;
 };
 
+class LuaTimeEvent
+{
+    public:
+        uint32_t addEventListener(LuaFile* lua, sol::protected_function condition, sol::protected_function callback);
+        void call();
+    private:
+        int id;
+        sol::protected_function condition;
+        sol::protected_function callback;
+
+};
+
 class LuaTimeTimeout
 {
     public:
@@ -48,6 +60,7 @@ class LuaTime
     sol::table get(std::string format);
     int setInterval(sol::protected_function func, uint32_t interval);
     int setTimeout(sol::protected_function func, uint32_t timeout);
+
     void removeInterval(int id);
     void removeTimeout(int id);
 

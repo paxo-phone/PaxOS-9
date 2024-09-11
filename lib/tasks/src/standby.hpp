@@ -14,6 +14,8 @@ namespace StandbyMode
     void setSleepTime(uint64_t sleepTime);
 
     bool state();
+    bool expired();    // check if it's time to sleep
+    void reset();
 
     void enable();
     void disable();

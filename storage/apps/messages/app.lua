@@ -1,3 +1,31 @@
+function loadNotifs()
+    local unreadfile = storage:file("unread.txt", READ)
+
+    unreadfile:open()
+    notifs = unreadfile:readAll()
+    print ("unread file: " .. notifs)
+    unreadfile:close()
+end
+
+listUpdated = false
+
+function eraseNotif(number)
+    local unreadfile = storage:file("unread.txt", WRITE)
+
+    unreadfile:open()
+    unreadfile:write(string.gsub(notifs, number.."\n", ""))
+    unreadfile:close()
+
+    listUpdated = true
+end
+
+function openImage(path)
+    win3=gui:window()
+
+    local image = gui:image(win3, "images/" .. path, 0, 0, 320, 480)
+    gui:setWindow(win3)
+end
+
 function newMessage(number)
     local msg = gui:keyboard("Message au " .. number, "")
 
@@ -29,22 +57,24 @@ function appendMessage(msg, list)
 end
 
 function converation(number)
-    print("converation called with number ")
     events.onmessage(function ()
-        print("message received")
         if (win2~= nil) then
-            print("win2 not nil")
             gui:del(win2)
-            print("win2 deleted")
             converation(number)
-            print("converation finished")
         end
     end)
 
     win2=gui:window()
 
     local c = gsm.getContactByNumber(number)
-    --print("getContactByNumber returned " .. tostring(c))
+
+    if(notifs == nil) then
+        loadNotifs()
+    end
+
+    if(notifs:find(number) ~= nil) then
+        eraseNotif(number)
+    end
 
     local title=gui:label(win2, 90, 30, 141, 22)
     title:setHorizontalAlignment(CENTER_ALIGNMENT)
@@ -61,27 +91,38 @@ function converation(number)
     --print("getMessages returned " .. tostring(messages))
 
     for i, message in pairs(messages) do
-        --print("message " .. tostring(i) .. " : " .. tostring(message))
-        local bull = gui:box(list, 0, 0, 184, 30)
-        
-        local label = gui:label(bull, 0, 0, 184, 0)
-        label:setHorizontalAlignment(CENTER_ALIGNMENT)
-        label:setText(message.message)
-        label:setFontSize(18)
+        local numberPart = message.message:match("/(%d+)%.jpg")  -- Extract the number part
 
-        local labelHeight = label:getTextHeight() + 8
+        if(numberPart) then -- image
+            print("image " .. numberPart)
+            local image = gui:image(list, "images/" .. numberPart .. "p.jpg" , 0, 0, 60, 60)
 
-        label:setHeight(labelHeight)
+            image:onClick(function ()
+                openImage(string.sub(message.message, 2))
+            end)
+        else
+            print("message " .. message.message)
+            local bull = gui:box(list, 0, 0, 184, 30)
+            
+            local label = gui:label(bull, 0, 0, 184, 0)
+            label:setHorizontalAlignment(CENTER_ALIGNMENT)
+            label:setText(message.message)
+            label:setFontSize(18)
 
-        local canva = gui:canvas(bull, 0, labelHeight, 68, 1)
-        canva:fillRect(0, 0, 68, 1, COLOR_DARK)
-        canva:setX(57)
+            local labelHeight = label:getTextHeight() + 8
 
-        if(message.who == false) then
-            bull:setX(96)
+            label:setHeight(labelHeight)
+
+            local canva = gui:canvas(bull, 0, labelHeight, 68, 1)
+            canva:fillRect(0, 0, 68, 1, COLOR_DARK)
+            canva:setX(57)
+
+            if(message.who == false) then
+                bull:setX(96)
+            end
+
+            bull:setHeight(labelHeight + 9)
         end
-
-        bull:setHeight(labelHeight + 9)
     end
 
     list:setIndex(#messages -1)
@@ -104,7 +145,19 @@ function converation(number)
 
     local back = gui:image(win2, "back.png", 30, 30, 18, 18)
     back:onClick(function() 
-        time:setTimeout(function () gui:del(win2) gui:setWindow(win) end, 0) end)
+        time:setTimeout(
+            function ()
+                gui:del(win2)
+                
+            end, 0)
+            
+        if(listUpdated == true) then
+            gui:del(win)
+            run({})
+        else
+            gui:setWindow(win)
+        end
+    end)
 
     events.onmessageerror(function ()
         if (label_sent~= nil and win2~= nil) then
@@ -129,18 +182,38 @@ function run(arg)
     title:setFontSize(24)
     title:setText("Message")
     
-    listO = gui:vlist(win, 35, 90, 250, 280)
+    listO = gui:vlist(win, 35, 90, 250+21, 280)
     
     local files = storage:listDir("data")
+
+    loadNotifs()
+
+    table.sort(files, function (a, b)
+        numbera = a:match("(.+)%.json")
+        numberb = b:match("(.+)%.json")
+        if notifs:find(numbera) ~= nil and notifs:find(numberb) == nil then
+            return true
+        elseif notifs:find(numberb) ~= nil and notifs:find(numbera) == nil then
+            return false
+        end
+
+        return numbera < numberb
+    end)
     
     for i, file in ipairs(files) do
-        local case = gui:box(listO, 0, 0, 250, 36)
+        local case = gui:box(listO, 0, 0, 250+21, 36)
         
         local number = file:match("(.+)%.json")
         
+        if notifs:find(number) then
+            local unread = gui:box(case, 0, 12, 13, 13)
+            unread:setBackgroundColor(COLOR_WARNING)
+            unread:setRadius(6)
+        end
+        
         local c = gsm.getContactByNumber(number)
         
-        local name = gui:label(case, 0, 0, 230, 18)
+        local name = gui:label(case, 21, 0, 230, 18)
         if c.name ~= "" then
             name:setText(c.name)
             name:setFontSize(16)
@@ -149,8 +222,8 @@ function run(arg)
             name:setFontSize(16)
         end
         
-        local num = gui:label(case, 0, 18, 230, 18)
-        if c.name ~= "" then
+        local num = gui:label(case, 21, 18, 230, 18)
+        if c.namgsme ~= "" then
             num:setText(c.phone)
         else
             num:setText("-")

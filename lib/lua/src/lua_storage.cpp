@@ -1,5 +1,7 @@
 #include "lua_storage.hpp"
 
+#include <libsystem.hpp>
+
 #include "lua_file.hpp"
 
 LuaStorage::LuaStorage(LuaFile* lua)
@@ -61,8 +63,10 @@ bool LuaStorage::legalPath(storage::Path path)
 storage::Path LuaStorage::convertPath(storage::Path path)
 {
     if (!legalPath(path))
-        throw std::runtime_error("The app is not allowed to access this path: " + path.str());
+        throw libsystem::exceptions::RuntimeError("The app is not allowed to access this path: " + path.str());
     
+    std::cerr << this->lua->directory.str() << " " << path.m_steps[0] << std::endl;
+
     if(path.m_steps[0]=="/")
         return path;
     else
@@ -71,8 +75,8 @@ storage::Path LuaStorage::convertPath(storage::Path path)
 
 std::unique_ptr<LuaStorageFile> LuaStorage::file(std::string filename, int mode)
 {
-    storage::Path path(filename);
+    storage::Path path(convertPath(filename));
     std::cout << "path: " << path.str() << std::endl;
     
-    return std::make_unique<LuaStorageFile>(convertPath(path), mode);
+    return std::make_unique<LuaStorageFile>(path, mode);
 }

@@ -6,6 +6,6 @@ LuaImage::LuaImage(LuaWidget* parent, storage::Path path, int x, int y, int widt
     init(widget, parent);
 }
 
-void LuaImage::setTransparentColor (color_t color) {
-        widget->setTransparentColor(color);
+void LuaImage::setTransparentColor(color_t color){
+    widget->setTransparentColor(color);
 }

@@ -33,9 +33,10 @@ namespace graphics
         EFont m_font;
         float m_fontSize;
         color_t m_text_color;
+        uint8_t m_color_depth;
 
     public:
-        Surface(uint16_t width, uint16_t height);
+        Surface(uint16_t width, uint16_t height, const uint8_t color_depth = 16);
         ~Surface();
 
         [[nodiscard]] uint16_t getWidth() const;
@@ -67,6 +68,7 @@ namespace graphics
 
         void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
+        bool saveAsJpg(const storage::Path filename);
         void drawImage(const SImage &image, int16_t x, int16_t y, uint16_t w = 0, uint16_t h = 0);
 
         void setFont(EFont font);
@@ -79,7 +81,24 @@ namespace graphics
         // w and h are the width and height of the bounding box where the text will be centered
         void drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w = -1, const uint16_t h = -1, const bool horizontallyCentered = true, const bool verticallyCentered = true, const std::optional<color_t> color = std::nullopt);
 
-        void blur(uint8_t radius);
+        [[nodiscard]] Surface clone() const;
+
+        [[nodiscard]] void * getBuffer() const;
+        void setBuffer(void* buffer, int32_t w = -1, int32_t h = -1);
+
+        enum Filter {
+            BLUR,
+            LIGHTEN,
+            DARKEN
+        };
+
+        void applyFilter(Filter filter, int32_t intensity);
+
+    private:
+        void blur(int32_t radius);
+        void fastBlur(int32_t radius);
+        void lighten(int32_t intensity);
+        void darken(int32_t intensity);
     };
 } // graphics
 

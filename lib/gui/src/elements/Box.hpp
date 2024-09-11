@@ -5,10 +5,14 @@
 #ifndef BOX_HPP
 #define BOX_HPP
 
+
 #include "../ElementBase.hpp"
 
 namespace gui::elements
 {
+    /**
+     * @brief A simple box that can be used as a background, border, etc.
+     */
     class Box final : public ElementBase
     {
     public:
