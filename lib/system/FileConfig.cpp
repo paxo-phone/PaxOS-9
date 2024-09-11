@@ -147,6 +147,39 @@ namespace libsystem {
             case STRING:
                 value = readString();
                 break;
+            case INT:
+                value = static_cast<int>(readUint32());
+                break;
+            case FLOAT: {
+                log("Found float !");
+
+                uint32_t intValue = readUint32();
+
+                log("Float int: " + std::to_string(intValue));
+
+                float floatValue = *reinterpret_cast<float *>(&intValue);
+
+                log("Float float: " + std::to_string(floatValue));
+
+                value = floatValue;
+
+                break;
+            }
+            case DOUBLE: {
+                log("Found double !");
+
+                uint64_t intValue = readUint64();
+
+                log("Double int: " + std::to_string(intValue));
+
+                double doubleValue = *reinterpret_cast<double *>(&intValue);
+
+                log("Double double: " + std::to_string(doubleValue));
+
+                value = doubleValue;
+
+                break;
+            }
             default:;
         }
 
@@ -267,11 +300,17 @@ namespace libsystem {
     }
 
     uint64_t FileConfig::readUint64() {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshift-count-overflow"
-        return read() << 56 | read() << 48 | read() << 40 | read() << 32 |
-            read() << 24 | read() << 16 | read() << 8 | read();
-#pragma GCC diagnostic pop
+        // #pragma GCC diagnostic push
+        // #pragma GCC diagnostic ignored "-Wshift-count-overflow"
+
+        const uint64_t r = static_cast<uint64_t>(read()) << 56 | static_cast<uint64_t>(read()) << 48 |
+                            static_cast<uint64_t>(read()) << 40 | static_cast<uint64_t>(read()) << 32 |
+                            static_cast<uint64_t>(read()) << 24 | static_cast<uint64_t>(read()) << 16 |
+                            static_cast<uint64_t>(read()) << 8 | static_cast<uint64_t>(read());
+
+        return r;
+
+        // #pragma GCC diagnostic pop
     }
 
     std::string FileConfig::readString(const size_t length) {
@@ -385,8 +424,45 @@ namespace libsystem {
 
                 break;
             }
+            case INT: {
+                const int v = std::get<int>(m_value);
+                const auto v32 = static_cast<uint32_t>(v);
+
+                fileStream->write(static_cast<char>(v32 >> 24));
+                fileStream->write(static_cast<char>(v32 >> 16 & 0xFF));
+                fileStream->write(static_cast<char>(v32 >> 8 & 0xFF));
+                fileStream->write(static_cast<char>(v32 & 0xFF));
+
+                break;
+            }
+            case FLOAT: {
+                const float v = std::get<float>(m_value);
+                const auto v32 = *reinterpret_cast<const uint32_t *>(&v);
+
+                fileStream->write(static_cast<char>(v32 >> 24));
+                fileStream->write(static_cast<char>(v32 >> 16 & 0xFF));
+                fileStream->write(static_cast<char>(v32 >> 8 & 0xFF));
+                fileStream->write(static_cast<char>(v32 & 0xFF));
+
+                break;
+            }
+            case DOUBLE: {
+                const double v = std::get<double>(m_value);
+                const auto v64 = *reinterpret_cast<const uint64_t *>(&v);
+
+                fileStream->write(static_cast<char>(v64 >> 56));
+                fileStream->write(static_cast<char>(v64 >> 48 & 0xFF));
+                fileStream->write(static_cast<char>(v64 >> 40 & 0xFF));
+                fileStream->write(static_cast<char>(v64 >> 32 & 0xFF));
+                fileStream->write(static_cast<char>(v64 >> 24 & 0xFF));
+                fileStream->write(static_cast<char>(v64 >> 16 & 0xFF));
+                fileStream->write(static_cast<char>(v64 >> 8 & 0xFF));
+                fileStream->write(static_cast<char>(v64 & 0xFF));
+
+                break;
+            }
             default:
-                fileStream->write(69);
+                fileStream->write(0x00);
         }
     }
 

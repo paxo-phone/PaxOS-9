@@ -23,6 +23,8 @@ namespace libsystem {
      * It is used to store simple data like user preferences (E.g. screen brightness).
      * Should be faster than JSON.
      *
+     * @todo Write better FileStream implementation.
+     *
      * @todo Add lists support.
      */
     class FileConfig {
@@ -31,7 +33,17 @@ namespace libsystem {
          * Available types for values.
          * Logic needs to be implemented before adding any new value.
          */
-        typedef std::variant<std::nullptr_t, uint8_t, uint16_t, uint32_t, uint64_t, std::string> file_config_types_t;
+        typedef std::variant<
+            std::nullptr_t,
+            uint8_t,
+            uint16_t,
+            uint32_t,
+            uint64_t,
+            std::string,
+            int,
+            float,
+            double
+        > file_config_types_t;
 
     public:
         /**
@@ -92,7 +104,10 @@ namespace libsystem {
             UINT16,
             UINT32,
             UINT64,
-            STRING
+            STRING,
+            INT,
+            FLOAT,
+            DOUBLE
         };
 
         enum VersionFlag {
