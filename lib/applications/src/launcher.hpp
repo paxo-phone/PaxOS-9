@@ -14,14 +14,14 @@ namespace AppManager {
 }
 
 namespace applications::launcher {
-    void init();
-    void free();
+    void init();    // load the launcher
+    void free();    // free the launcher
 
-    void update();
-    void draw();
+    void update();  // update the launcher gui and events
+    void draw();    // make the gui of the launcher
 
-    bool iconTouched();
-    std::shared_ptr<AppManager::App> getApp();
+    bool iconTouched();  // check if an app icon is touched
+    std::shared_ptr<AppManager::App> getApp();  // get the selected app
 }
 
 #endif
