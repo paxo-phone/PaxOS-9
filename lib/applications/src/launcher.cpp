@@ -91,7 +91,7 @@ void applications::launcher::init() {
 }
 
 void applications::launcher::update() {
-    std::cout << "Launcher update" << std::endl;
+    // std::cout << "Launcher update" << std::endl;
 
     if (dirty) {
         // If dirty, free to force redraw it
@@ -102,7 +102,7 @@ void applications::launcher::update() {
     if (!allocated) {
         // If launcher has been freed, redraw it
         draw();
-        std::cout << "Launcher redraw" << std::endl;
+        //std::cout << "Launcher redraw" << std::endl;
     }
 
     // Update dynamic elements
@@ -225,7 +225,7 @@ void applications::launcher::draw() {
         launcherWindow = std::make_shared<Window>();
     }
 
-    std::cout << "launcher::update 1.1" << std::endl;
+    //std::cout << "launcher::update 1.1" << std::endl;
 
     StandbyMode::triggerPower();
 
@@ -238,7 +238,7 @@ void applications::launcher::draw() {
     launcherWindow->addChild(clockLabel);
 
 
-    std::cout << "launcher::update 1.2" << std::endl;
+    //std::cout << "launcher::update 1.2" << std::endl;
 
     // Date
     dateLabel = new Label(55, 89, 210, 18);
@@ -249,7 +249,7 @@ void applications::launcher::draw() {
     launcherWindow->addChild(dateLabel);
 
 
-    std::cout << "launcher::update 1.3" << std::endl;
+//    std::cout << "launcher::update 1.3" << std::endl;
 
     // Battery icon
     const auto batteryIconDarkPath = storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
