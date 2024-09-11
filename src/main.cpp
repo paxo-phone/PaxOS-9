@@ -60,6 +60,8 @@ void mainLoop(void* data) {
     // ReSharper disable once CppTooWideScopeInitStatement
     const libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
 
+    // TODO: Load launcher before OOBE app, to make the experience smoother.
+
     // Check if OOBE app need to be launched
     if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
         // Launch OOBE app
