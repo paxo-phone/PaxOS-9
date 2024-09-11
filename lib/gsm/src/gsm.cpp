@@ -501,7 +501,7 @@ namespace GSM
             StandbyMode::triggerPower();
             download();
 
-            uint i = data.find("+HTTPACTION: ");
+            uint32_t i = data.find("+HTTPACTION: ");
             if(i != std::string::npos)
             {
                 if(data.find("\r\n", i) != std::string::npos)
@@ -569,8 +569,8 @@ namespace GSM
         graphics::Surface loading(320, 5);    // affiche le chargement parce que l'app en cours est figée
             loading.fillRect(0, 0, loading.getWidth(), loading.getHeight(), 0xFFFF);
         
-        for(uint i = 0; i < size;) {    // pour tous les caractères de données brutes annoncés
-            for (uint r = 0; r < numberOfBlocks +1 && i < size; r++)    // pour tous les blocs envoyés en une fois
+        for(uint32_t i = 0; i < size;) {    // pour tous les caractères de données brutes annoncés
+            for (uint32_t r = 0; r < numberOfBlocks +1 && i < size; r++)    // pour tous les blocs envoyés en une fois
             {
                 while ((gsm.available() && timer + timeout_block > millis())?(gsm.read() != ':'):(true));   // wait for the garbage data to be ignored
                 while ((gsm.available() && timer + timeout_block > millis())?(gsm.read() != '\n'):(true));
@@ -585,7 +585,7 @@ namespace GSM
 
                 if(jpg == 0)    // no jpeg for the moment
                 {
-                    for (uint j = 0; j < nextBlockSize; j++)    // parse the block
+                    for (uint32_t j = 0; j < nextBlockSize; j++)    // parse the block
                     {
                         char c = gsm.read();    // read the next char
                         
@@ -636,7 +636,7 @@ namespace GSM
                         bufferIndex += nextBlockSize;   
                 } else  // jpg == 2
                 {
-                    for (uint j = 0; j < nextBlockSize; j++)    // ignore the rest of the data
+                    for (uint32_t j = 0; j < nextBlockSize; j++)    // ignore the rest of the data
                         gsm.read();
                 }
 
@@ -647,7 +647,7 @@ namespace GSM
 
             // loading bar in the terminal
             std::cout << "[";
-            for (uint j = 0; j < 20; j++)
+            for (uint32_t j = 0; j < 20; j++)
             {
                 if(i < j*size/20)
                     std::cout << " ";
