@@ -13,6 +13,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <lua_system.hpp>
 
 
 /*
@@ -486,7 +487,7 @@ void LuaFile::load()
             "getTextWidth", &LuaLabel::getTextWidth,
             "setVerticalAlignment", &LuaLabel::setVerticalAlignment,
             "setHorizontalAlignment", &LuaLabel::setHorizontalAlignment,
-            "setTextColor", &LuaLabel::setTextColor,
+            "setTextColor", sol::overload(&LuaLabel::setTextColor, &LuaLabel::setTextColorRGB),
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaInput>("LuaInput",
@@ -648,6 +649,43 @@ void LuaFile::load()
         lua["gsm"] = luaGSM;
     }
 
+    /*
+     * System.
+     *
+     * @todo Add permission.
+     */
+    {
+        // TODO: Move this from this scope to the "global lua" scope.
+        auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
+
+        auto system = paxo["system"].get_or_create<sol::table>(sol::new_table());
+        auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
+
+        // paxo.system.config.get()
+        systemConfig.set_function("get", sol::overload(
+            &paxolua::system::config::getBool,
+            // &paxolua::system::config::getInt,
+            &paxolua::system::config::getFloat,
+            &paxolua::system::config::getString
+        ));
+
+        // paxo.system.config.set()
+        systemConfig.set_function("set", sol::overload(
+            &paxolua::system::config::setBool,
+            // &paxolua::system::config::setInt,
+            &paxolua::system::config::setFloat,
+            &paxolua::system::config::setString
+        ));
+
+        systemConfig.set_function("write", &paxolua::system::config::write);
+
+        auto app = paxo["app"].get_or_create<sol::table>(sol::new_table());
+
+        app.set_function("quit", [&]() {
+            m_commandQueue.push(QUIT);
+        });
+    }
+
     {   // load events
         sol::table luaEvents = lua.create_table();
 
@@ -729,8 +767,19 @@ void LuaFile::stop(std::vector<std::string> arg)
     lua["quit"](arg);
 }
 
-void LuaFile::loop()
-{
+void LuaFile::loop() {
+    // Process commands
+    while (!m_commandQueue.empty()) {
+        switch (m_commandQueue.front()) {
+            case QUIT:
+                // Quit lua app OUTSIDE of lua
+                AppManager::quitApp();
+                break;
+        }
+
+        m_commandQueue.pop();
+    }
+
     //lua_gui.update();   // add App Priority To Acces Gui
     lua_time.update();
 }

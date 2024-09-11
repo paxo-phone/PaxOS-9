@@ -42,7 +42,8 @@ namespace libsystem {
             std::string,
             int,
             float,
-            double
+            double,
+            bool
         > file_config_types_t;
 
     public:
@@ -107,7 +108,8 @@ namespace libsystem {
             STRING,
             INT,
             FLOAT,
-            DOUBLE
+            DOUBLE,
+            BOOL
         };
 
         enum VersionFlag {

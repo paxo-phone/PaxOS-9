@@ -57,6 +57,23 @@ void mainLoop(void* data) {
 
     GuiManager& guiManager = GuiManager::getInstance();
 
+    // ReSharper disable once CppTooWideScopeInitStatement
+    const libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
+    // Check if OOBE app need to be launched
+    if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
+        // Launch OOBE app
+        const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+
+        try {
+            oobeApp->run(false);
+        } catch (std::runtime_error& e) {
+            std::cerr << "Lua error: " << e.what() << std::endl;
+            guiManager.showErrorMessage(e.what());
+            //AppManager::appList[i].kill();
+        }
+    }
+
     // Main loop
     while (true) {
         // Update inputs

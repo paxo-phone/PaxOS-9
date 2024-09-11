@@ -151,35 +151,24 @@ namespace libsystem {
                 value = static_cast<int>(readUint32());
                 break;
             case FLOAT: {
-                log("Found float !");
-
                 uint32_t intValue = readUint32();
-
-                log("Float int: " + std::to_string(intValue));
-
                 float floatValue = *reinterpret_cast<float *>(&intValue);
-
-                log("Float float: " + std::to_string(floatValue));
 
                 value = floatValue;
 
                 break;
             }
             case DOUBLE: {
-                log("Found double !");
-
                 uint64_t intValue = readUint64();
-
-                log("Double int: " + std::to_string(intValue));
-
                 double doubleValue = *reinterpret_cast<double *>(&intValue);
-
-                log("Double double: " + std::to_string(doubleValue));
 
                 value = doubleValue;
 
                 break;
             }
+            case BOOL:
+                value = static_cast<bool>(readUint8());
+                break;
             default:;
         }
 
@@ -458,6 +447,14 @@ namespace libsystem {
                 fileStream->write(static_cast<char>(v64 >> 16 & 0xFF));
                 fileStream->write(static_cast<char>(v64 >> 8 & 0xFF));
                 fileStream->write(static_cast<char>(v64 & 0xFF));
+
+                break;
+            }
+            case BOOL: {
+                const bool v = std::get<bool>(m_value);
+
+                // ReSharper disable once CppRedundantCastExpression
+                fileStream->write(static_cast<char>(v));
 
                 break;
             }
