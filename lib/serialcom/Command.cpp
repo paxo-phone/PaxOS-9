@@ -1,6 +1,7 @@
 #include "Command.hpp"
 #include "Commands/InfoCommand.hpp"
 #include "Commands/FileCommands.hpp"
+#include "Commands/ShellModeCommand.hpp"
 #include <iostream>
 
 namespace serialcom {
