@@ -46,6 +46,7 @@ using json = nlohmann::json;
 
 // DOWNLOAD
 #define FILE_CANNOT_BE_OPENED(PATH) "File " + std::string(PATH) + " cannot be opened."
+#define FILE_SIZE_MESSAGE(SIZE) "File size " + std::string(SIZE) + "\n"
 
 namespace serialcom
 {
@@ -62,7 +63,7 @@ namespace serialcom
             if (lsPath.exists()) {
                 SerialManager::sharedInstance->commandLog(LS_SUCCESS_OUPUT_HEADER(firstArgument));
                 for (const auto& file : files) {
-                    SerialManager::sharedInstance->commandLog(file);
+                    SerialManager::sharedInstance->commandLog("\n" + file);
                 }
             } else {
                 SerialManager::sharedInstance->commandLog(DIRECTORY_DOES_NOT_EXIST(firstArgument));
@@ -317,7 +318,7 @@ namespace serialcom
 
         if (this->shellMode)
             //SerialManager::sharedInstance->commandLog("File size " + std::to_string(fileStream.size()) + " : " + std::to_string(fileStream.size() + 1) + " : " + BOOL_STR(fileStream.size() == 0));
-            SerialManager::sharedInstance->commandLog("File size " + std::to_string(fileStream.size()));
+            SerialManager::sharedInstance->commandLog(FILE_SIZE_MESSAGE(std::to_string(fileStream.size())));
         else
             SerialManager::sharedInstance->commandLog(std::to_string(fileStream.size()));
 

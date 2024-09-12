@@ -70,6 +70,12 @@ namespace serialcom {
             this->originalBuffer = buffer;
             return oldBuffer;
         }
+
+        void emptyBuffer()
+        {
+            buffer.fill(0);
+            Base::setp(buffer.data(), buffer.data() + size);
+        }
     private:
         int_type overflow(int_type ch) override
         {

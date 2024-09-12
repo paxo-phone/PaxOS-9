@@ -18,7 +18,11 @@ namespace serialcom {
 
         static const std::shared_ptr<SerialManager> sharedInstance;
 
+        void startCommandLog();
+
         void commandLog(const std::string& message); // log by a command result only
+
+        void finishCommandLog(bool shellMode);
 
         void forceFlushBuffers();
 
@@ -37,6 +41,10 @@ namespace serialcom {
         private:
         ArrayedStreamBuffer<MAX_OUTPUT_SIZE> coutBuffer;
         ArrayedStreamBuffer<MAX_OUTPUT_SIZE> cerrBuffer;
+
+        std::array<char, MAX_OUTPUT_SIZE> commandLogBuffer = {'\0'}; // value-initialize buffer commandLogBuffer;
+        u_int16_t commandLogBufferIndex = 0;
+        u_int64_t commandLogBufferHash = 0;
 
         bool newData = false;
         bool isOutputingCommand = false;

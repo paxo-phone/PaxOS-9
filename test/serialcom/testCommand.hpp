@@ -10,16 +10,18 @@ using namespace serialcom;
 
 void executeCommand(std::string commandText, bool shellMode)
 {
-    char info_input[serialcom::INPUT_MAX_SIZE] = {'\0'};
+    char info_input[INPUT_MAX_SIZE] = {'\0'};
     strcpy(info_input, commandText.c_str());
     Command command = Command(info_input);
     CommandsManager::defaultInstance->shellMode = shellMode;
+    SerialManager::sharedInstance->startCommandLog();
     CommandsManager::defaultInstance->processCommand(command);
+    SerialManager::sharedInstance->finishCommandLog(CommandsManager::defaultInstance->shellMode);
 }
 
 void testCommand(std::string commandText, bool shellMode, Command::CommandType expectedCommandType, std::string expectedOutput)
 {
-    char info_input[serialcom::INPUT_MAX_SIZE] = {'\0'};
+    char info_input[INPUT_MAX_SIZE] = {'\0'};
     strcpy(info_input, commandText.c_str());
     Command command = Command(info_input);
     ASSERT_EQ(command.type, expectedCommandType);
@@ -31,14 +33,49 @@ void testCommand(std::string commandText, bool shellMode, Command::CommandType e
 
     // BEGIN: Code being tested
     CommandsManager::defaultInstance->shellMode = shellMode;
+    SerialManager::sharedInstance->startCommandLog();
     CommandsManager::defaultInstance->processCommand(command);
+    SerialManager::sharedInstance->finishCommandLog(CommandsManager::defaultInstance->shellMode);
     // END:   Code being tested
 
     // Use the string value of buffer to compare against expected output
     std::string text = buffer.str();
 
     if (CommandsManager::defaultInstance->shellMode)
-      text.pop_back(); // remove the last '\n' character printed if the shellMode is enabled
+    {
+        text.pop_back(); // remove the last '\n' character printed if the shellMode is enabled
+    } else {
+        if (text.size() >= 8)
+        {
+            // get the size of the expected output (2 bytes), raw bytes of a uint16 and the hash (4 bytes), raw bytes of a uint32
+
+            uint16_t expectedOutputSize = 0;
+            expectedOutputSize = (text[1] << 8) | text[0]; // little endian
+
+            // 2 option bytes
+
+            // 4 hash bytes
+            uint32_t expectedOutputHash = 0;
+            expectedOutputHash = (text[7] << 24) | (text[6] << 16) | (text[5] << 8) | text[4]; // little endian
+
+            text.erase(0, 8); // remove the size and hash from the expected output
+
+            ASSERT_EQ(std::to_string(text.size()), std::to_string(expectedOutputSize));
+
+            // verify the hash
+
+            uint64_t pseudoHash = 0;
+
+            for (char c : text)
+            {
+                pseudoHash = (pseudoHash + c) % 4294967295;
+            }
+
+            uint32_t finalPseudoHash = pseudoHash;
+
+            ASSERT_EQ(finalPseudoHash, expectedOutputHash);
+        }
+    }
 
     int result = text.compare(expectedOutput);
 

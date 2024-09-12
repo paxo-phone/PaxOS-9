@@ -2,6 +2,9 @@
 #include "CommandsManager.hpp"
 #include <delay.hpp>
 #include <iostream>
+#include <streambuf>
+#include <array>
+#include <cstddef>
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
 #endif
@@ -27,9 +30,52 @@ namespace serialcom {
 
         std::ios_base::sync_with_stdio(true);
     }
+
+    void SerialManager::startCommandLog()
+    {
+        this->commandLogBuffer.fill(0);
+        this->commandLogBufferIndex = 0;
+        this->commandLogBufferHash = 0;
+    }
     
-    void SerialManager::commandLog(const std::string& message) { // should only be called in the serialLoop thread
-        this->coutBuffer.directLog(message, CommandsManager::defaultInstance->shellMode);
+    void SerialManager::commandLog(const std::string& message) // should only be called in the serialLoop thread
+    {
+        // put in the commandLogBuffer
+        
+        for (char c : message)
+        {
+            if (this->commandLogBufferIndex < MAX_OUTPUT_SIZE)
+            {
+                this->commandLogBuffer[this->commandLogBufferIndex] = c;
+                this->commandLogBufferIndex++;
+                this->commandLogBufferHash = (this->commandLogBufferHash + c) % 4294967295;
+            } // TODO: handle overflows
+        }
+    }
+
+    void SerialManager::finishCommandLog(bool shellMode)
+    {
+        if (shellMode)
+        {
+            this->coutBuffer.directLog(this->commandLogBuffer.data(), true);
+        } else {
+            uint32_t finalPseudoHash = this->commandLogBufferHash;
+
+            std::string bufferIndex(reinterpret_cast<const char *>(&this->commandLogBufferIndex), sizeof(this->commandLogBufferIndex));
+
+            this->coutBuffer.directLog(bufferIndex, false);
+
+            uint16_t options = 0b0000000000000000;
+            std::string optionsString(reinterpret_cast<const char *>(&options), sizeof(options));
+
+            this->coutBuffer.directLog(optionsString, false);
+
+            std::string bufferHash(reinterpret_cast<const char *>(&finalPseudoHash), sizeof(finalPseudoHash));
+
+            this->coutBuffer.directLog(bufferHash, false);
+
+            this->coutBuffer.directLog(this->commandLogBuffer.data(), false);
+        }
     }
 
     void SerialManager::forceFlushBuffers()
@@ -65,7 +111,9 @@ namespace serialcom {
                     std::cout << std::endl;
                 }
                 Command newCommand = Command(serialManager->current_input);
+                serialManager->startCommandLog();
                 CommandsManager::defaultInstance->processCommand(newCommand);
+                serialManager->finishCommandLog(CommandsManager::defaultInstance->shellMode);
                 serialManager->newData = false;
             }
 

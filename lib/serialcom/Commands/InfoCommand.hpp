@@ -8,10 +8,18 @@
 #include <iostream>
 #include <functional>
 
+#define HOSTNAME_MESSAGE "Hostname: " + std::string(HOSTNAME) + "\n"
+#define WIFI_MAC_MESSAGE "WiFi Mac Address: " + std::string(MAC_WIFI) + "\n"
+#define BLUETOOTH_MAC_MESSAGE "Bluetooth Mac Address: " + std::string(MAC_BLUETOOTH) + "\n"
+#define VERSION_MESSAGE "Version: " + std::string(CURRENT_VERSION) + "\n"
+#define HARDWARE_MESSAGE "Hardware: " + std::string(HARDWARE_DESCRIPTION) + "\n"
+#define INFO_COMMAND_NOT_RECOGNIZED(ARGUMENT) "Argument " + std::string(ARGUMENT) + " not recognized (available: hostname, mac, version, hardware)."
+#define INFO_COMMAND_NOT_RECOGNIZED_MAC(ARGUMENT) "Argument " + std::string(ARGUMENT) + " not recognized (available: wifi, bluetooth)."
+
 namespace serialcom {
     void CommandsManager::processInfoCommandHostname(const Command& command) const {
         if (this->shellMode) {
-            SerialManager::sharedInstance->commandLog("Hostname: " + std::string(HOSTNAME));
+            SerialManager::sharedInstance->commandLog(HOSTNAME_MESSAGE);
         } else {
             SerialManager::sharedInstance->commandLog(HOSTNAME);
             // output the null terminator
@@ -22,7 +30,7 @@ namespace serialcom {
 
     void CommandsManager::printWiFiMac() const {
         if (this->shellMode) {
-            SerialManager::sharedInstance->commandLog("WiFi Mac Address: " + std::string(MAC_WIFI)); // format it in a fancy way
+            SerialManager::sharedInstance->commandLog(WIFI_MAC_MESSAGE); // format it in a fancy way
         } else {
             SerialManager::sharedInstance->commandLog(MAC_WIFI);
         }
@@ -30,7 +38,7 @@ namespace serialcom {
 
     void CommandsManager::printBluetoothMac() const {
         if (this->shellMode) {
-            SerialManager::sharedInstance->commandLog("Bluetooth Mac Address: " + std::string(MAC_BLUETOOTH)); // format it in a fancy way
+            SerialManager::sharedInstance->commandLog(BLUETOOTH_MAC_MESSAGE); // format it in a fancy way
         } else {
             SerialManager::sharedInstance->commandLog(MAC_BLUETOOTH);
         }
@@ -47,7 +55,7 @@ namespace serialcom {
             printBluetoothMac();
         } else {
             if (this->shellMode) {
-                SerialManager::sharedInstance->commandLog("Argument " + potentialSecondParameter + " not recognized (available: wifi, bluetooth)");
+                SerialManager::sharedInstance->commandLog(INFO_COMMAND_NOT_RECOGNIZED_MAC(potentialSecondParameter));
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             }
@@ -56,7 +64,7 @@ namespace serialcom {
 
     void CommandsManager::processInfoCommandVersion(const Command& command) const {
         if (this->shellMode) {
-            SerialManager::sharedInstance->commandLog("Version: " + std::string(CURRENT_VERSION));
+            SerialManager::sharedInstance->commandLog(VERSION_MESSAGE);
         } else {
             SerialManager::sharedInstance->commandLog(CURRENT_VERSION);
         }
@@ -64,7 +72,7 @@ namespace serialcom {
 
     void CommandsManager::processInfoCommandHardware(const Command& command) const {
         if (this->shellMode) {
-            SerialManager::sharedInstance->commandLog("Hardware: " + std::string(HARDWARE_DESCRIPTION));
+            SerialManager::sharedInstance->commandLog(HARDWARE_MESSAGE);
         } else {
             SerialManager::sharedInstance->commandLog(HARDWARE_DESCRIPTION);
         }
@@ -99,7 +107,7 @@ namespace serialcom {
             return;
         } else {
             if (this->shellMode) {
-                SerialManager::sharedInstance->commandLog("Argument " + firstArgument + " not recognized (available: hostname, mac, version, hardware)");
+                SerialManager::sharedInstance->commandLog(INFO_COMMAND_NOT_RECOGNIZED(firstArgument));
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
             }
