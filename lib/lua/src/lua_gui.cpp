@@ -141,10 +141,14 @@ LuaWindow* LuaGui::window()
 
 void LuaGui::del(LuaWidget* widget)
 {
-    delete widget;
-    if(mainWindow == widget)
-        mainWindow = nullptr;
-    widget = nullptr;
+    // prevent a widget to remove itself during its execution
+    lua->eventHandler.setTimeout(new Callback<>(std::function<void(void)>([&]()
+    {
+        delete widget;
+        if(mainWindow == widget)
+            mainWindow = nullptr;
+        widget = nullptr;
+    })), 0);    // run it as soon as possible
 }
 
 void LuaGui::update()
