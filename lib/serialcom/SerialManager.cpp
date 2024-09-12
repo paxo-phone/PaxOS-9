@@ -34,8 +34,11 @@ namespace serialcom {
 
     void SerialManager::forceFlushBuffers()
     {
-        this->coutBuffer.flushBuffer();
-        this->cerrBuffer.flushBuffer();
+        if (!this->consoleLocked)
+        {
+            this->coutBuffer.flushBuffer();
+            this->cerrBuffer.flushBuffer();
+        }
     }
 
     std::streambuf* SerialManager::changeDefaultCoutBuffer(std::streambuf* buffer)
@@ -65,8 +68,11 @@ namespace serialcom {
                 CommandsManager::defaultInstance->processCommand(newCommand);
                 serialManager->newData = false;
             }
-            serialManager->coutBuffer.flushBuffer();
-            serialManager->cerrBuffer.flushBuffer();
+
+            if (!serialManager->consoleLocked) {
+                serialManager->coutBuffer.flushBuffer();
+                serialManager->cerrBuffer.flushBuffer();
+            }
 
             PaxOS_Delay(10);
         }

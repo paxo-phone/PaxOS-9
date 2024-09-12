@@ -2,6 +2,7 @@
 #include "Commands/InfoCommand.hpp"
 #include "Commands/FileCommands.hpp"
 #include "Commands/ShellModeCommand.hpp"
+#include "Commands/ConsoleCommand.hpp"
 #include <iostream>
 
 namespace serialcom {
@@ -179,6 +180,7 @@ namespace serialcom {
 
     std::unordered_map<Command::CommandType, std::string> Command::command_types_raw_strings {
         {Command::CommandType::sm, "sm"},
+        {Command::CommandType::console, "console"},
 
         {Command::CommandType::info, "info"},
         {Command::CommandType::echo, "echo"},

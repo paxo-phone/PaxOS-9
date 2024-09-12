@@ -13,6 +13,9 @@ namespace serialcom {
             case Command::CommandType::sm:
                 processSMCommand(command);
                 break;
+            case Command::CommandType::console:
+                processConsoleCommand(command);
+                break;
             case Command::CommandType::info:
                 processInfoCommand(command);
                 break;

@@ -14,6 +14,8 @@ namespace serialcom {
         SerialManager();
         ~SerialManager();
 
+        bool consoleLocked = false;
+
         static const std::shared_ptr<SerialManager> sharedInstance;
 
         void commandLog(const std::string& message); // log by a command result only

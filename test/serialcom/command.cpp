@@ -10,4 +10,5 @@
 #include "Commands/Command.hpp"
 #include "Commands/InfoCommandTests.hpp"
 #include "Commands/FileCommandTests.hpp"
-#include "Commands/ShellModeCommand.hpp"
+#include "Commands/ShellModeCommandTests.hpp"
+#include "Commands/ConsoleCommandTests.hpp"
