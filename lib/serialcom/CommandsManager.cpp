@@ -10,6 +10,9 @@ namespace serialcom {
 
     void CommandsManager::processCommand(const Command& command) {
         switch (command.type) {
+            case Command::CommandType::sm:
+                processSMCommand(command);
+                break;
             case Command::CommandType::info:
                 processInfoCommand(command);
                 break;

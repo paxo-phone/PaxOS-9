@@ -15,6 +15,8 @@ namespace serialcom {
             bool shellMode = true;
 
         private:
+            void processSMCommand(const Command& command);
+
             void processInfoCommand(const Command& command) const;
             void processInfoCommandHostname(const Command& command) const;
             void printWiFiMac() const;

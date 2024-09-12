@@ -13,6 +13,8 @@ namespace serialcom {
 
     struct Command {
         enum class CommandType {
+            sm,
+
             info,
             echo,
             apps,
@@ -29,8 +31,6 @@ namespace serialcom {
             cat,
             download,
             upload,
-              
-            
 
             unknown
         };

@@ -37,7 +37,7 @@ void testCommand(std::string commandText, bool shellMode, Command::CommandType e
     // Use the string value of buffer to compare against expected output
     std::string text = buffer.str();
 
-    if (shellMode)
+    if (CommandsManager::defaultInstance->shellMode)
       text.pop_back(); // remove the last '\n' character printed if the shellMode is enabled
 
     int result = text.compare(expectedOutput);
@@ -73,6 +73,8 @@ void testCommand(std::string commandText, bool shellMode, Command::CommandType e
                   }
               }
          }
+
+         std::cout << "Arguments: " << command.arguments[0] << " with size " << std::string(command.arguments[0]).size() << "; " << command.arguments[1] << " with size " << std::string(command.arguments[1]).size() << "; " << command.arguments[2] << " with size " << std::string(command.arguments[2]).size() << std::endl;
    }
 
     SerialManager::sharedInstance->forceFlushBuffers();

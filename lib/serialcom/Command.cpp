@@ -177,6 +177,8 @@ namespace serialcom {
     }
 
     std::unordered_map<Command::CommandType, std::string> Command::command_types_raw_strings {
+        {Command::CommandType::sm, "sm"},
+
         {Command::CommandType::info, "info"},
         {Command::CommandType::echo, "echo"},
         {Command::CommandType::apps, "apps"},
