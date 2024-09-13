@@ -64,13 +64,33 @@ namespace serialcom
                 SerialManager::sharedInstance->commandLog(LS_SUCCESS_OUPUT_HEADER(firstArgument));
                 for (const auto& file : files) {
                     SerialManager::sharedInstance->commandLog("\n" + file);
+                    if (storage::Path(firstArgument + "/" + file).isdir())
+                    {
+                        SerialManager::sharedInstance->commandLog("/");
+                    }
                 }
             } else {
                 SerialManager::sharedInstance->commandLog(DIRECTORY_DOES_NOT_EXIST(firstArgument));
             }
         } else {
             if (lsPath.exists()) {
-                json output = files;
+                json output;
+
+                std::vector<std::string> realFiles;
+                std::vector<std::string> directories;
+
+                for (const auto& file : files) {
+                    if (storage::Path(firstArgument + "/" + file).isdir())
+                    {
+                        directories.push_back(file);
+                    } else {
+                        realFiles.push_back(file);
+                    }
+                }
+
+                output["files"] = realFiles;
+                output["directories"] = directories;
+                
                 SerialManager::sharedInstance->commandLog(output.dump());
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);

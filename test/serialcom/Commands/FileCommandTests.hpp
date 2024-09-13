@@ -46,7 +46,7 @@ TEST(Commands, FILE_COMMANDS)
     */
 
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST"));
-    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "[]");
+    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[]}");
 
     testCommand("ls /FILE_COMMANDS_TEST1", true, Command::CommandType::ls, DIRECTORY_DOES_NOT_EXIST("/FILE_COMMANDS_TEST1"));
     testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE1", false, Command::CommandType::ls, NON_SHELL_MODE_ERROR_CODE);
@@ -69,7 +69,7 @@ TEST(Commands, FILE_COMMANDS)
     */
 
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nfile.txt");
-    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "[\"file.txt\"]");
+    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[\"file.txt\"]}");
 
     testCommand("rm /FILE_COMMANDS_TEST/file.txt", true, Command::CommandType::rm, PATH_REMOVAL_SUCCESS("/FILE_COMMANDS_TEST/file.txt"));
     testCommand("rm /FILE_COMMANDS_TEST_NON_SHELL_MODE/file.txt", false, Command::CommandType::rm, NON_SHELL_MODE_NO_ERROR_CODE);
@@ -78,7 +78,7 @@ TEST(Commands, FILE_COMMANDS)
     testCommand("rm /FILE_COMMANDS_TEST_NON_SHELL_MODE/file.txt", false, Command::CommandType::rm, NON_SHELL_MODE_ERROR_CODE);
 
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST"));
-    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "[]");
+    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[]}");
 
         // TODO find a scenario where the rm command fails
 
@@ -111,7 +111,7 @@ TEST(Commands, FILE_COMMANDS)
     testCommand("touch /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFile.txt", false, Command::CommandType::touch, NON_SHELL_MODE_NO_ERROR_CODE);
 
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nemptyFile.txt");
-    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "[\"emptyFile.txt\"]");
+    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[\"emptyFile.txt\"]}");
 
     testCommand("download /FILE_COMMANDS_TEST/emptyFile.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
     testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFile.txt", false, Command::CommandType::download, "0");
@@ -128,7 +128,7 @@ TEST(Commands, FILE_COMMANDS)
     //testCommand("cp FILE_COMMANDS_TEST_NON_SHELL_MODE/test.txt FILE_COMMANDS_TEST_NON_SHELL_MODE/testCopy.txt", false, Command::CommandType::cp, NON_SHELL_MODE_NO_ERROR_CODE);
 
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nemptyFile.txt\nemptyFileCopy.txt");
-    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "[\"emptyFile.txt\",\"emptyFileCopy.txt\"]");
+    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[\"emptyFile.txt\",\"emptyFileCopy.txt\"]}");
 
     executeCommand("rm /FILE_COMMANDS_TEST/emptyFileMoved.txt", true);
     executeCommand("rm /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileMoved.txt", true);
@@ -140,7 +140,7 @@ TEST(Commands, FILE_COMMANDS)
     //testCommand("mv FILE_COMMANDS_TEST_NON_SHELL_MODE/test.txt FILE_COMMANDS_TEST_NON_SHELL_MODE/testMoved.txt", false, Command::CommandType::mv, NON_SHELL_MODE_NO_ERROR_CODE);
 
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nemptyFileCopy.txt\nemptyFileMoved.txt");
-    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "[\"emptyFileCopy.txt\",\"emptyFileMoved.txt\"]");
+    testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[\"emptyFileCopy.txt\",\"emptyFileMoved.txt\"]}");
 
     testCommand("download /FILE_COMMANDS_TEST/emptyFileMoved.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
     testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileMoved.txt", false, Command::CommandType::download, "0");
