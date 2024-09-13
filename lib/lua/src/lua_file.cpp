@@ -401,6 +401,7 @@ void LuaFile::load()
             "setBorderColor",&LuaWidget::setBorderColor,
             "setRadius",&LuaWidget::setRadius,
             "setBorderSize", &LuaWidget::setBorderSize,
+            "clear", &LuaWidget::clear,
             "enable", &LuaWidget::enable,
             "disable", &LuaWidget::disable,
             "isEnabled", &LuaWidget::isEnabled,

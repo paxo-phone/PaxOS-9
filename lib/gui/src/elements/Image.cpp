@@ -5,7 +5,6 @@
 #include <path.hpp>
 
 #include <iostream>
-#include <libsystem.hpp>
 
 namespace gui::ImagesList
 {
@@ -20,32 +19,32 @@ namespace gui::ImagesList
 
     std::vector<ImageLoaded> images;
 
-    std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF) {
-        // ReSharper disable once CppUseStructuredBinding
-        for (const auto& image : images) {
-            if (image.path.str() == path.str() && image.width == width && image.height == height) {
-                return image.surface;
-            }
-        }
+   std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF) {
+         // ReSharper disable once CppUseStructuredBinding
+         for (const auto& image : images) {
+             if (image.path.str() == path.str() && image.width == width && image.height == height) {
+                 return image.surface;
+             }
+         }
 
-        const auto i = graphics::SImage(path);
+         const auto i = graphics::SImage(path);
 
-        // libsystem::log("Image: " + std::to_string(i.getType()) + ", " + std::to_string(i.getWidth()) + ", " + std::to_string(i.getHeight()) + ", " + i.getPath().str());
+         // libsystem::log("Image: " + std::to_string(i.getType()) + ", " + std::to_string(i.getWidth()) + ", " + std::to_string(i.getHeight()) + ", " + i.getPath().str());
 
-        ImageLoaded img = {
-            path,
-            width, // i.getWidth(),
-            height, // i.getHeight(),
-            std::make_shared<graphics::Surface>(width, height)
-        };
+         ImageLoaded img = {
+             path,
+             i.getWidth(),
+             i.getHeight(),
+             std::make_shared<graphics::Surface>(width, height)
+         };
 
-        // Clear the background if it's a transparent image ?
-        // I guess so ?
-        if(i.getType() != graphics::ImageType::BMP) {
-            img.surface->clear(backgroundColor);
-        }
+         // Clear the background if it's a transparent image ?
+         // I guess so ?
+         if(i.getType() != graphics::ImageType::BMP) {
+             img.surface->clear(backgroundColor);
+         }
 
-        img.surface->drawImage(i, 0, 0, width, height);
+         img.surface->drawImage(i, 0, 0, width, height);
 
         images.push_back(img);
 
@@ -59,7 +58,7 @@ namespace gui::ImagesList
             if (img->surface.use_count() == 1)
             {
                 img = images.erase(img);
-                //std::cout << "[Image] image deleted" << std::endl;
+                std::cout << "[Image] image deleted" << std::endl;
             }
             else
             {
@@ -93,18 +92,19 @@ namespace gui::elements
             load(m_backgroundColor);
     }
 
-    void Image::load(color_t background)
-    {
-        m_surface = gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
-        localGraphicalUpdate();
-    }
-
-        void Image::setTransparentColor(color_t color){
+    void Image::setTransparentColor(color_t color){
         if ( ! m_surface) {
             //std::cout << "[Image] m_surface is null";
             load(color);
         }
         m_surface->setTransparentColor(color);
         m_surface->setTransparency(true);
+    }
+
+
+    void Image::load(color_t background)
+    {
+        m_surface = gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
+        localGraphicalUpdate();
     }
 }
