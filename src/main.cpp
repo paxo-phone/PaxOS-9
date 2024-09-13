@@ -331,7 +331,8 @@ void setup()
     AppManager::init();
 
     #ifdef ESP_PLATFORM
-    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
+    //                                     // stack size: >32k = crash due to image decoder in stack
+    xTaskCreateUniversal(mainLoop,"newloop", 16*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
     vTaskDelete(NULL);
     #else
     mainLoop(NULL);

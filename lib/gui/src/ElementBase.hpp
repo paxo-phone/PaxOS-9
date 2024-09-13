@@ -102,6 +102,8 @@ namespace gui
         void forceUpdate();
 
     protected:
+        void freeRamFor(uint32_t size, ElementBase* window);
+
         // variables générales
         uint16_t m_width, m_height;
 
