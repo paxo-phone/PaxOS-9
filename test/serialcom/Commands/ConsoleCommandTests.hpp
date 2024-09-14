@@ -42,7 +42,7 @@ TEST(Commands, CONSOLE_COMMAND)
 
     SerialManager::sharedInstance->forceFlushBuffers();
 
-    ASSERT_EQ(buffer.str().substr(8) /* avoid the header things */, NON_SHELL_MODE_NO_ERROR_CODE + shouldBePrintedMessage);
+    ASSERT_EQ(buffer.str().substr(12) /* avoid the header things */, NON_SHELL_MODE_NO_ERROR_CODE + shouldBePrintedMessage);
 
     buffer.str("");
 
@@ -54,7 +54,7 @@ TEST(Commands, CONSOLE_COMMAND)
 
     SerialManager::sharedInstance->forceFlushBuffers();
 
-    ASSERT_EQ(buffer.str().substr(8), NON_SHELL_MODE_NO_ERROR_CODE);
+    ASSERT_EQ(buffer.str().substr(12), NON_SHELL_MODE_NO_ERROR_CODE);
 
     SerialManager::sharedInstance->changeDefaultCoutBuffer(prevcoutbuf);
 }

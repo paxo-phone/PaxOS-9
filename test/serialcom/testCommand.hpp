@@ -45,20 +45,23 @@ void testCommand(std::string commandText, bool shellMode, Command::CommandType e
     {
         text.pop_back(); // remove the last '\n' character printed if the shellMode is enabled
     } else {
-        if (text.size() >= 8)
+        if (text.size() >= 12)
         {
+            // 4 begin bytes
+            ASSERT_TRUE(text[0] == 0xff && text[1] == 0xfe && text[2] == 0xfd && text[3] == 0xfc);
+
             // get the size of the expected output (2 bytes), raw bytes of a uint16 and the hash (4 bytes), raw bytes of a uint32
 
             uint16_t expectedOutputSize = 0;
-            expectedOutputSize = (text[1] << 8) | text[0]; // little endian
+            expectedOutputSize = (text[5] << 8) | text[4]; // little endian
 
             // 2 option bytes
 
             // 4 hash bytes
             uint32_t expectedOutputHash = 0;
-            expectedOutputHash = (text[7] << 24) | (text[6] << 16) | (text[5] << 8) | text[4]; // little endian
+            expectedOutputHash = (text[11] << 24) | (text[10] << 16) | (text[9] << 8) | text[8]; // little endian
 
-            text.erase(0, 8); // remove the size and hash from the expected output
+            text.erase(0, 12); // remove the size and hash from the expected output
 
             ASSERT_EQ(std::to_string(text.size()), std::to_string(expectedOutputSize));
 

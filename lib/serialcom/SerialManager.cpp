@@ -41,6 +41,8 @@ namespace serialcom {
     void SerialManager::commandLog(const std::string& message) // should only be called in the serialLoop thread
     {
         // put in the commandLogBuffer
+
+        uint64_t pseudoHash = this->commandLogBufferHash;
         
         for (char c : message)
         {
@@ -48,9 +50,11 @@ namespace serialcom {
             {
                 this->commandLogBuffer[this->commandLogBufferIndex] = c;
                 this->commandLogBufferIndex++;
-                this->commandLogBufferHash = (this->commandLogBufferHash + c) % 4294967295;
+                pseudoHash = (pseudoHash + c) % 4294967295;
             } // TODO: handle overflows
         }
+
+        this->commandLogBufferHash = pseudoHash;
     }
 
     void SerialManager::finishCommandLog(bool shellMode)
@@ -59,7 +63,16 @@ namespace serialcom {
         {
             this->coutBuffer.directLog(this->commandLogBuffer.data(), true);
         } else {
-            uint32_t finalPseudoHash = this->commandLogBufferHash;
+            union {
+                uint32_t hash;
+                char bytes[4];
+            } hashUnion;
+            hashUnion.hash = this->commandLogBufferHash;
+
+            char startBytes[4] = { 0xff, 0xfe, 0xfd, 0xfc };
+            std::string startBytesString(reinterpret_cast<const char *>(&startBytes), sizeof(startBytes));
+
+            this->coutBuffer.directLog(startBytesString, false);
 
             std::string bufferIndex(reinterpret_cast<const char *>(&this->commandLogBufferIndex), sizeof(this->commandLogBufferIndex));
 
@@ -70,8 +83,8 @@ namespace serialcom {
 
             this->coutBuffer.directLog(optionsString, false);
 
-            std::string bufferHash(reinterpret_cast<const char *>(&finalPseudoHash), sizeof(finalPseudoHash));
-
+            std::string bufferHash(reinterpret_cast<const char *>(&hashUnion.bytes), sizeof(hashUnion.bytes));
+ 
             this->coutBuffer.directLog(bufferHash, false);
 
             this->coutBuffer.directLog(this->commandLogBuffer.data(), false);
