@@ -42,6 +42,7 @@ namespace GSM
     std::vector<Message> messages;
     State state;
     uint16_t seconds, minutes, hours, days, months, years = 0;
+    std::vector<float> battery_voltage_history;
     float voltage = -1;
     int networkQuality = 0;
     bool flightMode = false;
@@ -994,6 +995,19 @@ namespace GSM
         try
         {
             voltage = std::stof(voltage_str);
+
+            battery_voltage_history.push_back(voltage);
+            if (battery_voltage_history.size() > 24)
+                battery_voltage_history.erase(battery_voltage_history.begin());
+
+            if (battery_voltage_history.size() > 0) {
+                double sum = 0;
+                for (auto v : battery_voltage_history)
+                    sum += v;
+                voltage = sum / battery_voltage_history.size();
+
+                std::cout << "Battery voltage average: " << voltage << std::endl;
+            }
         }
         catch (std::exception)
         {
@@ -1010,7 +1024,7 @@ namespace GSM
         // Thanks NumWorks for the regression app
         const double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
 
-        std::cout << "Battery level: " << batteryLevel << std::endl;
+        //std::cout << "Battery level: " << batteryLevel << std::endl;
 
         return std::clamp(batteryLevel, 0.0, 1.0);
 
