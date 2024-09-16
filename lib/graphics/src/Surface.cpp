@@ -530,14 +530,18 @@ namespace graphics
 
     void Surface::drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const bool horizontallyCentered, const bool verticallyCentered, const std::optional<color_t> color)
     {
-        const uint16_t textWidth = m_sprite.textWidth(text.c_str());
+//        const uint16_t textWidth = m_sprite.textWidth(text.c_str());
+        const uint16_t textWidth = getTextWidth(text.c_str());
+        
         int16_t textPositionX;
         if (horizontallyCentered)
         {
-            if (w == (uint16_t)-1)
+            if (w == (uint16_t)-1) {
                 textPositionX = x + (double)this->getWidth() * 0.5 - (double)textWidth * 0.5;
-            else
+            }
+            else {
                 textPositionX = x + (double)w * 0.5 - (double)textWidth * 0.5;
+            }
         }
         else
         {
