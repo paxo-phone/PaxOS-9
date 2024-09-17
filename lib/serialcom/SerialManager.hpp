@@ -14,13 +14,17 @@ namespace serialcom {
         SerialManager();
         ~SerialManager();
 
-        bool consoleLocked = false;
-
         static const std::shared_ptr<SerialManager> sharedInstance;
+
+        void changeConsoleLockTo(bool newState);
+
+        bool getConsoleLockState() const { return this->consoleLocked; }
 
         void startCommandLog();
 
         void commandLog(const std::string& message); // log by a command result only
+
+        void singleCommandLog(const std::string& message); // log by a command result only
 
         void finishCommandLog(bool shellMode);
 
@@ -46,6 +50,7 @@ namespace serialcom {
         uint16_t commandLogBufferIndex = 0;
         uint64_t commandLogBufferHash = 0;
 
+        bool consoleLocked = false;
         bool newData = false;
         bool isOutputingCommand = false;
         char current_input[INPUT_MAX_SIZE] = {'\0'};   // an array to store the received data

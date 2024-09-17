@@ -90,7 +90,7 @@ namespace serialcom
 
                 output["files"] = realFiles;
                 output["directories"] = directories;
-                
+
                 SerialManager::sharedInstance->commandLog(output.dump());
             } else {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
@@ -309,6 +309,11 @@ namespace serialcom
 
     // arg1 = file to download
     // output = file content in chunks of 2048 bytes (or less for the last chunk), each one encoded in base64
+    /* if !shellMode
+        1. OK + 4 bytes (file size)
+        2. file content in chunks of 2048 bytes (or less for the last chunk)
+        3. OK
+    */
     void CommandsManager::processDownloadCommand(const Command& command) const
     {
         std::string firstArgument = command.arguments[0];
@@ -339,32 +344,58 @@ namespace serialcom
         if (this->shellMode)
             //SerialManager::sharedInstance->commandLog("File size " + std::to_string(fileStream.size()) + " : " + std::to_string(fileStream.size() + 1) + " : " + BOOL_STR(fileStream.size() == 0));
             SerialManager::sharedInstance->commandLog(FILE_SIZE_MESSAGE(std::to_string(fileStream.size())));
-        else
-            SerialManager::sharedInstance->commandLog(std::to_string(fileStream.size()));
+        else {
+            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
 
-        if (fileStream.size() == 0)
+            uint32_t fileSize = fileStream.size();
+
+            std::string fileSizeString(reinterpret_cast<const char *>(&fileSize), sizeof(fileSize));
+            SerialManager::sharedInstance->commandLog(fileSizeString);
+            SerialManager::sharedInstance->finishCommandLog(false);
+        }
+
+        if (fileStream.size() == 0 && this->shellMode)
         {
-            if (this->shellMode)
-                SerialManager::sharedInstance->commandLog("Nothing in the file");
+            SerialManager::sharedInstance->commandLog("Nothing in the file");
+            fileStream.close();
             return;
         }
 
-        if (!this->shellMode)
-            SerialManager::sharedInstance->commandLog("\n");
+        std::string chunk;
 
         char nextChar = fileStream.readchar();
         while (nextChar != std::char_traits<char>::eof() && fileStream.sizeFromCurrentPosition() > 0)
         {
-            //SerialManager::sharedInstance->commandLog(std::to_string((uint8_t)nextChar));
-            //SerialManager::sharedInstance->commandLog(std::to_string(fileStream.sizeFromCurrentPosition()));
-            std::string chunk = nextChar + fileStream.read(2047);
-            std::string encodedChunk = base64::to_base64(chunk);
-            SerialManager::sharedInstance->commandLog(encodedChunk);
+            chunk += nextChar;
+
+            chunk += fileStream.read(2047);
+
+            if (this->shellMode)
+            {
+                std::string encodedChunk = base64::to_base64(chunk);
+                SerialManager::sharedInstance->singleCommandLog(encodedChunk);
+            }
+            else
+            {
+                SerialManager::sharedInstance->singleCommandLog(chunk);
+            }
+            chunk.clear();
             
             nextChar = fileStream.readchar();
         }
-    
+        
         fileStream.close();
+
+        if (this->shellMode)
+        {
+            SerialManager::sharedInstance->startCommandLog();
+            SerialManager::sharedInstance->commandLog("No error.");
+        }
+        else
+        {
+            SerialManager::sharedInstance->startCommandLog();
+            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+        }
     }
 
     // arg1 = fileName to upload

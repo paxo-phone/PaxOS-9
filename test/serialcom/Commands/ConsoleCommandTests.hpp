@@ -7,26 +7,26 @@ using namespace serialcom;
 
 TEST(Commands, CONSOLE_COMMAND)
 {
-    SerialManager::sharedInstance->consoleLocked = false;
+    SerialManager::sharedInstance->changeConsoleLockTo(false);
 
     testCommand("console lock", true, Command::CommandType::console, CONSOLE_LOCKED);
-    ASSERT_TRUE(SerialManager::sharedInstance->consoleLocked);
+    ASSERT_TRUE(SerialManager::sharedInstance->getConsoleLockState());
 
     testCommand("console unlock", true, Command::CommandType::console, CONSOLE_UNLOCKED);
-    ASSERT_FALSE(SerialManager::sharedInstance->consoleLocked);
+    ASSERT_FALSE(SerialManager::sharedInstance->getConsoleLockState());
 
     testCommand("console lock", false, Command::CommandType::console, NON_SHELL_MODE_NO_ERROR_CODE);
-    ASSERT_TRUE(SerialManager::sharedInstance->consoleLocked);
+    ASSERT_TRUE(SerialManager::sharedInstance->getConsoleLockState());
 
     testCommand("console unlock", false, Command::CommandType::console, NON_SHELL_MODE_NO_ERROR_CODE);
-    ASSERT_FALSE(SerialManager::sharedInstance->consoleLocked);
+    ASSERT_FALSE(SerialManager::sharedInstance->getConsoleLockState());
 
     testCommand("console wrongArgument", true, Command::CommandType::console, CONSOLE_LOCK_OPTION_NOT_RECOGNIZED("wrongArgument"));
     testCommand("console wrongArgument", false, Command::CommandType::console, NON_SHELL_MODE_ERROR_CODE);
 
     
 
-    SerialManager::sharedInstance->consoleLocked = false;
+    SerialManager::sharedInstance->changeConsoleLockTo(false);
 
     // test the lock effect, it should block any output that is not from the commands and only output them when the unlock is called
 
@@ -46,7 +46,7 @@ TEST(Commands, CONSOLE_COMMAND)
 
     buffer.str("");
 
-    SerialManager::sharedInstance->consoleLocked = true;
+    SerialManager::sharedInstance->changeConsoleLockTo(true);
 
     executeCommand("sm disable", false);
 

@@ -52,9 +52,18 @@ namespace storage
             return text;
         } else
         {
-            char buff[returnSize];
-            m_stream.read(buff, returnSize);
+            // Resize the string to accommodate `returnSize` bytes
+            std::string buff;
+            buff.resize(returnSize);
+
+            // Read from the stream into the buffer
+            m_stream.read(&buff[0], returnSize);  // Safe access to underlying data
+
+            // Shrink the string to the actual number of bytes read (gcount())
+            buff.resize(m_stream.gcount());
+
             return buff;
+
         }
     }
 
@@ -94,11 +103,13 @@ namespace storage
 
     long FileStream::size(void)
     {
+        const auto position = m_stream.tellg();
+        m_stream.seekg(0, std::ios::beg);
         const auto begin = m_stream.tellg();
         m_stream.seekg (0, std::ios::end);
         const auto end = m_stream.tellg();
         const auto fsize = (end-begin);
-        m_stream.seekg(0, std::ios::beg);
+        m_stream.seekg(position);
         return fsize;
 
     }
@@ -109,7 +120,7 @@ namespace storage
         m_stream.seekg (0, std::ios::end);
         const auto end = m_stream.tellg();
         const auto fsize = (end-currentPosition);
-        m_stream.seekg(fsize, std::ios::beg);
+        m_stream.seekg(currentPosition);
         return fsize;
 
     }

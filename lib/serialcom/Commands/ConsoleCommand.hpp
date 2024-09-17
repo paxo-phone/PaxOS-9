@@ -15,7 +15,7 @@ namespace serialcom {
 
         if (firstArgument == "lock")
         {
-            SerialManager::sharedInstance->consoleLocked = true;
+            SerialManager::sharedInstance->changeConsoleLockTo(true);
 
             if (this->shellMode) {
                 SerialManager::sharedInstance->commandLog(CONSOLE_LOCKED);
@@ -23,7 +23,7 @@ namespace serialcom {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
             }
         } else if (firstArgument == "unlock") {
-            SerialManager::sharedInstance->consoleLocked = false;
+            SerialManager::sharedInstance->changeConsoleLockTo(false);
             
             if (this->shellMode) {
                 SerialManager::sharedInstance->commandLog(CONSOLE_UNLOCKED);

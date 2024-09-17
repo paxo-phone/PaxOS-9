@@ -14,6 +14,8 @@ namespace serialcom {
         using Base = std::basic_streambuf<CharT>;
         using char_type = typename Base::char_type;
         using int_type = typename Base::int_type;
+
+        bool canFlushOnOverflow = true;
     
         ArrayedStreamBuffer()
         {
@@ -82,7 +84,14 @@ namespace serialcom {
             if (!this->stream)
                 return Base::overflow(ch);
             
-            flushBuffer();
+            // TODO: find a way to force flush on overflow without compromising an eventual command log.
+            if (canFlushOnOverflow)
+                flushBuffer();
+            else {
+                this->buffer.fill(0);
+                Base::setp(buffer.data(), buffer.data() + size);
+            }
+                
             *(this->stream) << (char)ch;
             return 1; // overflow management succeeded
         }

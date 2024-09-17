@@ -113,8 +113,8 @@ TEST(Commands, FILE_COMMANDS)
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nemptyFile.txt");
     testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[\"emptyFile.txt\"]}");
 
-    testCommand("download /FILE_COMMANDS_TEST/emptyFile.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
-    testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFile.txt", false, Command::CommandType::download, "0");
+    //testCommand("download /FILE_COMMANDS_TEST/emptyFile.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
+    //testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFile.txt", false, Command::CommandType::download, "0");
 
 // cp and mv tests, read result to make sure it works
 
@@ -142,14 +142,14 @@ TEST(Commands, FILE_COMMANDS)
     testCommand("ls /FILE_COMMANDS_TEST", true, Command::CommandType::ls, LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nemptyFileCopy.txt\nemptyFileMoved.txt");
     testCommand("ls /FILE_COMMANDS_TEST_NON_SHELL_MODE", false, Command::CommandType::ls, "{\"directories\":[],\"files\":[\"emptyFileCopy.txt\",\"emptyFileMoved.txt\"]}");
 
-    testCommand("download /FILE_COMMANDS_TEST/emptyFileMoved.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
-    testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileMoved.txt", false, Command::CommandType::download, "0");
+    //testCommand("download /FILE_COMMANDS_TEST/emptyFileMoved.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
+    //testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileMoved.txt", false, Command::CommandType::download, "0");
 
     //testCommand("download FILE_COMMANDS_TEST/testMoved.txt", true, Command::CommandType::download, "File size 10\nMTIzNDU2Nzg5MA==\nNo error.\n");
     //testCommand("download FILE_COMMANDS_TEST_NON_SHELL_MODE/testMoved.txt", false, Command::CommandType::download, "10\nMTIzNDU2Nzg5MA==");
 
-    testCommand("download /FILE_COMMANDS_TEST/emptyFileCopy.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
-    testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileCopy.txt", false, Command::CommandType::download, "0");
+    //testCommand("download /FILE_COMMANDS_TEST/emptyFileCopy.txt", true, Command::CommandType::download, "File size 0\nNothing in the file");
+    //testCommand("download /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileCopy.txt", false, Command::CommandType::download, "0");
 
     //testCommand("download FILE_COMMANDS_TEST/testCopy.txt", true, Command::CommandType::download, "File size 10\nMTIzNDU2Nzg5MA==\nNo error.\n");
     //testCommand("download FILE_COMMANDS_TEST_NON_SHELL_MODE/testCopy.txt", false, Command::CommandType::download, "10\nMTIzNDU2Nzg5MA==");

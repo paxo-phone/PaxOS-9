@@ -31,6 +31,13 @@ namespace serialcom {
         std::ios_base::sync_with_stdio(true);
     }
 
+    void SerialManager::changeConsoleLockTo(bool newState)
+    {
+        this->consoleLocked = newState;
+        this->coutBuffer.canFlushOnOverflow = !newState;
+        this->cerrBuffer.canFlushOnOverflow = !newState;
+    }
+
     void SerialManager::startCommandLog()
     {
         this->commandLogBuffer.fill(0);
@@ -39,7 +46,7 @@ namespace serialcom {
     }
     
     void SerialManager::commandLog(const std::string& message) // should only be called in the serialLoop thread
-    {
+    {   
         // put in the commandLogBuffer
 
         uint64_t pseudoHash = this->commandLogBufferHash;
@@ -57,19 +64,20 @@ namespace serialcom {
         this->commandLogBufferHash = pseudoHash;
     }
 
+    void SerialManager::singleCommandLog(const std::string& message)
+    {
+        SerialManager::sharedInstance->startCommandLog();
+        SerialManager::sharedInstance->commandLog(message);
+        SerialManager::sharedInstance->finishCommandLog(CommandsManager::defaultInstance->shellMode);
+    }
+
     void SerialManager::finishCommandLog(bool shellMode)
     {
         if (shellMode)
         {
-            this->coutBuffer.directLog(this->commandLogBuffer.data(), true);
+            this->coutBuffer.directLog(std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex), true);
         } else {
-            union {
-                uint32_t hash;
-                char bytes[4];
-            } hashUnion;
-            hashUnion.hash = this->commandLogBufferHash;
-
-            char startBytes[4] = { 0xff, 0xfe, 0xfd, 0xfc };
+            constexpr char startBytes[4] = { static_cast<char>(0xff), static_cast<char>(0xfe), static_cast<char>(0xfd), static_cast<char>(0xfc) };
             std::string startBytesString(reinterpret_cast<const char *>(&startBytes), sizeof(startBytes));
 
             this->coutBuffer.directLog(startBytesString, false);
@@ -83,11 +91,13 @@ namespace serialcom {
 
             this->coutBuffer.directLog(optionsString, false);
 
-            std::string bufferHash(reinterpret_cast<const char *>(&hashUnion.bytes), sizeof(hashUnion.bytes));
+            uint32_t hash = this->commandLogBufferHash;
+
+            std::string bufferHash(reinterpret_cast<const char *>(&hash), sizeof(hash));
  
             this->coutBuffer.directLog(bufferHash, false);
 
-            this->coutBuffer.directLog(this->commandLogBuffer.data(), false);
+            this->coutBuffer.directLog(std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex), false);
         }
     }
 

@@ -12,7 +12,7 @@ namespace serialcom {
 
             void processCommand(const Command& command);
 
-            bool shellMode = false;
+            bool shellMode = true;
 
         private:
             void processSMCommand(const Command& command);
