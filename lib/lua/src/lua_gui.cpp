@@ -29,6 +29,9 @@ LuaGui::~LuaGui()
     }
 }
 
+
+
+
 LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height)
 {
     LuaBox* w = new LuaBox(parent, x, y, width, height);
@@ -176,6 +179,32 @@ std::string LuaGui::keyboard(const std::string& placeholder, const std::string& 
     return o;
 }
 
+
+std::string LuaGui::keyboard2(const std::string& placeholder, const std::string& defaultText, bool rotate)
+{
+    if (rotate) {
+        graphics::setScreenOrientation(graphics::LANDSCAPE);
+    }
+
+    auto key = new Keyboard2(defaultText);
+    key->setPlaceholder(placeholder);
+
+    while (!hardware::getHomeButton() && !key->quitting())
+    {
+        eventHandlerApp.update();
+        key->updateAll();
+    }
+
+    if (rotate) {
+        graphics::setScreenOrientation(graphics::PORTRAIT);
+    }
+
+
+    std::string o = key->getText();
+
+    delete key;
+    return o;
+}
 void LuaGui::setMainWindow(LuaWindow* window) {
     this->mainWindow = window; 
     AppManager::askGui(this->lua); 

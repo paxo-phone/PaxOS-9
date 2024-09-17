@@ -381,6 +381,7 @@ void LuaFile::load()
             "setWindow", &LuaGui::setMainWindow,
             "getWindow", &LuaGui::getMainWindow,            
             "keyboard", &LuaGui::keyboard,
+            "keyboard2", &LuaGui::keyboard2,
             "showInfoMessage", &LuaGui::showInfoMessage,
             "showWarningMessage", &LuaGui::showWarningMessage,
             "showErrorMessage", &LuaGui::showErrorMessage
