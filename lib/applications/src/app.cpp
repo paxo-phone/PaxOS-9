@@ -8,7 +8,12 @@ namespace AppManager {
         : name(name), fullName(name), path(path), manifest(manifest),
           auth(auth),
           luaInstance(nullptr), app_state(NOT_RUNNING), background(false) {
+
         std::cout << "App: \"" << name << "\" \"" << fullName << "\"" << std::endl;
+
+        if (!manifest.exists()) {
+            throw libsystem::exceptions::InvalidArgument("Attempting to create an app with a non-existing manifest: " + manifest.str() + ".");
+        }
     }
 
     void App::run(const bool background, const std::vector<std::string>& parameters) {
@@ -16,15 +21,54 @@ namespace AppManager {
             throw libsystem::exceptions::RuntimeError("App is not authorized to run");
         }
 
+        libsystem::log("Manifest: " + manifest.str());
+
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
 
+        auto manifestFileStream = storage::FileStream(manifest.str(), storage::READ);
+
+        std::string manifestData = manifestFileStream.read();
+
+        manifestFileStream.close();
+
+        if (!nlohmann::json::accept(manifestData)) {
+            throw libsystem::exceptions::RuntimeError("Invalid app manifest, incorrect JSON format.");
+        }
+
+        if (const nlohmann::basic_json<> manifestJson = nlohmann::json::parse(manifestData); manifestJson.contains("permissions")) {
+            // PaxoLua app
+
+            if (!manifestJson.contains("main") || !manifestJson["main"].is_string()) {
+                throw libsystem::exceptions::RuntimeError("Invalid app manifest, missing 'main'.");
+            }
+
+            storage::Path appDirectory = path / "..";
+
+            storage::Path appMain = appDirectory / manifestJson["main"].get<std::string>();
+
+            if (!appMain.exists()) {
+                throw libsystem::exceptions::RuntimeError("Invalid app main, missing file: " + appMain.str() + ".");
+            }
+
+            m_luaEnvironment = std::make_shared<paxolua::LuaEnvironment>(appDirectory);
+            paxolua::helper::applyManifest(m_luaEnvironment.get(), manifest);
+            m_luaEnvironment->loadFile(appMain);
+            m_luaEnvironment->run();
+        } else {
+            // Legacy app
+
+            luaInstance = std::make_shared<LuaFile>(path, manifest);
+            luaInstance->app = this;
+
+            luaInstance->load();
+            luaInstance->run(parameters);
+        }
+
+        // Clear used JSON data
+        manifestData.clear();
+
+        // Add app to the stack
         appStack.push_back(this);
-
-        luaInstance = std::make_shared<LuaFile>(path, manifest);
-        luaInstance->app = this;
-
-        luaInstance->load();
-        luaInstance->run(parameters);
     }
 
     void App::wakeup() {
@@ -57,6 +101,16 @@ namespace AppManager {
     }
 
     void App::kill() {
+        // PaxoLua
+        if (m_luaEnvironment != nullptr) {
+            m_luaEnvironment.reset();
+
+            app_state = NOT_RUNNING;
+
+            libsystem::log("App killed.");
+        }
+
+        // Legacy
         if (luaInstance != nullptr) {
             luaInstance->stop();
             luaInstance.reset(); // delete luaInstance
@@ -106,6 +160,10 @@ namespace AppManager {
     std::string App::toString() const {
         return "{name = " + name + ", fullName = " + fullName + ", path = " + path.str() + ", manifest = " + manifest.
                str() + ", auth = " + std::to_string(auth) + ", state = " + std::to_string(app_state) + "}";
+    }
+
+    std::shared_ptr<paxolua::LuaEnvironment> App::getLuaEnvironment() {
+        return m_luaEnvironment;
     }
 
     std::mutex threadsync;
@@ -286,7 +344,15 @@ namespace AppManager {
             if(app->background == false)    // app is not in background
             {
                 if (app->isRunning()) { // app is running
-                    app->luaInstance->loop();
+                    if (app->getLuaEnvironment() != nullptr) {
+                        // Update PaxoLua app
+                        app->getLuaEnvironment()->update();
+                    }
+
+                    if (app->luaInstance != nullptr) {
+                        // Update legacy app
+                        app->luaInstance->loop();
+                    }
                 } else if (std::find(appStack.begin(), appStack.end(), app.get()) != appStack.end()) // if app is no longer in the stack (no gui is running) -> kill it
                 {
                     app->kill();

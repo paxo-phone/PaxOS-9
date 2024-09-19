@@ -3,12 +3,17 @@
 
 #include "lua_widget.hpp"
 
+namespace paxolua {
+    class LuaEnvironment;
+}
+
 class LuaFile;
 
 class LuaCanvas : public LuaWidget
 {
     public:
     LuaCanvas(LuaWidget* parent, int x, int y, int width, int height, LuaFile* lua);
+    LuaCanvas(LuaWidget* parent, int x, int y, int width, int height, paxolua::LuaEnvironment* env);
 
     void setPixel(int16_t x, int16_t y, color_t color) { widget->setPixel(x, y, color); }
 
@@ -55,6 +60,9 @@ class LuaCanvas : public LuaWidget
     gui::elements::Canvas* widget = nullptr;
 
     sol::protected_function onTouchFunc;
+
+private:
+    paxolua::LuaEnvironment *m_env;
 };
 
 #endif // LUA_CANVAS_MODULE

@@ -17,6 +17,10 @@
 #include "lua_json.hpp"
 
 
+namespace paxolua::lib {
+    class OldLibrary;
+}
+
 namespace AppManager {
     class App;
 }
@@ -32,7 +36,14 @@ struct Permissions {
     bool acces_gsm = true;
 };
 
+/**
+ * @brief Lua environment management based of a file.
+ *
+ * @deprecated Please use "paxolua::LuaEnvironment".
+ */
 class LuaFile {
+    friend class paxolua::lib::OldLibrary;
+
 public:
     LuaFile(storage::Path filename, storage::Path manifest);
     ~LuaFile();
@@ -96,6 +107,8 @@ public:
     AppManager::App* app; // using raw pointer, because this class will NEVER call the deleter
 
 private:
+    LuaFile();
+
     enum Command {
         QUIT
     };

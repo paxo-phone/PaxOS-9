@@ -1,0 +1,14 @@
+{
+    "permissions": [
+        "files",
+        "files_root",
+        "gsm",
+        "gui",
+        "hardware",
+        "time",
+        "web",
+        "web_paxo"
+    ],
+    "main": "app.lua",
+    "compatibility_mode": "old_lua"
+}

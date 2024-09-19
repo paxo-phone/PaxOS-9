@@ -46,12 +46,14 @@ LuaWidget::~LuaWidget()
         }
     }
 
-    for (uint16_t i = 0; i < gui->widgets.size(); i++)
-    {
-        if (gui->widgets[i] == this)
+    if (gui != nullptr) {
+        for (uint16_t i = 0; i < gui->widgets.size(); i++)
         {
-            gui->widgets.erase(gui->widgets.begin() + i);
-            break;
+            if (gui->widgets[i] == this)
+            {
+                gui->widgets.erase(gui->widgets.begin() + i);
+                break;
+            }
         }
     }
 

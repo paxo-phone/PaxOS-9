@@ -9,3 +9,5 @@
 ./storage/apps/alarme/app.lua
 ./storage/apps/calculatrice/app.lua
 ./storage/apps/calendrier/app.lua
+./storage/apps/paxoluatest/app.lua
+./storage/apps/oldluatest/app.lua

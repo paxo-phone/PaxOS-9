@@ -7,6 +7,7 @@
 #include <lua_file.hpp>
 #include <gui.hpp>
 #include <hardware.hpp>
+#include <LuaEnvironment.hpp>
 #include <mutex>
 
 #define APP_DIR "/apps"
@@ -79,6 +80,13 @@ namespace AppManager
          */
         void requestAuth();
 
+        /**
+         * @brief Get the lua environment of the app.
+         *
+         * @return A shared pointer to the lua environment.
+         */
+        std::shared_ptr<paxolua::LuaEnvironment> getLuaEnvironment();
+
         [[nodiscard]] std::string toString() const;
 
         std::string name;       // app name
@@ -98,8 +106,13 @@ namespace AppManager
         };
 
         std::shared_ptr<LuaFile> luaInstance;     // lua environment for the app
+
         uint8_t app_state;      // app state
         bool background;        // app is in background
+
+    private:
+        // New PaxoLua environment
+        std::shared_ptr<paxolua::LuaEnvironment> m_luaEnvironment;
     };
 
     // TODO : Check if "extern" is needed

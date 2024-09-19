@@ -13,7 +13,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <lua_system.hpp>
 
 
 /*
@@ -621,43 +620,6 @@ void LuaFile::load()
         };
 
         lua["gsm"] = luaGSM;
-    }
-
-    /*
-     * System.
-     *
-     * @todo Add permission.
-     */
-    {
-        // TODO: Move this from this scope to the "global lua" scope.
-        auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
-
-        auto system = paxo["system"].get_or_create<sol::table>(sol::new_table());
-        auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
-
-        // paxo.system.config.get()
-        systemConfig.set_function("get", sol::overload(
-            &paxolua::system::config::getBool,
-            // &paxolua::system::config::getInt,
-            &paxolua::system::config::getFloat,
-            &paxolua::system::config::getString
-        ));
-
-        // paxo.system.config.set()
-        systemConfig.set_function("set", sol::overload(
-            &paxolua::system::config::setBool,
-            // &paxolua::system::config::setInt,
-            &paxolua::system::config::setFloat,
-            &paxolua::system::config::setString
-        ));
-
-        systemConfig.set_function("write", &paxolua::system::config::write);
-
-        auto app = paxo["app"].get_or_create<sol::table>(sol::new_table());
-
-        app.set_function("quit", [&]() {
-            m_commandQueue.push(QUIT);
-        });
     }
 
     {   // load events
