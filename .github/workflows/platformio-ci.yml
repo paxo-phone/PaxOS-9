@@ -110,6 +110,9 @@ jobs:
               cp -r .pio/build/linux/program build
               cp -r storage build
 
+          - name: LS Build
+            run: ls -a build/storage/sys_apps
+
           - name: Upload artifact
             uses: actions/upload-artifact@v4
             with:
