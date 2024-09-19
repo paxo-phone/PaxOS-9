@@ -15,8 +15,6 @@ jobs:
         steps:
           - name: Checkout repository
             uses: actions/checkout@v4
-            with:
-              sparse-checkout-cone-mode: 'false'
 
           - name: Cache dependencies
             uses: actions/cache@v3
@@ -65,8 +63,9 @@ jobs:
         steps:
           - name: Checkout repository
             uses: actions/checkout@v4
-            with:
-              sparse-checkout-cone-mode: 'false'
+
+          - name: LS
+            uses: ls -a storage/sys_apps
 
           - name: Cache dependencies
             uses: actions/cache@v3
@@ -124,8 +123,6 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
-              with:
-                sparse-checkout-cone-mode: 'false'
 
             - name: Cache dependencies
               uses: actions/cache@v3
@@ -184,8 +181,6 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
-              with:
-                sparse-checkout-cone-mode: 'false'
 
             - name: Cache dependencies
               uses: actions/cache@v3
