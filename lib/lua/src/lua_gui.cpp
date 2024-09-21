@@ -180,9 +180,10 @@ std::string LuaGui::keyboard(const std::string& placeholder, const std::string& 
 }
 
 
-std::string LuaGui::keyboard2(const std::string& placeholder, const std::string& defaultText, bool rotate)
+std::string LuaGui::keyboard2(const std::string& placeholder, const std::string& defaultText, const int orientation)
 {
-    if (rotate) {
+    // set keyboard to LANDSCAPE mode if set 
+    if (orientation == graphics::LANDSCAPE) {
         graphics::setScreenOrientation(graphics::LANDSCAPE);
     }
 
@@ -195,7 +196,8 @@ std::string LuaGui::keyboard2(const std::string& placeholder, const std::string&
         key->updateAll();
     }
 
-    if (rotate) {
+    // set back to portrait when leaving keyboard
+    if (graphics::LANDSCAPE) {
         graphics::setScreenOrientation(graphics::PORTRAIT);
     }
 

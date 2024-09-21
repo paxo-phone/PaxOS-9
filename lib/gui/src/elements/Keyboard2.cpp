@@ -428,7 +428,6 @@ namespace gui::elements {
     char Keyboard2::getKey(const int16_t x, const int16_t y) const {
         // Check if the position is in the Keyboard2 box
 
-
         Keyboard2::Coord result;
         result = getRowColumn(x, y);
 

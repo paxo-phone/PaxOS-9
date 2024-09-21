@@ -35,7 +35,7 @@ class LuaGui
     LuaWindow* window();
 
     std::string keyboard(const std::string& placeholder, const std::string& defaultText);
-    std::string keyboard2(const std::string& placeholder, const std::string& defaultText, bool rotate = true);
+    std::string keyboard2(const std::string& placeholder, const std::string& defaultText, const int screenOrientation);
 
     void del(LuaWidget* widget);
 

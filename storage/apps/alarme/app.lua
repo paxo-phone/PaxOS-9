@@ -172,7 +172,7 @@ end
 
 function changeName(label)
     
-    local keyboard = gui:keyboard("Placeholder", label:getText())
+    local keyboard = gui:keyboard2("Placeholder", label:getText(), LANDSCAPE)
     label:setText(keyboard)
 end
 
