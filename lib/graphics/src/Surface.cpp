@@ -241,7 +241,7 @@ namespace graphics
     void Surface::fillRoundRectWithBorder(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs, uint16_t Backcolor, uint16_t Bordercolor)
     {
         m_sprite.fillSmoothRoundRect(x, y, w, h, r, Bordercolor);
-        m_sprite.fillSmoothRoundRect(x + bs, y + bs, w - 2 * bs, h - 2 * bs, r - bs, Backcolor);
+        m_sprite.fillSmoothRoundRect(x + bs, y + bs, w - 2 * bs, h - 2 * bs, r, Backcolor);
     }
 
     void Surface::drawRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r, const color_t color)
