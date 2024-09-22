@@ -54,7 +54,6 @@ function initNotes()
 
     local addLabel = gui:label(Frame, 270, 20, 40, 40, COLOR_WARNING)
     addLabel:setRadius(20)
-    addLabel:setTransparentColor(COLOR_WARNING)
     addLabel:setBackgroundColor(COLOR_BLACK)
 
     local addIcon = gui:image(addLabel, "plus.png", 12, 12, 16, 16, COLOR_BLACK)
