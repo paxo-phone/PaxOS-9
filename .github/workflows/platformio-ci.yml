@@ -14,7 +14,7 @@ jobs:
 
         steps:
           - name: Checkout repository
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache dependencies
             uses: actions/cache@v3
@@ -54,15 +54,16 @@ jobs:
             uses: actions/upload-artifact@v4
             with:
               name: paxo-v5-build
+              include-hidden-files: true
               path: |
-                build
+                build/
 
     linux_build_test_upload:
         runs-on: ubuntu-latest
 
         steps:
           - name: Checkout repository
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache dependencies
             uses: actions/cache@v3
@@ -111,15 +112,16 @@ jobs:
             uses: actions/upload-artifact@v4
             with:
               name: linux-build
+              include-hidden-files: true
               path: |
-                build
+                build/
 
     macos_build_test_upload:
         runs-on: macos-latest
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Cache dependencies
               uses: actions/cache@v3
@@ -169,15 +171,16 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: macos-build
+                include-hidden-files: true
                 path: |
-                  build
+                  build/
 
     windows_build_test_upload:
         runs-on: windows-latest
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Cache dependencies
               uses: actions/cache@v3
@@ -220,9 +223,13 @@ jobs:
                 cp -r .pio/build/windows/*.dll build
                 cp -r storage build
 
+            - name: Copy required DLLs into artifact directory
+              run: python scripts/github_actions/windows/get_dll.py build
+
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
                 name: windows-build
+                include-hidden-files: true
                 path: |
-                  build
+                  build/
