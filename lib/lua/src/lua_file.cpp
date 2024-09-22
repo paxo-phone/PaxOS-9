@@ -140,6 +140,8 @@ std::string tableToString(const sol::table& table) {
             ss << "\"" << pair.second.as<std::string>() << "\"";
         } else if (pair.second.is<int>()) {
             ss << pair.second.as<int>();
+        } else if (pair.second.is<bool>()) {
+            ss << pair.second.as<bool>();
         } else if (pair.second.is<sol::table>()) {
             ss << tableToString(pair.second); 
             // You might want to recursively list nested tables here
