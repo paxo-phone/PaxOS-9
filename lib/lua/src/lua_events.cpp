@@ -84,7 +84,7 @@ LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::protected_function func, uin
     this->lua = lua;
     this->func = func;
     this->interval = interval;
-    this->id = eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)), interval);
+    this->id = lua->eventHandler.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)), interval);
 }
 
 
@@ -123,7 +123,7 @@ void LuaTimeInterval::call()
 
 LuaTimeInterval::~LuaTimeInterval()
 {
-    eventHandlerApp.removeInterval(id);
+    lua->eventHandler.removeInterval(id);
 }
 
 LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint32_t timeout)
@@ -131,7 +131,7 @@ LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint3
     this->lua = lua;
     this->func = func;
     this->timeout = timeout;
-    this->id = eventHandlerApp.setTimeout(new Callback<>(std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))), timeout);
+    this->id = lua->eventHandler.setTimeout(new Callback<>(std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))), timeout);
 }
 
 int LuaTimeTimeout::getId()
@@ -158,12 +158,12 @@ void LuaTimeTimeout::call()
 LuaTimeTimeout::~LuaTimeTimeout()
 {
     if(!done)
-        eventHandlerApp.removeTimeout(id);
+        lua->eventHandler.removeTimeout(id);
 }
 
 void LuaTime::update()
 {
-    eventHandlerApp.update();
+    lua->eventHandler.update();
     
     for (int it = 0; it < timeouts.size(); it++)
     {

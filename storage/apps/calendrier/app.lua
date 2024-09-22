@@ -4,7 +4,9 @@ require "gestionDebug.lua"
 local boxImgDay, boxImgWeek, boxImgMonth, boxImgParametre, boxImgAdd
 local menu
 local currentMode
-local winDay, winNewEvent
+local winDay, winWeek, winMonth, winNewEvent, winConfig
+local oldWin
+
 
 local affichageTop = 60
 
@@ -14,6 +16,7 @@ local config = {}
 -- liste d'event du calendrier
 local PATH_DATA = "/data"
 local data = {}
+
 
 
 -- ---------------------------------------
@@ -102,10 +105,17 @@ end
 
 function displayConfig()
 
-    winConfig = gui:window()
-    gui:setWindow (winConfig)
-    
+--    winConfig = gui:window()
+  --  gui:setWindow (winConfig)
+  print("displayConfig")
+
+  winConfig = manageWindow()
+
+    print("on a notre wonConfig")
+    print(winConfig)
     local title=gui:label(winConfig, 50, 28, 144, 28)
+    print("Affichage label OK")
+
     title:setFontSize(24)
     title:setText("Préférences")
 
@@ -114,7 +124,6 @@ function displayConfig()
 
     local imgBack = gui:image(winConfig, "back.png", 20, 30, 18, 18)
     imgBack:onClick(function () switchScreen(today[1], today[2], today[3]) end)
-
 
     local lblWeekNum = gui:label(winConfig, 20, 100, 300, 30)
     lblWeekNum:setText("Afficher le n° des semaines")
@@ -167,6 +176,7 @@ function displayConfig()
     vLstHeureFin:setAutoSelect(true)
 
     for i=0,23 do
+
         local lblHeureDebut = gui:label(vLstHeureDebut, 30, 0, 80, 18)
         local lblHeureFin = gui:label(vLstHeureFin, 30, 0, 80, 18)
 
@@ -180,7 +190,6 @@ function displayConfig()
         lblHeureDebut:setHorizontalAlignment(CENTER_ALIGNMENT)
         lblHeureFin:setHorizontalAlignment(CENTER_ALIGNMENT)
     end
-    print("config.day.heureFin = ")
     vLstHeureDebut:select(config.day.heureDebut)
     vLstHeureFin:select(config.day.heureFin)
 
@@ -223,6 +232,7 @@ function displayConfig()
         --retour à l'écran précédent 
         switchScreen(year, month, day)
     end)
+
 end -- displayConfig
 
 -- Gère la sélection unique d'un groupe de bouton radio
@@ -251,6 +261,9 @@ function saveConfig()
 
     fileConfig:close()
     fileConfig = nil
+
+    print("fin printConfig")
+
 end
 
 -- ---------------------------------------
@@ -259,9 +272,7 @@ end
 
 function displayWeek(year, month, day)
 
-    winWeek = gui:window()
-    gui:setWindow(winWeek)
-    
+    winWeek = manageWindow()
     currentMode = "week"
 
     displayTopBarre()
@@ -336,7 +347,7 @@ function displayWeek(year, month, day)
     widthBoxJour = int((widthDisplayMonth- NbJourstoDisplay *espacementBox)/ NbJourstoDisplay)
 
     -- liste déroulante des heures
-    vListeHeure = gui:vlist(winWeek, decalageHeure, topHeader+heigthHeader+espacementBox, widthBox, sizeListeHeures)
+    local vListeHeure = gui:vlist(winWeek, decalageHeure, topHeader+heigthHeader+espacementBox, widthBox, sizeListeHeures)
     vListeHeure:setSpaceLine(0)
     vListeHeure:setBackgroundColor(COLOR_LIGHT_GREY)
 
@@ -466,9 +477,11 @@ end -- displayWeek
 
 function displayMonth (year, month)
 
-    winMonth = gui:window()
-    gui:setWindow(winMonth)
-    
+--    winMonth = gui:window()
+--    gui:setWindow(winMonth)
+  
+    winMonth = manageWindow()
+
     currentMode = "month"
 
     displayTopBarre()
@@ -869,8 +882,10 @@ function displayDay(year, month, day)
     currentMode = "day"
 
     -- création d'une nouvelle fenetre pour le jour
-    winDay = gui:window()
-    gui:setWindow(winDay)
+--    winDay = gui:window()
+--    gui:setWindow(winDay)
+
+    winDay = manageWindow()
 
     -- cration de la top barre
     displayTopBarre()
@@ -1052,8 +1067,9 @@ end --displayDay
 
 function displayEvent(event)
 
-    winNewEvent = gui:window()
-    gui:setWindow(winNewEvent)
+--    winNewEvent = gui:window()
+--    gui:setWindow(winNewEvent)
+    winNewEvent = manageWindow()
 
     local isNew = false
 
@@ -1304,16 +1320,13 @@ end --newEvent
 -- ---------------------------------------
 
 function switchScreen(year, month, day)
-
     if (currentMode == "day") then
         displayDay(year, month, day)
-
     elseif (currentMode == "week") then
         displayWeek(year, month, day)
     else
         displayMonth(year, month)
     end
-
 end --switchScreen
 
 
@@ -1460,3 +1473,19 @@ function formatDate (date, pattern)
         return result
     
 end --formatDate
+
+function manageWindow()
+
+    local win
+
+    win = gui:window()
+    gui:setWindow(win)
+
+    if oldWin then 
+        gui:del(oldWin) 
+        oldWin  =nil 
+    end
+    
+    oldWin = win
+    return win
+end
