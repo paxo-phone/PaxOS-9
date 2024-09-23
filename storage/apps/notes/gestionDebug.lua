@@ -54,14 +54,3 @@ function getVariableName(var)
     end
 end
 
-
-
-function printEvent(event)
-
-    print("event: ".. event.name)
-    print("date debut: ".. tostring(event.debut.day).."/".. tostring(event.debut.month).."/".. tostring(event.debut.year))
-    print(  " debut: "..tostring(event.debut.heure)..":"..tostring(event.debut.minute) )
-    print(  " fin: "..tostring(event.fin.heure)..":"..tostring(event.fin.minute) )
-
-end
-

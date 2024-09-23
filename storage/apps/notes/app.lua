@@ -1,5 +1,3 @@
-require "gestionDebug.lua"
-
 
 local filename = "data/notes.dat"
 local oldWin
@@ -28,12 +26,45 @@ function loadDataFile()
 
     if storage:isFile(filename) then
         data = loadTable(filename)
+        sortTable()
+
+        if not data then data = {} end
     else
-        print("[Notesdata file not found")
+        print("[loadDataFile] file not found "..filename)
     end
 
 end
 
+
+-- Tri la table Data
+function sortTable()
+
+    table.sort(data, function(a,b)       
+        if not a.closed and not b.closed or a.closed and  b.closed then 
+            return a.UID > b.UID
+        elseif a.closed and not b.closed then 
+            return false 
+        elseif not a.closed and b.closed then
+            return true
+        else
+            return a.UID > b.UID
+        end
+    end)
+end
+
+
+-- Efface les notes qui sont "closed"
+function cleanData()
+
+    local tmpData = {}
+    for i, note in ipairs(data) do 
+        if not note.closed then
+            table.insert(tmpData, note)
+        end
+    end
+    data = tmpData
+    saveTable(filename,data)
+end
 
 -- -------------------------------------------
 -- Ecran Principal
@@ -43,49 +74,97 @@ function initNotes()
 
     win = manageWindow()
 
+    -- sortTable()
+
     local Frame = gui:box(win, 0, 0, 320, 65)
     Frame:setBackgroundColor(COLOR_WARNING)
     Frame:onClick(initNotes)
 
-    local TitleApp = gui:label(Frame, 20, 20, 144, 28)
+    local TitleApp = gui:label(Frame, 40, 15, 144, 28)
     TitleApp:setText("Mes Notes")
     TitleApp:setBackgroundColor(COLOR_WARNING)
     TitleApp:setFontSize(32)
 
-    local addLabel = gui:label(Frame, 270, 20, 40, 40, COLOR_WARNING)
+    local addLabel = gui:label(win, 270, 420, 40, 40)
     addLabel:setRadius(20)
     addLabel:setBackgroundColor(COLOR_BLACK)
 
     local addIcon = gui:image(addLabel, "plus.png", 12, 12, 16, 16, COLOR_BLACK)
-
     addLabel:onClick(editNote)
 
-    local SettingsBox = gui:box(win, 225, 115, 75, 30)
-    SettingsBox:setBackgroundColor(COLOR_WARNING)
-    SettingsBox:setRadius(10)
+    local SettingsIcon = gui:image(Frame, "menu.png", 10, 20, 20, 20, COLOR_WARNING)
+    SettingsIcon:onClick(Settings)
 
-    local SettingsIcon = gui:image(SettingsBox, "Settings.png", 26, 5, 20, 20, COLOR_WARNING)
-    SettingsBox:onClick(Settings)
+    local lstNotes = gui:vlist(win, 20, 80, 290, 320)
+    lstNotes:setSpaceLine(5)
 
+    local dataNote = {}
+    local nbNotes=0
 
-    debugPrint(data)
-    local listO = gui:vlist(win, 35, 150, 250, 280)
+    local hauteurNote = 35
 
-    for i, note in pairs(data) do
+    for i, note in ipairs(data) do
+        nbNotes = nbNotes+1
+        local boxNote = gui:box(lstNotes, 0, 0, 290, hauteurNote)
+        boxNote:setBorderSize(1)
+        boxNote:setBorderColor(COLOR_LIGHT_GREY)
+        dataNote[i]={}
 
-        print( "notes "..tostring(i))
-        local case = gui:box(listO, 0, 36, 250, 36, COLOR_LIGHT_BLUE)
-        case:setBackgroundColor(COLOR_LIGHT_BLUE)
-        case:setRadius(10)
-        local lblNoteTitle = gui:label(case, 21, 0, 230, 18)
-        lblNoteTitle:setBackgroundColor(COLOR_LIGHT_BLUE)
-        lblNoteTitle:setText(note.Title)
-        lblNoteTitle:setFontSize(16)
+        local chkClosed = gui:checkbox(boxNote, 5, 5)
+        chkClosed:onClick(
+            function()
+                local check = dataNote[i].check
+                local label = dataNote[i].label
+                note.closed = check:getState()
+                writeNote(label, note, hauteurNote)
+                saveTable(filename, data)
+            end
+        )
+        chkClosed:setState(note.closed)
 
-        case:onClick(function() editNote(note.UID) end)
+        local lblNoteTitle = gui:canvas(boxNote, 30, 1, 258, hauteurNote-2)
+        lblNoteTitle:fillRect(0, 0, 258, hauteurNote, COLOR_WHITE)
+
+        dataNote[i].check = chkClosed
+        dataNote[i].label = lblNoteTitle
+        writeNote(lblNoteTitle, note, hauteurNote)
+
+        lblNoteTitle:onClick(
+            function() 
+                if not dataNote[i].check:getState() then
+                    editNote(note.UID)  
+                end
+            end
+        )
+    end
+
+    if nbNotes==0 then
+        local lblEmpty = gui:label(lstNotes, 0, 0, 290, 30)
+        lblEmpty:setText("aucune note")
+        lblEmpty:setTextColor(COLOR_GREY)
     end
 
 end
+
+function launchNote(check, note, hauteurNote)
+    if not check.getState() then
+        editNote(note.UID)
+    end
+end
+
+function writeNote(label, note, hauteurNote)
+    local fontSize = 22
+    if note.closed then
+        label:fillRect(0, 0, 280, hauteurNote, COLOR_WHITE)
+        label:drawText(10, 1, note.Title, COLOR_GREY, fontSize)
+        label:drawLine(10, 15, math.floor(#note.Title * 12), 15, COLOR_GREY)                    
+    else
+        label:fillRect(0, 0, 280, hauteurNote, COLOR_WHITE)
+        label:drawText(10, 1, note.Title, COLOR_BLACK, fontSize)
+    end
+    label:drawText(190, hauteurNote-10-1, note.date, COLOR_GREY, 10)
+end
+
 
 
 
@@ -93,15 +172,16 @@ end
 -- si UID est nil ou la note UID n'exoste pas, créé une nouvelle note vierge et la renvoi
 function getNote(UID)
 
+
     local note
-    if not UID or not data.UID then
+    if not UID or not data[UID] then
         note = {}
         note.UID = createUID()
         note.Title = ""
         note.TextNote = ""
-        note.actif = true
+        note.closed = false
     else
-        note = data.UID
+        note = data[UID]
     end
 
     return note
@@ -122,6 +202,7 @@ function editNote(UID)
     local Frame = gui:box(winNote, 0, 0, 320, 65)
     Frame:setBackgroundColor(COLOR_WARNING)
 
+
     local newNote = getNote(UID)
 
     local TitleApp = gui:label(Frame, 20, 20, 250, 28)
@@ -129,18 +210,28 @@ function editNote(UID)
     TitleApp:setBackgroundColor(COLOR_WARNING)
     TitleApp:setFontSize(32)
 
-    local lblTitleNote = gui:input(winNote, 35, 121, 250, 40)
-    lblTitleNote:setTitle("Titre")
-    lblTitleNote:onClick(
+    local inputTitleNote = gui:input(winNote, 35, 80, 250, 40)
+    inputTitleNote:setTitle("Titre")
+    inputTitleNote:setText(newNote.Title)
+    inputTitleNote:onClick(
         function () 
             local keyboard = gui:keyboard("Titre de la note", newNote.Title)
-            lblTitleNote:setText(keyboard)
+            inputTitleNote:setText(keyboard)
             newNote.Title = keyboard
         end
     )
 
-    local TextNote = gui:input(winNote, 35, 216, 250, 40)
-    TextNote:setTitle("Note")
+--    local TextNote = gui:input(winNote, 35, 216, 250, 40)
+
+    local lblNote = gui:label(winNote, 35, 150, 250, 20)
+    lblNote:setFontSize(16)
+    lblNote:setTextColor(COLOR_GREY)
+    lblNote:setText("Note")
+
+    local TextNote = gui:label(winNote, 35, 170, 250, 200)
+    TextNote:setBorderSize(1)
+    TextNote:setBorderColor(COLOR_BLACK)
+    TextNote:setText(newNote.TextNote)
     TextNote:onClick(function () 
         local keyboard = gui:keyboard("Titre de la note", newNote.TextNote)
         TextNote:setText(keyboard)
@@ -148,20 +239,26 @@ function editNote(UID)
         end
     )
 
-    edit = gui:button(winNote, 35, 350, 250, 38)
+    edit = gui:label(winNote, 35, 405, 250, 30)
+    edit:setHorizontalAlignment(CENTER_ALIGNMENT)
+    edit:setHorizontalAlignment(CENTER_ALIGNMENT)
+    edit:setBorderSize(1)
+    edit:setBorderColor(COLOR_BLACK)
+    edit:setRadius(15)
     edit:setText("Sauvegarder")
     edit:onClick(function()
-
-        debugPrint(newNote)
---        data[newNote.UID]={}
+        newNote.date = getDate()
         data[newNote.UID] = newNote
---        table.insert(data, newNote)
         saveTable(filename, data)
-        --SaveNoteData(data)
         initNotes()
     end)
 
-    cancel = gui:button(winNote, 35, 394, 250, 38)
+    cancel = gui:label(winNote, 35, 440, 250, 30)
+    cancel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    cancel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    cancel:setBorderColor(COLOR_BLACK)
+    cancel:setBorderSize(1)
+    cancel:setRadius(15)
     cancel:setText("Annuler")
     cancel:onClick(initNotes)
 
@@ -172,32 +269,49 @@ end
 
 function Settings()
 
-    print(1)
     local winSetting = manageWindow()
 
     local Frame = gui:box(winSetting, 0, 0, 320, 65)
     Frame:setBackgroundColor(COLOR_WARNING)
-    print(2)
 
-
-    local TitleApp = gui:label(Frame, 20, 20, 250, 28)
-    TitleApp:setText("A propos de Notes")
+    local TitleApp = gui:label(Frame, 40, 15, 250, 28)
+    TitleApp:setText("A propos ...")
     TitleApp:setBackgroundColor(COLOR_WARNING)
     TitleApp:setFontSize(32)
 
-    print(3)
+    local imgBack = gui:image(winSetting, "back.png", 10, 15, 20, 30, COLOR_WARNING )
+    imgBack:onClick(initNotes)
 
-    local leaveWin = gui:label(winSetting, 10, 80, 144, 28)
-    leaveWin:setText("< Mes Notes")
-    leaveWin:setFontSize(18)
-    leaveWin:setTextColor(COLOR_GREY)
-    leaveWin:onClick(initNotes)
 
-    local updateLabel = gui:label(winSetting, 60, 430, 250, 35)
-    updateLabel:setText("Notes V.1.0.0 - Created by M2LC")
-    updateLabel:setFontSize(16)
-    updateLabel:setTextColor(COLOR_GREY)
-    print(4)
+    local nbNotesClosed = 0
+    local nbNotes = 0
+    for i, note in pairs(data) do 
+        nbNotes = nbNotes+1
+        if note.closed then nbNotesClosed = nbNotesClosed +1 end
+    end
+
+    local lblNbNotes = gui:label(winSetting, 30, 150, 200, 40)
+    lblNbNotes:setText("Nombre de Notes:")
+
+    local lblCountNbNotes = gui:label(winSetting, 270, 150, 30, 40)
+    lblCountNbNotes:setText(tostring(nbNotes))
+
+    local lblNbNotesClosed = gui:label(winSetting, 30, 200, 200, 40)
+    lblNbNotesClosed:setText("Nombre de Notes cloturées:")
+
+    local lblCountNbNotesClosed = gui:label(winSetting, 270, 200, 30, 40)
+    lblCountNbNotesClosed:setText(tostring(nbNotesClosed))
+
+
+
+    local btnEffacerNotesClosed = gui:label(winSetting, 50, 420, 220, 30)
+    btnEffacerNotesClosed:setRadius(15)
+    btnEffacerNotesClosed:setBorderSize(1)
+    btnEffacerNotesClosed:setBorderColor(COLOR_GREY)
+    btnEffacerNotesClosed:setHorizontalAlignment(CENTER_ALIGNMENT)
+    btnEffacerNotesClosed:setVerticalAlignment (CENTER_ALIGNMENT)
+    btnEffacerNotesClosed:setText("Effacer les notes cloturées")
+    btnEffacerNotesClosed:onClick(function() cleanData() Settings() end)
 
 end
 
@@ -232,3 +346,20 @@ function createUID()
     math.randomseed(time:monotonic())
     return "N"..time:monotonic()..math.random(99999)
 end
+
+
+function getDate()
+
+    local today = time:get("y,mo,d,h,mi,s")
+--    return {today[1], today[2], today[3]}
+    
+        local year = today[1]
+        local month = string.format("%02d", today[2])
+        local day = string.format("%02d", today[3])
+        local heure = string.format("%02d", today[4])
+        local minute = string.format("%02d", today[5])
+    
+        return day.."/"..month.."/"..year.." "..heure..":"..minute
+
+end
+

@@ -141,16 +141,17 @@ std::string tableToString(const sol::table& table) {
         } else if (pair.second.is<int>()) {
             ss << pair.second.as<int>();
         } else if (pair.second.is<bool>()) {
-            ss << pair.second.as<bool>();
+            if (pair.second.as<bool>())
+                ss << "true";
+            else
+                ss << "false";
         } else if (pair.second.is<sol::table>()) {
             ss << tableToString(pair.second); 
             // You might want to recursively list nested tables here
         } else {
             //ss << "(Unknown type)";
         }
-
         //std::cout << std::endl;
-
 //        if (size != i)
             ss << ", ";
     }
