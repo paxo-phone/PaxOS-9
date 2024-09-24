@@ -9,14 +9,15 @@
 #include <Surface.hpp>
 #include <iostream>
 
-namespace gui::elements {
+namespace gui::elements
+{
     Label::Label(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
         : ElementBase(),
-        m_text(""),
-        m_fontSize(18),
-        m_textColor(COLOR_DARK),
-        m_textVerticalAlignment(UP),
-        m_textHorizontalAlignment(LEFT)
+          m_text(""),
+          m_fontSize(18),
+          m_textColor(COLOR_DARK),
+          m_textVerticalAlignment(UP),
+          m_textHorizontalAlignment(LEFT)
     {
         m_x = x;
         m_y = y;
@@ -25,6 +26,7 @@ namespace gui::elements {
 
         m_hasCursor = false;
         m_cursorIndex = 0;
+        m_strikeOut = false;
     }
 
     Label::~Label() = default;
@@ -34,7 +36,7 @@ namespace gui::elements {
         m_surface->clear(COLOR_WHITE);
         m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, m_borderRadius, m_borderSize, m_backgroundColor, m_borderColor);
 
-        m_surface->setTextColor((this->m_textColor == 0)?(1):(this->m_textColor));
+        m_surface->setTextColor((this->m_textColor == 0) ? (1) : (this->m_textColor));
         m_surface->setColor(this->m_backgroundColor);
         m_surface->setFontSize(this->m_fontSize);
 
@@ -45,40 +47,40 @@ namespace gui::elements {
             int x;
             switch (int(m_textHorizontalAlignment))
             {
-                case Alignement::LEFT:
-                    x = getRadius()/2 + getBorderSize();
+            case Alignement::LEFT:
+                x = getRadius() / 2 + getBorderSize();
                 break;
-                case Alignement::CENTER:
-                    x = getRadius()/2 + getBorderSize() + getUsableWidth()/2 - m_surface->getTextWidth(lines[i])/2;
+            case Alignement::CENTER:
+                x = getRadius() / 2 + getBorderSize() + getUsableWidth() / 2 - m_surface->getTextWidth(lines[i]) / 2;
                 break;
-                case Alignement::RIGHT:
-                    x = getRadius()/2 + getBorderSize() + getUsableWidth() - m_surface->getTextWidth(lines[i]);
+            case Alignement::RIGHT:
+                x = getRadius() / 2 + getBorderSize() + getUsableWidth() - m_surface->getTextWidth(lines[i]);
                 break;
             };
 
             int y;
             switch (int(m_textVerticalAlignment))
             {
-                case Alignement::UP:
-                    y = getRadius()/2 + getBorderSize() + (m_surface->getTextHeight() + LINE_SPACING) * i;
+            case Alignement::UP:
+                y = getRadius() / 2 + getBorderSize() + (m_surface->getTextHeight() + LINE_SPACING) * i;
                 break;
-                case Alignement::CENTER:
-                    y = getRadius()/2 + getBorderSize() + getUsableHeight()/2
-                        - ((m_surface->getTextHeight() + LINE_SPACING) * lines.size()) / 2 
-                        + (m_surface->getTextHeight() + LINE_SPACING) * i;
+            case Alignement::CENTER:
+                y = getRadius() / 2 + getBorderSize() + getUsableHeight() / 2 - ((m_surface->getTextHeight() + LINE_SPACING) * lines.size()) / 2 + (m_surface->getTextHeight() + LINE_SPACING) * i;
                 break;
-                case Alignement::DOWN:
-                    y = getRadius()/2 + getBorderSize() + getUsableHeight()
-                        - ((m_surface->getTextHeight() + LINE_SPACING) * lines.size())
-                        + (m_surface->getTextHeight() + LINE_SPACING) * i;
+            case Alignement::DOWN:
+                y = getRadius() / 2 + getBorderSize() + getUsableHeight() - ((m_surface->getTextHeight() + LINE_SPACING) * lines.size()) + (m_surface->getTextHeight() + LINE_SPACING) * i;
                 break;
             };
 
             m_surface->drawText(lines[i], x, y);
+            if (m_strikeOut)
+            {
+                m_surface->drawLine(x, y + m_surface->getTextHeight() / 2, x + m_surface->getTextWidth(lines[i]), y + m_surface->getTextHeight() / 2, m_textColor);
+            }
         }
     }
 
-    void Label::setText(const std::string& text)
+    void Label::setText(const std::string &text)
     {
         this->m_text = text;
         localGraphicalUpdate();
@@ -106,9 +108,10 @@ namespace gui::elements {
         uint16_t charIndex = 0; // Global text index
 
         uint16_t lineCharIndex = 0; // X position
-        uint16_t lineIndex = 0; // Y position
+        uint16_t lineIndex = 0;     // Y position
 
-        for (char c : m_text) {
+        for (char c : m_text)
+        {
             // Save cursor pos
             if (m_hasCursor)
             {
@@ -124,41 +127,56 @@ namespace gui::elements {
                 }
             }
 
-            if (c == '\n') {
+            if (c == '\n')
+            {
                 output.m_lines.push_back(currentLine);
                 currentLine = "";
 
                 lineIndex++;
                 lineCharIndex = 0;
-            } else if (m_surface->getTextWidth(currentLine + c) <= getUsableWidth()) {
+            }
+            else if (m_surface->getTextWidth(currentLine + c) <= getUsableWidth())
+            {
                 currentLine += c;
 
                 lineCharIndex++;
-            } else if (c == ' ') {
+            }
+            else if (c == ' ')
+            {
                 output.m_lines.push_back(currentLine);
                 currentLine = "";
 
                 lineIndex++;
                 lineCharIndex = 0;
-            } else {
-                if (currentLine.empty()) {
+            }
+            else
+            {
+                if (currentLine.empty())
+                {
                     currentLine += c;
 
                     lineCharIndex++;
-                } else if (currentLine.back() == ' ') {
+                }
+                else if (currentLine.back() == ' ')
+                {
                     currentLine += c;
 
                     lineCharIndex++;
-                } else {
+                }
+                else
+                {
                     std::size_t lastSpace = currentLine.find_last_of(' ');
-                    if (lastSpace == std::string::npos) {
+                    if (lastSpace == std::string::npos)
+                    {
                         output.m_lines.push_back(currentLine);
                         currentLine = "";
                         currentLine += c;
 
                         lineIndex++;
                         lineCharIndex = 1;
-                    } else {
+                    }
+                    else
+                    {
                         std::string firstPart = currentLine.substr(0, lastSpace);
                         output.m_lines.push_back(firstPart);
                         currentLine = currentLine.substr(lastSpace + 1);
@@ -182,7 +200,8 @@ namespace gui::elements {
             }
         }
 
-        if (!currentLine.empty()) {
+        if (!currentLine.empty())
+        {
             output.m_lines.push_back(currentLine);
         }
 
@@ -191,12 +210,12 @@ namespace gui::elements {
 
     uint16_t Label::getUsableWidth(void)
     {
-        return getWidth()-getRadius()-2*getBorderSize();
+        return getWidth() - getRadius() - 2 * getBorderSize();
     }
 
     uint16_t Label::getUsableHeight(void)
     {
-        return getHeight()-getRadius()-2*getBorderSize();
+        return getHeight() - getRadius() - 2 * getBorderSize();
     }
 
     void Label::setHorizontalAlignment(Alignement alignment)
@@ -217,7 +236,7 @@ namespace gui::elements {
 
     uint16_t Label::getTextWidth()
     {
-        if(m_surface == nullptr)
+        if (m_surface == nullptr)
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
         m_surface->setFontSize(this->m_fontSize);
         return m_surface->getTextWidth(m_text);
@@ -226,7 +245,7 @@ namespace gui::elements {
     uint16_t Label::getTextHeight()
     {
         bool allocatedSprite = false;
-        if(m_surface == nullptr)
+        if (m_surface == nullptr)
         {
             m_surface = std::make_shared<graphics::Surface>(1, 1);
             allocatedSprite = true;
@@ -235,9 +254,9 @@ namespace gui::elements {
         m_surface->setFontSize(this->m_fontSize);
 
         const auto [lines, cursorIndex, cursorLine] = parse();
-        uint16_t out = getRadius() + getBorderSize()*2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+        uint16_t out = getRadius() + getBorderSize() * 2 + (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
 
-        if(allocatedSprite)
+        if (allocatedSprite)
             m_surface = nullptr;
 
         return out;
@@ -262,11 +281,18 @@ namespace gui::elements {
     {
         m_cursorIndex = cursorIndex;
 
-        if (m_cursorIndex < 0) {
+        if (m_cursorIndex < 0)
+        {
             m_cursorIndex = 0;
         }
-        if (m_cursorIndex > m_text.length()) {
+        if (m_cursorIndex > m_text.length())
+        {
             m_cursorIndex = static_cast<int16_t>(m_text.length());
         }
+    }
+
+    void Label::setStrikeOut(bool strikeOut)
+    {
+        m_strikeOut = strikeOut;
     }
 } // gui::elements

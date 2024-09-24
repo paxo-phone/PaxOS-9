@@ -10,3 +10,4 @@
 ./storage/apps/calculatrice/app.lua
 ./storage/apps/demineur/app.lua
 ./storage/apps/calendrier/app.lua
+./storage/apps/notes/app.lua
