@@ -13,27 +13,29 @@ namespace gui::elements
 {
     /**
      * @brief Widget label displays text
-    **/
+     **/
     class Label final : public ElementBase
     {
     public:
         Label(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~Label() override;
 
-        enum Alignement {
+        enum Alignement
+        {
             CENTER,
             LEFT,
             RIGHT,
             UP,
             DOWN
         };
-        
+
         void render() override;
 
-        void setText(const std::string& text);
+        void setText(const std::string &text);
         std::string getText() const;
         void setTextColor(color_t color);
         void setFontSize(uint16_t fontSize);
+        void setStrikeOut(bool strikeOut);
 
         void setHorizontalAlignment(Alignement alignment);
         void setVerticalAlignment(Alignement alignment);
@@ -48,11 +50,12 @@ namespace gui::elements
         void setCursorIndex(int16_t cursorIndex);
 
     private:
-        struct ParseDataOutput {
+        struct ParseDataOutput
+        {
             std::vector<std::string> m_lines;
 
             uint16_t m_cursorIndex; // X
-            uint16_t m_cursorLine; // Y
+            uint16_t m_cursorLine;  // Y
         };
 
         ParseDataOutput parse(void);
@@ -67,7 +70,8 @@ namespace gui::elements
 
         bool m_hasCursor;
         int16_t m_cursorIndex;
+        bool m_strikeOut;
     };
 } // gui::elements
 
-#endif //LABEL_HPP
+#endif // LABEL_HPP
