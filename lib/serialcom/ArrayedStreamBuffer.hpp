@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <iostream>
 #include <memory>
+#include <Arduino.h>
 
 namespace serialcom {
 
@@ -58,11 +59,7 @@ namespace serialcom {
             if (!this->stream || !this->originalBuffer)
                 return;
             this->stream->rdbuf(originalBuffer);
-            *(this->stream) << log;
-            if (newLine)
-                *(this->stream) << std::endl;
-            else
-                *(this->stream) << std::flush;
+            Serial.write(log.c_str(), log.size());
             this->stream->rdbuf(this);
         }
 
