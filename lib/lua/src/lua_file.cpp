@@ -199,7 +199,7 @@ void save_lua_table(sol::state &lua, const std::string &path, sol::table table)
         return;
     }
 
-    std::cout << tableToString(table) << std::endl;
+    // std::cout << tableToString(table) << std::endl;
     try
     {
         file << tableToString(table);
