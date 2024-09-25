@@ -1,15 +1,11 @@
 #ifndef TASKS_HPP
 #define TASKS_HPP
 
-#include <stdlib.h>
 #include <functional>
 #include <vector>
-#include <algorithm>
-#include <iostream>
 #include <tuple>
 #include "../../hardware/hardware.hpp"
 #include "invoke.hpp"
-#include <functional>
 
 class Function
 {

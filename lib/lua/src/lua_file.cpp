@@ -8,6 +8,11 @@
 #include <json.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
+#include <libsystem.hpp>
+#include <standby.hpp>
+
+#include <fstream>
+#include <iostream>
 
 
 /*
@@ -57,6 +62,13 @@ LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
 
 LuaFile::~LuaFile()
 {
+    // prevent a crash if the app is deleted and one or more callbacks are defined
+    this->onmessage = sol::nil;
+    this->onmessageerror = sol::nil;
+    this->oncall = sol::nil;
+    this->onlowbattery = sol::nil;
+    this->oncharging = sol::nil;
+
     // libérer les ressources (events, etc)
 }
 
@@ -92,16 +104,122 @@ int sol_exception_handler(lua_State* L, sol::optional<const std::exception&> may
 }
 
 int custom_panic_handler(lua_State* L) {
-    AppManager::App& app = AppManager::get(L);
+    std::shared_ptr<AppManager::App> app = AppManager::get(L);
 
-    app.errors += std::string(lua_tostring(L, -1)) + "\n";
-    app.app_state = AppManager::App::AppState::NOT_RUNNING;
+    app->errors += std::string(lua_tostring(L, -1)) + "\n";
+    app->app_state = AppManager::App::AppState::NOT_RUNNING;
 
     const char* msg = lua_tostring(L, -1);
     std::cerr << "Lua panic: " << msg << std::endl;
     
     return 0;
 }
+
+std::string tableToString(const sol::table& table) {
+    std::stringstream ss;
+    ss << "{";
+    
+    int size = 0;
+    for (const auto& pair : table) { size++;}    
+    
+    int i=0;
+    for (const auto& pair : table) {
+        if (pair.first.is<std::string>()) {
+            ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
+        } else if(pair.first.is<int>()) { 
+            ss << "["  <<pair.first.as<int>()<< "]"; 
+        }
+            else { // Assuming it's an identifier
+            ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
+        }
+        i++;
+        ss << "=";
+
+        // Handle different value types carefully
+        if (pair.second.is<std::string>()) {
+            ss << "\"" << pair.second.as<std::string>() << "\"";
+        } else if (pair.second.is<int>()) {
+            ss << pair.second.as<int>();
+        } else if (pair.second.is<sol::table>()) {
+            ss << tableToString(pair.second); 
+            // You might want to recursively list nested tables here
+        } else {
+            //ss << "(Unknown type)";
+        }
+
+        //std::cout << std::endl;
+
+//        if (size != i)
+            ss << ", ";
+    }
+
+    ss << "}";
+
+    //std::cout << ss.str() << std::endl;
+
+    return ss.str();
+}
+
+
+// Function to save a Lua table to a file
+void save_lua_table(sol::state& lua, const std::string& path, sol::table table) {
+    std::ofstream file(path);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file for writing: " << path << std::endl;
+        return;
+    }
+
+    std::cout << tableToString(table) << std::endl;
+    try{
+        file << tableToString(table);
+    }
+    catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Handle other standard exceptions
+        std::cerr << "Standard error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
+    }
+    file.close();
+}
+
+// Function to load a Lua table from a file
+sol::table load_lua_table(sol::state& lua, const std::string& path) {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file for reading: " << path << std::endl;
+        return sol::table{};
+    }
+
+    std::stringstream content;
+    content << file.rdbuf();
+
+    sol::table resultTable;
+    try {
+        lua.script("returntable=" + content.str());
+         std::string tableName = "returntable"; // Adjust if your table has a different name
+        // Retrieve the created table from the Lua state
+         resultTable= lua[tableName];
+    }
+    catch (const sol::error& e) {
+        // Handle Solidity specific errors
+        std::cerr << "Sol error on table serialisation" << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        // Handle other standard exceptions
+        std::cerr << "Error: " << e.what() << std::endl;
+    } catch (...) {
+        // Handle any other unknown exceptions
+        std::cerr << "Unknown error" << std::endl;
+    }
+
+    // Get the global table name (assuming the string defines a table named 'resultTable')
+
+    return resultTable;
+}
+
 
 void LuaFile::load()
 {
@@ -123,6 +241,7 @@ void LuaFile::load()
     if(!nlohmann::json::accept(conf))
     {
         std::cerr << "Les permissions de l'app ne sont pas définies ou sont invalides" << std::endl;
+        std::cerr << "Conf: " << conf << " in " << manifest.str() << std::endl;
         return;
     }
 
@@ -144,6 +263,30 @@ void LuaFile::load()
 
     lua.set_function("nonothing", []() {
     });
+
+    lua["require"] = [&](const std::string& filename) -> sol::object {
+        storage::Path lib(filename);
+
+        // Load the file
+        sol::load_result chunk = lua.load_file(this->lua_storage.convertPath(lib).str());
+        if (!chunk.valid()) {
+            sol::error err = chunk;
+            throw std::runtime_error("Error loading module '" + filename + "': " + err.what());
+        }
+
+        // 4. Execute the loaded chunk and return its results
+        return chunk(); 
+    };
+
+    lua["saveTable"] = [&](const std::string& filename, const sol::table& table)
+    {
+        save_lua_table(lua, lua_storage.convertPath(filename).str(), table);
+    };
+
+    lua["loadTable"] = [&](const std::string& filename)
+    {
+        return load_lua_table(lua, lua_storage.convertPath(filename).str());
+    };
 
     if (perms.acces_hardware)   // si hardware est autorisé
     {
@@ -191,6 +334,7 @@ void LuaFile::load()
             "get_int", &LuaJson::get_int,
             "get_double", &LuaJson::get_double,
             "get_bool", &LuaJson::get_bool,
+            "get_string", &LuaJson::get_string,
             "set_int", &LuaJson::set_int,
             "set_double", &LuaJson::set_double,
             "set_bool", &LuaJson::set_bool,
@@ -235,6 +379,7 @@ void LuaFile::load()
             "checkbox", &LuaGui::checkbox,
             "del", &LuaGui::del,
             "setWindow", &LuaGui::setMainWindow,
+            "getWindow", &LuaGui::getMainWindow,            
             "keyboard", &LuaGui::keyboard,
             "showInfoMessage", &LuaGui::showInfoMessage,
             "showWarningMessage", &LuaGui::showWarningMessage,
@@ -256,6 +401,7 @@ void LuaFile::load()
             "setBorderColor",&LuaWidget::setBorderColor,
             "setRadius",&LuaWidget::setRadius,
             "setBorderSize", &LuaWidget::setBorderSize,
+            "clear", &LuaWidget::clear,
             "enable", &LuaWidget::enable,
             "disable", &LuaWidget::disable,
             "isEnabled", &LuaWidget::isEnabled,
@@ -295,6 +441,8 @@ void LuaFile::load()
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaImage>("LuaImage",
+            "setTransparentColor", &LuaImage::setTransparentColor,
+
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaLabel>("LuaLabel",
@@ -341,11 +489,21 @@ void LuaFile::load()
         lua.new_usertype<LuaVerticalList>("LuaVList",
             "setIndex", &LuaVerticalList::setIndex,
             "setSpaceLine", &LuaVerticalList::setSpaceLine,
+            "setSelectionFocus", &LuaVerticalList::setFocus,
+            "getSelected", &LuaVerticalList::getSelected,
+            "select", &LuaVerticalList::select,
+            "setSelectionColor", &LuaVerticalList::setSelectionColor,
+            "setAutoSelect", &LuaVerticalList::setAutoSelect,
+            "onSelect", &LuaVerticalList::onSelect,
             sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
             //"add", &LuaHorizontalList::add,
+            "setSpaceLine", &LuaHorizontalList::setSpaceLine,
             sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.set("SELECTION_UP", VerticalList::SelectionFocus::UP);
+        lua.set("SELECTION_CENTER", VerticalList::SelectionFocus::CENTER);
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);
         lua.set("RIGHT_ALIGNMENT", Label::Alignement::RIGHT);
@@ -382,7 +540,7 @@ void LuaFile::load()
         lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
             {
                 try{
-                    AppManager::get(name).run(false, arg);
+                    AppManager::get(name)->run(false, arg);
                 }
                 catch(std::runtime_error &e) {
                     std::cerr << "Erreur: " << e.what() << std::endl;
@@ -396,7 +554,7 @@ void LuaFile::load()
             [&](std::string name)
             {
                 try{
-                    AppManager::get(name).run(false, {});
+                    AppManager::get(name)->run(false, {});
                 }
                 catch(std::runtime_error &e) {
                     std::cerr << "Erreur: " << e.what() << std::endl;
@@ -539,7 +697,7 @@ void LuaFile::wakeup(std::vector<std::string> arg)
 
 void LuaFile::stop(std::vector<std::string> arg)
 {
-    sol::protected_function func = lua["quit"];
+    const sol::protected_function func = lua.get<sol::protected_function>("quit");;
     if (!func.valid())
         return;
 

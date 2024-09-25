@@ -1,7 +1,9 @@
-#include <string>
-
-#include <fstream>
 #include "filestream.hpp"
+#include <sstream>
+
+#ifdef ESP_PLATFORM
+#include <SD.h>
+#endif
 
 namespace storage
 {
@@ -24,10 +26,10 @@ namespace storage
     {
         if (mode == READ)
             m_stream.open(path, std::ios::in | std::ios::binary);
-        else if(mode == WRITE)
-                m_stream.open(path, std::ios::out | std::ios::binary);
-        else if(mode == APPEND)
-                m_stream.open(path, std::ios::app | std::ios::binary);
+        else if (mode == WRITE)
+            m_stream.open(path, std::ios::out | std::ios::binary);
+        else if (mode == APPEND)
+            m_stream.open(path, std::ios::app | std::ios::binary);
     }
 
     void FileStream::close(void)
@@ -91,6 +93,11 @@ namespace storage
         m_stream << str;
     }
 
+    void FileStream::write(const char* str, std::size_t len)
+    {
+        m_stream.write(str, len);
+    }
+
     void FileStream::write(const char c)
     {
         m_stream << c;
@@ -106,7 +113,7 @@ namespace storage
         const auto position = m_stream.tellg();
         m_stream.seekg(0, std::ios::beg);
         const auto begin = m_stream.tellg();
-        m_stream.seekg (0, std::ios::end);
+        m_stream.seekg(0, std::ios::end);
         const auto end = m_stream.tellg();
         const auto fsize = (end-begin);
         m_stream.seekg(position);
@@ -122,7 +129,6 @@ namespace storage
         const auto fsize = (end-currentPosition);
         m_stream.seekg(currentPosition);
         return fsize;
-
     }
 
     FileStream &operator<<(FileStream &stream,

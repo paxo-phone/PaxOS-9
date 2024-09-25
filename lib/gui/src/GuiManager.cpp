@@ -1,7 +1,13 @@
 #include "GuiManager.hpp"
 
-    
-    GuiManager::GuiManager(){
+#include <hardware.hpp>
+
+#include "elements/Button.hpp"
+#include "elements/Label.hpp"
+#include "elements/Canvas.hpp"
+
+
+GuiManager::GuiManager(){
 
     }
 

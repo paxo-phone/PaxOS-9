@@ -4,6 +4,12 @@
 
 #include "imgdec.hpp"
 
+#include <filestream.hpp>
+#include <iostream>
+
+#define TJE_IMPLEMENTATION
+#include "toojpeg.h"
+
 #include <exception>
 
 // Create a uint16 with 2x uint8 (Little endian)
@@ -48,33 +54,66 @@ imgdec::IMGData imgdec::decodeHeader(const uint8_t* rawData)
         imgData.width = make32B(rawData[0x10], rawData[0x11], rawData[0x12], rawData[0x13]);
         imgData.heigth = make32B(rawData[0x14], rawData[0x15], rawData[0x16], rawData[0x17]);
     }
-    else if (rawData[0x00] == 0xFF && rawData[0x01] == 0xD8 && rawData[0x02] == 0xFF)
+    else
     {
         imgData.type = JPG;
 
-        // JPG is such a weird image format, we need to find the address of the width and height
+        // Look for the SOF0 marker (FF C0) which indicates the start of frame
         int i = 0;
-        while (rawData[i] != 0xC0) // Only SOF0 marker, may cause issues
+        while (i < 2000) // A reasonable limit for searching within the file
         {
+            if (rawData[i] == 0xFF && rawData[i + 1] == 0xC0)
+            {
+                // SOF0 marker found
+                imgData.heigth = make16B(rawData[i + 5], rawData[i + 6]);
+                imgData.width = make16B(rawData[i + 7], rawData[i + 8]);
+                break;
+            }
             i++;
         }
 
-        // Skip SOF0 marker
-        i++;
-
-        // Skip length
-        i += 2;
-
-        // Skip bitsPerSample
-        i++;
-
-        imgData.width = make16B(rawData[i], rawData[i + 1]);
-        imgData.heigth = make16B(rawData[i + 2], rawData[i + 3]);
+        // If we reach the end of the loop without finding the SOF0 marker, it's an error
+        if (i >= 2000)
+        {
+            std::cerr << "Invalid JPEG file: SOF0 marker not found." << std::endl;
+        }
     }
-    else
+    /*else
     {
         imgData.type = ERROR; // Unknown image
-    }
+    }*/
 
     return imgData;
+}
+
+std::ofstream myFile;
+
+// write a single byte compressed by tooJpeg
+void myOutput(unsigned char byte)
+{
+    myFile << byte;
+}
+
+void imgdec::encodeJpg(const uint8_t *rawData, uint32_t width, uint32_t height, storage::Path filename)
+{
+    std::string path = filename.str();
+
+    myFile.open(path, std::ios::binary);
+
+    // RGB: one byte each for red, green, blue
+    const auto bytesPerPixel = 3;
+
+    // start JPEG compression
+    // note: myOutput is the function defined in line 18, it saves the output in example.jpg
+    // optional parameters:
+    const bool isRGB = true;       // true = RGB image, else false = grayscale
+    const auto quality = 90;       // compression quality: 0 = worst, 100 = best, 80 to 90 are most often used
+    const bool downsample = false; // false = save as YCbCr444 JPEG (better quality), true = YCbCr420 (smaller file)
+    const char *comment = "mms";   // arbitrary JPEG comment
+    
+    std::cout << "ready to write: " << path << std::endl;
+    
+    auto ok = TooJpeg::writeJpeg(myOutput, rawData, width, height, isRGB, quality, downsample, comment);
+
+    myFile.close();
 }

@@ -6,6 +6,9 @@
 
 namespace gui::elements
 {
+    /**
+     * @brief Simply a checkbox widget
+    **/
     class Checkbox final : public ElementBase
     {
     public:

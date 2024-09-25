@@ -1,9 +1,10 @@
+#include "path.hpp"
+
 #include <string>
 #include <cstdint>
 #include <vector>
-
-#include <stdlib.h>
 #include <iostream>
+#include <libsystem.hpp>
 
 #include <filestream.hpp>
 
@@ -13,13 +14,9 @@
 #else
 #include <Arduino.h>
 #include <SD.h>
-#include <stdbool.h>
 #include <dirent.h>   // for Dir and Files
 #include <sys/stat.h> // to check files
-#include <esp_system.h>
 #endif
-
-#include "path.hpp"
 
 #define MOUNT_POINT "/sd"
 
@@ -33,26 +30,33 @@
 #define SYSTEM_PATH_SEPARATOR '/'
 #endif
 
-bool storage::init()
-{
+bool storage::init() {
 #ifdef ESP_PLATFORM
 
-    for (int i = 0; i < 4; i++)
-    {
-        if (SD.begin(4/*, SPI, 8000000*/))
+    constexpr uint8_t sdBeginTryCount = 4;
+
+    for (int i = 0; i < sdBeginTryCount; i++) {
+        if (SD.begin(4, SPI, 8000000)) {
+            libsystem::log("SD card initialized.");
             return true;
-        std::cout << "Error storage initialization" << std::endl;
+        }
+
+        libsystem::log("SD card initialization failed, try " + std::to_string(i + 1) + " of " + std::to_string(sdBeginTryCount) + ".");
     }
 
-    esp_restart();
+    // esp_restart();
 
     // Show error message on the screen?
 
+    libsystem::log("SD card initialization failed.");
+
     return false;
 
-#endif
+#else
 
     return true;
+
+#endif
 }
 
 namespace storage
@@ -100,7 +104,8 @@ namespace storage
         {
             o += m_steps[i];
             if (i != m_steps.size() - 1)
-                o += SYSTEM_PATH_SEPARATOR;
+                o += "/";
+                // o += SYSTEM_PATH_SEPARATOR;
         }
 
         return o;

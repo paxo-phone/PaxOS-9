@@ -66,6 +66,11 @@ bool LuaJson::get_bool(std::string key)
     return json[key].get<bool>();
 }
 
+std::string LuaJson::get_string(std::string key)
+{
+    return json[key].get<std::string>();
+}
+
 void LuaJson::set_int(std::string key, int value)
 {
     json[key] = value;

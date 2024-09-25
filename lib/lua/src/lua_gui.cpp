@@ -141,10 +141,24 @@ LuaWindow* LuaGui::window()
 
 void LuaGui::del(LuaWidget* widget)
 {
-    delete widget;
-    if(mainWindow == widget)
-        mainWindow = nullptr;
-    widget = nullptr;
+// prevent a widget to remove itself during its execution
+     lua->eventHandler.setTimeout(
+        new Callback<>(
+            std::bind(
+                std::function<void(LuaWidget*, LuaWidget*)>(
+                    [](LuaWidget* widget, LuaWidget* mainWindow)
+                    {
+                        delete widget;
+                        if(mainWindow == widget)
+                            mainWindow = nullptr;
+                        widget = nullptr;
+                    }
+                ),
+                widget, mainWindow
+            )
+        ), 0
+        
+    );
 }
 
 void LuaGui::update()
@@ -179,6 +193,11 @@ std::string LuaGui::keyboard(const std::string& placeholder, const std::string& 
 void LuaGui::setMainWindow(LuaWindow* window) {
     this->mainWindow = window; 
     AppManager::askGui(this->lua); 
+}
+
+
+LuaWindow* LuaGui::getMainWindow() {
+    return this->mainWindow; 
 }
 
 void LuaGui::showErrorMessage(const std::string& msg ){

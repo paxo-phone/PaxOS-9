@@ -4,25 +4,23 @@
 //
 
 #include "graphics.hpp"
+#include "standby.hpp"
 
 #include <iostream>
+#include <libsystem.hpp>
 #include <Surface.hpp>
 #include <threads.hpp>
 
 #ifdef ESP_PLATFORM
 
-#include "platforms/LGFX_ESP32_PAXO5.hpp"
+#include <Wire.h>
+
 #include <FT6236G.h>
 FT6236G ct;
 
-#else
-
-#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
-#include "LGFX_AUTODETECT.hpp"
-
-#include "LovyanGFX.hpp"
-
 #endif
+
+int16_t graphics::brightness = 0xFF/3;
 
 namespace
 {
@@ -54,30 +52,38 @@ void graphics::setBrightness(uint16_t value)
     for (uint16_t i = oldValue; i < value; i++)
     {
         lcd->setBrightness(i);
-        delay(2);
+        delay(1);
     }
 
     for (int16_t i = oldValue; i >= value && i!=-1; i--)
     {
         lcd->setBrightness(i);
-        delay(2);
+        delay(1);
     }
 
     oldValue = value;
     #else
-    if(value == 0)
+
+    // Simulate a switched off display
+    if (value == 0) {
         lcd->fillScreen(0x0000);
+    }
+
     #endif
 }
 
-void graphics::init()
+LGFX* graphics::getLcd()
+{
+    return lcd.get();
+}
+
+graphics::GraphicsInitCode graphics::init()
 {
 #ifdef ESP_PLATFORM
 
     running = true; // It doesn't feel right to set this here...
 
     lcd = std::make_shared<LGFX>();
-    ct.init(21, 22, false, 400000);
 
 #else
 
@@ -93,18 +99,41 @@ void graphics::init()
     lcd->init();
     lcd->setColorDepth(16);
     lcd->setTextColor(TFT_WHITE);
-    lcd->fillScreen(TFT_RED);
-}
+    lcd->fillScreen(TFT_BLACK);
 
-void graphics::reInit()
-{
-    lcd->init();
-    lcd->setTextColor(TFT_WHITE);
-    lcd->fillScreen(TFT_RED);
+    // Show init text
+    const std::string& initText = "Paxo";
+    lcd->setFont(&DejaVu40);
+    lcd->setTextColor(packRGB565(58, 186, 153));
+    lcd->setCursor(
+        static_cast<int32_t>(0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))),
+        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())));
+    lcd->printf("%s", initText.c_str());
 
-    #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
+
+    // Init touchscreen
+
     ct.init(21, 22, false, 400000);
-    #endif
+
+    // Check if only 1 I2C (touchscreen) device is found
+    // 0 => No device are connected
+    // 2+ => Faulty touchscreen
+    const uint8_t i2cDevicesCount = hardware::scanI2C(21, 22, false);
+
+    /*
+    if (i2cDevicesCount == 0) {
+        return ERROR_NO_TOUCHSCREEN;
+    }
+
+    if (i2cDevicesCount >= 2) {
+        return ERROR_FAULTY_TOUCHSCREEN;
+    }
+    */
+
+#endif
+
+    return SUCCESS;
 }
 
 uint16_t graphics::getScreenWidth()
@@ -246,6 +275,8 @@ int getTouch(uint16_t *pPoints)
 
 void graphics::touchUpdate()
 {
+    if(StandbyMode::state() == true)
+        return;
     bool touchState = true;
     int16_t liveTouchX = 0, liveTouchY = 0;
 
@@ -303,6 +334,12 @@ void graphics::touchUpdate()
         newTouchY = -1;
         isTouchRead = false;
     }
+
+    if(liveTouchX != touchX || liveTouchY != touchY)
+    {
+        if(StandbyMode::state() == false)
+            StandbyMode::trigger();
+    }
 }
 
 bool graphics::isTouched()
@@ -332,3 +369,15 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
         break;
     }
 }
+
+LGFX* graphics::getLCD() {
+    return lcd.get();
+}
+
+#ifdef ESP_PLATFORM
+
+FT6236G* graphics::getTouchController() {
+    return &ct;
+}
+
+#endif
