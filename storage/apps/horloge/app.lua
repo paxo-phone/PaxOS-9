@@ -1,4 +1,5 @@
-local tNow
+local heureInit
+local initMillis = 0
 local tChrono = 0
 local tMinuteur
 
@@ -52,6 +53,28 @@ function run()
 end --run
 
 
+-- Fonction de calcu de l'heure
+function getHeure()
+
+    if not heureInit then
+        heureInit = time:get("h,mi,s")
+        initMillis = time:monotonic()    
+        return heureInit
+    
+    else
+        local Diffnow = int((time:monotonic() - initMillis)/1000)
+        local horaire = heureInit[1]*3600 +heureInit[2]*60 +heureInit[3] + Diffnow
+        
+        local heure = int(horaire / 3600)
+        local minute = int(60* (horaire / 3600 - int(horaire / 3600)))
+        local seconde = horaire % 60
+
+        return {heure, minute, seconde}
+    end
+        
+end
+
+
 -- Init de l'écran
 -- Création des composants graphiques de l'application
 function init()
@@ -64,6 +87,10 @@ function init()
     heure_label = gui:label(win, 0, 50, 320, 30)
     heure_label:setFontSize(20)
     heure_label:setHorizontalAlignment(CENTER_ALIGNMENT)
+
+
+    -- Gestion de l'heure. Récupération initiale
+
 
     --Affichage des images de fonctions
 
@@ -424,11 +451,15 @@ end -- function copyStruct
 function afficheHorloge()
 
     -- recupere l'heure
-    tNow = time:get("h,mi,s")
 
-    local heure = tNow[1]
-    local minute = tNow[2]
-    local seconde = tNow[3]
+--    local heure = tNow[1]
+  --  local minute = tNow[2]
+    --local seconde = tNow[3]
+
+    local fullHeure = getHeure()
+    local heure = fullHeure[1]
+    local minute = fullHeure[2]
+    local seconde = fullHeure[3]
 
     local now = convert_to_time(heure, minute, seconde) --= table.concat(tNow, ":")
     heure_label:setText(now)
@@ -490,9 +521,9 @@ function afficheChrono()
     local heure = int(tChrono / 3600)
     local minute = int(60* (tChrono / 3600 - int(tChrono / 3600)))
     local seconde = tChrono % 60
-    local now = convert_to_time(heure, minute, seconde) 
 
     -- Affichage du chrono dans le label
+    local now = convert_to_time(heure, minute, seconde) 
     heure_label:setText(now)    
 
     --Affichage de l'heure dans l'horloge
