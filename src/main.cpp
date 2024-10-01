@@ -138,6 +138,7 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
+        #ifdef ESP_PLATFORM
         if(Serial.available())
         {
             std::cout << "Main loop" << std::endl;
@@ -145,6 +146,7 @@ void mainLoop(void* data) {
             std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
             std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
         }
+        #endif
 
         StandbyMode::wait();
     }
