@@ -163,6 +163,7 @@ LuaTimeTimeout::~LuaTimeTimeout()
 
 void LuaTime::update()
 {
+    running = true;
     lua->eventHandler.update();
     
     for (int it = 0; it < timeouts.size(); it++)
@@ -174,6 +175,7 @@ void LuaTime::update()
             it = 0; // reset the loop
         }
     }
+    running = false;
 }
 
 int LuaTime::setInterval(sol::protected_function func, uint32_t interval)

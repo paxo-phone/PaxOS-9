@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 
-SET_LOOP_TASK_STACK_SIZE(8 * 1024);
+SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 
 #endif
 
@@ -138,10 +138,13 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        /*std::cout << "Main loop" << std::endl;
-        std::cout << "Launcher: " << launcher << std::endl;
-        std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
-        std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;*/
+        if(Serial.available())
+        {
+            std::cout << "Main loop" << std::endl;
+            std::cout << "Launcher: " << launcher << std::endl;
+            std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
+            std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
+        }
 
         StandbyMode::wait();
     }

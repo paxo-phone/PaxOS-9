@@ -141,24 +141,33 @@ LuaWindow* LuaGui::window()
 
 void LuaGui::del(LuaWidget* widget)
 {
-// prevent a widget to remove itself during its execution
-     lua->eventHandler.setTimeout(
-        new Callback<>(
-            std::bind(
-                std::function<void(LuaWidget*, LuaWidget*)>(
-                    [](LuaWidget* widget, LuaWidget* mainWindow)
-                    {
-                        delete widget;
-                        if(mainWindow == widget)
-                            mainWindow = nullptr;
-                        widget = nullptr;
-                    }
-                ),
-                widget, mainWindow
-            )
-        ), 0
-        
-    );
+    // prevent a widget to remove itself during its execution
+    if(lua->lua_time.running)
+    {
+        delete widget;
+        if(mainWindow == widget)
+            mainWindow = nullptr;
+        widget = nullptr;
+    }
+    else    // auto enable async if not already done by lua
+    {
+        lua->eventHandler.setTimeout(
+            new Callback<>(
+                std::bind(
+                    std::function<void(LuaWidget*, LuaWidget*)>(
+                        [](LuaWidget* widget, LuaWidget* mainWindow)
+                        {
+                            delete widget;
+                            if(mainWindow == widget)
+                                mainWindow = nullptr;
+                            widget = nullptr;
+                        }
+                    ),
+                    widget, mainWindow
+                )
+            ), 0
+        );
+    }
 }
 
 void LuaGui::update()
