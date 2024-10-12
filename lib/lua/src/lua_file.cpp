@@ -1,3 +1,13 @@
+/**
+ * @file lua_file.cpp
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2024-09-19
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #include "lua_file.hpp"
 
 #include <gui.hpp>
@@ -10,6 +20,7 @@
 #include <contacts.hpp>
 #include <libsystem.hpp>
 #include <standby.hpp>
+#include <graphics.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -49,6 +60,12 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
     return std::make_shared<LuaHttpClient>(lua);
 }*/
 
+/**
+ * @brief Construct a new Lua File:: Lua File object
+ * 
+ * @param filename 
+ * @param manifest 
+ */
 LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     :lua_gui(this),
     lua_storage(this),
@@ -103,6 +120,12 @@ int sol_exception_handler(lua_State* L, sol::optional<const std::exception&> may
     return 0;
 }
 
+/**
+ * @brief 
+ * 
+ * @param L 
+ * @return int 
+ */
 int custom_panic_handler(lua_State* L) {
     std::shared_ptr<AppManager::App> app = AppManager::get(L);
 
@@ -381,6 +404,15 @@ void LuaFile::load()
             "setWindow", &LuaGui::setMainWindow,
             "getWindow", &LuaGui::getMainWindow,            
             "keyboard", &LuaGui::keyboard,
+            "keyboard2", &LuaGui::keyboard2,
+/*            
+            "image", sol::overload(
+                [](LuaGui* gui, LuaWidget* parent, std::string path, int x, int y, int width, int height) -> LuaImage* {
+                    return gui->image(parent, path, x, y, width, height, COLOR_WHITE);
+                },
+                &LuaGui::image
+            ),
+            */
             "showInfoMessage", &LuaGui::showInfoMessage,
             "showWarningMessage", &LuaGui::showWarningMessage,
             "showErrorMessage", &LuaGui::showErrorMessage
@@ -501,6 +533,9 @@ void LuaFile::load()
             //"add", &LuaHorizontalList::add,
             "setSpaceLine", &LuaHorizontalList::setSpaceLine,
             sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.set("LANDSCAPE",graphics::LANDSCAPE);
+        lua.set("PORTRAIT",graphics::PORTRAIT);
 
         lua.set("SELECTION_UP", VerticalList::SelectionFocus::UP);
         lua.set("SELECTION_CENTER", VerticalList::SelectionFocus::CENTER);
