@@ -43,7 +43,8 @@ void testCommand(std::string commandText, bool shellMode, Command::CommandType e
 
     if (CommandsManager::defaultInstance->shellMode)
     {
-        text.pop_back(); // remove the last '\n' character printed if the shellMode is enabled
+        text.pop_back(); // remove the last '\n' and '\r' characters printed if the shellMode is enabled
+        text.pop_back();
     } else {
         if (text.size() >= 12)
         {

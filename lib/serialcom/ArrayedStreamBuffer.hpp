@@ -60,6 +60,11 @@ namespace serialcom {
                 return;
             this->stream->rdbuf(originalBuffer);
             Serial.write(log.c_str(), log.size());
+            if (newLine)
+            {
+                Serial.write("\r\n");
+                Serial.flush();
+            }
             this->stream->rdbuf(this);
         }
 

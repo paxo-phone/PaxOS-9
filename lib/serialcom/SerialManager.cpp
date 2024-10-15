@@ -99,6 +99,8 @@ namespace serialcom {
 
             this->coutBuffer.directLog(std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex), false);
         }
+
+        this->startCommandLog();
     }
 
     void SerialManager::forceFlushBuffers()

@@ -404,7 +404,7 @@ namespace serialcom
     void CommandsManager::processUploadCommand(const Command& command) const
     {
         storage::Path uploadPath(command.arguments[0]);
-        SerialManager::sharedInstance->commandLog("Uploading file to " + uploadPath.str() + " with size " + command.arguments[1] + " bytes");
+        //SerialManager::sharedInstance->commandLog("Uploading file to " + uploadPath.str() + " with size " + command.arguments[1] + " bytes");
         try
         {
             size_t fileSize = std::stoi(command.arguments[1]);
@@ -412,57 +412,149 @@ namespace serialcom
 
             storage::FileStream fileStream(uploadPath.str(), storage::WRITE);
 
-            for (size_t i = 0; i < fileSize; i += 2048)
+            if (this->shellMode)
             {
-                //SerialManager::sharedInstance->commandLog("Getting encoded chunk");
-                std::string encodedChunk;
-                while (encodedChunk.empty())
+                for (size_t i = 0; i < fileSize; i += 2048)
                 {
-                    static size_t ndx = 0;
-                    bool newData = false;
-                    char endMarker = '\n';
-                    char rc;
-                    
-                    #ifdef ESP_PLATFORM
-                    #define dataAvailable Serial.available() > 0
-                    #else
-                    #define dataAvailable std::cin.peek() != EOF
-                    #endif
-                    while (dataAvailable && newData == false) {
-                        #ifdef ESP_PLATFORM
-                        rc = Serial.read();
-                        #else
-                        rc = std::cin.get();
-                        #endif
-
-                        if (rc != endMarker)
-                            encodedChunk += rc;     
-                        else
-                            newData = true;
-                    }
-                }
-
-                encodedChunk.pop_back(); // remove the last '\n' character
-                /*
-                while (true)
-                {
-                    SerialManager::sharedInstance->commandLog("Waiting for chunk");
-                    std::getline(std::cin, encodedChunk);
-                    if (encodedChunk.size() != 0)
+                    //SerialManager::sharedInstance->commandLog("Getting encoded chunk");
+                    std::string encodedChunk;
+                    while (encodedChunk.empty())
                     {
-                        SerialManager::sharedInstance->commandLog("Got a chunk whose size is not null.");
-                        break;
+                        bool newData = false;
+                        char endMarker = '\n';
+                        char rc;
+                        
+                        #ifdef ESP_PLATFORM
+                        #define dataAvailable Serial.available() > 0
+                        #else
+                        #define dataAvailable std::cin.peek() != EOF
+                        #endif
+                        while (dataAvailable && newData == false) {
+                            #ifdef ESP_PLATFORM
+                            rc = Serial.read();
+                            #else
+                            rc = std::cin.get();
+                            #endif
+
+                            if (rc != endMarker)
+                                encodedChunk += rc;     
+                            else
+                                newData = true;
+                        }
+                    }
+                    std::string chunk = base64::from_base64(encodedChunk).c_str();
+                    fileStream.write(chunk);
+                }
+            } else
+            {
+
+                size_t receivedSize = 0;
+
+                SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+
+                while (receivedSize < fileSize)
+                {
+                    //SerialManager::sharedInstance->singleCommandLog("main loop");
+                    std::string tempBuffer;
+                    uint16_t expectedSize = 0;
+
+                    int tries = 0;
+                    uint16_t tempBufferSize = 0;
+                    bool newData = false;
+
+                    while (true)
+                    {
+                        //SerialManager::sharedInstance->singleCommandLog("sec loop");
+                        if (tries >= 100 && false)
+                        {
+                            fileStream.close();
+                            uploadPath.remove();
+                            SerialManager::sharedInstance->singleCommandLog("Input found: " + tempBuffer);
+                            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                            return;
+                        }
+                        tries++;
+                        
+                        #ifdef ESP_PLATFORM
+                        #define dataAvailable Serial.available() > 0
+                        #else
+                        #define dataAvailable std::cin.peek() != EOF
+                        #endif
+                        while (dataAvailable && newData == false && tempBufferSize < 2060) {
+                            //SerialManager::sharedInstance->singleCommandLog("in loop");
+                            #ifdef ESP_PLATFORM
+                            char rc = Serial.read();
+                            #else
+                            char rc = std::cin.get();
+                            #endif
+
+                            if (rc != -1)
+                            {
+                                tempBuffer += rc;
+                                tempBufferSize++;   
+                            }  
+                            else
+                                newData = true;
+                        }
+
+                        size_t pos = tempBuffer.find(std::string((char)0xff + "") + (char)0xfe + (char)0xfd);
+
+                        if (pos == std::string::npos)
+                        {
+                            tempBuffer = tempBuffer.substr(max((uint16_t)2, tempBufferSize) - 2); // keep the last 2 bytes that could be the beginning of the next message
+                            tempBufferSize = min(tempBufferSize, (uint16_t)2);
+                            continue;
+                        }
+
+                        tempBuffer = tempBuffer.substr(pos + 2);
+
+                        tempBufferSize -= pos + 2;
+
+                        if (tempBufferSize > 8)
+                        {
+                            //SerialManager::sharedInstance->commandLog("GOT MORE THAN 8 BYTES!");
+                            expectedSize = tempBuffer[0] + (tempBuffer[1] << 8);
+                            //SerialManager::sharedInstance->commandLog("First size byte is " + std::to_string(tempBuffer[0]) + " second size byte is " + std::to_string(tempBuffer[1]));
+                            //SerialManager::sharedInstance->commandLog("Size is " + std::to_string(expectedSize) + " buffersize = " + std::to_string(tempBufferSize));
+                            //SerialManager::sharedInstance->commandLog("Buffer itself: " + tempBuffer);
+                            //SerialManager::sharedInstance->finishCommandLog(false);
+                            
+                            if (tempBufferSize >= expectedSize + 8)
+                                break;
+                        }
+
+                        PaxOS_Delay(20);
                     }
 
-                    PaxOS_Delay(100);
+                    uint16_t options = tempBuffer[2] + (tempBuffer[3] << 8);
+
+                    uint32_t checksum = tempBuffer[4] + (tempBuffer[5] << 8) + (tempBuffer[6] << 16) + (tempBuffer[7] << 24);
+
+                    uint64_t tempChecksum = 0;
+
+                    tempBuffer = tempBuffer.substr(8, expectedSize);
+                    
+                    for (char c : tempBuffer)
+                    {
+                        tempChecksum = (tempChecksum + c) % 4294967295;
+                    }
+
+                    if (checksum != (uint32_t)tempChecksum)
+                    {
+                        fileStream.close();
+                        uploadPath.remove();
+                        SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("checksum don't match, expected ") + std::to_string(checksum) + " got " + std::to_string(tempChecksum));
+                        return;
+                    }
+
+                    fileStream.write(tempBuffer);
+
+                    receivedSize += expectedSize;
+
+                    tempBuffer = "";
+
+                    SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
                 }
-                */
-                //SerialManager::sharedInstance->commandLog("Got chunk");
-                //SerialManager::sharedInstance->commandLog(std::to_string(encodedChunk.size()));
-                //SerialManager::sharedInstance->commandLog(encodedChunk);
-                std::string chunk = base64::from_base64(encodedChunk).c_str();
-                //SerialManager::sharedInstance->commandLog(chunk);
-                fileStream.write(chunk);
             }
 
             fileStream.close();
@@ -477,7 +569,9 @@ namespace serialcom
             if (this->shellMode)
                 SerialManager::sharedInstance->commandLog("Error uploading file: " + std::string(e.what()));
             else
-                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string(e.what()));
+
+            uploadPath.remove();
             return;
         }
     }
