@@ -48,6 +48,9 @@ using json = nlohmann::json;
 #define FILE_CANNOT_BE_OPENED(PATH) "File " + std::string(PATH) + " cannot be opened."
 #define FILE_SIZE_MESSAGE(SIZE) "File size " + std::string(SIZE) + "\n"
 
+// UPLOAD
+#define NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN "RE"
+
 namespace serialcom
 {
     // arg1 = path to get children from
@@ -447,41 +450,47 @@ namespace serialcom
                 }
             } else
             {
-
                 size_t receivedSize = 0;
 
                 SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
 
+                uint16_t askAgainTries = 0; 
+
                 while (receivedSize < fileSize)
                 {
-                    //SerialManager::sharedInstance->singleCommandLog("main loop");
+                    if (askAgainTries >= 10)
+                    {
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_ERROR_CODE);
+                        return;
+                    }
+
                     std::string tempBuffer;
                     uint16_t expectedSize = 0;
 
-                    int tries = 0;
+                    uint16_t tries = 0;
                     uint16_t tempBufferSize = 0;
                     bool newData = false;
 
+
+                    bool shouldRestartLoop = false;
                     while (true)
                     {
-                        //SerialManager::sharedInstance->singleCommandLog("sec loop");
-                        if (tries >= 100 && false)
+                        if (tries >= 1000)
                         {
-                            fileStream.close();
-                            uploadPath.remove();
-                            SerialManager::sharedInstance->singleCommandLog("Input found: " + tempBuffer);
-                            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
-                            return;
+                            shouldRestartLoop = true;
+                            SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN);
+                            askAgainTries++;
+                            break;
                         }
                         tries++;
                         
+
                         #ifdef ESP_PLATFORM
                         #define dataAvailable Serial.available() > 0
                         #else
                         #define dataAvailable std::cin.peek() != EOF
                         #endif
-                        while (dataAvailable && newData == false && tempBufferSize < 2060) {
-                            //SerialManager::sharedInstance->singleCommandLog("in loop");
+                        while (dataAvailable && newData == false && tempBufferSize < 4096) {
                             #ifdef ESP_PLATFORM
                             char rc = Serial.read();
                             #else
@@ -512,21 +521,27 @@ namespace serialcom
 
                         if (tempBufferSize > 8)
                         {
-                            //SerialManager::sharedInstance->commandLog("GOT MORE THAN 8 BYTES!");
                             expectedSize = tempBuffer[0] + (tempBuffer[1] << 8);
-                            //SerialManager::sharedInstance->commandLog("First size byte is " + std::to_string(tempBuffer[0]) + " second size byte is " + std::to_string(tempBuffer[1]));
-                            //SerialManager::sharedInstance->commandLog("Size is " + std::to_string(expectedSize) + " buffersize = " + std::to_string(tempBufferSize));
-                            //SerialManager::sharedInstance->commandLog("Buffer itself: " + tempBuffer);
-                            //SerialManager::sharedInstance->finishCommandLog(false);
                             
                             if (tempBufferSize >= expectedSize + 8)
                                 break;
                         }
 
-                        PaxOS_Delay(20);
+                        PaxOS_Delay(10);
                     }
 
+                    if (shouldRestartLoop)
+                        continue;
+
                     uint16_t options = tempBuffer[2] + (tempBuffer[3] << 8);
+
+                    if (options & 0x0001) // wants to end the communication
+                    {
+                        fileStream.close();
+                        uploadPath.remove();
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+                        return;
+                    }
 
                     uint32_t checksum = tempBuffer[4] + (tempBuffer[5] << 8) + (tempBuffer[6] << 16) + (tempBuffer[7] << 24);
 
@@ -541,10 +556,9 @@ namespace serialcom
 
                     if (checksum != (uint32_t)tempChecksum)
                     {
-                        fileStream.close();
-                        uploadPath.remove();
-                        SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("checksum don't match, expected ") + std::to_string(checksum) + " got " + std::to_string(tempChecksum));
-                        return;
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN + std::string("checksum don't match, expected ") + std::to_string(checksum) + " got " + std::to_string(tempChecksum));
+                        askAgainTries++;
+                        continue;
                     }
 
                     fileStream.write(tempBuffer);
@@ -554,6 +568,8 @@ namespace serialcom
                     tempBuffer = "";
 
                     SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+
+                    askAgainTries = 0;
                 }
             }
 
