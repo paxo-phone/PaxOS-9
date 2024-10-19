@@ -16,12 +16,12 @@ namespace graphics
 }
 
 #define COLOR_DARK 0x0000
-#define COLOR_LIGHT 0xF7BE
+#define COLOR_LIGHT graphics::packRGB565(242, 218, 182) // Theme color should be real White in the base theme
 #define COLOR_SUCCESS 0x2D28
 #define COLOR_WARNING 0xFE00
 #define COLOR_ERROR 0xD9A8
 
-#define COLOR_WHITE         graphics::packRGB565(255, 255, 255)
+#define COLOR_WHITE         COLOR_LIGHT
 #define COLOR_BLACK         graphics::packRGB565(0, 0, 0)
 #define COLOR_RED           graphics::packRGB565(255, 0, 0)
 #define COLOR_GREEN         graphics::packRGB565(0, 128, 0)

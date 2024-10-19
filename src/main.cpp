@@ -266,16 +266,6 @@ void setup()
 
     std::vector<Contacts::contact> cc = Contacts::listContacts();
 
-    /*
-    for(auto c : cc) {
-        //std::cout << c.name << " " << c.phone << std::endl;
-    }
-    */
-
-
-    /**
-     * Gestion des applications
-     */
     AppManager::init();
 
     mainLoop(NULL);
