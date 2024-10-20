@@ -30,6 +30,7 @@ namespace GSM
         requests.push_back(this);
 
         state = RequestState::WAITING;
+        timeout = millis() + 10000;
         this->callback = callback;
     }
 
@@ -40,6 +41,8 @@ namespace GSM
 
         #ifdef ESP_PLATFORM
         
+        timeout = millis() + 10000;
+
         GSM::coresync.lock();
         uint64_t timer = millis();  // pour le timeout
         uint64_t timeout_block = 3000;    // timeout de 1 secondes
@@ -99,6 +102,12 @@ namespace GSM
         requests.erase(std::remove(requests.begin(), requests.end(), this), requests.end());
     }
 
+    void HttpRequest::fastKill(uint8_t code)
+    {
+        close();
+        callback(code, 0);
+    }
+
     void HttpRequest::manage()
     {
         if(currentRequest == nullptr)
@@ -118,41 +127,63 @@ namespace GSM
             switch (currentRequest->state)
             {
                 case HttpRequest::RequestState::WAITING:
-                    GSM::send("AT+HTTPINIT", "AT+HTTPINIT", 500);   // setup http
-
-                    if(currentRequest->header.httpMethod == HttpHeader::Method::GET)
+                    if(GSM::send("AT+HTTPINIT", "AT+HTTPINIT", 500).find("OK") == std::string::npos)   // setup http
                     {
-                        GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->header.url + "\"\r", "AT+HTTPPARA", 500);
-                        GSM::send("AT+HTTPACTION=0", "AT+HTTPACTION", 5000);
-                    } 
-                    else if(currentRequest->header.httpMethod == HttpHeader::Method::POST)
-                    {
-                        // Set URL for POST request
-                        GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->header.url + "\"\r", "AT+HTTPPARA", 500);
-                        
-                        // Set content type (assuming JSON, adjust if needed)
-                        GSM::send("AT+HTTPPARA=\"CONTENT\",\"application/json\"\r", "AT+HTTPPARA", 500);
-                        
-                        // Prepare to send data
-                        int dataLength = currentRequest->header.body.length();
-                        GSM::send("AT+HTTPDATA=" + std::to_string(dataLength) + ",10000", "DOWNLOAD", 1000);
-                        
-                        // Send the actual POST data
-                        GSM::send(currentRequest->header.body, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
-                        
-                        // Perform POST action
-                        GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 5000);
+                        currentRequest->fastKill();
+                        break;
                     }
+                    else
+                    {
+                        if(currentRequest->header.httpMethod == HttpHeader::Method::GET)
+                        {
+                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->header.url + "\"\r", "AT+HTTPPARA", 500);
+                            if(GSM::send("AT+HTTPACTION=0", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
+                            {
+                                currentRequest->fastKill();
+                                break;
+                            }
+                        } 
+                        else if(currentRequest->header.httpMethod == HttpHeader::Method::POST)
+                        {
+                            // Set URL for POST request
+                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->header.url + "\"\r", "AT+HTTPPARA", 500);
+                            
+                            // Set content type (assuming JSON, adjust if needed)
+                            GSM::send("AT+HTTPPARA=\"CONTENT\",\"application/json\"\r", "AT+HTTPPARA", 500);
+                            
+                            // Prepare to send data
+                            int dataLength = currentRequest->header.body.length();
+                            GSM::send("AT+HTTPDATA=" + std::to_string(dataLength) + ",10000", "DOWNLOAD", 1000);
+                            
+                            // Send the actual POST data
+                            GSM::send(currentRequest->header.body, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
+                            
+                            // Perform POST action
+                            if(GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
+                            {
+                                currentRequest->fastKill();
+                                break;
+                            }
+                        }
 
-                    currentRequest->state = HttpRequest::RequestState::SENT;
-
+                        currentRequest->state = HttpRequest::RequestState::SENT;
+                    }
                     
                     break;
                 case HttpRequest::RequestState::SENT:
                     // let the key be received
+                    if(millis() > currentRequest->timeout)
+                    {
+                        currentRequest->fastKill(504);
+                    }
                     break;
                 case HttpRequest::RequestState::RECEIVED:
                     // let the app read the data
+                    if(millis() > currentRequest->timeout)
+                    {
+                        currentRequest->close();
+                        break;
+                    }
                     break;
                 case HttpRequest::RequestState::END:
                     currentRequest = nullptr;
@@ -178,6 +209,7 @@ namespace GSM
             {
                 currentRequest->state = RequestState::RECEIVED;
                 currentRequest->dataSize = size;
+                currentRequest->timeout = millis() + 10000;
                 currentRequest->callback(status, size);
             }
         }

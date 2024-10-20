@@ -173,7 +173,10 @@ namespace GSM
 
         private:
         uint64_t dataSize = 0;
+        uint64_t timeout = 0;   // date at which the request will timeout
         uint64_t readed = 0;
+
+        void fastKill(uint8_t code = 400);
     };
 
     std::string getCurrentTimestamp();  // return the current timestamp formated
