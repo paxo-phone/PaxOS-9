@@ -8,6 +8,10 @@
 #include <backtrace_saver.hpp>
 #include <backtrace.hpp>
 
+#include <Arduino.h>
+
+SET_LOOP_TASK_STACK_SIZE(16 * 1024);
+
 #endif
 
 #include <unistd.h>
@@ -154,74 +158,18 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        /*std::cout << "Main loop" << std::endl;
-        std::cout << "Launcher: " << launcher << std::endl;
-        std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
-        std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;*/
+        #ifdef ESP_PLATFORM
+        if(Serial.available())
+        {
+            std::cout << "Main loop" << std::endl;
+            std::cout << "Launcher: " << launcher << std::endl;
+            std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
+            std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
+        }
+        #endif
 
         StandbyMode::wait();
     }
-/*
-    // Main loop
-    while (true) {
-        // Update inputs
-        hardware::input::update();
-        std::cout << "Update inputs" << std::endl;
-
-        // Update running apps
-        AppManager::update();
-
-        // Don't show anything
-        if (libsystem::getDeviceMode() == libsystem::SLEEP) {
-            if (getButtonDown(hardware::input::HOME)) {
-                setDeviceMode(libsystem::NORMAL);
-            }
-
-            continue;
-        }
-
-        if (AppManager::isAnyVisibleApp()) {
-            if (getButtonDown(hardware::input::HOME)) {
-                AppManager::quitApp();
-            }
-        } else {
-            // If home button pressed on the launcher
-            // Put the device in sleep
-            if (getButtonDown(hardware::input::HOME)) {
-                // Free the launcher resources
-                applications::launcher::free();
-
-                setDeviceMode(libsystem::SLEEP);
-                continue;
-            }
-
-            std::cout << "Update launcher" << std::endl;
-
-            // Update, show and allocate launcher
-            applications::launcher::update();
-
-            // Icons interactions
-            if (applications::launcher::iconTouched()) {
-                const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
-
-                // Free the launcher resources
-                applications::launcher::free();
-
-                // Launch the app
-                try {
-                    app->run(false);
-                } catch (std::runtime_error& e) {
-                    std::cerr << "Erreur: " << e.what() << std::endl;
-                    // Affichage du msg d'erreur
-                    guiManager.showErrorMessage(e.what());
-                    // on kill l'application ?!?
-                    //AppManager::appList[i].kill();
-                }
-            }
-        }
-
-        AppManager::loop();
-    }*/
 }
 
 void setup()
@@ -358,12 +306,7 @@ void setup()
      */
     AppManager::init();
 
-    #ifdef ESP_PLATFORM
-    xTaskCreateUniversal(mainLoop,"newloop", 32*1024, NULL, 1, NULL, ARDUINO_RUNNING_CORE);
-    vTaskDelete(NULL);
-    #else
     mainLoop(NULL);
-    #endif
 }
 
 void loop(){}

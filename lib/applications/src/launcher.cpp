@@ -88,6 +88,7 @@ namespace applications::launcher {
 
 void applications::launcher::init() {
     launcherWindow = std::make_shared<Window>();
+    targetApp = nullptr;
 }
 
 void applications::launcher::update() {
@@ -206,10 +207,11 @@ void applications::launcher::update() {
         graphics::setBrightness(newBrightness);
     }
 
-    targetApp = nullptr;
 
     for (const auto& [icon, app] : applicationsIconsMap) {
         if (icon->isTouched()) {
+            targetApp = nullptr;
+            std::cout << "launcher::update - touched: " << app->name << std::endl;
             targetApp = app;
         }
     }

@@ -1,1 +1,1 @@
-{"day":{"heureFin":18, "heureDebut":9}, "displayBusinessWeek":false, "defaultView":"week", "displayWeekNum":true}
+{"defaultView":"week", "displayBusinessWeek":true, "displayWeekNum":true, "day":{"heureDebut":6, "heureFin":18}}
