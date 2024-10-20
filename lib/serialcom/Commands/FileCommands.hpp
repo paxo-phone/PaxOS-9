@@ -404,6 +404,24 @@ namespace serialcom
     // arg1 = fileName to upload
     // arg2 = size of the file in bytes
     // input = file content in chunks of 2048 bytes (or less for the last chunk), each one encoded in base64
+    /* NON SHELL MODE
+        -> upload filename size
+        <- OK
+        -> chunk (undetermined size, little is more reliable but slower)
+        {
+            <- RE (if the chunk is not correct) => 
+                {
+                    -> send chunk again
+                    OR
+                    -> send a packet with the first bit of the options being set to 1 => end the communication
+                }
+            OR
+            <- OK => send next chunk
+            OR
+            <- KO => end of the communication because of an error
+        }
+        <- OK
+    */
     void CommandsManager::processUploadCommand(const Command& command) const
     {
         storage::Path uploadPath(command.arguments[0]);
