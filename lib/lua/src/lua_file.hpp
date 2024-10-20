@@ -7,6 +7,7 @@
 #include <filestream.hpp>
 #include <path.hpp>
 #include <hardware.hpp>
+#include <threads.hpp>
 
 #include "lua_gui.hpp"
 #include "lua_hardware.hpp"
@@ -86,6 +87,7 @@ public:
     storage::Path filename;
     Window* current_root;
 
+    EventHandler eventHandler;
     LuaHardware lua_hardware;
     LuaGui lua_gui;
     LuaStorage lua_storage;

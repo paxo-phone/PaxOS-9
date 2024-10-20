@@ -40,10 +40,13 @@ gui::ElementBase::ElementBase() : m_x(0), m_y(0),
 
 gui::ElementBase::~ElementBase()
 {
+ 
+ // force le rafraichisseent sur un delete d'un enfant
     if (m_parent != nullptr)
         m_parent->localGraphicalUpdate();
 
-    // Libération de la mémoire allouée pour les enfants de l'objet
+ 
+ // Libération de la mémoire allouée pour les enfants de l'objet
     for (int i = 0; i < m_children.size(); i++)
     {
         if (m_children[i] != nullptr)
@@ -73,7 +76,10 @@ void gui::ElementBase::renderAll(bool onScreen)
             m_surface = nullptr;
 
         if (m_surface == nullptr)
+        {
+            freeRamFor(m_width * m_height, this->getMaster());
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
+        }
 
         // Render the element
         render();
@@ -643,4 +649,25 @@ gui::ElementBase *gui::ElementBase::getElementAt(int index) {
     }
     return nullptr;
 
+}
+
+#include "elements/Window.hpp"
+
+void gui::ElementBase::freeRamFor(uint32_t size, ElementBase* window)
+{
+    #ifdef ESP_PLATFORM
+    size_t free = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+
+    if (free < size + 1000000)
+    {
+        std::cout << "Not enough RAM, free : " << free << " need : " << size << "\n     -> will free other windows" << std::endl;
+        for (auto i : gui::elements::Window::windows)
+        {
+            if(i != window)
+            {
+                i->free();
+            }
+        }
+    }
+    #endif
 }

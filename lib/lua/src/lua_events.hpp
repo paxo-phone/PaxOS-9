@@ -64,6 +64,8 @@ class LuaTime
     void removeInterval(int id);
     void removeTimeout(int id);
 
+    bool running = false;
+
     private:
     LuaFile* lua = nullptr;
     uint32_t timerFromStart = 0;

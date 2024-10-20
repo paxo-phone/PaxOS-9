@@ -88,6 +88,7 @@ namespace applications::launcher {
 
 void applications::launcher::init() {
     launcherWindow = std::make_shared<Window>();
+    targetApp = nullptr;
 }
 
 void applications::launcher::update() {
@@ -209,10 +210,11 @@ void applications::launcher::update() {
         graphics::setBrightness(graphics::brightness);
     }
 
-    targetApp = nullptr;
 
     for (const auto& [icon, app] : applicationsIconsMap) {
         if (icon->isTouched()) {
+            targetApp = nullptr;
+            std::cout << "launcher::update - touched: " << app->name << std::endl;
             targetApp = app;
         }
     }
@@ -253,7 +255,7 @@ void applications::launcher::draw() {
 
     // Battery icon
     const auto batteryIconDarkPath = storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
-    batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32, TFT_WHITE);
+    batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32, COLOR_LIGHT);
     batteryIcon->load();
     launcherWindow->addChild(batteryIcon);
 
@@ -320,7 +322,7 @@ void applications::launcher::draw() {
 
 
     // List contenant les app
-    VerticalList* winListApps = new VerticalList(0, 164, 320,316);
+    VerticalList* winListApps = new VerticalList(60, 164, 320-60*2,316);
     //winListApps->setBackgroundColor(COLOR_GREY);
     launcherWindow->addChild(winListApps);
 
@@ -336,7 +338,7 @@ void applications::launcher::draw() {
         }
 
 //        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 * int(placementIndex/2), 80, 80);
-        auto* box = new Box(60 + 119 * (placementIndex%2), 95 * (placementIndex / 2), 80, 80);
+        auto* box = new Box(119 * (placementIndex%2), 95 * (placementIndex / 2), 80, 80);
 
         auto* img = new Image(app->path / "../icon.png", 20, 6, 40, 40);
         img->load();

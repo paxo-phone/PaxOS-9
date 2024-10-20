@@ -36,6 +36,7 @@ class LuaWidget
         void onScrollRight(sol::protected_function func){onScrollRightFunc = func;}
         void onScrollLeft(sol::protected_function func){onScrollLeftFunc = func;}
         LuaWidget* getChildAtIndex(int index){return children[index];}
+        void clear();
 
         void update();
         virtual void specificUpdate(){};

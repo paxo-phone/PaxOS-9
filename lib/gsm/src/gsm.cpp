@@ -42,9 +42,11 @@ namespace GSM
     std::vector<Message> messages;
     State state;
     uint16_t seconds, minutes, hours, days, months, years = 0;
+    std::vector<float> battery_voltage_history;
     float voltage = -1;
     int networkQuality = 0;
     bool flightMode = false;
+    std::mutex coresync;
 
     namespace ExternalEvents
     {
@@ -801,7 +803,12 @@ namespace GSM
                         std::cout << "MMS: " << decoder.url << std::endl;
                         std::string number = decoder.sender;
                         std::string link = decoder.url;
+
                         getHttpMMS(number, link);
+
+                        /*eventHandlerGsm.setTimeout(     // use async
+                            new Callback<>(std::bind(&GSM::getHttpMMS, number, link))
+                        , 0);*/
                     }
                     else // PDU_type::SMS
                     {
@@ -994,6 +1001,19 @@ namespace GSM
         try
         {
             voltage = std::stof(voltage_str);
+
+            battery_voltage_history.push_back(voltage);
+            if (battery_voltage_history.size() > 24)
+                battery_voltage_history.erase(battery_voltage_history.begin());
+
+            if (battery_voltage_history.size() > 0) {
+                double sum = 0;
+                for (auto v : battery_voltage_history)
+                    sum += v;
+                voltage = sum / battery_voltage_history.size();
+
+                std::cout << "Battery voltage average: " << voltage << std::endl;
+            }
         }
         catch (std::exception)
         {
@@ -1010,7 +1030,7 @@ namespace GSM
         // Thanks NumWorks for the regression app
         const double batteryLevel = 3.083368 * std::pow(voltage, 3) - 37.21203 * std::pow(voltage, 2) + 150.5735 * voltage - 203.3347;
 
-        std::cout << "Battery level: " << batteryLevel << std::endl;
+        //std::cout << "Battery level: " << batteryLevel << std::endl;
 
         return std::clamp(batteryLevel, 0.0, 1.0);
 
@@ -1181,19 +1201,27 @@ namespace GSM
         keys.push_back({"+CMTI:", &GSM::onMessage});
         keys.push_back({"VOICE CALL: END", &GSM::onHangOff});
         keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
+        keys.push_back({"+HTTPACTION: ", &GSM::HttpRequest::received});
+
+        coresync.lock();
 
         while (true)
         {
-            PaxOS_Delay(5);
+            coresync.unlock();
+            PaxOS_Delay(10);
+            coresync.lock();
 
             eventHandlerGsm.update();
 
             download();
 
+            //std::cout << data << std::endl;
+
             process();
             data = "";
 
             checkRequest();
+            HttpRequest::manage();
         }
     }
 };
