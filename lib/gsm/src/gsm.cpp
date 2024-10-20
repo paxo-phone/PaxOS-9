@@ -46,6 +46,7 @@ namespace GSM
     float voltage = -1;
     int networkQuality = 0;
     bool flightMode = false;
+    std::mutex coresync;
 
     namespace ExternalEvents
     {
@@ -802,7 +803,12 @@ namespace GSM
                         std::cout << "MMS: " << decoder.url << std::endl;
                         std::string number = decoder.sender;
                         std::string link = decoder.url;
+
                         getHttpMMS(number, link);
+
+                        /*eventHandlerGsm.setTimeout(     // use async
+                            new Callback<>(std::bind(&GSM::getHttpMMS, number, link))
+                        , 0);*/
                     }
                     else // PDU_type::SMS
                     {
@@ -1195,19 +1201,27 @@ namespace GSM
         keys.push_back({"+CMTI:", &GSM::onMessage});
         keys.push_back({"VOICE CALL: END", &GSM::onHangOff});
         keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
+        keys.push_back({"+HTTPACTION: ", &GSM::HttpRequest::received});
+
+        coresync.lock();
 
         while (true)
         {
-            PaxOS_Delay(5);
+            coresync.unlock();
+            PaxOS_Delay(10);
+            coresync.lock();
 
             eventHandlerGsm.update();
 
             download();
 
+            //std::cout << data << std::endl;
+
             process();
             data = "";
 
             checkRequest();
+            HttpRequest::manage();
         }
     }
 };

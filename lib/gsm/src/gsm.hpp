@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <mutex>
 
 #define BAUDRATE 921600
 
@@ -85,6 +86,7 @@ namespace GSM
     extern uint16_t seconds, minutes, hours, days, months, years;
     extern float voltage;
     extern int networkQuality;
+    extern std::mutex coresync;
 
     // initialize the modem, power it on is required
     void init();
@@ -124,6 +126,58 @@ namespace GSM
     bool isFlightMode();
     // set flight mode
     void setFlightMode(bool mode);
+
+    // Network
+    struct HttpHeader
+    {
+        enum Method
+        {
+            GET,
+            POST
+        };
+
+        std::string url;
+        Method httpMethod;
+        std::string body;
+    };
+
+    class HttpRequest   // todo add a timeout if the callback is never called + add inner buffer for 2 cores requests
+    {
+        public:
+        HttpRequest(HttpHeader header);
+        ~HttpRequest();
+
+        void send(std::function <void (uint8_t, uint64_t)> callback);    // return callback
+
+        HttpHeader header;
+        size_t readChunk(char* buffer);
+        void close();
+    
+        enum RequestState
+        {
+            SETUP,      // the data is set up
+            WAITING,    // waiting for the system to send the request
+            SENT,       // the request has been sent, wait for the result
+            RECEIVED,   // the request has been received, waiting for the callback to read
+            END,
+            ENDED       // the request has ended, need to be deleted
+        };
+
+        RequestState state = RequestState::SETUP;
+        std::function <void (uint8_t, uint64_t)> callback;
+
+        static std::vector<HttpRequest*> requests;
+        static HttpRequest* currentRequest;
+        static void manage();
+        static void received();
+
+        private:
+        uint64_t dataSize = 0;
+        uint64_t timeout = 0;   // date at which the request will timeout
+        uint64_t readed = 0;
+
+        void fastKill(uint8_t code = 400);
+    };
 
     std::string getCurrentTimestamp();  // return the current timestamp formated
     std::string getCurrentTimestampNoSpaces();  // return the current timestamp formated without spaces

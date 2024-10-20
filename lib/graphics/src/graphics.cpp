@@ -60,19 +60,18 @@ void graphics::setBrightness(uint16_t value, const bool temp)
     #ifdef ESP_PLATFORM
     static uint16_t oldValue = 0;
 
-    for (uint16_t i = oldValue; i < value; i++)
-    {
-        lcd->setBrightness(i);
+    while (value < oldValue) {
+        oldValue--;
+        lcd->setBrightness(oldValue);
         delay(1);
     }
 
-    for (int16_t i = oldValue; i >= value && i!=-1; i--)
-    {
-        lcd->setBrightness(i);
+    while (value > oldValue) {
+        oldValue++;
+        lcd->setBrightness(oldValue);
         delay(1);
     }
 
-    oldValue = value;
     #else
 
     // Simulate a switched off display
