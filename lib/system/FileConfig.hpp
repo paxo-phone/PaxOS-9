@@ -15,7 +15,8 @@
 #include <path.hpp>
 #include <filestream.hpp>
 
-namespace libsystem {
+namespace libsystem
+{
     /**
      * @brief Class to store user preferences in a binary format.
      *
@@ -27,12 +28,14 @@ namespace libsystem {
      *
      * @todo Add lists support.
      */
-    class FileConfig {
+    class FileConfig
+    {
         // Need to match "FileConfig::Type" !
         /**
          * Available types for values.
          * Logic needs to be implemented before adding any new value.
          */
+
         typedef std::variant<
             std::nullptr_t,
             uint8_t,
@@ -43,8 +46,9 @@ namespace libsystem {
             int,
             float,
             double,
-            bool
-        > file_config_types_t;
+            bool,
+            std::vector<std::string>>
+            file_config_types_t;
 
     public:
         /**
@@ -68,8 +72,9 @@ namespace libsystem {
          * @param key The key of the value to get.
          * @return The value.
          */
-        template<typename T>
-        [[nodiscard]] T get(const std::string &key) const {
+        template <typename T>
+        [[nodiscard]] T get(const std::string &key) const
+        {
             return std::get<T>(getRaw(key));
         }
 
@@ -80,8 +85,9 @@ namespace libsystem {
          * @param key The key of the value to set.
          * @param value The value to set to.
          */
-        template<typename T>
-        void set(const std::string &key, T value) const {
+        template <typename T>
+        void set(const std::string &key, T value) const
+        {
             setRaw(key, static_cast<T>(value));
         }
 
@@ -92,14 +98,16 @@ namespace libsystem {
         [[nodiscard]] std::string toString() const;
 
     private:
-        enum OpCode {
+        enum OpCode
+        {
             NULL_CODE,
             PROPERTY,
             BEGIN_NAMESPACE,
             END_NAMESPACE
         };
 
-        enum Type {
+        enum Type
+        {
             NULL_TYPE,
             UINT8,
             UINT16,
@@ -109,14 +117,17 @@ namespace libsystem {
             INT,
             FLOAT,
             DOUBLE,
-            BOOL
+            BOOL,
+            LIST
         };
 
-        enum VersionFlag {
+        enum VersionFlag
+        {
             EMPTY
         };
 
-        class Node : public std::enable_shared_from_this<Node> {
+        class Node : public std::enable_shared_from_this<Node>
+        {
         public:
             virtual ~Node() = default;
 
@@ -128,7 +139,8 @@ namespace libsystem {
 
         class NamespaceNode;
 
-        class ValueNode final : public Node {
+        class ValueNode final : public Node
+        {
             friend class NamespaceNode;
 
         public:
@@ -144,18 +156,19 @@ namespace libsystem {
 
             std::string getPath() override;
 
-            void write(const std::shared_ptr<storage::FileStream>& fileStream) const;
+            void write(const std::shared_ptr<storage::FileStream> &fileStream) const;
 
         private:
             std::string m_key;
             file_config_types_t m_value;
         };
 
-        class NamespaceNode final : public Node {
+        class NamespaceNode final : public Node
+        {
             friend class ValueNode;
 
         public:
-            explicit NamespaceNode(const std::string& name);
+            explicit NamespaceNode(const std::string &name);
 
             [[nodiscard]] std::shared_ptr<NamespaceNode> getParent() const;
 
@@ -167,12 +180,12 @@ namespace libsystem {
             bool hasNamespace(const std::string &name);
             std::shared_ptr<NamespaceNode> getNamespace(const std::string &name);
 
-            void addValueNode(const std::shared_ptr<ValueNode>& node);
-            void addNamespaceNode(const std::shared_ptr<NamespaceNode>& node);
+            void addValueNode(const std::shared_ptr<ValueNode> &node);
+            void addNamespaceNode(const std::shared_ptr<NamespaceNode> &node);
 
             std::string getPath() override;
 
-            void write(const std::shared_ptr<storage::FileStream>& fileStream) const;
+            void write(const std::shared_ptr<storage::FileStream> &fileStream) const;
 
         private:
             std::string m_name;
@@ -229,10 +242,10 @@ namespace libsystem {
         static std::vector<std::string> getSplicedNamespacedKey(const std::string &namespacedKey);
 
         [[nodiscard]] std::shared_ptr<NamespaceNode> getNamespaceNodeFromNamespaceKey(const std::string &namespacedKey,
-            bool createNewNamespaces = false) const;
+                                                                                      bool createNewNamespaces = false) const;
 
         [[nodiscard]] file_config_types_t getRaw(const std::string &key) const;
-        void setRaw(const std::string &key, const file_config_types_t& value) const;
+        void setRaw(const std::string &key, const file_config_types_t &value) const;
 
         /*
          * FileStream interface
@@ -251,9 +264,11 @@ namespace libsystem {
         [[nodiscard]] uint32_t readUint32();
         [[nodiscard]] uint64_t readUint64();
         [[nodiscard]] std::string readString(size_t length = 0);
+        [[nodiscard]] std::vector<std::string> readList();
+
         [[nodiscard]] OpCode readOpCode();
         [[nodiscard]] Type readType();
     };
 } // libsystem
 
-#endif //FILECONFIG_HPP
+#endif // FILECONFIG_HPP
