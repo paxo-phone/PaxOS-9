@@ -13,11 +13,12 @@ local grid = {}
 local espacementBox
 local sizeCase
 
--- Element 
+-- Element du jeu
 local imgStatut, boxActionFlag, lblNbMine
 local lblTimer, idTimer
 local flagAction = false
 local isGameOver
+local oldWin
 
 function run()
 
@@ -31,19 +32,31 @@ function int(x)
     return math.floor(x)
 end
 
+-- Fonction de création d'une fenetre
+-- si oldWin existe, alors on delete oldWin
+-- oldWin existe si ce n'est pas la première fenetre créée
+function manageWindow()
+
+    local win = gui:window()
+    gui:setWindow(win)
+    if oldWin then 
+        gui:del(oldWin) 
+        oldWin = nil 
+    end
+    oldWin = win
+    return win
+end
 
 -- ------------------------------------------------
 --     GESTION DE L'ECRAN DE SELECTION DU NIVEAU 
 -- ------------------------------------------------
 
-
 -- Initialise l'écran du jeu
 function afficheSelectionNiveau()
 
+        local winSelectionNiveau = manageWindow()
 
-        winSelectionNiveau = gui:window()
-
-        lblTitle = gui:label(winSelectionNiveau, 15, 10, 200, 28)
+        local lblTitle = gui:label(winSelectionNiveau, 15, 10, 200, 28)
         lblTitle:setFontSize(24)
         lblTitle:setText("Démineur")
 
@@ -77,8 +90,6 @@ function afficheSelectionNiveau()
         lblHard:setText("hard")
         lblHard:onClick(function() selectionNiveau("hard") end)
 
-    gui:setWindow(winSelectionNiveau)
-
 end
 
 
@@ -101,8 +112,6 @@ end
 -- ------------------------------------------------
 
 function prepareGame()
---    initGrid()
-    --placeMines()
     initBoard()
     placeMines()
     calculateAdjacentMines()
@@ -111,7 +120,7 @@ end
 -- Initialise le board 
 function initBoard()
 
-    win = gui:window()
+    local win = manageWindow()
 
     local sizeBord = 10
     espacementBox = 1
@@ -125,7 +134,12 @@ function initBoard()
     cnvContour:setBorderColor(colorNiveau)
 
     local imgHome = gui:image(win, "home.png", 10, 30, 40, 40, COLOR_WHITE)
-    imgHome:onClick(afficheSelectionNiveau)
+    imgHome:onClick(
+        function () 
+            clearTimer()
+            afficheSelectionNiveau()
+        end
+    )
 
     lblStatut = gui:label(win, 50, 90, 220, 40)
     lblStatut:setFontSize(24)
@@ -159,7 +173,7 @@ function initBoard()
     imgActionFlag = gui:image(boxActionFlag, "drapeau.png", 0, 0, 40, 40)
     imgActionFlag:setTransparentColor(COLOR_WHITE)
     imgActionFlag:onClick(setFlagAction)
-
+    flagAction = false
 
     for i = 1, gridSize do
         grid[i] = {}
@@ -174,17 +188,17 @@ function initBoard()
         end
     end
 
-    if (idTimer) then
-        time:removeTimeout(idTimer)
-    end
+    clearTimer()
     timer()
 
     isGameOver = false
-
-    gui:setWindow(win)
-
 end
 
+function clearTimer()
+    if (idTimer) then
+        time:removeTimeout(idTimer)
+    end
+end
 
 -- Incrément de l'horloge toutes les secondes
 function timer ()
@@ -212,6 +226,7 @@ end
 -- Active / Desactive le flag
 function setFlagAction()
 
+    if isGameOver then return end
     flagAction = not flagAction
 
     if (flagAction) then
@@ -235,6 +250,7 @@ function gameover()
     lblStatut:setText("Perdu !")
     lblStatut:setTextColor(COLOR_RED)
 
+    local win = gui:getWindow()
     imgStatut = gui:image(win, "lost.png", 140, 30, 40, 40, COLOR_WHITE)
 
     -- reveal all mines
