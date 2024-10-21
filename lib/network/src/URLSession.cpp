@@ -1,23 +1,24 @@
 #include "URLSession.hpp"
 #include "NetworkManager.hpp"
 #include "URLSessionDataTask.hpp"
-#include "CompletionHandler.hpp"
 
 namespace network {
     const std::shared_ptr<URLSession> URLSession::defaultInstance = std::make_shared<URLSession>();
 
     URLSession::URLSession() {
-        NetworkManager::sharedInstance->turnON();
+        NetworkManager::sharedInstance->turnONWiFi();
     }
     
-    URLSessionDataTask* URLSession::dataTaskWithURL(const URL url, CompletionHandler completionHandler)
+    std::shared_ptr<URLSessionDataTask> URLSession::dataTaskWithURL(const URL url, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback)
     {
         URLRequest request(url);
-        return this->dataTaskWithRequest(request, completionHandler);
+        return this->dataTaskWithRequest(request, callback);
     }
 
-    URLSessionDataTask* URLSession::dataTaskWithRequest(const URLRequest request, CompletionHandler completionHandler)
+    std::shared_ptr<URLSessionDataTask> URLSession::dataTaskWithRequest(const URLRequest request, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback)
     {
-        return new URLSessionDataTask(request, completionHandler);
+        std::shared_ptr<URLSessionDataTask> task = std::make_shared<URLSessionDataTask>(URLSessionDataTask(request, this->preferWifi, callback));
+        this->tasks.push_back(task);
+        return task;
     }
 }

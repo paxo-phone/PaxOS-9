@@ -2,19 +2,24 @@
 
 #include "NetworkManager.hpp"
 
+#include <gsm.hpp>
+
 #include <string>
 #include <map>
 
 namespace network {
-    URLSessionDataTask::URLSessionDataTask(const URLRequest request, CompletionHandler completionHandler) : URLSessionTask(request), completionHandler(completionHandler)
+    URLSessionDataTask::URLSessionDataTask(const URLRequest request, bool useWiFi, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback) : URLSessionTask(request, useWiFi), callback(callback)
     {
-        #ifndef ESP_PLATFORM
-        curlHandle = curl_easy_init();
+        #ifdef ESP_PLATFORM
+            if (this->useWiFi)
+            {
+                curlHandle = curl_easy_init();
+            }
+        #else
+            curlHandle = curl_easy_init();
         #endif
-    };
 
-    void URLSessionDataTask::resume() {
-        if (this->state != State::Suspended)
+        if (this->state != State::Waiting)
             return;
 
         if (!this->request.url.isValid())
@@ -29,12 +34,50 @@ namespace network {
             return;
         }
 
-        this->state = State::Running;
-        if (this->curlHandle == nullptr)
+        #ifdef ESP_PLATFORM
+            if (this->useWiFi)
+            {
+                if (this->curlHandle == nullptr)
+                {
+                    this->state = State::Cancelled;
+                    return;
+                }
+                this->sendRequestWiFi();
+            }
+            else
+            {
+                this->sendRequestGSM();
+            }
+        #else
+            this->sendRequestWiFi();
+        #endif
+    };
+
+    void URLSessionDataTask::handleResponse(uint16_t statusCode, uint64_t responseBodySize)
+    {
+        this->response = URLResponse(statusCode, responseBodySize);
+
+        if (statusCode == 200)
         {
-            this->state = State::Cancelled;
-            return;
+            this->state = State::ResponseReceived;
         }
+        else
+        {
+            this->state = State::Failed;
+        }
+
+        this->callback(std::make_shared<URLSessionDataTask>(*this));
+    }
+
+    void URLSessionDataTask::sendRequestGSM()
+    {
+        GSM::sendRequest(std::make_shared<URLSessionDataTask>(*this));
+    }
+
+    void URLSessionDataTask::sendRequestWiFi()
+    {
+        this->state = State::Running;
+
         switch (this->request.method)
         {
             case URLRequest::HTTPMethod::GET:
@@ -74,9 +117,24 @@ namespace network {
             std::cerr << "cURL error: " << curl_easy_strerror(res) << std::endl;
         }
 
-        this->state = State::Completed;
+        uint64_t httpCode = 0;
+        curl_easy_getinfo(curlHandle, CURLINFO_RESPONSE_CODE, &httpCode);
 
-        this->completionHandler(this->responseData);
+        this->handleResponse(httpCode, this->responseData.length());
+    }
+
+    void URLSessionDataTask::resume() {
+        if (this->state == State::Paused)
+        {
+            if (this->useWiFi)
+            {
+                curl_easy_pause(this->curlHandle, CURLPAUSE_CONT);
+            }
+            else
+            {
+                //GSM::resumeRequest(); TODO
+            }
+        }
     }
 
     void URLSessionDataTask::cancel() {
@@ -90,7 +148,14 @@ namespace network {
     void URLSessionDataTask::pause() { // not working right now
         if (this->state == State::Running)
         {
-            curl_easy_pause(this->curlHandle, CURLPAUSE_ALL);
+            if (this->useWiFi)
+            {
+                curl_easy_pause(this->curlHandle, CURLPAUSE_ALL);
+            }
+            else
+            {
+                //GSM::pauseRequest(); TODO
+            }
             this->state = State::Paused;
         }
     }
@@ -137,5 +202,28 @@ namespace network {
             memory->task->uploadProgressHandler(memory->task->uploadProgress);
         }                
         return 0; /* all is good */
+    }
+
+    size_t URLSessionDataTask::readChunk(char* buffer)
+    {
+        if (this->state != State::ResponseReceived)
+            return 0;
+
+        #ifdef ESP_PLATFORM
+            if (this->useWiFi)
+            {
+                if (this->responseData.empty())
+                    return 0;
+                return this->responseData.copy(buffer, this->response->responseBodySize); // TODO read only a chunk like GSM does
+            }
+            else
+            {
+                return GSM::readResponseDataChunk(buffer);
+            }
+        #else
+            if (this->responseData.empty())
+                return 0;
+            return this->responseData.copy(buffer, this->response->responseBodySize);
+        #endif
     }
 }

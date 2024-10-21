@@ -10,6 +10,7 @@
 #include <GuiManager.hpp>
 #include <standby.hpp>
 #include <threads.hpp>
+#include <URLSession.hpp>
 
 
 /**
@@ -89,6 +90,17 @@ namespace applications::launcher {
 void applications::launcher::init() {
     launcherWindow = std::make_shared<Window>();
     targetApp = nullptr;
+
+    network::URLSession::defaultInstance->dataTaskWithURL(std::string("https://granger.requestcatcher.com/test"), [](std::shared_ptr<network::URLSessionDataTask> task) {
+        char data[2048];
+        task->readChunk(data);
+        if (task->response == std::nullopt) {
+            std::cout << "Request failed" << std::endl;
+            return;
+        } else {
+            std::cout << "Request done, code: " << task->response->statusCode << ", dataSize: " << task->response->responseBodySize << ", data: " << std::string(data) << std::endl;
+        }
+    });
 }
 
 void applications::launcher::update() {

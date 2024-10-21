@@ -1,4 +1,5 @@
 #include "gsm.hpp"
+#include <URLResponse.hpp>
 #include <threads.hpp>
 
 #include <regex>
@@ -8,46 +9,36 @@
 
 namespace GSM
 {
-    std::vector<HttpRequest*> HttpRequest::requests;
-    HttpRequest* HttpRequest::currentRequest = nullptr;
+    std::shared_ptr<network::URLSessionDataTask> currentRequest = nullptr;
+    std::vector<std::shared_ptr<network::URLSessionDataTask>> hTTPRequests;
 
-    HttpRequest::HttpRequest(HttpHeader header) : header(header)
+    void sendRequest(std::shared_ptr<network::URLSessionDataTask> request)
     {
+        hTTPRequests.push_back(request);
+        request->state = network::URLSessionDataTask::State::Waiting;
+
+        request->updateTimeout();
     }
 
-    HttpRequest::~HttpRequest()
+    size_t readResponseDataChunk(char* buffer) // read a single chunk of 1024 bytes
     {
-        close();
-    }
-
-    void HttpRequest::send(std::function <void (uint8_t, uint64_t)> callback)
-    {
-        if(callback == nullptr)
-        {
-            state = RequestState::ENDED;
-        }
-
-        requests.push_back(this);
-
-        state = RequestState::WAITING;
-        timeout = millis() + 10000;
-        this->callback = callback;
-    }
-
-    size_t HttpRequest::readChunk(char* buffer) // read a single chunk of 1024 bytes
-    {
-        if(state != RequestState::RECEIVED)
+        if (currentRequest == nullptr && currentRequest->response != std::nullopt)
             return 0;
+
+        if(currentRequest->state != network::URLSessionDataTask::State::ResponseReceived)
+            return 0;
+
+        network::URLResponse requestResponse = currentRequest->response.value();
 
         #ifdef ESP_PLATFORM
         
-        timeout = millis() + 10000;
+        currentRequest->updateTimeout();
 
         GSM::coresync.lock();
         uint64_t timer = millis();  // pour le timeout
-        uint64_t timeout_block = 3000;    // timeout de 1 secondes
+        uint64_t timeout_block = 3000;    // timeout de 3 secondes
 
-        uint64_t nextBlockSize = std::min(uint64_t(1024), dataSize - readed);
+        uint64_t nextBlockSize = std::min(uint64_t(1024), requestResponse.responseBodySize - requestResponse.readPosition);
 
         //std::cout << "Reading chunk: " << nextBlockSize << std::endl;
 
@@ -65,7 +56,7 @@ namespace GSM
         {
             std::cout << "Timeout" << std::endl;
             nextBlockSize = 0;
-            close();
+            closeRequest();
         }
         else
         {
@@ -76,12 +67,14 @@ namespace GSM
 
         //std::cout << "Chunk readed" << std::endl;
         
-        readed += nextBlockSize;
+        requestResponse.readPosition += nextBlockSize;
 
-        if (readed == dataSize)
+        if (requestResponse.readPosition == requestResponse.responseBodySize)
         {
-            close();
+            closeRequest();
         }
+
+        currentRequest->response = std::make_optional(requestResponse);
 
         GSM::coresync.unlock();
         return nextBlockSize;
@@ -91,32 +84,25 @@ namespace GSM
         return 0;
     }
 
-    void HttpRequest::close()
-    {
-        if(state == RequestState::ENDED)
-            return;
-        
+    void closeRequest()
+    {        
         GSM::send("AT+HTTPTERM", "AT+HTTPTERM", 1000);
-
-        state = RequestState::ENDED;
-        requests.erase(std::remove(requests.begin(), requests.end(), this), requests.end());
+        if (currentRequest != nullptr)
+        {
+            currentRequest->state = network::URLSessionDataTask::State::Finished;
+            currentRequest = nullptr;
+        }
     }
 
-    void HttpRequest::fastKill(uint8_t code)
+    void requestsLoopCycle()
     {
-        close();
-        callback(code, 0);
-    }
-
-    void HttpRequest::manage()
-    {
-        if(currentRequest == nullptr)
+        if(GSM::currentRequest == nullptr)
         {
             for (uint8_t i = 0; i < requests.size(); i++)
             {
-                if(requests[i]->state == HttpRequest::RequestState::WAITING)
+                if(hTTPRequests[i]->state == network::URLSessionDataTask::State::Waiting)
                 {
-                    currentRequest = requests[i];
+                    currentRequest = hTTPRequests[i];
                     break;
                 }
             }
@@ -126,73 +112,76 @@ namespace GSM
         {
             switch (currentRequest->state)
             {
-                case HttpRequest::RequestState::WAITING:
-                    if(GSM::send("AT+HTTPINIT", "AT+HTTPINIT", 500).find("OK") == std::string::npos)   // setup http
+                case network::URLSessionDataTask::State::Waiting:
+                    if(currentRequest->isOverTimeout() || GSM::send("AT+HTTPINIT", "AT+HTTPINIT", 500).find("OK") == std::string::npos)   // setup http
                     {
-                        currentRequest->fastKill();
+                        killRequest();
                         break;
                     }
                     else
                     {
-                        if(currentRequest->header.httpMethod == HttpHeader::Method::GET)
+                        if(currentRequest->request.method == network::URLRequest::HTTPMethod::GET)
                         {
-                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->header.url + "\"\r", "AT+HTTPPARA", 500);
+                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->request.url.absoluteString + "\"\r", "AT+HTTPPARA", 500);
                             if(GSM::send("AT+HTTPACTION=0", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
                             {
-                                currentRequest->fastKill();
+                                killRequest();
                                 break;
                             }
                         } 
-                        else if(currentRequest->header.httpMethod == HttpHeader::Method::POST)
+                        else if(currentRequest->request.method == network::URLRequest::HTTPMethod::POST)
                         {
                             // Set URL for POST request
-                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->header.url + "\"\r", "AT+HTTPPARA", 500);
+                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->request.url.absoluteString + "\"\r", "AT+HTTPPARA", 500);
                             
                             // Set content type (assuming JSON, adjust if needed)
                             GSM::send("AT+HTTPPARA=\"CONTENT\",\"application/json\"\r", "AT+HTTPPARA", 500);
                             
                             // Prepare to send data
-                            int dataLength = currentRequest->header.body.length();
+                            int dataLength = currentRequest->request.httpBody.length();
                             GSM::send("AT+HTTPDATA=" + std::to_string(dataLength) + ",10000", "DOWNLOAD", 1000);
                             
                             // Send the actual POST data
-                            GSM::send(currentRequest->header.body, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
+                            GSM::send(currentRequest->request.httpBody, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
                             
                             // Perform POST action
                             if(GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
                             {
-                                currentRequest->fastKill();
+                                killRequest();
                                 break;
                             }
                         }
 
-                        currentRequest->state = HttpRequest::RequestState::SENT;
+                        currentRequest->state = network::URLSessionDataTask::State::Running;
+
+                        currentRequest->updateTimeout();
                     }
                     
                     break;
-                case HttpRequest::RequestState::SENT:
+                case network::URLSessionDataTask::State::Running:
                     // let the key be received
-                    if(millis() > currentRequest->timeout)
+                    if(currentRequest->isOverTimeout())
                     {
-                        currentRequest->fastKill(504);
+                        killRequest();
                     }
                     break;
-                case HttpRequest::RequestState::RECEIVED:
+                case network::URLSessionDataTask::State::ResponseReceived:
                     // let the app read the data
-                    if(millis() > currentRequest->timeout)
+                    if(currentRequest->isOverTimeout())
                     {
-                        currentRequest->close();
+                        closeRequest();
                         break;
                     }
                     break;
-                case HttpRequest::RequestState::END:
+                case network::URLSessionDataTask::State::Cancelled:
+                case network::URLSessionDataTask::State::Finished:
                     currentRequest = nullptr;
                     break;
             }
         }
     }
 
-    void HttpRequest::received()
+    void handleIncomingResponse()
     {
         std::regex pattern(".*\\+HTTPACTION: (\\d+),(\\d+),(\\d+)\\r\\n.*");
         std::smatch match;
@@ -207,11 +196,19 @@ namespace GSM
 
             if(currentRequest != nullptr)
             {
-                currentRequest->state = RequestState::RECEIVED;
-                currentRequest->dataSize = size;
-                currentRequest->timeout = millis() + 10000;
-                currentRequest->callback(status, size);
+                currentRequest->updateTimeout();
+                currentRequest->handleResponse(status, size);
             }
+        }
+    }
+
+    void killRequest(uint16_t code)
+    {
+        if(currentRequest != nullptr)
+        {
+            closeRequest();
+            currentRequest->handleResponse(code, 0);
+            currentRequest = nullptr;
         }
     }
 }

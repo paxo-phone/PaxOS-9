@@ -1144,6 +1144,9 @@ namespace GSM
         if(o.find("+CSQ:") != std::string::npos)
         {
             networkQuality = atoi(o.substr(o.find("+CSQ: ") + 5, o.find(",") - o.find("+CSQ: ") - 5).c_str());
+        } else 
+        {
+            networkQuality = 0;
         }
         //std::cout << "networkQuality: " << networkQuality << std::endl;
     }
@@ -1201,7 +1204,7 @@ namespace GSM
         keys.push_back({"+CMTI:", &GSM::onMessage});
         keys.push_back({"VOICE CALL: END", &GSM::onHangOff});
         keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
-        keys.push_back({"+HTTPACTION: ", &GSM::HttpRequest::received});
+        keys.push_back({"+HTTPACTION: ", &GSM::handleIncomingResponse});
 
         coresync.lock();
 
@@ -1221,7 +1224,7 @@ namespace GSM
             data = "";
 
             checkRequest();
-            HttpRequest::manage();
+            requestsLoopCycle();
         }
     }
 };

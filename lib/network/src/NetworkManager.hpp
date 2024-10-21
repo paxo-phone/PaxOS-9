@@ -14,15 +14,17 @@ namespace network
             
             static const std::shared_ptr<NetworkManager> sharedInstance;
 
-            const void connect(const std::string& ssid);
+            const void connectToWiFi(const std::string& ssid);
 
-            const void connect(const std::string& ssid, const std::string& passwd);
+            const void connectToWiFi(const std::string& ssid, const std::string& passwd);
 
-            const void disconnect();
+            const void disconnectWiFi();
 
-            const void turnOFF();
+            const void turnOFFWiFi();
 
-            const void turnON();
+            const void turnONWiFi();
+
+            const std::string currentWiFiSSID();
 
             const bool isConnected();
     };

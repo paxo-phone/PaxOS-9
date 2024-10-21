@@ -11,10 +11,16 @@ namespace network {
         public:
             static const std::shared_ptr<URLSession> defaultInstance;
 
+            bool preferWifi = false;
+
+            bool concurrentRequestsLimit = 1;
+
+            std::vector<std::shared_ptr<URLSessionDataTask>> tasks;
+
             URLSession();
 
-            URLSessionDataTask* dataTaskWithURL(const URL url, CompletionHandler completionHandler);
-            URLSessionDataTask* dataTaskWithRequest(const URLRequest, CompletionHandler completionHandler);
+            std::shared_ptr<URLSessionDataTask> dataTaskWithURL(const URL url, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback);
+            std::shared_ptr<URLSessionDataTask> dataTaskWithRequest(const URLRequest, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback);
     };
 }
 #endif // URLSESSION_HPP

@@ -14,7 +14,7 @@ namespace network {
             DELETE
         };
 
-        URLRequest(URL url) : url(url), method(GET), timeoutInterval(60000) {}
+        URLRequest(URL url) : url(url), method(GET), timeoutInterval(10000) {}
 
         HTTPMethod method;
 

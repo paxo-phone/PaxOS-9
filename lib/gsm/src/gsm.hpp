@@ -6,6 +6,8 @@
 #include <string>
 #include <cstdint>
 #include <mutex>
+#include <URLRequest.hpp>
+#include <URLSessionDataTask.hpp>
 
 #define BAUDRATE 921600
 
@@ -127,57 +129,24 @@ namespace GSM
     // set flight mode
     void setFlightMode(bool mode);
 
+
     // Network
-    struct HttpHeader
-    {
-        enum Method
-        {
-            GET,
-            POST
-        };
 
-        std::string url;
-        Method httpMethod;
-        std::string body;
-    };
+    extern std::shared_ptr<network::URLSessionDataTask> currentRequest;
 
-    class HttpRequest   // todo add a timeout if the callback is never called + add inner buffer for 2 cores requests
-    {
-        public:
-        HttpRequest(HttpHeader header);
-        ~HttpRequest();
+    extern std::vector<std::shared_ptr<network::URLSessionDataTask>> hTTPRequests;
 
-        void send(std::function <void (uint8_t, uint64_t)> callback);    // return callback
+    void requestsLoopCycle();
 
-        HttpHeader header;
-        size_t readChunk(char* buffer);
-        void close();
-    
-        enum RequestState
-        {
-            SETUP,      // the data is set up
-            WAITING,    // waiting for the system to send the request
-            SENT,       // the request has been sent, wait for the result
-            RECEIVED,   // the request has been received, waiting for the callback to read
-            END,
-            ENDED       // the request has ended, need to be deleted
-        };
+    void sendRequest(std::shared_ptr<network::URLSessionDataTask> request);
 
-        RequestState state = RequestState::SETUP;
-        std::function <void (uint8_t, uint64_t)> callback;
+    void handleIncomingResponse();
 
-        static std::vector<HttpRequest*> requests;
-        static HttpRequest* currentRequest;
-        static void manage();
-        static void received();
+    size_t readResponseDataChunk(char* buffer);
 
-        private:
-        uint64_t dataSize = 0;
-        uint64_t timeout = 0;   // date at which the request will timeout
-        uint64_t readed = 0;
+    void killRequest(uint16_t code = 400);
 
-        void fastKill(uint8_t code = 400);
-    };
+    void closeRequest();
 
     std::string getCurrentTimestamp();  // return the current timestamp formated
     std::string getCurrentTimestampNoSpaces();  // return the current timestamp formated without spaces
