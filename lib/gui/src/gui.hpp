@@ -16,6 +16,7 @@
 #include "elements/Button.hpp"
 #include "elements/Radio.hpp"
 #include "elements/Keyboard.hpp"
+#include "elements/Slider.hpp"
 
 #include "GuiManager.hpp"
 
