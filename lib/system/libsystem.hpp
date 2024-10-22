@@ -231,7 +231,7 @@ namespace libsystem
          * @param brightness
          * @param save
          */
-        void setBrightness(int16_t brightness, bool save);
+        void setBrightness(int16_t brightness, bool save = false);
 
         /**
          * @brief Set the StandBy Sleep in milliseconds
@@ -239,7 +239,7 @@ namespace libsystem
          * @param millis
          * @param save
          */
-        void setStandBySleepTime(uint64_t millis, bool save);
+        void setStandBySleepTime(uint64_t millis, bool save = false);
 
         /**
          * @brief Get the StandBy Sleep Time from the config file
@@ -313,7 +313,7 @@ namespace libsystem
          * @param color
          * @param save
          */
-        void setBackgroundColor(color_t color, bool save);
+        void setBackgroundColor(color_t color, bool save = false);
 
         /**
          * @brief Set the default Text Color of widgets
@@ -321,7 +321,7 @@ namespace libsystem
          * @param color
          * @param save
          */
-        void setTextColor(color_t color, bool save);
+        void setTextColor(color_t color, bool save = false);
 
         /**
          * @brief Set the default Border Color of widgets
@@ -329,7 +329,7 @@ namespace libsystem
          * @param color
          * @param save
          */
-        void setBorderColor(color_t color, bool save);
+        void setBorderColor(color_t color, bool save = false);
     }
 
 } // namespace libsystem

@@ -660,9 +660,9 @@ void LuaFile::load()
      */
     {
         // TODO: Move this from this scope to the "global lua" scope.
-        auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
+        //        auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
 
-        auto system = paxo["system"].get_or_create<sol::table>(sol::new_table());
+        auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
         auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
 
         // paxo.system.config.get()
@@ -685,6 +685,43 @@ void LuaFile::load()
 
         app.set_function("quit", [&]()
                          { m_commandQueue.push(QUIT); });
+    }
+
+    /**
+     * @brief gestion ds settings Paxo
+     *
+     */
+    {
+        // auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
+
+        auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
+        auto systemSettings = lua["settings"].get_or_create<sol::table>(sol::new_table());
+
+        systemSettings.set_function("getBrightness", &libsystem::paxoConfig::getBrightness);
+        systemSettings.set_function("setBrightness", &libsystem::paxoConfig::setBrightness);
+        systemSettings.set_function("setStandBySleepTime", &libsystem::paxoConfig::setStandBySleepTime);
+        systemSettings.set_function("getStandBySleepTime", &libsystem::paxoConfig::getStandBySleepTime);
+
+        systemSettings.set_function("getOSVersion", &libsystem::paxoConfig::getOSVersion);
+
+        systemSettings.set_function("getConnectedWifi", &libsystem::paxoConfig::getConnectedWifi);
+        systemSettings.set_function("connectWifi", &libsystem::paxoConfig::connectWifi);
+        systemSettings.set_function("getAvailableWifiSSID", [&]() -> sol::table
+                                    {
+        std::vector<std::string> lstSSID = libsystem::paxoConfig::getAvailableWifiSSID();
+
+        sol::table result = lua.create_table();
+        for (const auto elem : lstSSID) {
+            result.add(elem);
+        }
+        return result; });
+
+        systemSettings.set_function("getBackgroundColor", &libsystem::paxoConfig::getBackgroundColor);
+        systemSettings.set_function("getTextColor", &libsystem::paxoConfig::getTextColor);
+        systemSettings.set_function("getBorderColor", &libsystem::paxoConfig::getBorderColor);
+        systemSettings.set_function("setBackgroundColor", &libsystem::paxoConfig::setBackgroundColor);
+        systemSettings.set_function("setTextColor", &libsystem::paxoConfig::setTextColor);
+        systemSettings.set_function("setBorderColor", &libsystem::paxoConfig::setBorderColor);
     }
 
     { // load events
