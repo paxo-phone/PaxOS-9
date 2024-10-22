@@ -3,7 +3,7 @@
 #include "URLSessionDataTask.hpp"
 
 namespace network {
-    const std::shared_ptr<URLSession> URLSession::defaultInstance = std::make_shared<URLSession>();
+    std::shared_ptr<URLSession> URLSession::defaultInstance/* = std::make_shared<URLSession>()*/;
 
     URLSession::URLSession() {
         NetworkManager::sharedInstance->turnONWiFi();

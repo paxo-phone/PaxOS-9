@@ -9,7 +9,7 @@
 namespace network {
     class URLSession {
         public:
-            static const std::shared_ptr<URLSession> defaultInstance;
+            static std::shared_ptr<URLSession> defaultInstance;
 
             bool preferWifi = false;
 

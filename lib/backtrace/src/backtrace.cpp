@@ -52,7 +52,7 @@ namespace backtrace_saver {
     }
 
     
-    re_restart_debug_t getCurrentBacktrace()
+    /*re_restart_debug_t getCurrentBacktrace()
     {
         re_restart_debug_t oldData = _debug_info;
         debugUpdate();
@@ -62,7 +62,7 @@ namespace backtrace_saver {
         _debug_info = oldData;
 
         return returnData;
-    }
+    }*/
 
     bool saveBacktrace()
     {

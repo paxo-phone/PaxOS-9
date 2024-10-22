@@ -7,9 +7,17 @@
 #include <curl/curl.h>
 #include <gsm.hpp>
 
+#include <URLSession.hpp>
+
 namespace network
 {
-    const std::shared_ptr<NetworkManager> NetworkManager::sharedInstance = std::make_shared<NetworkManager>();
+    std::shared_ptr<NetworkManager> NetworkManager::sharedInstance/* = std::make_shared<NetworkManager>()*/;
+
+    void init()
+    {
+        NetworkManager::sharedInstance = std::make_shared<NetworkManager>();
+        URLSession::defaultInstance = std::make_shared<URLSession>();
+    }
 
     NetworkManager::NetworkManager()
     {

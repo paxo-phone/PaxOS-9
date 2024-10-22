@@ -7,12 +7,14 @@
 
 namespace network
 {
+    void init ();
+
     class NetworkManager 
     {
         public:
             NetworkManager();
             
-            static const std::shared_ptr<NetworkManager> sharedInstance;
+            static std::shared_ptr<NetworkManager> sharedInstance;
 
             const void connectToWiFi(const std::string& ssid);
 
