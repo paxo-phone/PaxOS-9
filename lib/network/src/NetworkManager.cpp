@@ -9,7 +9,8 @@
 
 namespace network
 {
-    const std::shared_ptr<NetworkManager> NetworkManager::sharedInstance = std::make_shared<NetworkManager>();
+    NetworkManager NetworkManager::_sharedInstance;
+    const std::shared_ptr<NetworkManager> NetworkManager::sharedInstance(&NetworkManager::_sharedInstance);
 
     NetworkManager::NetworkManager()
     {

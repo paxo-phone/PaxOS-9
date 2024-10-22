@@ -21,6 +21,8 @@ namespace network {
 
             std::shared_ptr<URLSessionDataTask> dataTaskWithURL(const URL url, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback);
             std::shared_ptr<URLSessionDataTask> dataTaskWithRequest(const URLRequest, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback);
+        private:
+            static URLSession _defaultInstance;
     };
 }
 #endif // URLSESSION_HPP
