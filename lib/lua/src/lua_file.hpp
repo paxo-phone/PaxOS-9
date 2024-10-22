@@ -7,6 +7,7 @@
 #include <filestream.hpp>
 #include <path.hpp>
 #include <hardware.hpp>
+#include <queue>
 #include <threads.hpp>
 
 #include "lua_gui.hpp"
@@ -95,6 +96,13 @@ public:
     //LuaNetwork lua_network;
 
     AppManager::App* app; // using raw pointer, because this class will NEVER call the deleter
+
+private:
+    enum Command {
+        QUIT
+    };
+
+    std::queue<Command> m_commandQueue;
 };
 
 #endif

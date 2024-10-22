@@ -31,7 +31,7 @@ namespace StandbyMode
             return;
         lastTrigger = millis();
 
-        graphics::setBrightness(graphics::brightness);
+        graphics::setBrightness(graphics::getBrightness());
     }
 
     void triggerPower()
@@ -58,7 +58,8 @@ namespace StandbyMode
     {
         if (!enabled && millis() - lastTrigger > sleepTime - 10000)
         {
-            graphics::setBrightness(graphics::brightness/3 + 3);
+            // Dim screen
+            graphics::setBrightness(graphics::getBrightness()/3 + 3, true);
         }
 
         if (millis() - lastPowerTrigger > 5000)

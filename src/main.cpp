@@ -25,6 +25,7 @@ SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 #include <gsm.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
+#include <FileConfig.hpp>
 #include <iostream>
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
@@ -59,6 +60,25 @@ void mainLoop(void* data) {
 #endif
 
     GuiManager& guiManager = GuiManager::getInstance();
+
+    // ReSharper disable once CppTooWideScopeInitStatement
+    const libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
+    // TODO: Load launcher before OOBE app, to make the experience smoother.
+
+    // Check if OOBE app need to be launched
+    if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
+        // Launch OOBE app
+        const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+
+        try {
+            oobeApp->run(false);
+        } catch (std::runtime_error& e) {
+            std::cerr << "Lua error: " << e.what() << std::endl;
+            guiManager.showErrorMessage(e.what());
+            //AppManager::appList[i].kill();
+        }
+    }
 
     bool launcher = false;
     while (true)    // manage the running apps, the launcher and the sleep mode
@@ -205,11 +225,19 @@ void setup()
     );
     #endif // ESP_PLATFORM
 
-    // Positionnement de l'écran en mode Portrait
-    graphics::setScreenOrientation(graphics::PORTRAIT);
-
     // Init de la gestiuon des Threads
     ThreadManager::init();
+
+    libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
+    if (!systemConfig.has("settings.brightness")) {
+        systemConfig.set<uint8_t>("settings.brightness", 69);
+        systemConfig.write();
+    }
+
+    libsystem::log("settings.brightness: " + std::to_string(systemConfig.get<uint8_t>("settings.brightness")));
+
+    graphics::setBrightness(systemConfig.get<uint8_t>("settings.brightness"));
 
     // Init launcher
     applications::launcher::init();

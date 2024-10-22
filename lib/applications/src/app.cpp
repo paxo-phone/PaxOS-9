@@ -111,6 +111,10 @@ namespace AppManager {
     std::mutex threadsync;
 
     std::vector<std::shared_ptr<App> > appList;
+
+    /**
+     * The stack is used only for foreground applications THAT HAVE a Window created.
+     */
     std::vector<App *> appStack;
 
     // ReSharper disable once CppParameterMayBeConstPtrOrRef

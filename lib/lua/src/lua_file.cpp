@@ -13,7 +13,7 @@
 
 #include <fstream>
 #include <iostream>
-
+#include <lua_system.hpp>
 
 /*
 LuaHttpClient::LuaHttpClient(LuaFile* lua)
@@ -50,10 +50,10 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
 }*/
 
 LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
-    :lua_gui(this),
-    lua_storage(this),
-    lua_time(this)/*,
-    lua_network(this)*/
+    : lua_gui(this),
+      lua_storage(this),
+      lua_time(this) /*,
+       lua_network(this)*/
 {
     this->filename = filename;
     this->manifest = manifest;
@@ -72,30 +72,38 @@ LuaFile::~LuaFile()
     // libérer les ressources (events, etc)
 }
 
-void* custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize) {
-    //std::cout << "custom_allocator: " << nsize << std::endl;
-    if (nsize == 0) {
+void *custom_allocator(void *ud, void *ptr, size_t osize, size_t nsize)
+{
+    // std::cout << "custom_allocator: " << nsize << std::endl;
+    if (nsize == 0)
+    {
         // Free the block
-        if (ptr != NULL) {
+        if (ptr != NULL)
+        {
             free(ptr);
         }
         return NULL;
-    } else {
-        // Allocate or resize the block
-        #ifdef ESP32
-            return ps_realloc(ptr, nsize);
-        #else
-            return realloc(ptr, nsize);
-        #endif
+    }
+    else
+    {
+// Allocate or resize the block
+#ifdef ESP32
+        return ps_realloc(ptr, nsize);
+#else
+        return realloc(ptr, nsize);
+#endif
     }
 }
 
-int sol_exception_handler(lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description) {
+int sol_exception_handler(lua_State *L, sol::optional<const std::exception &> maybe_exception, sol::string_view description)
+{
     std::cerr << "An error occurred in Lua: ";
-    if (maybe_exception) {
+    if (maybe_exception)
+    {
         std::cerr << maybe_exception->what() << std::endl;
     }
-    else {
+    else
+    {
         std::cerr << description << std::endl;
     }
     lua_error(L);
@@ -103,83 +111,107 @@ int sol_exception_handler(lua_State* L, sol::optional<const std::exception&> may
     return 0;
 }
 
-int custom_panic_handler(lua_State* L) {
+int custom_panic_handler(lua_State *L)
+{
     std::shared_ptr<AppManager::App> app = AppManager::get(L);
 
     app->errors += std::string(lua_tostring(L, -1)) + "\n";
     app->app_state = AppManager::App::AppState::NOT_RUNNING;
 
-    const char* msg = lua_tostring(L, -1);
+    const char *msg = lua_tostring(L, -1);
     std::cerr << "Lua panic: " << msg << std::endl;
-    
+
     return 0;
 }
 
-std::string tableToString(const sol::table& table) {
+std::string tableToString(const sol::table &table)
+{
     std::stringstream ss;
     ss << "{";
-    
+
     int size = 0;
-    for (const auto& pair : table) { size++;}    
-    
-    int i=0;
-    for (const auto& pair : table) {
-        if (pair.first.is<std::string>()) {
-            ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
-        } else if(pair.first.is<int>()) { 
-            ss << "["  <<pair.first.as<int>()<< "]"; 
+    for (const auto &pair : table)
+    {
+        size++;
+    }
+
+    int i = 0;
+    for (const auto &pair : table)
+    {
+        if (pair.first.is<std::string>())
+        {
+            ss << "[\"" << pair.first.as<std::string>() << "\"]";
         }
-            else { // Assuming it's an identifier
-            ss << "[\"" << pair.first.as<std::string>() << "\"]"; 
+        else if (pair.first.is<int>())
+        {
+            ss << "[" << pair.first.as<int>() << "]";
+        }
+        else
+        { // Assuming it's an identifier
+            ss << "[\"" << pair.first.as<std::string>() << "\"]";
         }
         i++;
         ss << "=";
 
         // Handle different value types carefully
-        if (pair.second.is<std::string>()) {
+        if (pair.second.is<std::string>())
+        {
             ss << "\"" << pair.second.as<std::string>() << "\"";
-        } else if (pair.second.is<int>()) {
+        }
+        else if (pair.second.is<int>())
+        {
             ss << pair.second.as<int>();
-        } else if (pair.second.is<sol::table>()) {
-            ss << tableToString(pair.second); 
+        }
+        else if (pair.second.is<sol::table>())
+        {
+            ss << tableToString(pair.second);
             // You might want to recursively list nested tables here
-        } else {
-            //ss << "(Unknown type)";
+        }
+        else
+        {
+            // ss << "(Unknown type)";
         }
 
-        //std::cout << std::endl;
+        // std::cout << std::endl;
 
-//        if (size != i)
-            ss << ", ";
+        //        if (size != i)
+        ss << ", ";
     }
 
     ss << "}";
 
-    //std::cout << ss.str() << std::endl;
+    // std::cout << ss.str() << std::endl;
 
     return ss.str();
 }
 
-
 // Function to save a Lua table to a file
-void save_lua_table(sol::state& lua, const std::string& path, sol::table table) {
+void save_lua_table(sol::state &lua, const std::string &path, sol::table table)
+{
     std::ofstream file(path);
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         std::cerr << "Error: Could not open file for writing: " << path << std::endl;
         return;
     }
 
     std::cout << tableToString(table) << std::endl;
-    try{
+    try
+    {
         file << tableToString(table);
     }
-    catch (const sol::error& e) {
+    catch (const sol::error &e)
+    {
         // Handle Solidity specific errors
         std::cerr << "Sol error: " << e.what() << std::endl;
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         // Handle other standard exceptions
         std::cerr << "Standard error: " << e.what() << std::endl;
-    } catch (...) {
+    }
+    catch (...)
+    {
         // Handle any other unknown exceptions
         std::cerr << "Unknown error" << std::endl;
     }
@@ -187,9 +219,11 @@ void save_lua_table(sol::state& lua, const std::string& path, sol::table table) 
 }
 
 // Function to load a Lua table from a file
-sol::table load_lua_table(sol::state& lua, const std::string& path) {
+sol::table load_lua_table(sol::state &lua, const std::string &path)
+{
     std::ifstream file(path);
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         std::cerr << "Error: Could not open file for reading: " << path << std::endl;
         return sol::table{};
     }
@@ -198,19 +232,25 @@ sol::table load_lua_table(sol::state& lua, const std::string& path) {
     content << file.rdbuf();
 
     sol::table resultTable;
-    try {
+    try
+    {
         lua.script("returntable=" + content.str());
-         std::string tableName = "returntable"; // Adjust if your table has a different name
-        // Retrieve the created table from the Lua state
-         resultTable= lua[tableName];
+        std::string tableName = "returntable"; // Adjust if your table has a different name
+                                               // Retrieve the created table from the Lua state
+        resultTable = lua[tableName];
     }
-    catch (const sol::error& e) {
+    catch (const sol::error &e)
+    {
         // Handle Solidity specific errors
         std::cerr << "Sol error on table serialisation" << e.what() << std::endl;
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         // Handle other standard exceptions
         std::cerr << "Error: " << e.what() << std::endl;
-    } catch (...) {
+    }
+    catch (...)
+    {
         // Handle any other unknown exceptions
         std::cerr << "Unknown error" << std::endl;
     }
@@ -219,7 +259,6 @@ sol::table load_lua_table(sol::state& lua, const std::string& path) {
 
     return resultTable;
 }
-
 
 void LuaFile::load()
 {
@@ -238,7 +277,7 @@ void LuaFile::load()
     std::string conf = file2.read();
     file2.close();
 
-    if(!nlohmann::json::accept(conf))
+    if (!nlohmann::json::accept(conf))
     {
         std::cerr << "Les permissions de l'app ne sont pas définies ou sont invalides" << std::endl;
         std::cerr << "Conf: " << conf << " in " << manifest.str() << std::endl;
@@ -261,246 +300,242 @@ void LuaFile::load()
 
     // en fonction des permissions, charger certains modules
 
-    lua.set_function("nonothing", []() {
-    });
+    lua.set_function("nonothing", []() {});
 
-    lua["require"] = [&](const std::string& filename) -> sol::object {
+    lua["require"] = [&](const std::string &filename) -> sol::object
+    {
         storage::Path lib(filename);
 
         // Load the file
         sol::load_result chunk = lua.load_file(this->lua_storage.convertPath(lib).str());
-        if (!chunk.valid()) {
+        if (!chunk.valid())
+        {
             sol::error err = chunk;
             throw std::runtime_error("Error loading module '" + filename + "': " + err.what());
         }
 
         // 4. Execute the loaded chunk and return its results
-        return chunk(); 
+        return chunk();
     };
 
-    lua["saveTable"] = [&](const std::string& filename, const sol::table& table)
+    lua["saveTable"] = [&](const std::string &filename, const sol::table &table)
     {
         save_lua_table(lua, lua_storage.convertPath(filename).str(), table);
     };
 
-    lua["loadTable"] = [&](const std::string& filename)
+    lua["loadTable"] = [&](const std::string &filename)
     {
         return load_lua_table(lua, lua_storage.convertPath(filename).str());
     };
 
-    if (perms.acces_hardware)   // si hardware est autorisé
+    if (perms.acces_hardware) // si hardware est autorisé
     {
         lua.new_usertype<LuaHardware>("hardware",
-            "flash", &LuaHardware::flash
-        );
+                                      "flash", &LuaHardware::flash);
 
         lua["hardware"] = &lua_hardware;
     }
 
-    if (perms.acces_files)   // si storage est autorisé
+    if (perms.acces_files) // si storage est autorisé
     {
         lua.new_usertype<LuaStorageFile>("File",
-            "open", &LuaStorageFile::open,
-            "close", &LuaStorageFile::close,
-            "write", &LuaStorageFile::write,
-            "readChar", &LuaStorageFile::readChar,
-            "readLine", &LuaStorageFile::readLine,
-            "readAll", &LuaStorageFile::readAll
-        );
+                                         "open", &LuaStorageFile::open,
+                                         "close", &LuaStorageFile::close,
+                                         "write", &LuaStorageFile::write,
+                                         "readChar", &LuaStorageFile::readChar,
+                                         "readLine", &LuaStorageFile::readLine,
+                                         "readAll", &LuaStorageFile::readAll);
 
         lua.new_usertype<LuaStorage>("storage",
-            "file", &LuaStorage::file,  // return a (new LuaStorageFile)
-            "mkdir", &LuaStorage::newDir,
-            "mvFile", &LuaStorage::renameFile,
-            "mvDir", &LuaStorage::renameDir,
-            "rmFile", &LuaStorage::deleteFile,
-            "rmDir", &LuaStorage::deleteDir,
-            "isDir", &LuaStorage::isDir,
-            "isFile", &LuaStorage::isFile,
-            "listDir", &LuaStorage::listDir
-        );
+                                     "file", &LuaStorage::file, // return a (new LuaStorageFile)
+                                     "mkdir", &LuaStorage::newDir,
+                                     "mvFile", &LuaStorage::renameFile,
+                                     "mvDir", &LuaStorage::renameDir,
+                                     "rmFile", &LuaStorage::deleteFile,
+                                     "rmDir", &LuaStorage::deleteDir,
+                                     "isDir", &LuaStorage::isDir,
+                                     "isFile", &LuaStorage::isFile,
+                                     "listDir", &LuaStorage::listDir);
 
         lua.set("READ", 0);
         lua.set("APPEND", 2);
         lua.set("WRITE", 1);
-        
+
         auto json_ud = lua.new_usertype<LuaJson>("Json",
-            "new", sol::constructors<LuaJson(std::string)>(),
-            "get", &LuaJson::get,
-            "is_null", &LuaJson::is_null,
-            "size", &LuaJson::size,
-            "has_key", &LuaJson::has_key,
-            "remove", &LuaJson::remove,
-            "get_int", &LuaJson::get_int,
-            "get_double", &LuaJson::get_double,
-            "get_bool", &LuaJson::get_bool,
-            "get_string", &LuaJson::get_string,
-            "set_int", &LuaJson::set_int,
-            "set_double", &LuaJson::set_double,
-            "set_bool", &LuaJson::set_bool,
-            "__index", sol::overload(
-                static_cast<LuaJson (LuaJson::*)(std::string)>( &LuaJson::op ),
-                static_cast<int (LuaJson::*)(std::string)>( &LuaJson::get_int ),
-                static_cast<double (LuaJson::*)(std::string)>( &LuaJson::get_double ),
-                static_cast<bool (LuaJson::*)(std::string)>( &LuaJson::get_bool )
-            ),
-            "__newindex", sol::overload(
-                static_cast<void (LuaJson::*)(std::string, int)>( &LuaJson::set_int ),
-                static_cast<void (LuaJson::*)(std::string, double)>( &LuaJson::set_double ),
-                static_cast<void (LuaJson::*)(std::string, bool)>( &LuaJson::set_bool ),
-                static_cast<void (LuaJson::*)(std::string, std::string)>( &LuaJson::set )
-            )
-        );
+                                                 "new", sol::constructors<LuaJson(std::string)>(),
+                                                 "get", &LuaJson::get,
+                                                 "is_null", &LuaJson::is_null,
+                                                 "size", &LuaJson::size,
+                                                 "has_key", &LuaJson::has_key,
+                                                 "remove", &LuaJson::remove,
+                                                 "get_int", &LuaJson::get_int,
+                                                 "get_double", &LuaJson::get_double,
+                                                 "get_bool", &LuaJson::get_bool,
+                                                 "get_string", &LuaJson::get_string,
+                                                 "set_int", &LuaJson::set_int,
+                                                 "set_double", &LuaJson::set_double,
+                                                 "set_bool", &LuaJson::set_bool,
+                                                 "__index", sol::overload(static_cast<LuaJson (LuaJson::*)(std::string)>(&LuaJson::op), static_cast<int (LuaJson::*)(std::string)>(&LuaJson::get_int), static_cast<double (LuaJson::*)(std::string)>(&LuaJson::get_double), static_cast<bool (LuaJson::*)(std::string)>(&LuaJson::get_bool)),
+                                                 "__newindex", sol::overload(static_cast<void (LuaJson::*)(std::string, int)>(&LuaJson::set_int), static_cast<void (LuaJson::*)(std::string, double)>(&LuaJson::set_double), static_cast<void (LuaJson::*)(std::string, bool)>(&LuaJson::set_bool), static_cast<void (LuaJson::*)(std::string, std::string)>(&LuaJson::set)));
 
         lua["Json"] = json_ud;
 
         lua["storage"] = &lua_storage;
     }
 
-    if (perms.acces_gui)   // si gui est autorisé
+    if (perms.acces_gui) // si gui est autorisé
     {
         lua.new_usertype<LuaGui>("gui",
-            "box", &LuaGui::box,
-            "canvas", &LuaGui::canvas,
-            "image", sol::overload(
-                [](LuaGui* gui, LuaWidget* parent, std::string path, int x, int y, int width, int height) -> LuaImage* {
-                    return gui->image(parent, path, x, y, width, height, COLOR_WHITE);
-                },
-                &LuaGui::image
-            ),
-            "label", &LuaGui::label,
-            "input", &LuaGui::input,
-            "button", &LuaGui::button,
-            "window", &LuaGui::window,
-            "switch", &LuaGui::switchb,
-            "radio", &LuaGui::radio,
-            "vlist", &LuaGui::verticalList,
-            "hlist", &LuaGui::horizontalList,
-            "checkbox", &LuaGui::checkbox,
-            "del", &LuaGui::del,
-            "setWindow", &LuaGui::setMainWindow,
-            "getWindow", &LuaGui::getMainWindow,            
-            "keyboard", &LuaGui::keyboard,
-            "showInfoMessage", &LuaGui::showInfoMessage,
-            "showWarningMessage", &LuaGui::showWarningMessage,
-            "showErrorMessage", &LuaGui::showErrorMessage
-        );
+                                 "box", &LuaGui::box,
+                                 "canvas", &LuaGui::canvas,
+                                 "image", sol::overload([](LuaGui *gui, LuaWidget *parent, std::string path, int x, int y, int width, int height) -> LuaImage *
+                                                        { return gui->image(parent, path, x, y, width, height, COLOR_WHITE); }, &LuaGui::image),
+                                 "label", &LuaGui::label,
+                                 "input", &LuaGui::input,
+                                 "button", &LuaGui::button,
+                                 "window", &LuaGui::window,
+                                 "switch", &LuaGui::switchb,
+                                 "radio", &LuaGui::radio,
+                                 "vlist", &LuaGui::verticalList,
+                                 "hlist", &LuaGui::horizontalList,
+                                 "checkbox", &LuaGui::checkbox,
+                                 "del", &LuaGui::del,
+                                 "setWindow", &LuaGui::setMainWindow,
+                                 "getWindow", &LuaGui::getMainWindow,
+                                 "keyboard", &LuaGui::keyboard,
+                                 "slider", &LuaGui::slider,
+                                 "showInfoMessage", &LuaGui::showInfoMessage,
+                                 "showWarningMessage", &LuaGui::showWarningMessage,
+                                 "showErrorMessage", &LuaGui::showErrorMessage);
 
         lua["gui"] = &lua_gui;
 
         lua.new_usertype<LuaWidget>("widget",
-            "setX", &LuaWidget::setX,
-            "setY", &LuaWidget::setY,
-            "setWidth", &LuaWidget::setWidth,
-            "setHeight", &LuaWidget::setHeight,
-            "getX", &LuaWidget::getX,
-            "getY", &LuaWidget::getY,
-            "getWidth", &LuaWidget::getWidth,
-            "getHeight", &LuaWidget::getHeight,
-            "setBackgroundColor", &LuaWidget::setBackgroundColor,
-            "setBorderColor",&LuaWidget::setBorderColor,
-            "setRadius",&LuaWidget::setRadius,
-            "setBorderSize", &LuaWidget::setBorderSize,
-            "clear", &LuaWidget::clear,
-            "enable", &LuaWidget::enable,
-            "disable", &LuaWidget::disable,
-            "isEnabled", &LuaWidget::isEnabled,
-            "isTouched", &LuaWidget::isTouched,
-            "onClick", &LuaWidget::onClick,
-            "getChildAtIndex", &LuaWidget::getChildAtIndex
-        );
+                                    "setX", &LuaWidget::setX,
+                                    "setY", &LuaWidget::setY,
+                                    "setWidth", &LuaWidget::setWidth,
+                                    "setHeight", &LuaWidget::setHeight,
+                                    "getX", &LuaWidget::getX,
+                                    "getY", &LuaWidget::getY,
+                                    "getWidth", &LuaWidget::getWidth,
+                                    "getHeight", &LuaWidget::getHeight,
+                                    "setBackgroundColor", &LuaWidget::setBackgroundColor,
+                                    "setBorderColor", &LuaWidget::setBorderColor,
+                                    "setRadius", &LuaWidget::setRadius,
+                                    "setBorderSize", &LuaWidget::setBorderSize,
+                                    "clear", &LuaWidget::clear,
+                                    "enable", &LuaWidget::enable,
+                                    "disable", &LuaWidget::disable,
+                                    "isEnabled", &LuaWidget::isEnabled,
+                                    "isTouched", &LuaWidget::isTouched,
+                                    "onClick", &LuaWidget::onClick,
+                                    "getChildAtIndex", &LuaWidget::getChildAtIndex);
 
         lua.new_usertype<LuaWindow>("LuaWindow",
-            sol::constructors<LuaWindow(*)()>(), // Empty constructor
-            sol::base_classes, sol::bases<LuaWidget>(),
-            
-            sol::meta_function::garbage_collect,
-            sol::destructor(LuaWindow::delete_LuaWindow)
-        );
+                                    sol::constructors<LuaWindow (*)()>(), // Empty constructor
+                                    sol::base_classes, sol::bases<LuaWidget>(),
+
+                                    sol::meta_function::garbage_collect,
+                                    sol::destructor(LuaWindow::delete_LuaWindow));
 
         lua.new_usertype<LuaBox>("LuaBox",
-            "setRadius", &LuaBox::setRadius,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                 "setRadius", &LuaBox::setRadius,
+                                 sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaCanvas>("LuaCanvas",
-            "setPixel", &LuaCanvas::setPixel,
-            "drawRect", &LuaCanvas::drawRect,
-            "fillRect", &LuaCanvas::fillRect,
-            "drawCircle", &LuaCanvas::drawCircle,
-            "fillCircle", &LuaCanvas::fillCircle,
-            "drawRoundRect", &LuaCanvas::drawRoundRect,
-            "fillRoundRect", &LuaCanvas::fillRoundRect,
-            "drawPolygon", &LuaCanvas::drawPolygon,
-            "fillPolygon", &LuaCanvas::fillPolygon,
-            "drawLine", &LuaCanvas::drawLine,
-            "drawText", &LuaCanvas::drawText,
-            "drawTextCentered", &LuaCanvas::drawTextCentered,
-            "drawTextCenteredInBounds", &LuaCanvas::drawTextCenteredInRect,
-            "getTouch", &LuaCanvas::getTouch,
-            "onTouch", &LuaCanvas::onTouch,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                    "setPixel", &LuaCanvas::setPixel,
+                                    "drawRect", &LuaCanvas::drawRect,
+                                    "fillRect", &LuaCanvas::fillRect,
+                                    "drawCircle", &LuaCanvas::drawCircle,
+                                    "fillCircle", &LuaCanvas::fillCircle,
+                                    "drawRoundRect", &LuaCanvas::drawRoundRect,
+                                    "fillRoundRect", &LuaCanvas::fillRoundRect,
+                                    "drawPolygon", &LuaCanvas::drawPolygon,
+                                    "fillPolygon", &LuaCanvas::fillPolygon,
+                                    "drawLine", &LuaCanvas::drawLine,
+                                    "drawText", &LuaCanvas::drawText,
+                                    "drawTextCentered", &LuaCanvas::drawTextCentered,
+                                    "drawTextCenteredInBounds", &LuaCanvas::drawTextCenteredInRect,
+                                    "getTouch", &LuaCanvas::getTouch,
+                                    "onTouch", &LuaCanvas::onTouch,
+                                    sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaImage>("LuaImage",
-            "setTransparentColor", &LuaImage::setTransparentColor,
+                                   "setTransparentColor", &LuaImage::setTransparentColor,
 
-            sol::base_classes, sol::bases<LuaWidget>());
+                                   sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaLabel>("LuaLabel",
-            "setText", &LuaLabel::setText,
-            "getText", &LuaLabel::getText,
-            "setFontSize", &LuaLabel::setFontSize,
-            "getTextHeight", &LuaLabel::getTextHeight,
-            "getTextWidth", &LuaLabel::getTextWidth,
-            "setVerticalAlignment", &LuaLabel::setVerticalAlignment,
-            "setHorizontalAlignment", &LuaLabel::setHorizontalAlignment,
-            "setTextColor", &LuaLabel::setTextColor,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                   "setText", &LuaLabel::setText,
+                                   "getText", &LuaLabel::getText,
+                                   "setFontSize", &LuaLabel::setFontSize,
+                                   "getTextHeight", &LuaLabel::getTextHeight,
+                                   "getTextWidth", &LuaLabel::getTextWidth,
+                                   "setVerticalAlignment", &LuaLabel::setVerticalAlignment,
+                                   "setHorizontalAlignment", &LuaLabel::setHorizontalAlignment,
+                                   "setTextColor", sol::overload(&LuaLabel::setTextColor, &LuaLabel::setTextColorRGB),
+                                   sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaInput>("LuaInput",
-            "setText", &LuaInput::setText,
-            "getText", &LuaInput::getText,
-            "setPlaceHolder", &LuaInput::setPlaceHolder,
-            "setTitle", &LuaInput::setTitle,
-            sol::base_classes, sol::bases<LuaWidget>());
-        
+                                   "setText", &LuaInput::setText,
+                                   "getText", &LuaInput::getText,
+                                   "setPlaceHolder", &LuaInput::setPlaceHolder,
+                                   "setTitle", &LuaInput::setTitle,
+                                   sol::base_classes, sol::bases<LuaWidget>());
+
         lua.new_usertype<LuaButton>("LuaButton",
-            "setText", &LuaButton::setText,
-            "getText", &LuaButton::getText,
-            "setIcon", &LuaButton::setIcon,
-            "setTheme", &LuaButton::setTheme,
-            "format", &LuaButton::format,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                    "setText", &LuaButton::setText,
+                                    "getText", &LuaButton::getText,
+                                    "setIcon", &LuaButton::setIcon,
+                                    "setTheme", &LuaButton::setTheme,
+                                    "format", &LuaButton::format,
+                                    sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaSwitch>("LuaSwitch",
-            "setState", &LuaSwitch::setState,
-            "getState", &LuaSwitch::getState,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                    "setState", &LuaSwitch::setState,
+                                    "getState", &LuaSwitch::getState,
+                                    sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaRadio>("LuaRadio",
-            "setState", &LuaRadio::setState,
-            "getState", &LuaRadio::getState,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                   "setState", &LuaRadio::setState,
+                                   "getState", &LuaRadio::getState,
+                                   sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaCheckbox>("LuaCheckbox",
-            "setState", &LuaCheckbox::setState,
-            "getState", &LuaCheckbox::getState,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                      "setState", &LuaCheckbox::setState,
+                                      "getState", &LuaCheckbox::getState,
+                                      sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaVerticalList>("LuaVList",
-            "setIndex", &LuaVerticalList::setIndex,
-            "setSpaceLine", &LuaVerticalList::setSpaceLine,
-            "setSelectionFocus", &LuaVerticalList::setFocus,
-            "getSelected", &LuaVerticalList::getSelected,
-            "select", &LuaVerticalList::select,
-            "setSelectionColor", &LuaVerticalList::setSelectionColor,
-            "setAutoSelect", &LuaVerticalList::setAutoSelect,
-            "onSelect", &LuaVerticalList::onSelect,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                          "setIndex", &LuaVerticalList::setIndex,
+                                          "setSpaceLine", &LuaVerticalList::setSpaceLine,
+                                          "setSelectionFocus", &LuaVerticalList::setFocus,
+                                          "getSelected", &LuaVerticalList::getSelected,
+                                          "select", &LuaVerticalList::select,
+                                          "setSelectionColor", &LuaVerticalList::setSelectionColor,
+                                          "setAutoSelect", &LuaVerticalList::setAutoSelect,
+                                          "onSelect", &LuaVerticalList::onSelect,
+                                          sol::base_classes, sol::bases<LuaWidget>());
 
         lua.new_usertype<LuaHorizontalList>("LuaHList",
-            //"add", &LuaHorizontalList::add,
-            "setSpaceLine", &LuaHorizontalList::setSpaceLine,
-            sol::base_classes, sol::bases<LuaWidget>());
+                                            //"add", &LuaHorizontalList::add,
+                                            "setSpaceLine", &LuaHorizontalList::setSpaceLine,
+                                            sol::base_classes, sol::bases<LuaWidget>());
+
+        lua.new_usertype<LuaSlider>("LuaSlider",
+                                    "setValue", &LuaSlider::setValue,
+                                    "displayValue", &LuaSlider::displayValue,
+                                    "setMinValue", &LuaSlider::setMinValue,
+                                    "setMaxValue", &LuaSlider::setMaxValue,
+                                    "getValue", &LuaSlider::getValue,
+                                    "getMinValue", &LuaSlider::getMinValue,
+                                    "getMaxValue", &LuaSlider::getMaxValue,
+                                    "setBorderColor", &LuaSlider::setBorderColor,
+                                    "setValueColor", &LuaSlider::setValueColor,
+                                    "setTextColor", &LuaSlider::setTextColor,
+                                    "setFormatPercentage", &LuaSlider::setFormatPercentage,
+                                    "onChange", &LuaSlider::onChange,
+                                    sol::base_classes, sol::bases<LuaWidget>());
 
         lua.set("SELECTION_UP", VerticalList::SelectionFocus::UP);
         lua.set("SELECTION_CENTER", VerticalList::SelectionFocus::CENTER);
@@ -538,7 +573,7 @@ void LuaFile::load()
         lua.set("COLOR_LIGHT_GREY", COLOR_LIGHT_GREY);
 
         lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
-            {
+                                                 {
                 try{
                     AppManager::get(name)->run(false, arg);
                 }
@@ -549,42 +584,39 @@ void LuaFile::load()
                     guiManager.showErrorMessage(e.what());
                 }
 
-                return true;
-            },
-            [&](std::string name)
-            {
-                try{
-                    AppManager::get(name)->run(false, {});
-                }
-                catch(std::runtime_error &e) {
-                    std::cerr << "Erreur: " << e.what() << std::endl;
-                    // Ajout message d'erreur
-                    GuiManager &guiManager = GuiManager::getInstance();
-                    guiManager.showErrorMessage(e.what());
+                return true; },
+                                                 [&](std::string name)
+                                                 {
+                                                     try
+                                                     {
+                                                         AppManager::get(name)->run(false, {});
+                                                     }
+                                                     catch (std::runtime_error &e)
+                                                     {
+                                                         std::cerr << "Erreur: " << e.what() << std::endl;
+                                                         // Ajout message d'erreur
+                                                         GuiManager &guiManager = GuiManager::getInstance();
+                                                         guiManager.showErrorMessage(e.what());
+                                                     }
 
-                }
-
-                return true;
-            }
-        )
-        );
+                                                     return true;
+                                                 }));
     }
 
-    if(perms.acces_time)
+    if (perms.acces_time)
     {
         lua.new_usertype<LuaTime>("time",
-            "monotonic", &LuaTime::monotonic,
-            "get", &LuaTime::get,
-            "setInterval", &LuaTime::setInterval,
-            "setTimeout", &LuaTime::setTimeout,
-            "removeInterval", &LuaTime::removeInterval,
-            "removeTimeout", &LuaTime::removeTimeout
-        );
+                                  "monotonic", &LuaTime::monotonic,
+                                  "get", &LuaTime::get,
+                                  "setInterval", &LuaTime::setInterval,
+                                  "setTimeout", &LuaTime::setTimeout,
+                                  "removeInterval", &LuaTime::removeInterval,
+                                  "removeTimeout", &LuaTime::removeTimeout);
 
         lua["time"] = &lua_time;
     }
 
-    if(perms.acces_gsm)
+    if (perms.acces_gsm)
     {
         sol::table luaGSM = lua.create_table();
 
@@ -605,66 +637,110 @@ void LuaFile::load()
         luaGSM["addContact"] = &Contacts::addContact;
 
         lua.new_usertype<Contacts::contact>("Contact",
-            "name", &Contacts::contact::name,
-            "phone", &Contacts::contact::phone
-        );
+                                            "name", &Contacts::contact::name,
+                                            "phone", &Contacts::contact::phone);
 
-        
         lua.new_usertype<Conversations::Message>("Message",
-            "message", &Conversations::Message::message,
-            "who", &Conversations::Message::who,
-            "date", &Conversations::Message::date
-        );
-        
-        luaGSM["getMessages"] = [&](const std::string& number) {
+                                                 "message", &Conversations::Message::message,
+                                                 "who", &Conversations::Message::who,
+                                                 "date", &Conversations::Message::date);
+
+        luaGSM["getMessages"] = [&](const std::string &number)
+        {
             return LuaGSM::getMessages(number, lua);
         };
 
         lua["gsm"] = luaGSM;
     }
 
-    {   // load events
+    /*
+     * System.
+     *
+     * @todo Add permission.
+     */
+    {
+        // TODO: Move this from this scope to the "global lua" scope.
+        auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
+
+        auto system = paxo["system"].get_or_create<sol::table>(sol::new_table());
+        auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
+
+        // paxo.system.config.get()
+        systemConfig.set_function("get", sol::overload(
+                                             &paxolua::system::config::getBool,
+                                             // &paxolua::system::config::getInt,
+                                             &paxolua::system::config::getFloat,
+                                             &paxolua::system::config::getString));
+
+        // paxo.system.config.set()
+        systemConfig.set_function("set", sol::overload(
+                                             &paxolua::system::config::setBool,
+                                             // &paxolua::system::config::setInt,
+                                             &paxolua::system::config::setFloat,
+                                             &paxolua::system::config::setString));
+
+        systemConfig.set_function("write", &paxolua::system::config::write);
+
+        auto app = paxo["app"].get_or_create<sol::table>(sol::new_table());
+
+        app.set_function("quit", [&]()
+                         { m_commandQueue.push(QUIT); });
+    }
+
+    { // load events
         sol::table luaEvents = lua.create_table();
 
-        luaEvents["oncall"] = [&](sol::protected_function func) { this->oncall = func; };
-        luaEvents["onmessage"] = [&](sol::protected_function func) { this->onmessage = func; std::cout << "onmessage event registered" << std::endl; };
-        luaEvents["onlowbattery"] = [&](sol::protected_function func) { this->onlowbattery = func; };
-        luaEvents["oncharging"] = [&](sol::protected_function func) { this->oncharging = func; };
-        luaEvents["onmessageerror"] = [&](sol::protected_function func) { this->onmessageerror = func; };
+        luaEvents["oncall"] = [&](sol::protected_function func)
+        { this->oncall = func; };
+        luaEvents["onmessage"] = [&](sol::protected_function func)
+        { this->onmessage = func; std::cout << "onmessage event registered" << std::endl; };
+        luaEvents["onlowbattery"] = [&](sol::protected_function func)
+        { this->onlowbattery = func; };
+        luaEvents["oncharging"] = [&](sol::protected_function func)
+        { this->oncharging = func; };
+        luaEvents["onmessageerror"] = [&](sol::protected_function func)
+        { this->onmessageerror = func; };
 
         lua["events"] = luaEvents;
     }
 
     lua.set_panic(custom_panic_handler);
-    //lua.set_exception_handler(sol_exception_handler);
+    // lua.set_exception_handler(sol_exception_handler);
 }
 
-#define SAFE_CALL(func, lua, arg) do { \
-    sol::protected_function_result result = func(arg); \
-    if (!result.valid()) { \
-        sol::error err = result; \
-        const char* what = err.what(); \
-        if (what) { \
-            printf("Error from Lua: %s\n", what); \
-        } else { \
-            printf("Unknown Lua error occurred\n"); \
-        } \
-    } \
-} while(0)
+#define SAFE_CALL(func, lua, arg)                          \
+    do                                                     \
+    {                                                      \
+        sol::protected_function_result result = func(arg); \
+        if (!result.valid())                               \
+        {                                                  \
+            sol::error err = result;                       \
+            const char *what = err.what();                 \
+            if (what)                                      \
+            {                                              \
+                printf("Error from Lua: %s\n", what);      \
+            }                                              \
+            else                                           \
+            {                                              \
+                printf("Unknown Lua error occurred\n");    \
+            }                                              \
+        }                                                  \
+    } while (0)
 
 void LuaFile::run(std::vector<std::string> arg)
 {
     // run the app
 
-    //lua.set_exception_handler(AppManager::pushError);
+    // lua.set_exception_handler(AppManager::pushError);
 
     std::cout << "Loading Lua File: " << filename.str() << std::endl;
     storage::FileStream file(filename.str(), storage::READ);
-    
+
     std::string code = file.read();
     file.close();
 
-    lua.script(code);   code.clear();  // load and delete the unnecessary code
+    lua.script(code);
+    code.clear(); // load and delete the unnecessary code
 
     SAFE_CALL(lua["run"], lua, arg);
 }
@@ -680,7 +756,8 @@ void LuaFile::runBackground(std::vector<std::string> arg)
     std::string code = file.read();
     file.close();
 
-    lua.script(code);   code = "";  // load and delete the unnecessary code
+    lua.script(code);
+    code = ""; // load and delete the unnecessary code
 
     sol::protected_function func = lua["background"];
     lua["background"](arg);
@@ -697,7 +774,8 @@ void LuaFile::wakeup(std::vector<std::string> arg)
 
 void LuaFile::stop(std::vector<std::string> arg)
 {
-    const sol::protected_function func = lua.get<sol::protected_function>("quit");;
+    const sol::protected_function func = lua.get<sol::protected_function>("quit");
+    ;
     if (!func.valid())
         return;
 
@@ -706,6 +784,20 @@ void LuaFile::stop(std::vector<std::string> arg)
 
 void LuaFile::loop()
 {
-    //lua_gui.update();   // add App Priority To Acces Gui
+    // Process commands
+    while (!m_commandQueue.empty())
+    {
+        switch (m_commandQueue.front())
+        {
+        case QUIT:
+            // Quit lua app OUTSIDE of lua
+            AppManager::quitApp();
+            break;
+        }
+
+        m_commandQueue.pop();
+    }
+
+    // lua_gui.update();   // add App Priority To Acces Gui
     lua_time.update();
 }
