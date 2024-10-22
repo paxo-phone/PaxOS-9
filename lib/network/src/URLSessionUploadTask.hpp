@@ -1,0 +1,8 @@
+#ifndef URLSESSIONUPLOADTASK_HPP
+#define URLSESSIONUPLOADTASK_HPP
+
+namespace network {
+    
+}
+
+#endif // URLSESSIONUPLOADTASK_HPP
