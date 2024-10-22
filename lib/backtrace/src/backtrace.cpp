@@ -51,19 +51,6 @@ namespace backtrace_saver {
         return backtraceMessageStream.str(); 
     }
 
-    
-    re_restart_debug_t getCurrentBacktrace()
-    {
-        re_restart_debug_t oldData = _debug_info;
-        debugUpdate();
-
-        re_restart_debug_t returnData = _debug_info;
-
-        _debug_info = oldData;
-
-        return returnData;
-    }
-
     bool saveBacktrace()
     {
         if (!shouldSaveBacktrace())
