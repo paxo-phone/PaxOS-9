@@ -660,7 +660,7 @@ void LuaFile::load()
      */
     {
         // TODO: Move this from this scope to the "global lua" scope.
-        //        auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
+        // auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
 
         auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
         auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
@@ -681,7 +681,7 @@ void LuaFile::load()
 
         systemConfig.set_function("write", &paxolua::system::config::write);
 
-        auto app = paxo["app"].get_or_create<sol::table>(sol::new_table());
+        auto app = system["app"].get_or_create<sol::table>(sol::new_table());
 
         app.set_function("quit", [&]()
                          { m_commandQueue.push(QUIT); });
