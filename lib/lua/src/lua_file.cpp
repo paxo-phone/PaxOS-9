@@ -546,6 +546,49 @@ void LuaFile::load()
         lua.set("UP_ALIGNMENT", Label::Alignement::UP);
         lua.set("DOWN_ALIGNMENT", Label::Alignement::DOWN);
 
+        /**
+         * @brief gestion des couleurs
+         * new version
+         *
+         */
+        {
+            auto color = lua["color"].get_or_create<sol::table>(sol::new_table());
+
+            color.set("dark", COLOR_DARK);
+            color.set("light", COLOR_LIGHT);
+            color.set("success", COLOR_SUCCESS);
+            color.set("warning", COLOR_WARNING);
+            color.set("error", COLOR_ERROR);
+
+            color.set("white", COLOR_WHITE);
+            color.set("black", COLOR_BLACK);
+            color.set("red", COLOR_RED);
+            color.set("green", COLOR_GREEN);
+            color.set("blue", COLOR_BLUE);
+
+            color.set("yellow", COLOR_YELLOW);
+            color.set("grey", COLOR_GREY);
+            color.set("magenta", COLOR_MAGENTA);
+            color.set("cyan", COLOR_CYAN);
+            color.set("violet", COLOR_VIOLET);
+            color.set("orange", COLOR_ORANGE);
+            color.set("pink", COLOR_PINK);
+
+            color.set("lightOrange", COLOR_LIGHT_ORANGE);
+            color.set("lightGreen", COLOR_LIGHT_GREEN);
+            color.set("lightBlue", COLOR_LIGHT_BLUE);
+            color.set("lightGrey", COLOR_LIGHT_GREY);
+
+            color.set_function("toColor", [&](const uint8_t r, const uint8_t g, const uint8_t b) -> color_t
+                               { return graphics::packRGB565(r, g, b); });
+
+            color.set_function("toRGB", [&](const color_t rgb) -> std::tuple<uint8_t, uint8_t, uint8_t>
+                               {
+                               uint8_t r, g, b;
+                               graphics::unpackRGB565(rgb, &r, &g, &b);
+                               return std::make_tuple(r, g, b); });
+        }
+
         lua.set("COLOR_DARK", COLOR_DARK);
         lua.set("COLOR_LIGHT", COLOR_LIGHT);
         lua.set("COLOR_SUCCESS", COLOR_SUCCESS);
@@ -660,9 +703,9 @@ void LuaFile::load()
      */
     {
         // TODO: Move this from this scope to the "global lua" scope.
-        auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
+        // auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
 
-        auto system = paxo["system"].get_or_create<sol::table>(sol::new_table());
+        auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
         auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
 
         // paxo.system.config.get()
@@ -680,10 +723,47 @@ void LuaFile::load()
 
         systemConfig.set_function("write", &paxolua::system::config::write);
 
-        auto app = paxo["app"].get_or_create<sol::table>(sol::new_table());
+        auto app = system["app"].get_or_create<sol::table>(sol::new_table());
 
         app.set_function("quit", [&]()
                          { m_commandQueue.push(QUIT); });
+    }
+
+    /**
+     * @brief gestion ds settings Paxo
+     *
+     */
+    {
+        // auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
+
+        auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
+        auto systemSettings = lua["settings"].get_or_create<sol::table>(sol::new_table());
+
+        systemSettings.set_function("getBrightness", &libsystem::paxoConfig::getBrightness);
+        systemSettings.set_function("setBrightness", &libsystem::paxoConfig::setBrightness);
+        systemSettings.set_function("setStandBySleepTime", &libsystem::paxoConfig::setStandBySleepTime);
+        systemSettings.set_function("getStandBySleepTime", &libsystem::paxoConfig::getStandBySleepTime);
+
+        systemSettings.set_function("getOSVersion", &libsystem::paxoConfig::getOSVersion);
+
+        systemSettings.set_function("getConnectedWifi", &libsystem::paxoConfig::getConnectedWifi);
+        systemSettings.set_function("connectWifi", &libsystem::paxoConfig::connectWifi);
+        systemSettings.set_function("getAvailableWifiSSID", [&]() -> sol::table
+                                    {
+        std::vector<std::string> lstSSID = libsystem::paxoConfig::getAvailableWifiSSID();
+
+        sol::table result = lua.create_table();
+        for (const auto elem : lstSSID) {
+            result.add(elem);
+        }
+        return result; });
+
+        systemSettings.set_function("getBackgroundColor", &libsystem::paxoConfig::getBackgroundColor);
+        systemSettings.set_function("getTextColor", &libsystem::paxoConfig::getTextColor);
+        systemSettings.set_function("getBorderColor", &libsystem::paxoConfig::getBorderColor);
+        systemSettings.set_function("setBackgroundColor", &libsystem::paxoConfig::setBackgroundColor);
+        systemSettings.set_function("setTextColor", &libsystem::paxoConfig::setTextColor);
+        systemSettings.set_function("setBorderColor", &libsystem::paxoConfig::setBorderColor);
     }
 
     { // load events
