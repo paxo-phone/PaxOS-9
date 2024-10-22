@@ -546,6 +546,49 @@ void LuaFile::load()
         lua.set("UP_ALIGNMENT", Label::Alignement::UP);
         lua.set("DOWN_ALIGNMENT", Label::Alignement::DOWN);
 
+        /**
+         * @brief gestion des couleurs
+         * new version
+         *
+         */
+        {
+            auto color = lua["color"].get_or_create<sol::table>(sol::new_table());
+
+            color.set("dark", COLOR_DARK);
+            color.set("light", COLOR_LIGHT);
+            color.set("success", COLOR_SUCCESS);
+            color.set("warning", COLOR_WARNING);
+            color.set("error", COLOR_ERROR);
+
+            color.set("white", COLOR_WHITE);
+            color.set("black", COLOR_BLACK);
+            color.set("red", COLOR_RED);
+            color.set("green", COLOR_GREEN);
+            color.set("blue", COLOR_BLUE);
+
+            color.set("yellow", COLOR_YELLOW);
+            color.set("grey", COLOR_GREY);
+            color.set("magenta", COLOR_MAGENTA);
+            color.set("cyan", COLOR_CYAN);
+            color.set("violet", COLOR_VIOLET);
+            color.set("orange", COLOR_ORANGE);
+            color.set("pink", COLOR_PINK);
+
+            color.set("lightOrange", COLOR_LIGHT_ORANGE);
+            color.set("lightGreen", COLOR_LIGHT_GREEN);
+            color.set("lightBlue", COLOR_LIGHT_BLUE);
+            color.set("lightGrey", COLOR_LIGHT_GREY);
+
+            color.set_function("toColor", [&](const uint8_t r, const uint8_t g, const uint8_t b) -> color_t
+                               { return graphics::packRGB565(r, g, b); });
+
+            color.set_function("toRGB", [&](const color_t rgb) -> std::tuple<uint8_t, uint8_t, uint8_t>
+                               {
+                               uint8_t r, g, b;
+                               graphics::unpackRGB565(rgb, &r, &g, &b);
+                               return std::make_tuple(r, g, b); });
+        }
+
         lua.set("COLOR_DARK", COLOR_DARK);
         lua.set("COLOR_LIGHT", COLOR_LIGHT);
         lua.set("COLOR_SUCCESS", COLOR_SUCCESS);

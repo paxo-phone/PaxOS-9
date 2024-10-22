@@ -1,3 +1,5 @@
+require("perso.lua")
+
 -- define heights for the different sections
 
 boxHeight_base = 55
@@ -145,7 +147,7 @@ function systemSettings()
             textBrightness:setVerticalAlignment(CENTER_ALIGNMENT)
             textBrightness:setText("Luminosité")
         
-        local brightnessSlider = gui:slider(brightnessBox, 15, 53, 230, 10, 5, 255, paxo.system.config.getInt("settings.brightness"))
+        local brightnessSlider = gui:slider(brightnessBox, 15, 53, 230, 10, 5, 255, system.config.getInt("settings.brightness"))
 
     gui:setWindow(win2)
 end
@@ -189,7 +191,26 @@ function run() -- create the menu
             text_personalization:setVerticalAlignment(CENTER_ALIGNMENT)
             text_personalization:setText("Personnalisation")
         local img = gui:image(box_personalization, "r_arrow.png", 219, 15, 25, 25)
-        box_personalization:onClick(personalizationSettings)
-
+        -- box_personalization:onClick(personalizationSettings)
+        box_personalization:onClick(initColorScreen)
     gui:setWindow(win)
+end
+
+
+
+local oldWin
+function manageWindow()
+
+    local win
+
+    win = gui:window()
+    gui:setWindow(win)
+
+    if oldWin then 
+        gui:del(oldWin) 
+        oldWin  =nil 
+    end
+    
+    oldWin = win
+    return win
 end
