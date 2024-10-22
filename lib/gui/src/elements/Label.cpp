@@ -31,7 +31,7 @@ namespace gui::elements {
 
     void Label::render()
     {
-        m_surface->clear(COLOR_WHITE);
+        m_surface->clear(m_parent==nullptr?COLOR_WHITE:m_parent->getBackgroundColor());
         m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, m_borderRadius, m_borderSize, m_backgroundColor, m_borderColor);
 
         m_surface->setTextColor((this->m_textColor == 0)?(1):(this->m_textColor));

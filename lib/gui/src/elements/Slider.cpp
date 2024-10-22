@@ -23,14 +23,14 @@ namespace gui::elements
         m_height = height;
         m_minValue = minValue;
         m_maxValue = maxValue;
-        m_borderSize = 1;
+        m_borderSize = 2;
         m_borderRadius = m_height / 2;
         if (defaultValue >= minValue && defaultValue <= maxValue)
             m_Value = defaultValue;
         else
             m_Value = minValue;
-        m_backgroundColor = COLOR_WHITE;
-        m_borderColor = COLOR_BLACK;
+        m_borderColor = graphics::constPackRGB565(217, 217, 217);;
+        m_backgroundColor = m_borderColor;
         m_valueColor = COLOR_BLACK;
         m_positionValue = 0;
         m_displayValue = false;
@@ -100,13 +100,13 @@ namespace gui::elements
 
     void Slider::slide()
     {
-        setValue(floor((touchX - m_x) * (m_maxValue - m_minValue) / m_width));
+        setValue(floor((touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width));
     }
 
     void Slider::render()
     {
 
-        this->getAndSetSurface()->clear(m_backgroundColor);
+        this->getAndSetSurface()->clear(m_parent==nullptr?COLOR_WHITE:m_parent->getBackgroundColor());
 
         // render the of the widget
         int valueSize = ((m_Value - m_minValue) * m_width) / (m_maxValue - m_minValue);

@@ -28,7 +28,7 @@ namespace gui::elements
 
     void Button::render()
     {
-        m_surface->clear(COLOR_WHITE);
+        m_surface->clear(m_parent==nullptr?COLOR_WHITE:m_parent->getBackgroundColor());
         m_surface->fillRoundRectWithBorder(0, 0,
             this->m_width, this->m_height, 
             this->m_borderRadius, this->m_borderSize, 

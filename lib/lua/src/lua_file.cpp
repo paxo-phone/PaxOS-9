@@ -666,11 +666,10 @@ void LuaFile::load()
         auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
 
         // paxo.system.config.get()
-        systemConfig.set_function("get", sol::overload(
-                                             &paxolua::system::config::getBool,
-                                             // &paxolua::system::config::getInt,
-                                             &paxolua::system::config::getFloat,
-                                             &paxolua::system::config::getString));
+        systemConfig.set_function("getBool", &paxolua::system::config::getBool);
+        systemConfig.set_function("getInt", &paxolua::system::config::getInt);
+        systemConfig.set_function("getFloat", &paxolua::system::config::getFloat);
+        systemConfig.set_function("getString", &paxolua::system::config::getString);
 
         // paxo.system.config.set()
         systemConfig.set_function("set", sol::overload(

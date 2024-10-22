@@ -36,6 +36,8 @@ namespace libsystem
          * Logic needs to be implemented before adding any new value.
          */
 
+
+    public:
         typedef std::variant<
             std::nullptr_t,
             uint8_t,
@@ -50,7 +52,6 @@ namespace libsystem
             std::vector<std::string>>
             file_config_types_t;
 
-    public:
         /**
          * Create and load a file config.
          * @param path The path to load and store the config.
@@ -244,7 +245,10 @@ namespace libsystem
         [[nodiscard]] std::shared_ptr<NamespaceNode> getNamespaceNodeFromNamespaceKey(const std::string &namespacedKey,
                                                                                       bool createNewNamespaces = false) const;
 
+        public:
         [[nodiscard]] file_config_types_t getRaw(const std::string &key) const;
+        
+        private:
         void setRaw(const std::string &key, const file_config_types_t &value) const;
 
         /*
