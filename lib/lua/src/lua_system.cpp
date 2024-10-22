@@ -11,10 +11,35 @@ bool paxolua::system::config::getBool(const std::string &key) {
     return libsystem::getSystemConfig().get<bool>(key);
 }
 
-int paxolua::system::config::getInt(const std::string &key) {
+int paxolua::system::config::getInt(const std::string &key) {   // convert any number to int
     libsystem::log("getInt: " + key);
-    return libsystem::getSystemConfig().get<int>(key);
+
+    // Get the raw variant type
+    libsystem::FileConfig::file_config_types_t value = libsystem::getSystemConfig().getRaw(key);
+
+    // Use a visitor to return the value as int
+    return std::visit([](auto&& arg) -> int { 
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::nullptr_t>) {
+            return 0; // Or any default value for nullptr
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            // Attempt string to int conversion, handle errors as needed
+            try {
+                return std::stoi(arg);
+            } catch (const std::exception& e) {
+                libsystem::log("Error converting string to int: " + std::string(e.what()));
+                return 0; // Or any default value on error
+            }
+        } else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
+            // Handle vector of strings (e.g., return size, first element as int, etc.)
+            // For this example, let's return the size of the vector
+            return arg.size(); 
+        } else {
+            return static_cast<int>(arg); 
+        }
+    }, value);
 }
+
 
 float paxolua::system::config::getFloat(const std::string &key) {
     libsystem::log("getFloat: " + key);
