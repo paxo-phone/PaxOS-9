@@ -102,6 +102,7 @@ namespace GSM
             {
                 if(hTTPRequests[i]->state == network::URLSessionDataTask::State::Waiting)
                 {
+                    std::cout << "Request -------------------------: " << i << std::endl;
                     currentRequest = hTTPRequests[i];
                     break;
                 }

@@ -71,11 +71,14 @@ namespace network {
 
     void URLSessionDataTask::sendRequestGSM()
     {
+        std::cout << "sendRequestGSM" << std::endl;
         GSM::sendRequest(std::make_shared<URLSessionDataTask>(*this));
     }
 
     void URLSessionDataTask::sendRequestWiFi()
     {
+        std::cout << "sendRequestWIFI" << std::endl;
+
         this->state = State::Running;
 
         switch (this->request.method)
