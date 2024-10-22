@@ -86,10 +86,14 @@ namespace GSM
 
     void closeRequest()
     {        
-        GSM::send("AT+HTTPTERM", "AT+HTTPTERM", 1000);
         if (currentRequest != nullptr)
         {
-            currentRequest->state = network::URLSessionDataTask::State::Finished;
+            if (currentRequest->state != network::URLSessionDataTask::State::Finished)
+            {
+                GSM::send("AT+HTTPTERM", "AT+HTTPTERM", 1000);
+                currentRequest->state = network::URLSessionDataTask::State::Finished;
+            }
+            hTTPRequests.erase(std::remove(hTTPRequests.begin(), hTTPRequests.end(), currentRequest), hTTPRequests.end());
             currentRequest = nullptr;
         }
     }

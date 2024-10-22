@@ -10,8 +10,6 @@
 
 #include <Arduino.h>
 
-SET_LOOP_TASK_STACK_SIZE(16 * 1024);
-
 #endif
 
 #include <unistd.h>
@@ -248,7 +246,7 @@ void setup()
     };
 
     #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
+    ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 4000);
     #endif
 
     // gestion de la détection du toucher de l'écran
