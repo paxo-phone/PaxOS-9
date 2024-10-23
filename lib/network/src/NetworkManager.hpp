@@ -29,6 +29,8 @@ namespace network
             const std::string currentWiFiSSID();
 
             const bool isConnected();
+        
+        private:
     };
 }
 

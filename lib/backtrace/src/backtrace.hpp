@@ -19,8 +19,6 @@ namespace backtrace_saver {
 
     std::string getBacktraceMessage();
 
-    backtrace_saver::re_restart_debug_t getCurrentBacktrace();
-
     bool saveBacktrace();
 
     void backtraceMessageGUI();
