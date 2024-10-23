@@ -175,12 +175,11 @@ namespace GSM
                     if(currentRequest->isOverTimeout())
                     {
                         closeRequest();
-                        break;
                     }
                     break;
                 case network::URLSessionDataTask::State::Cancelled:
                 case network::URLSessionDataTask::State::Finished:
-                    currentRequest = nullptr;
+                    closeRequest();
                     break;
             }
         }

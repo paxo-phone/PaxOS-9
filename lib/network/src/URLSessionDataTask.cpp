@@ -30,6 +30,7 @@ namespace network {
 
         if (!NetworkManager::sharedInstance->isConnected())
         {
+            std::cout << "No internet connection" << std::endl;
             this->state = State::Cancelled;
             return;
         }
