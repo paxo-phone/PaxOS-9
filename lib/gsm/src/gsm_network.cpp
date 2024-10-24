@@ -102,7 +102,7 @@ namespace GSM
     {
         if(GSM::currentRequest == nullptr)
         {
-            for (uint8_t i = 0; i < requests.size(); i++)
+            for (uint8_t i = 0; i < hTTPRequests.size(); i++)
             {
                 if(hTTPRequests[i]->state == network::URLSessionDataTask::State::Waiting)
                 {
@@ -210,9 +210,9 @@ namespace GSM
     {
         if(currentRequest != nullptr)
         {
+            std::shared_ptr<network::URLSessionDataTask> request = currentRequest;
             closeRequest();
-            currentRequest->handleResponse(code, 0);
-            currentRequest = nullptr;
+            request->handleResponse(code, 0);
         }
     }
 }
