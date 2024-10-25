@@ -57,7 +57,9 @@ namespace GSM
         {
             std::cout << "Timeout" << std::endl;
             nextBlockSize = 0;
+            GSM::coresync.unlock();
             closeRequest(705);
+            return 0;
         }
         else
         {
@@ -72,7 +74,10 @@ namespace GSM
 
         if (requestResponse.readPosition == requestResponse.responseBodySize)
         {
+            GSM::coresync.unlock();
+            currentRequest->response = std::make_optional(requestResponse);
             closeRequest(requestResponse.statusCode); // response code is not important here as the response has already been handled
+            return nextBlockSize;
         }
 
         currentRequest->response = std::make_optional(requestResponse);
