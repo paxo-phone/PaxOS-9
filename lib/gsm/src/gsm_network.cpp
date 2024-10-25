@@ -106,8 +106,6 @@ namespace GSM
             {
                 if(hTTPRequests[i]->state == network::URLSessionDataTask::State::Waiting)
                 {
-                    std::cout << "Request -------------------------: " << i << std::endl;
-                    Serial.flush();
                     currentRequest = hTTPRequests[i];
                     break;
                 }
@@ -119,50 +117,53 @@ namespace GSM
             switch (currentRequest->state)
             {
                 case network::URLSessionDataTask::State::Waiting:
-                    if(currentRequest->isOverTimeout() || GSM::send("AT+HTTPINIT", "AT+HTTPINIT", 500).find("OK") == std::string::npos)   // setup http
                     {
-                        killRequest();
-                        break;
-                    }
-                    else
-                    {
-                        if(currentRequest->request.method == network::URLRequest::HTTPMethod::GET)
+                        std::string o = GSM::send("AT+HTTPINIT", "AT+HTTPINIT", 1000);
+                        if(currentRequest->isOverTimeout() || false)   // setup http
                         {
-                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->request.url.absoluteString + "\"\r", "AT+HTTPPARA", 500);
-                            if(GSM::send("AT+HTTPACTION=0", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
-                            {
-                                killRequest();
-                                break;
-                            }
-                        } 
-                        else if(currentRequest->request.method == network::URLRequest::HTTPMethod::POST)
-                        {
-                            // Set URL for POST request
-                            GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->request.url.absoluteString + "\"\r", "AT+HTTPPARA", 500);
-                            
-                            // Set content type (assuming JSON, adjust if needed)
-                            GSM::send("AT+HTTPPARA=\"CONTENT\",\"application/json\"\r", "AT+HTTPPARA", 500);
-                            
-                            // Prepare to send data
-                            int dataLength = currentRequest->request.httpBody.length();
-                            GSM::send("AT+HTTPDATA=" + std::to_string(dataLength) + ",10000", "DOWNLOAD", 1000);
-                            
-                            // Send the actual POST data
-                            GSM::send(currentRequest->request.httpBody, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
-                            
-                            // Perform POST action
-                            if(GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
-                            {
-                                killRequest();
-                                break;
-                            }
+                            killRequest();
+                            break;
                         }
+                        else
+                        {
+                            if(currentRequest->request.method == network::URLRequest::HTTPMethod::GET)
+                            {
+                                GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->request.url.absoluteString + "\"\r", "AT+HTTPPARA", 500);
+                                if(GSM::send("AT+HTTPACTION=0", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
+                                {
+                                    killRequest();
+                                    break;
+                                }
+                            }
+                            else if(currentRequest->request.method == network::URLRequest::HTTPMethod::POST)
+                            {
+                                // Set URL for POST request
+                                GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->request.url.absoluteString + "\"\r", "AT+HTTPPARA", 500);
+                                
+                                // Set content type (assuming JSON, adjust if needed)
+                                GSM::send("AT+HTTPPARA=\"CONTENT\",\"application/json\"\r", "AT+HTTPPARA", 500);
+                                
+                                // Prepare to send data
+                                int dataLength = currentRequest->request.httpBody.length();
+                                GSM::send("AT+HTTPDATA=" + std::to_string(dataLength) + ",10000", "DOWNLOAD", 1000);
+                                
+                                // Send the actual POST data
+                                GSM::send(currentRequest->request.httpBody, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
+                                
+                                // Perform POST action
+                                if((o = GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 10000)).find("OK") == std::string::npos)
+                                {
+                                    killRequest();
+                                    std::cout << o << std::endl;
+                                    break;
+                                }
+                            }
 
-                        currentRequest->state = network::URLSessionDataTask::State::Running;
+                            currentRequest->state = network::URLSessionDataTask::State::Running;
 
-                        currentRequest->updateTimeout();
+                            currentRequest->updateTimeout();
+                        }
                     }
-                    
                     break;
                 case network::URLSessionDataTask::State::Running:
                     // let the key be received
@@ -196,6 +197,8 @@ namespace GSM
             int action = std::stoi(match[1].str());
             int status = std::stoi(match[2].str());
             int size = std::stoi(match[3].str());
+
+            std::cout << data << std::endl;
 
             std::cout << "action: " << action << " status: " << status << " size: " << size << std::endl;
 

@@ -270,15 +270,25 @@ void setup()
     AppManager::init();
     network::init();
 
-    delay(5000);
-    network::URLSession::defaultInstance->dataTaskWithURL(std::string("https://granger.requestcatcher.com/test"), [](std::shared_ptr<network::URLSessionDataTask> task) {
+    delay(10000);
+    network::URLSession::defaultInstance->dataTaskWithURL(std::string("http://example.com"), [](std::shared_ptr<network::URLSessionDataTask> task) {
                 char data[2048];
-                task->readChunk(data);
+                std::cout << "Request done, code: " << task->response->statusCode << ", dataSize: " << task->response->responseBodySize << std::endl;
+                
                 if (task->response == std::nullopt) {
                     std::cout << "Request failed" << std::endl;
                     return;
                 } else {
-                    std::cout << "Request done, code: " << task->response->statusCode << ", dataSize: " << task->response->responseBodySize << ", data: " << std::string(data) << std::endl;
+                    size_t size = task->readChunk(data);
+    
+                    for (size_t i = 0; i < size; ++i)
+                    {
+                        if (data[i] < 32 || data[i] > 126)
+                            std::cout << '.';
+                        else
+                            std::cout << data[i];
+                    }
+                    std::cout << std::endl;
                 }
             });
 
