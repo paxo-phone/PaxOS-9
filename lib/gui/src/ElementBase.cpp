@@ -456,21 +456,20 @@ bool gui::ElementBase::isFocused(bool forced)
 
 void gui::ElementBase::enable()
 {
-    if(m_isEnabled)
-        return;
-    m_isEnabled = true;
-    globalGraphicalUpdate();
+    setEnabled(true);
 }
 
 void gui::ElementBase::disable()
 {
-    if(!m_isEnabled)
-        return;
-    m_isEnabled = false;
-    globalGraphicalUpdate();
+    setEnabled(false);
 }
 
 void gui::ElementBase::setEnabled(const bool enabled) {
+    if (isEnabled() == enabled) {
+        // Do nothing when already in this state.
+        return;
+    }
+
     m_isEnabled = enabled;
     globalGraphicalUpdate();
 }

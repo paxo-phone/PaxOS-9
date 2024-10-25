@@ -196,18 +196,15 @@ void applications::launcher::update() {
     // Check touch events
 
     if (brightnessSliderBox->isFocused(true)) {
-        // TODO: Refactoring
+        libsystem::log("Brightness: " + graphics::getBrightness());
 
-        libsystem::log("Brightness: " + graphics::brightness);
+        const int16_t newBrightness = static_cast<int16_t>(std::clamp(
+            (325 - (gui::ElementBase::touchY - 77)) * 255 / 325,
+            3,
+            255
+        ));
 
-        graphics::brightness = (325 - (gui::ElementBase::touchY - 77)) * 255 / 325;
-        graphics::brightness = std::clamp(
-            graphics::brightness,
-            static_cast<int16_t>(3),
-            static_cast<int16_t>(255)
-        );
-
-        graphics::setBrightness(graphics::brightness);
+        graphics::setBrightness(newBrightness);
     }
 
 

@@ -13,7 +13,12 @@
 namespace gui::elements
 {
     /**
-     * @brief This witget can contain a label or an image and is clickable. It follows the theme designed by paxo on figma
+     * @brief Clickable widget containing a label or/and an image.
+     *
+     * This widget can contain a label or/and an image and is clickable.
+     * It follows the theme designed by Paxo on figma.
+     *
+     * @todo Move source code to .cpp.
      */
     class Button final : public ElementBase
     {
@@ -27,14 +32,50 @@ namespace gui::elements
         void setText(std::string text);
         void setIcon(storage::Path path);
 
-        void setBorderColor(color_t color){m_label->setBorderColor(color);}
-        void setFontSize(uint16_t r){m_label->setFontSize(r);}    
-    
-        void setBackgroundColor(color_t color){ m_label->setBackgroundColor(color);}
+        void setBorderColor(color_t color) {
+            if (m_label == nullptr) {
+                return;
+            }
 
-        void setVerticalAlignment(Label::Alignement alignment){ m_label->setVerticalAlignment(alignment); }
-        void setHorizontalAlignment(Label::Alignement alignment){ m_label->setHorizontalAlignment(alignment); }
-        void setTextColor(color_t color){ m_label->setTextColor(color); }
+            m_label->setBorderColor(color);
+        }
+        void setFontSize(uint16_t r) {
+            if (m_label == nullptr) {
+                return;
+            }
+
+            m_label->setFontSize(r);
+        }
+    
+        void setBackgroundColor(color_t color) {
+            if (m_label == nullptr) {
+                return;
+            }
+
+            m_label->setBackgroundColor(color);
+        }
+
+        void setVerticalAlignment(Label::Alignement alignment) {
+            if (m_label == nullptr) {
+                return;
+            }
+
+            m_label->setVerticalAlignment(alignment);
+        }
+        void setHorizontalAlignment(Label::Alignement alignment) {
+            if (m_label == nullptr) {
+                return;
+            }
+
+            m_label->setHorizontalAlignment(alignment);
+        }
+        void setTextColor(color_t color) {
+            if (m_label == nullptr) {
+                return;
+            }
+
+            m_label->setTextColor(color);
+        }
 
 
         std::string getText();
