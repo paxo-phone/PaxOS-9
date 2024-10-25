@@ -272,7 +272,7 @@ void setup()
     network::init();
 
     PaxOS_Delay(10000);
-    network::URLSession::defaultInstance->dataTaskWithURL(std::string("http://example.com"), [](std::shared_ptr<network::URLSessionDataTask> task) {
+    network::URLSession::defaultInstance->dataTaskWithURL(std::string("http://www.example.com"), [](std::shared_ptr<network::URLSessionDataTask> task) {
                 char data[2048];
                 std::cout << "Request done, code: " << task->response->statusCode << ", dataSize: " << task->response->responseBodySize << std::endl;
                 
