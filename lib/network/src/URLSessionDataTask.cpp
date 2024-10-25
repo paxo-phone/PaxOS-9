@@ -31,6 +31,7 @@ namespace network {
             return;
         }
 
+        #ifdef ESP_PLATFORM
         if ((this->useWiFi && !NetworkManager::sharedInstance->isWiFiConnected()) || (!this->useWiFi && !NetworkManager::sharedInstance->isGSMConnected()))
         {
             std::cout << "No internet connection" << std::endl;
@@ -38,6 +39,15 @@ namespace network {
             this->handleResponse(701, 0);
             return;
         }
+        #else
+        if (!NetworkManager::sharedInstance->isWiFiConnected())
+        {
+            std::cout << "No internet connection" << std::endl;
+            this->state = State::Cancelled;
+            this->handleResponse(701, 0);
+            return;
+        }
+        #endif
 
         #ifdef ESP_PLATFORM
             delay(100);
