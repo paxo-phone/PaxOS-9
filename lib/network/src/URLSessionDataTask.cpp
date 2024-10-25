@@ -24,19 +24,18 @@ namespace network {
             curlHandle = curl_easy_init();
         #endif
 
-        if (this->state != State::Waiting)
-            return;
-
         if (!this->request.url.isValid())
         {
             this->state = State::Cancelled;
+            this->handleResponse(700, 0);
             return;
         }
 
-        if (!NetworkManager::sharedInstance->isConnected())
+        if ((this->useWiFi && !NetworkManager::sharedInstance->isWiFiConnected()) || (!this->useWiFi && !NetworkManager::sharedInstance->isGSMConnected()))
         {
             std::cout << "No internet connection" << std::endl;
             this->state = State::Cancelled;
+            this->handleResponse(701, 0);
             return;
         }
 
@@ -51,6 +50,7 @@ namespace network {
                 if (this->curlHandle == nullptr)
                 {
                     this->state = State::Cancelled;
+                    this->handleResponse(703, 0);
                     return;
                 }
                 this->sendRequestWiFi();
@@ -68,15 +68,16 @@ namespace network {
 
     void URLSessionDataTask::handleResponse(uint16_t statusCode, uint64_t responseBodySize)
     {
+        if (this->response.has_value())
+            return; // handlResponse already done
         this->response = URLResponse(statusCode, responseBodySize);
 
-        if (statusCode == 200)
-        {
+        if (this->state != State::Cancelled)
             this->state = State::ResponseReceived;
-        }
-        else
+
+        if (this->useWiFi)
         {
-            this->state = State::Failed;
+            curl_easy_cleanup(this->curlHandle);
         }
 
         this->callback(std::make_shared<URLSessionDataTask>(*this));
@@ -85,7 +86,11 @@ namespace network {
     void URLSessionDataTask::sendRequestGSM()
     {
         std::cout << "sendRequestGSM" << std::endl;
+        #ifdef ESP_PLATFORM
         Serial.flush();
+        #else
+        std::flush(std::cout);
+        #endif
         GSM::sendRequest(std::make_shared<URLSessionDataTask>(*this));
     }
 
@@ -105,7 +110,9 @@ namespace network {
                 curl_easy_setopt(this->curlHandle, CURLOPT_POSTFIELDS, this->request.httpBody.c_str());
                 break;
             default:
-                throw std::runtime_error("Unsupported HTTP method");
+                this->state = State::Cancelled;
+                handleResponse(704, 0);
+                return;
         }
         curl_easy_setopt(this->curlHandle, CURLOPT_URL, this->request.url.absoluteString.c_str());
         curl_easy_setopt(this->curlHandle, CURLOPT_WRITEFUNCTION, this->WriteCallback);
@@ -155,11 +162,26 @@ namespace network {
     }
 
     void URLSessionDataTask::cancel() {
-        if (this->state == State::Running)
+        if (this->state == State::Running || this->state == State::Paused || this->state == State::Waiting || this->state == State::ResponseReceived)
         {
-            curl_easy_cleanup(this->curlHandle);
+            this->state = State::Cancelled;
+            if (GSM::currentRequest.get() == this)
+            {
+                GSM::closeRequest(702);
+            } else {
+                // find the shared_ptr containing the current task and remove it
+
+                auto it = std::find_if(GSM::hTTPRequests.begin(), GSM::hTTPRequests.end(), [this](std::shared_ptr<URLSessionDataTask> task) {
+                    return task.get() == this;
+                });
+
+                if (it != GSM::hTTPRequests.end())
+                {
+                    GSM::hTTPRequests.erase(it);
+                }
+            }
+            this->handleResponse(702, 0); // handle the response if it has not been done yet
         }
-        this->state = State::Cancelled;
     }
 
     void URLSessionDataTask::pause() { // not working right now

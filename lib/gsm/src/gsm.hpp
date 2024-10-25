@@ -144,9 +144,7 @@ namespace GSM
 
     size_t readResponseDataChunk(char* buffer);
 
-    void killRequest(uint16_t code = 400);
-
-    void closeRequest();
+    void closeRequest(uint16_t code);
 
     std::string getCurrentTimestamp();  // return the current timestamp formated
     std::string getCurrentTimestampNoSpaces();  // return the current timestamp formated without spaces

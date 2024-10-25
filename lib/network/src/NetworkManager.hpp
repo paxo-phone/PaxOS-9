@@ -29,6 +29,10 @@ namespace network
             const std::string currentWiFiSSID();
 
             const bool isConnected();
+
+            const bool isWiFiConnected();
+
+            const bool isGSMConnected();
         
         private:
     };

@@ -22,7 +22,7 @@ namespace GSM
 
     size_t readResponseDataChunk(char* buffer) // read a single chunk of 1024 bytes
     {
-        if (currentRequest == nullptr && currentRequest->response != std::nullopt)
+        if (currentRequest.get() == nullptr && currentRequest->response != std::nullopt)
             return 0;
 
         if(currentRequest->state != network::URLSessionDataTask::State::ResponseReceived)
@@ -56,7 +56,7 @@ namespace GSM
         {
             std::cout << "Timeout" << std::endl;
             nextBlockSize = 0;
-            closeRequest();
+            closeRequest(705);
         }
         else
         {
@@ -71,7 +71,7 @@ namespace GSM
 
         if (requestResponse.readPosition == requestResponse.responseBodySize)
         {
-            closeRequest();
+            closeRequest(requestResponse.statusCode); // response code is not important here as the response has already been handled
         }
 
         currentRequest->response = std::make_optional(requestResponse);
@@ -84,16 +84,21 @@ namespace GSM
         return 0;
     }
 
-    void closeRequest()
+    void closeRequest(uint16_t code)
     {        
-        if (currentRequest != nullptr)
+        if (currentRequest.get() != nullptr)
         {
-            if (currentRequest->state != network::URLSessionDataTask::State::Finished)
-            {
+            if (currentRequest->state != network::URLSessionDataTask::State::Finished && currentRequest->state != network::URLSessionDataTask::State::Waiting)
+            { 
+                // request already sent, we need to close it
                 GSM::send("AT+HTTPTERM", "AT+HTTPTERM", 1000);
+                currentRequest->state = network::URLSessionDataTask::State::Finished;
+            } else if (currentRequest->state == network::URLSessionDataTask::State::Waiting) {
+                // request has not been sent yet
                 currentRequest->state = network::URLSessionDataTask::State::Finished;
             }
             hTTPRequests.erase(std::remove(hTTPRequests.begin(), hTTPRequests.end(), currentRequest), hTTPRequests.end());
+            currentRequest->handleResponse(code, 0); // handle the response if it has not been done yet
             currentRequest = nullptr;
         }
     }
@@ -112,16 +117,17 @@ namespace GSM
             }
         }
 
-        if(currentRequest != nullptr)
+        if(GSM::currentRequest.get() != nullptr)
         {
             switch (currentRequest->state)
             {
-                case network::URLSessionDataTask::State::Waiting:
+                case network::URLSessionDataTask::State::Waiting: // request should be sent
                     {
                         std::string o = GSM::send("AT+HTTPINIT", "AT+HTTPINIT", 1000);
-                        if(currentRequest->isOverTimeout() || false)   // setup http
+                        currentRequest->state = network::URLSessionDataTask::State::Running;
+                        if(currentRequest->isOverTimeout())   // setup http
                         {
-                            killRequest();
+                            closeRequest(708); // timout exceeded
                             break;
                         }
                         else
@@ -131,7 +137,7 @@ namespace GSM
                                 GSM::send("AT+HTTPPARA=\"URL\",\"" + currentRequest->request.url.absoluteString + "\"\r", "AT+HTTPPARA", 500);
                                 if(GSM::send("AT+HTTPACTION=0", "AT+HTTPACTION", 5000).find("OK") == std::string::npos)
                                 {
-                                    killRequest();
+                                    closeRequest(706);
                                     break;
                                 }
                             }
@@ -151,38 +157,34 @@ namespace GSM
                                 GSM::send(currentRequest->request.httpBody, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
                                 
                                 // Perform POST action
-                                if((o = GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 10000)).find("OK") == std::string::npos)
+                                if((GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 10000)).find("OK") == std::string::npos)
                                 {
-                                    killRequest();
-                                    std::cout << o << std::endl;
+                                    closeRequest(707);
                                     break;
                                 }
+                            } else {
+                                closeRequest(704); // unsupported method
+                                break;
                             }
-
-                            currentRequest->state = network::URLSessionDataTask::State::Running;
 
                             currentRequest->updateTimeout();
                         }
                     }
                     break;
+                case network::URLSessionDataTask::State::Paused: // TODO? but as the simcom can handle only 1 request at a time it might not be useful
                 case network::URLSessionDataTask::State::Running:
-                    // let the key be received
-                    if(currentRequest->isOverTimeout())
-                    {
-                        killRequest();
-                    }
-                    break;
                 case network::URLSessionDataTask::State::ResponseReceived:
                     // let the app read the data
                     if(currentRequest->isOverTimeout())
                     {
-                        closeRequest();
+                        closeRequest(708);
                     }
                     break;
                 case network::URLSessionDataTask::State::Cancelled:
                 case network::URLSessionDataTask::State::Finished:
-                    closeRequest();
+                    closeRequest(709); // should happen rarely as the request should have already been removed from the list
                     break;
+
             }
         }
     }
@@ -202,21 +204,11 @@ namespace GSM
 
             std::cout << "action: " << action << " status: " << status << " size: " << size << std::endl;
 
-            if(currentRequest != nullptr)
+            if(currentRequest.get() != nullptr)
             {
                 currentRequest->updateTimeout();
                 currentRequest->handleResponse(status, size);
             }
-        }
-    }
-
-    void killRequest(uint16_t code)
-    {
-        if(currentRequest != nullptr)
-        {
-            std::shared_ptr<network::URLSessionDataTask> request = currentRequest;
-            closeRequest();
-            request->handleResponse(code, 0);
         }
     }
 }

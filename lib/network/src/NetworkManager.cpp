@@ -73,18 +73,31 @@ namespace network
 
     const bool NetworkManager::isConnected()
     {
+        return this->isWiFiConnected() || this->isGSMConnected();
+    }
+
+    const bool NetworkManager::isWiFiConnected()
+    {
         #ifdef ESP_PLATFORM
-            return WiFi.status() == WL_CONNECTED || GSM::getNetworkStatus() > 0; // TODO: use the AT http command to know if a request can be made via GSM
+            return WiFi.status() == WL_CONNECTED;
         #else
-        
-        int pingExitCode = system("ping -c1 -s1 8.8.8.8 > /dev/null 2>&1"); // ping Google's DNS server and return the exit code
-        if (pingExitCode == 0)
-        {
-            return true;
-        } else
-        {   
+            int pingExitCode = system("ping -c1 -s1 8.8.8.8 > /dev/null 2>&1"); // ping Google's DNS server and return the exit code
+            if (pingExitCode == 0)
+            {
+                return true;
+            } else
+            {   
+                return false;
+            }
+        #endif
+    }
+
+    const bool NetworkManager::isGSMConnected()
+    {
+        #ifdef ESP_PLATFORM
+            return GSM::getNetworkStatus() > 0;
+        #else
             return false;
-        }
-       #endif
+        #endif
     }
 }

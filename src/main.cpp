@@ -29,6 +29,7 @@ SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
+#include <delay.hpp>
 #include <../network/network.hpp>
 
 
@@ -270,7 +271,7 @@ void setup()
     AppManager::init();
     network::init();
 
-    delay(10000);
+    PaxOS_Delay(10000);
     network::URLSession::defaultInstance->dataTaskWithURL(std::string("http://example.com"), [](std::shared_ptr<network::URLSessionDataTask> task) {
                 char data[2048];
                 std::cout << "Request done, code: " << task->response->statusCode << ", dataSize: " << task->response->responseBodySize << std::endl;

@@ -10,19 +10,49 @@ namespace network {
     class URLSessionTask {
         public:
             enum State {
-                Running,
+                /*
+                * The task is waiting to be launched
+                */
                 Waiting,
+
+                /*
+                * The task is sending/has been sent to the server
+                */
+                Running,
+
+                /*
+                * The task has been cancelled by the user or by the system because of an internal error (see return code)
+                */
                 Cancelled,
+
+                /*
+                * The task has been paused by the user, not effective when useWiFi is false
+                */
                 Paused,
+
+                /*
+                * The task has received a response from the server, you can read the response in the `response` property
+                */
                 ResponseReceived,
-                Failed,
+
+                /*
+                * The task has finished, no data can't be read anymore (except when useWiFi is true)
+                */
                 Finished
             };
 
             const URLRequest request;
 
+            /*
+            * The response of the request
+
+            @note Will be empty until a response from the server is received or an internal error (timout, invalid url, etc...) happens.
+            */
             std::optional<URLResponse> response;
 
+            /*
+            * Boolean indicating whether the task is using WiFi or GSM
+            */
             const bool useWiFi;
 
             virtual void resume() = 0;
