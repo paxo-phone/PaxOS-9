@@ -22,11 +22,16 @@ namespace GSM
 
     size_t readResponseDataChunk(char* buffer) // read a single chunk of 1024 bytes
     {
+        std::cout << "---1" << std::endl;
         if (currentRequest.get() == nullptr && currentRequest->response != std::nullopt)
             return 0;
 
+        std::cout << "---2" << std::endl;
+
         if(currentRequest->state != network::URLSessionDataTask::State::ResponseReceived)
             return 0;
+
+        std::cout << "---3" << std::endl;
 
         network::URLResponse requestResponse = currentRequest->response.value();
 
@@ -39,6 +44,8 @@ namespace GSM
         uint64_t timeout_block = 3000;    // timeout de 3 secondes
 
         uint64_t nextBlockSize = std::min(uint64_t(1024), requestResponse.responseBodySize - requestResponse.readPosition);
+
+        std::cout << "---4" << std::endl;
 
         download();
         std::cout << "Reading chunk: " << nextBlockSize << std::endl;
@@ -213,7 +220,8 @@ namespace GSM
             if(currentRequest.get() != nullptr)
             {
                 currentRequest->updateTimeout();
-                currentRequest->handleResponse(status, size);
+                //currentRequest->handleResponse(status, size);
+                eventHandlerApp.setTimeout(new Callback<>(std::bind(&network::URLSessionDataTask::handleResponse, currentRequest, status, size)), 0);
             }
         }
     }

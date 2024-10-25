@@ -5,6 +5,7 @@
 #include "URLResponse.hpp"
 #include <optional>
 #include <clock.hpp>
+#include <cstdint>
 
 namespace network {
     class URLSessionTask {

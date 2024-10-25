@@ -6,6 +6,7 @@
 #include "ProgressHandler.hpp"
 #include <memory>
 
+#include <cstdint>
 #include <iostream>
 #include <curl/curl.h>
 

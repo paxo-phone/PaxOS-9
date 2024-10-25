@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <cstdint>
 #include "URL.hpp"
 
 namespace network {
