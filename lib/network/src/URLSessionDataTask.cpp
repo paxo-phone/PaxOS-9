@@ -10,6 +10,11 @@
 namespace network {
     URLSessionDataTask::URLSessionDataTask(const URLRequest request, bool useWiFi, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback) : URLSessionTask(request, useWiFi), callback(callback)
     {
+        std::cout << "URLSessionDataTask" << std::endl;
+        std::cout << "useWiFi: " << int(useWiFi) << std::endl;
+        std::cout << "useWiFi2: " << int(this->useWiFi) << std::endl;
+        this->useWiFi = useWiFi;
+
         #ifdef ESP_PLATFORM
             if (this->useWiFi)
             {
@@ -35,8 +40,13 @@ namespace network {
         }
 
         #ifdef ESP_PLATFORM
+            delay(100);
+            std::cout << "\nuseWiFi3: " << int(useWiFi) << std::endl;
+            Serial.flush();
+
             if (this->useWiFi)
             {
+                std::cout << "sendRequestWiFi" << std::endl;
                 if (this->curlHandle == nullptr)
                 {
                     this->state = State::Cancelled;
@@ -46,6 +56,8 @@ namespace network {
             }
             else
             {
+                std::cout << "sendRequestGSM" << std::endl;
+                Serial.flush();
                 this->sendRequestGSM();
             }
         #else
@@ -72,6 +84,7 @@ namespace network {
     void URLSessionDataTask::sendRequestGSM()
     {
         std::cout << "sendRequestGSM" << std::endl;
+        Serial.flush();
         GSM::sendRequest(std::make_shared<URLSessionDataTask>(*this));
     }
 

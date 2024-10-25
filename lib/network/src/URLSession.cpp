@@ -11,12 +11,14 @@ namespace network {
     
     std::shared_ptr<URLSessionDataTask> URLSession::dataTaskWithURL(const URL url, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback)
     {
+        std::cout << "dataTaskWithURL" << std::endl;
         URLRequest request(url);
         return this->dataTaskWithRequest(request, callback);
     }
 
     std::shared_ptr<URLSessionDataTask> URLSession::dataTaskWithRequest(const URLRequest request, std::function<void(std::shared_ptr<URLSessionDataTask> task)> callback)
     {
+        std::cout << "dataTaskWithRequest" << std::endl;
         std::shared_ptr<URLSessionDataTask> task = std::make_shared<URLSessionDataTask>(URLSessionDataTask(request, this->preferWifi, callback));
         this->tasks.push_back(task);
         return task;

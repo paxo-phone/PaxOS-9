@@ -270,6 +270,7 @@ void setup()
     AppManager::init();
     network::init();
 
+    delay(5000);
     network::URLSession::defaultInstance->dataTaskWithURL(std::string("https://granger.requestcatcher.com/test"), [](std::shared_ptr<network::URLSessionDataTask> task) {
                 char data[2048];
                 task->readChunk(data);
