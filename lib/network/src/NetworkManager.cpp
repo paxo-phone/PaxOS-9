@@ -22,7 +22,7 @@ namespace network
     NetworkManager::NetworkManager()
     {
         #ifdef ESP_PLATFORM
-            this->turnONWiFi();
+            this->turnOFFWiFi();
         #endif
         curl_global_init(CURL_GLOBAL_ALL);
     }

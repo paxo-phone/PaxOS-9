@@ -40,7 +40,8 @@ namespace GSM
 
         uint64_t nextBlockSize = std::min(uint64_t(1024), requestResponse.responseBodySize - requestResponse.readPosition);
 
-        //std::cout << "Reading chunk: " << nextBlockSize << std::endl;
+        download();
+        std::cout << "Reading chunk: " << nextBlockSize << std::endl;
 
         gsm.println("AT+HTTPREAD=0,1024\r");
 
@@ -65,7 +66,7 @@ namespace GSM
 
         GSM::data += gsm.readString().c_str();
 
-        //std::cout << "Chunk readed" << std::endl;
+        std::cout << "Chunk readed" << std::endl;
         
         requestResponse.readPosition += nextBlockSize;
 
@@ -157,7 +158,7 @@ namespace GSM
                                 GSM::send(currentRequest->request.httpBody, "OK", 500 + dataLength * 8 * BAUDRATE);  // wait for the full data transfer
                                 
                                 // Perform POST action
-                                if((GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 10000)).find("OK") == std::string::npos)
+                                if((GSM::send("AT+HTTPACTION=1", "AT+HTTPACTION", 5000)).find("OK") == std::string::npos)
                                 {
                                     closeRequest(707);
                                     break;

@@ -272,7 +272,7 @@ void setup()
     network::init();
 
     PaxOS_Delay(10000);
-    network::URLSession::defaultInstance->dataTaskWithURL(std::string("http://example.com"), [](std::shared_ptr<network::URLSessionDataTask> task) {
+    network::URLSession::defaultInstance->dataTaskWithURL(std::string("https://www.example.com/"), [](std::shared_ptr<network::URLSessionDataTask> task) {
                 char data[2048];
                 std::cout << "Request done, code: " << task->response->statusCode << ", dataSize: " << task->response->responseBodySize << std::endl;
                 
@@ -280,7 +280,9 @@ void setup()
                     std::cout << "Request failed" << std::endl;
                     return;
                 } else {
+                    std::cout << "Request succeeded" << std::endl;
                     size_t size = task->readChunk(data);
+                    std::cout << "Response size: " << size << std::endl;
     
                     for (size_t i = 0; i < size; ++i)
                     {
