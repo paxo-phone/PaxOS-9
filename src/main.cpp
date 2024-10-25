@@ -69,9 +69,9 @@ void mainLoop(void* data) {
     // Check if OOBE app need to be launched
     if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
         // Launch OOBE app
-        const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
-
         try {
+            const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+
             oobeApp->run(false);
         } catch (std::runtime_error& e) {
             std::cerr << "Lua error: " << e.what() << std::endl;
