@@ -18,7 +18,8 @@ namespace AppManager {
 
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
 
-        appStack.push_back(this);
+        if(!background)
+            appStack.push_back(this);
 
         luaInstance = std::make_shared<LuaFile>(path, manifest);
         luaInstance->app = this;
@@ -190,7 +191,7 @@ namespace AppManager {
         // }
     }
 
-    void loadDir(const storage::Path& directory, bool root = false) {
+    void loadDir(const storage::Path& directory, bool root = false, std::string prefix = "") {
         std::vector<std::string> dirs = storage::Path(directory).listdir();
 
         storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
@@ -241,7 +242,7 @@ namespace AppManager {
                 );
             }
 
-            app->fullName = dir;
+            app->fullName = prefix.size() ? (prefix + "." + dir) : (dir);
 
             if (!dir.empty() && dir[0] == '.') {
                 app->visible = false;
@@ -253,13 +254,24 @@ namespace AppManager {
                 app->name = manifest["name"];
             }
 
-            app->background = false; // TODO : Allow background running
+            if(manifest["background"].is_boolean())
+            {
+                app->background = manifest["background"];
+                std::cout << "loading app in the background" << std::endl;
+            }
 
             if (manifest["autorun"].is_boolean()) {
-                if (manifest["autorun"]) {
-                    //appList.back().app_state = App::AppState::RUNNING_BACKGROUND; need to allocate -> use the run function
-                    //appList.back().luaInstance->runBackground();
+                if (manifest["autorun"] && app->background) {
+                    app.get()->run(true);
                 }
+            }
+
+            if(manifest["subdir"].is_string())  // todo, restrict only for subdirs
+            {
+                if((app.get()->path / "../" / manifest["subdir"]).exists())
+                    loadDir(app.get()->path / "../" / manifest["subdir"], root, app->fullName);
+                else
+                    std::cerr << "Error: subdir \"" << (app.get()->path / "../" / manifest["subdir"]).str() << "\" does not exist" << std::endl;
             }
 
             // Add app to list
@@ -330,10 +342,8 @@ namespace AppManager {
         // Get the currently running app
         App* app = appStack.back();
 
-        // Check if the app on the top is a foreground app
-        // TODO : Go down the stack ?
         if (app->background) {
-            throw libsystem::exceptions::RuntimeError("Cannot quit an backgroundn app.");
+            return;
         }
 
         // Kill the app

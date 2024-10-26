@@ -115,7 +115,7 @@ void mainLoop(void* data) {
 
                     // Launch the app
                     try {
-                        app->run(false);
+                        app->run(app->background);
                     } catch (std::runtime_error& e) {
                         std::cerr << "Erreur: " << e.what() << std::endl;
                         // Affichage du msg d'erreur
