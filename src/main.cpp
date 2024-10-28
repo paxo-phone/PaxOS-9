@@ -34,22 +34,6 @@ SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 
 using namespace gui::elements;
 
-
-
-void ringingVibrator(void* data)
-{
-    #ifdef ESP_PLATFORM
-    while (true)
-    {
-        if(GSM::state.callState == GSM::CallState::RINGING)
-        {
-            delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);
-        }
-        delay(10);
-    }
-    #endif
-}
-
 void mainLoop(void* data) {
 #ifdef ESP_PLATFORM
     if (!backtrace_saver::isBacktraceEmpty()) {
@@ -264,7 +248,7 @@ void setup()
     GSM::ExternalEvents::onNewMessage = []()
     {
         #ifdef ESP_PLATFORM
-        eventHandlerBack.setTimeout(new Callback<>([](){delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);}), 0);
+        eventHandlerBack.setTimeout(new Callback<>([](){hardware::vibrator::play({1, 0, 1});}), 0);
         #endif
         
         AppManager::event_onmessage();
@@ -276,7 +260,7 @@ void setup()
     };
 
     #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
+    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 16000);
     #endif
 
     // gestion de la détection du toucher de l'écran
@@ -296,6 +280,7 @@ void setup()
 
     AppManager::init();
 
+    hardware::vibrator::play({1, 1, 0, 0, 1, 0, 1});
     mainLoop(NULL);
 }
 

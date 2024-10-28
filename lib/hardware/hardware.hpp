@@ -2,6 +2,7 @@
 #define HARDWARE_HPP
 
 #include "clock.hpp"
+#include "vibrator.hpp"
 
 namespace hardware
 {

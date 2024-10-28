@@ -331,7 +331,8 @@ void LuaFile::load()
     if (perms.acces_hardware) // si hardware est autorisé
     {
         lua.new_usertype<LuaHardware>("hardware",
-                                      "flash", &LuaHardware::flash);
+                                      "flash", &LuaHardware::flash,
+                                      "vibrate", hardware::vibrator::play);
 
         lua["hardware"] = &lua_hardware;
     }
@@ -628,22 +629,22 @@ void LuaFile::load()
                 }
 
                 return true; },
-                                                 [&](std::string name)
-                                                 {
-                                                     try
-                                                     {
-                                                         AppManager::get(name)->run(false, {});
-                                                     }
-                                                     catch (std::runtime_error &e)
-                                                     {
-                                                         std::cerr << "Erreur: " << e.what() << std::endl;
-                                                         // Ajout message d'erreur
-                                                         GuiManager &guiManager = GuiManager::getInstance();
-                                                         guiManager.showErrorMessage(e.what());
-                                                     }
+                [&](std::string name)
+                {
+                    try
+                    {
+                        AppManager::get(name)->run(false, {});
+                    }
+                    catch (std::runtime_error &e)
+                    {
+                        std::cerr << "Erreur: " << e.what() << std::endl;
+                        // Ajout message d'erreur
+                        GuiManager &guiManager = GuiManager::getInstance();
+                        guiManager.showErrorMessage(e.what());
+                    }
 
-                                                     return true;
-                                                 }));
+                    return true;
+                }));
     }
 
     if (perms.acces_time)
