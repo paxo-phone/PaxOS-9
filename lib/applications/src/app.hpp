@@ -36,10 +36,9 @@ namespace AppManager
         App(const std::string& name, const storage::Path& path, const storage::Path& manifest, bool auth);
 
         /**
-         * @param background Run in background
          * @param parameters List of parameters to send to the lua run function of the app
          */
-        void run(bool background, const std::vector<std::string> &parameters = {});
+        void run(const std::vector<std::string> &parameters = {});
 
         /**
          * @brief Wake up the app (if it was sleeping)

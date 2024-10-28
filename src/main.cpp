@@ -56,10 +56,10 @@ void mainLoop(void* data) {
         try {
             const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
 
-            oobeApp->run(false);
+            oobeApp->run();
         } catch (std::runtime_error& e) {
-            std::cerr << "Lua error: " << e.what() << std::endl;
-            guiManager.showErrorMessage(e.what());
+            //std::cerr << "Lua error: " << e.what() << std::endl;
+            //guiManager.showErrorMessage(e.what());
             //AppManager::appList[i].kill();
         }
     }
@@ -99,7 +99,7 @@ void mainLoop(void* data) {
 
                     // Launch the app
                     try {
-                        app->run(app->background);
+                        app->run();
                     } catch (std::runtime_error& e) {
                         std::cerr << "Erreur: " << e.what() << std::endl;
                         // Affichage du msg d'erreur
@@ -241,7 +241,7 @@ void setup()
     // gestion des appels entrants
     GSM::ExternalEvents::onIncommingCall = []()
     {
-        eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run(false);}), 0);
+        eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run();}), 0);
     };
 
     // Gestion de la réception d'un message

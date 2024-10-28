@@ -4,6 +4,6 @@
         "files",
         "time"
     ],
-    "background": true,
+    "background": false,
     "subdir": "sub"
 }

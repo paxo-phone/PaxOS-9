@@ -8,10 +8,9 @@ namespace AppManager {
         : name(name), fullName(name), path(path), manifest(manifest),
           auth(auth),
           luaInstance(nullptr), app_state(NOT_RUNNING), background(false) {
-        std::cout << "App: \"" << name << "\" \"" << fullName << "\"" << std::endl;
     }
 
-    void App::run(const bool background, const std::vector<std::string>& parameters) {
+    void App::run(const std::vector<std::string>& parameters) {
         if (!auth) {
             throw libsystem::exceptions::RuntimeError("App is not authorized to run");
         }
@@ -43,7 +42,7 @@ namespace AppManager {
     }
 
     bool App::isRunning() const {
-        return app_state == RUNNING || app_state == RUNNING_BACKGROUND;
+        return this->luaInstance != nullptr;
     }
 
     bool App::isLoaded() const {
@@ -61,6 +60,14 @@ namespace AppManager {
         if (luaInstance != nullptr) {
             luaInstance->stop();
             luaInstance.reset(); // delete luaInstance
+
+            for (auto it = appStack.begin(); it != appStack.end();) {
+                if (*it == this) {
+                    it = appStack.erase(it);
+                } else {
+                    ++it;
+                }
+            }
 
             app_state = NOT_RUNNING;
 
@@ -174,7 +181,7 @@ namespace AppManager {
     void askGui(const LuaFile* lua) {
         App* app = lua->app;
 
-        if (lua->lua_gui.mainWindow == nullptr) {
+        /*if (lua->lua_gui.mainWindow == nullptr) {
             for (auto it = appStack.begin(); it != appStack.end(); ++it) {
                 if (*it == app) {
                     app->app_state = App::AppState::NOT_RUNNING;
@@ -184,7 +191,7 @@ namespace AppManager {
             }
 
             return;
-        }
+        }*/
 
         // if (appStack.empty() || appStack.back() != app) {
         //     appStack.push_back(app);
@@ -198,11 +205,11 @@ namespace AppManager {
         std::string allowedFiles = stream.read();
         stream.close();
 
-        libsystem::log("auth.list : " + allowedFiles);
+        //libsystem::log("auth.list : " + allowedFiles);
 
         for (auto dir: dirs) {
             auto appPath = storage::Path(directory) / dir;
-            libsystem::log("Loading app at \"" + appPath.str() + "\".");
+            //libsystem::log("Loading app at \"" + appPath.str() + "\".");
 
             auto manifestPath = storage::Path(directory) / dir / "manifest.json";
 
@@ -211,7 +218,7 @@ namespace AppManager {
             manifestStream.close();
 
             if (!nlohmann::json::accept(manifestContent)) {
-                std::cout << "Error: invalid manifest at \"" << manifestPath.str() << "\"" << std::endl;
+                std::cerr << "Error: invalid manifest at \"" << manifestPath.str() << "\"" << std::endl;
                 continue;
             }
 
@@ -242,7 +249,8 @@ namespace AppManager {
                 );
             }
 
-            app->fullName = prefix.size() ? (prefix + "." + dir) : (dir);
+            app->fullName = prefix.size() ? (prefix + dir) : (dir);
+            libsystem::log("Loading app \"" + app->fullName + "\".");
 
             if (!dir.empty() && dir[0] == '.') {
                 app->visible = false;
@@ -260,12 +268,6 @@ namespace AppManager {
                 std::cout << "loading app in the background" << std::endl;
             }
 
-            if (manifest["autorun"].is_boolean()) {
-                if (manifest["autorun"] && app->background) {
-                    app.get()->run(true);
-                }
-            }
-
             if(manifest["subdir"].is_string())  // todo, restrict only for subdirs
             {
                 if((app.get()->path / "../" / manifest["subdir"]).exists())
@@ -275,8 +277,14 @@ namespace AppManager {
             }
 
             // Add app to list
-            libsystem::log("Loaded app : " + app->toString() + ".");
+            //libsystem::log("Loaded app : " + app->toString() + ".");
             appList.push_back(app);
+            
+            if (manifest["autorun"].is_boolean()) {
+                if (manifest["autorun"] && app->background) {
+                    app.get()->run();
+                }
+            }
         }
     }
 
@@ -297,21 +305,24 @@ namespace AppManager {
         for (const auto& app: appList) {
             if(app->background == false)    // app is not in background
             {
-                if (app->isRunning()) { // app is running
-                    app->luaInstance->loop();
-                } else if (std::find(appStack.begin(), appStack.end(), app.get()) != appStack.end()) // if app is no longer in the stack (no gui is running) -> kill it
+                if (app->isRunning())
                 {
-                    app->kill();
+                    app->luaInstance->loop();
                 }
             }
         }
 
         // Update foreground app GUI
         if (!appStack.empty()) {
-            const App* app = appStack.back();
+            App* app = appStack.back();
 
             if (app->luaInstance != nullptr) {
                 app->luaInstance->lua_gui.update();
+            }
+
+            if(app->luaInstance->lua_gui.mainWindow == nullptr) // app has no GUI
+            {
+                app->kill();
             }
         }
 
@@ -348,9 +359,6 @@ namespace AppManager {
 
         // Kill the app
         app->kill();
-
-        // Remove app from stack
-        appStack.pop_back();
     }
 
     bool isAnyVisibleApp() {
