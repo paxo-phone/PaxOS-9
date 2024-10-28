@@ -1,5 +1,6 @@
 #include "Canvas.hpp"
 
+#include <algorithm>
 #include <standby.hpp>
 #include <threads.hpp>
 

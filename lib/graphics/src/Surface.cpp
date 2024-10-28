@@ -9,6 +9,7 @@
 #include <filestream.hpp>
 //#include <JPEGENC.h>
 #include <iostream>
+#include <algorithm>
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>

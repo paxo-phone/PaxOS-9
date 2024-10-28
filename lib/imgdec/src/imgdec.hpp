@@ -10,6 +10,9 @@
 
 namespace imgdec
 {
+
+#undef ERROR
+
     enum IMGType
     {
         ERROR,

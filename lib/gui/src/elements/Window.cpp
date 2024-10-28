@@ -5,6 +5,7 @@
 #include "Window.hpp"
 
 #include <cstdio>
+#include <algorithm>
 #include <graphics.hpp>
 #include <Surface.hpp>
 

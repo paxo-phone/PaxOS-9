@@ -1,5 +1,6 @@
 #include "tasks.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <clock.hpp>
 

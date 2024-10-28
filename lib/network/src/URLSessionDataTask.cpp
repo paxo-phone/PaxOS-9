@@ -1,5 +1,7 @@
 #include "URLSessionDataTask.hpp"
 
+#include <algorithm>
+
 #include "NetworkManager.hpp"
 
 #include <gsm.hpp>

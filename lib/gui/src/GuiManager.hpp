@@ -3,6 +3,8 @@
 
 #include "elements/Window.hpp"
 
+#undef ERROR
+
 enum WINDOW_TYPE {
     INFO, 
     WARNING,

@@ -7,6 +7,9 @@
 #include "URL.hpp"
 
 namespace network {
+
+#undef DELETE
+
     struct URLRequest {
         enum HTTPMethod {
             GET,

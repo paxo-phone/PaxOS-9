@@ -11,6 +11,8 @@ namespace hardware
     void setVibrator(bool state);
     bool getHomeButton();
 
+#undef ERROR_TIMEOUT
+
     // https://www.arduino.cc/reference/en/language/functions/communication/wire/endtransmission/
     enum I2CResponse {
         SUCCESS = 0,
