@@ -353,10 +353,6 @@ namespace AppManager {
         // Get the currently running app
         App* app = appStack.back();
 
-        if (app->background) {
-            return;
-        }
-
         // Kill the app
         app->kill();
     }

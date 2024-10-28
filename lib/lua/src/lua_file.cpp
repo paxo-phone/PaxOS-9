@@ -617,7 +617,8 @@ void LuaFile::load()
         lua.set("COLOR_LIGHT_GREY", COLOR_LIGHT_GREY);
 
         lua.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
-                                                 {
+        {
+            std::cerr << "launch is deprecated, use system.app:launch instead" << std::endl;
                 try{
                     AppManager::get(name)->run(arg);
                 }
@@ -728,6 +729,53 @@ void LuaFile::load()
 
         app.set_function("quit", [&]()
                          { m_commandQueue.push(QUIT); });
+
+        app.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
+        {
+                try{
+                    AppManager::get(name)->run(arg);
+                }
+                catch(std::runtime_error &e) {
+                    std::cerr << "Erreur: " << e.what() << std::endl;
+                    // Ajout message d'erreur
+                    GuiManager &guiManager = GuiManager::getInstance();
+                    guiManager.showErrorMessage(e.what());
+                }
+
+                return true; },
+                [&](std::string name)
+                {
+                    try
+                    {
+                        AppManager::get(name)->run({});
+                    }
+                    catch (std::runtime_error &e)
+                    {
+                        std::cerr << "Erreur: " << e.what() << std::endl;
+                        // Ajout message d'erreur
+                        GuiManager &guiManager = GuiManager::getInstance();
+                        guiManager.showErrorMessage(e.what());
+                    }
+
+                    return true;
+                }));
+        
+        app.set_function("stopApp", sol::overload([&](std::string name)
+        {
+            try{
+                auto app = AppManager::get(name);
+                if(app->luaInstance != nullptr && app->luaInstance.get() != this)
+                    app->kill();
+            }
+            catch(std::runtime_error &e) {
+                std::cerr << "Erreur: " << e.what() << std::endl;
+                // Ajout message d'erreur
+                GuiManager &guiManager = GuiManager::getInstance();
+                guiManager.showErrorMessage(e.what());
+            }
+
+            return true; }
+        ));
     }
 
     /**
@@ -855,7 +903,7 @@ void LuaFile::wakeup(std::vector<std::string> arg)
 void LuaFile::stop(std::vector<std::string> arg)
 {
     const sol::protected_function func = lua.get<sol::protected_function>("quit");
-    ;
+
     if (!func.valid())
         return;
 
@@ -871,7 +919,7 @@ void LuaFile::loop()
         {
         case QUIT:
             // Quit lua app OUTSIDE of lua
-            AppManager::quitApp();
+            AppManager::get(this)->kill();
             break;
         }
 

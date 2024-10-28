@@ -219,6 +219,11 @@ void setup()
         systemConfig.write();
     }
 
+    if (!systemConfig.has("settings.sleeptime")) {
+        systemConfig.set<uint64_t>("settings.sleeptime", 30000);
+        systemConfig.write();
+    }
+
     libsystem::log("settings.brightness: " + std::to_string(systemConfig.get<uint8_t>("settings.brightness")));
 
     graphics::setBrightness(systemConfig.get<uint8_t>("settings.brightness"));

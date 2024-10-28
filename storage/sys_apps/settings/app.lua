@@ -147,7 +147,22 @@ function systemSettings()
             textBrightness:setVerticalAlignment(CENTER_ALIGNMENT)
             textBrightness:setText("Luminosité")
         
-        local brightnessSlider = gui:slider(brightnessBox, 15, 53, 230, 10, 5, 255, system.config.getInt("settings.brightness"))
+        local brightnessSlider = gui:slider(brightnessBox, 15, 53, 230, 10, 5, 255, settings.getBrightness())
+            brightnessSlider:onChange(function() 
+                settings.setBrightness(brightnessSlider:getValue(), false)
+            end)
+
+    local sleepTimeBox = createBox(win2, 100, 73)
+        local textsleepTime = gui:label(sleepTimeBox, 16, 0, 177, 55)
+            textsleepTime:setFontSize(24)
+            textsleepTime:setVerticalAlignment(CENTER_ALIGNMENT)
+            textsleepTime:setText("Veille: " .. int(settings.getStandBySleepTime()/1000) .. "s")
+        print("sleep time: " .. settings.getStandBySleepTime())
+        local sleepTimeSlider = gui:slider(sleepTimeBox, 15, 53, 230, 10, 20, 120, int(settings.getStandBySleepTime()/1000))
+            sleepTimeSlider:onChange(function() 
+                settings.setStandBySleepTime(sleepTimeSlider:getValue()*1000, true)
+                textsleepTime:setText("Veille: " .. int(sleepTimeSlider:getValue()) .. "s")
+            end)
 
     gui:setWindow(win2)
 end
