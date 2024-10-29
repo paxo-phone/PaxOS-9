@@ -1083,6 +1083,7 @@ namespace GSM
 
     void updateHour()
     {
+        #ifdef ESP_PLATFORM
         std::string data = send("AT+CCLK?", "+CCLK:");
 
         size_t start = data.find("\"");
@@ -1123,6 +1124,16 @@ namespace GSM
         {
             return;
         }
+        #else
+        time_t now = time(0);
+        struct tm *ltm = localtime(&now);
+        years = ltm->tm_year + 1900;
+        months = ltm->tm_mon + 1;
+        days = ltm->tm_mday;
+        hours = ltm->tm_hour;
+        minutes = ltm->tm_min;
+        seconds = ltm->tm_sec;
+        #endif
 
         //std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
