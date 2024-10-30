@@ -58,7 +58,7 @@ namespace gui::elements {
         m_x = 0;
         m_y = 0;
 
-        m_backgroundColor = COLOR_LIGHT;
+        m_backgroundColor = COLOR_WHITE;
 
         m_hasEvents = true;
 
@@ -251,7 +251,7 @@ namespace gui::elements {
     void Keyboard::drawKeys() const {
         // Reset default settings
         m_keysCanvas->fillRect(0, 0, m_keysCanvas->getWidth(), m_keysCanvas->getHeight(),
-                               COLOR_LIGHT);
+                               COLOR_WHITE);
 
         // Draw every keys
         drawKeyRow(0, 10, getLayoutCharMap()[0]);

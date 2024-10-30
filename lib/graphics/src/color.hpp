@@ -58,12 +58,7 @@ namespace graphics {
 #define COLOR_WARNING 0xFE00
 #define COLOR_ERROR 0xD9A8
 
-
-// #define COLOR_WHITE 0xFFFF
-// #define COLOR_BLACK 0x0000
-// #define COLOR_GREY 0x8410
-
-#define COLOR_WHITE         graphics::constPackRGB565(255, 255, 255)
+extern color_t COLOR_WHITE;
 #define COLOR_BLACK         graphics::constPackRGB565(0, 0, 0)
 #define COLOR_RED           graphics::constPackRGB565(255, 0, 0)
 #define COLOR_GREEN         graphics::constPackRGB565(0, 128, 0)

@@ -252,7 +252,7 @@ void applications::launcher::draw() {
 
     // Battery icon
     const auto batteryIconDarkPath = storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
-    batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32, COLOR_LIGHT);
+    batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32);
     batteryIcon->load();
     launcherWindow->addChild(batteryIcon);
 

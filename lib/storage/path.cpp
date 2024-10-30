@@ -179,28 +179,30 @@ namespace storage
 
     void Path::simplify(void)
     {
-        std::vector<std::string>::iterator it = m_steps.begin();
-
-        while (it != m_steps.end())
+        std::vector<std::string> simplified_steps;
+        for (const auto& step : m_steps)
         {
-            if (*it == "..")
+            if (step == "..")
             {
-                if (it != m_steps.begin())
+                if (!simplified_steps.empty() && simplified_steps.back() != "..")
                 {
-                    m_steps.erase(it);
-                    it = m_steps.erase(it - 1);
+                    // Pop the last valid directory
+                    simplified_steps.pop_back();
                 }
                 else
                 {
-                    ++it;
+                    // If no valid directory to go up, keep the ".."
+                    simplified_steps.push_back(step);
                 }
             }
-            else
+            else if (step != ".")
             {
-                ++it;
+                simplified_steps.push_back(step);
             }
         }
+        m_steps = std::move(simplified_steps);
     }
+
 
     void Path::parse(const std::string &raw)
     {

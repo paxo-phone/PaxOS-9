@@ -61,6 +61,8 @@ function initColorScreen()
     lblTestCouleur:setBackgroundColor(backgroundColor)
     lblTestCouleur:setBorderColor(borderColor)
 
+    lblTestCouleur:onClick(saveColor)
+
 
     local width = 300
     local height = 200
@@ -161,10 +163,9 @@ end
 
 
 function saveColor()
-
-    settings:setBackgroundColor(backgroundColor, true)
-    settings:setTextColor(textColor, true)
-    settings:setBorderColor(borderColor, true)
+    settings.setBackgroundColor(backgroundColor)
+    --settings:setTextColor(textColor, true)
+    --settings:setBorderColor(borderColor, true)
 
     initMainScreen()
 

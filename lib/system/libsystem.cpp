@@ -383,6 +383,8 @@ color_t libsystem::paxoConfig::getBorderColor()
 
 void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save)
 {
+    COLOR_WHITE = color;
+    std::cout << COLOR_WHITE << std::endl;
     if (save)
     {
         systemConfig.set<uint16_t>("settings.color.background", static_cast<uint16_t>(color));

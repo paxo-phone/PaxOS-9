@@ -127,6 +127,12 @@ void mainLoop(void* data) {
             }
         }
 
+        if(libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
+        {
+            setDeviceMode(libsystem::NORMAL);
+            StandbyMode::disable();
+        }
+
         if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
         {
             if(launcher)
@@ -143,13 +149,13 @@ void mainLoop(void* data) {
         }
 
         #ifdef ESP_PLATFORM
-        if(Serial.available())
+        /*if(Serial.available())
         {
             std::cout << "Main loop" << std::endl;
             std::cout << "Launcher: " << launcher << std::endl;
             std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
             std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
-        }
+        }*/
         #endif
 
         StandbyMode::wait();
@@ -222,6 +228,13 @@ void setup()
     if (!systemConfig.has("settings.sleeptime")) {
         systemConfig.set<uint64_t>("settings.sleeptime", 30000);
         systemConfig.write();
+    }
+
+    if (!systemConfig.has("settings.color.background")) {
+        libsystem::paxoConfig::setBackgroundColor(0xFFFF, true);
+    }else
+    {
+        COLOR_WHITE = static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.background"));
     }
 
     libsystem::log("settings.brightness: " + std::to_string(systemConfig.get<uint8_t>("settings.brightness")));

@@ -226,6 +226,10 @@ namespace AppManager {
 
             std::shared_ptr<App> app;
 
+            std::string fullname = prefix.size() ? (prefix + "." + dir) : (dir);
+            libsystem::log("Loading app \"" + fullname + "\".");
+
+
             if (root) {
                 app = std::make_shared<App>(
                     dir,
@@ -236,21 +240,21 @@ namespace AppManager {
             } else if (allowedFiles.find(appPath.str()) != std::string::npos) {
                 app = std::make_shared<App>(
                     dir,
-                    storage::Path(APP_DIR) / dir / "app.lua",
-                    storage::Path(PERMS_DIR) / (dir + ".json"),
+                    storage::Path(directory) / dir / "app.lua",
+                    storage::Path(PERMS_DIR) / (fullname + ".json"),
                     true
                 );
             } else {
                 app = std::make_shared<App>(
                     dir,
-                    storage::Path(APP_DIR) / dir / "app.lua",
-                    storage::Path(APP_DIR) / dir / "manifest.json",
+                    storage::Path(directory) / dir / "app.lua",
+                    storage::Path(directory) / fullname / "manifest.json",
                     false
                 );
             }
 
-            app->fullName = prefix.size() ? (prefix + dir) : (dir);
-            libsystem::log("Loading app \"" + app->fullName + "\".");
+            app->fullName = fullname;
+
 
             if (!dir.empty() && dir[0] == '.') {
                 app->visible = false;
@@ -265,7 +269,6 @@ namespace AppManager {
             if(manifest["background"].is_boolean())
             {
                 app->background = manifest["background"];
-                std::cout << "loading app in the background" << std::endl;
             }
 
             if(manifest["subdir"].is_string())  // todo, restrict only for subdirs

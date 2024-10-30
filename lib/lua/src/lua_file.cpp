@@ -304,10 +304,8 @@ void LuaFile::load()
 
     lua["require"] = [&](const std::string &filename) -> sol::object
     {
-        storage::Path lib(filename);
-
         // Load the file
-        sol::load_result chunk = lua.load_file(this->lua_storage.convertPath(lib).str());
+        sol::load_result chunk = lua.load_file(this->lua_storage.convertPath(filename).str());
         if (!chunk.valid())
         {
             sol::error err = chunk;
@@ -316,16 +314,6 @@ void LuaFile::load()
 
         // 4. Execute the loaded chunk and return its results
         return chunk();
-    };
-
-    lua["saveTable"] = [&](const std::string &filename, const sol::table &table)
-    {
-        save_lua_table(lua, lua_storage.convertPath(filename).str(), table);
-    };
-
-    lua["loadTable"] = [&](const std::string &filename)
-    {
-        return load_lua_table(lua, lua_storage.convertPath(filename).str());
     };
 
     if (perms.acces_hardware) // si hardware est autorisé
@@ -380,6 +368,16 @@ void LuaFile::load()
                                                  "__newindex", sol::overload(static_cast<void (LuaJson::*)(std::string, int)>(&LuaJson::set_int), static_cast<void (LuaJson::*)(std::string, double)>(&LuaJson::set_double), static_cast<void (LuaJson::*)(std::string, bool)>(&LuaJson::set_bool), static_cast<void (LuaJson::*)(std::string, std::string)>(&LuaJson::set)));
 
         lua["Json"] = json_ud;
+
+        lua["saveTable"] = [&](const std::string &filename, const sol::table &table)
+        {
+            save_lua_table(lua, lua_storage.convertPath(filename).str(), table);
+        };
+
+        lua["loadTable"] = [&](const std::string &filename)
+        {
+            return load_lua_table(lua, lua_storage.convertPath(filename).str());
+        };
 
         lua["storage"] = &lua_storage;
     }
@@ -732,6 +730,8 @@ void LuaFile::load()
 
         app.set_function("launch", sol::overload([&](std::string name, std::vector<std::string> arg)
         {
+            std::cout << "launch: " << name << std::endl;
+            std::cout << "arg: " << arg[0] << std::endl;
                 try{
                     AppManager::get(name)->run(arg);
                 }
@@ -745,6 +745,7 @@ void LuaFile::load()
                 return true; },
                 [&](std::string name)
                 {
+                    std::cout << "launch: " << name << std::endl;
                     try
                     {
                         AppManager::get(name)->run({});
@@ -810,7 +811,7 @@ void LuaFile::load()
         systemSettings.set_function("getBackgroundColor", &libsystem::paxoConfig::getBackgroundColor);
         systemSettings.set_function("getTextColor", &libsystem::paxoConfig::getTextColor);
         systemSettings.set_function("getBorderColor", &libsystem::paxoConfig::getBorderColor);
-        systemSettings.set_function("setBackgroundColor", &libsystem::paxoConfig::setBackgroundColor);
+        systemSettings.set_function("setBackgroundColor", [](int color) { libsystem::paxoConfig::setBackgroundColor(color_t(color), true); });
         systemSettings.set_function("setTextColor", &libsystem::paxoConfig::setTextColor);
         systemSettings.set_function("setBorderColor", &libsystem::paxoConfig::setBorderColor);
     }

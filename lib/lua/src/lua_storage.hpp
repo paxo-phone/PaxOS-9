@@ -24,7 +24,7 @@ class LuaStorage
     std::vector<std::string> listDir(std::string path);
 
     bool legalPath(storage::Path path);
-    storage::Path convertPath(storage::Path);
+    storage::Path convertPath(std::string path);
 
     private:
     LuaFile* lua = nullptr;
