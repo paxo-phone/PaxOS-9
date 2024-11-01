@@ -28,7 +28,7 @@ function showAlarm(index)
     end)
 
     time:setInterval(function()
-        hardware:vibrate({true, true, false, false, true, true})
+        hardware.vibrate({true, true, false, false, true, true})
     end, 1000)
 
     gui:setWindow(win3)
