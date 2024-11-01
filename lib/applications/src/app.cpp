@@ -12,7 +12,10 @@ namespace AppManager {
 
     void App::run(const std::vector<std::string>& parameters) {
         if (!auth) {
-            throw libsystem::exceptions::RuntimeError("App is not authorized to run");
+            requestAuth();
+
+            if (!auth)
+                return;
         }
 
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
@@ -84,7 +87,7 @@ namespace AppManager {
         std::string data = stream.read();
         stream.close();
 
-        label->setText(data);
+        label->setText("Voulez-vous autoriser l'application " + fullName + " à accéder aux permissions suivantes:\n" + data);
         win.addChild(label);
 
         auto *btn = new Button(35, 420, 250, 38);
@@ -95,18 +98,16 @@ namespace AppManager {
 
         while (true) {
             win.updateAll();
+            eventHandlerApp.update();
+
+            if(hardware::getHomeButton())
+            {
+                break;
+            }
 
             if (btn->isTouched()) {
-                storage::FileStream streamP((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
-                streamP.write(path.str() + "\n");
-                streamP.close();
-
-                manifest = storage::Path(PERMS_DIR) / (name + ".json");
-                auth = true;
-
-                storage::FileStream newPermCopy(manifest.str(), storage::WRITE);
-                newPermCopy.write(data);
-                newPermCopy.close();
+                AppManager::addPermission(this);
+                break;
             }
         }
     }
@@ -178,24 +179,20 @@ namespace AppManager {
         return 0;
     }
 
-    void askGui(const LuaFile* lua) {
-        App* app = lua->app;
+    void addPermission(App* app) {
+        app->auth = true;
 
-        /*if (lua->lua_gui.mainWindow == nullptr) {
-            for (auto it = appStack.begin(); it != appStack.end(); ++it) {
-                if (*it == app) {
-                    app->app_state = App::AppState::NOT_RUNNING;
-                    appStack.erase(it);
-                    break;
-                }
-            }
+        storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
+        stream.write(app->path.str() + "\n");
+        stream.close();
 
-            return;
-        }*/
+        storage::FileStream oman(app->manifest.str(), storage::READ);
+        std::string manifest = oman.read();
+        oman.close();
 
-        // if (appStack.empty() || appStack.back() != app) {
-        //     appStack.push_back(app);
-        // }
+        storage::FileStream nman((storage::Path(PERMS_DIR) / (app->fullName + ".json")).str(), storage::WRITE);
+        nman.write(manifest);
+        nman.close();
     }
 
     void loadDir(const storage::Path& directory, bool root = false, std::string prefix = "") {
@@ -237,7 +234,7 @@ namespace AppManager {
                     directory / dir / "manifest.json",
                     true
                 );
-            } else if (allowedFiles.find(appPath.str()) != std::string::npos) {
+            } else if (allowedFiles.find(appPath.str() + "\n") != std::string::npos) {
                 app = std::make_shared<App>(
                     dir,
                     storage::Path(directory) / dir / "app.lua",
@@ -248,7 +245,7 @@ namespace AppManager {
                 app = std::make_shared<App>(
                     dir,
                     storage::Path(directory) / dir / "app.lua",
-                    storage::Path(directory) / fullname / "manifest.json",
+                    storage::Path(directory) / dir / "manifest.json",
                     false
                 );
             }
@@ -279,8 +276,6 @@ namespace AppManager {
                     std::cerr << "Error: subdir \"" << (app.get()->path / "../" / manifest["subdir"]).str() << "\" does not exist" << std::endl;
             }
 
-            // Add app to list
-            //libsystem::log("Loaded app : " + app->toString() + ".");
             appList.push_back(app);
             
             if (manifest["autorun"].is_boolean()) {

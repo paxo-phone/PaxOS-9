@@ -1,12 +1,10 @@
 global_list = {}
 
 function checkAlarm()
-    print("checkAlarm")
 
     for i, v in ipairs(global_list) do
         local h = tonumber(v.time:sub(1, 2))
         local m = tonumber(v.time:sub(4, 5))
-        print("Comparing: " .. h .. " with " .. time:get("h")[1] .. " and " .. m .. " with " .. time:get("mi")[1])
         if(h == time:get("h")[1] and m == time:get("mi")[1] and v.enabled == 1) then
             global_list[i].enabled = 0
             saveTable("../../alarms.tab", global_list)

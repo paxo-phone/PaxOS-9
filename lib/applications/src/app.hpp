@@ -11,7 +11,7 @@
 
 #define APP_DIR "/apps"
 #define SYSTEM_APP_DIR "/sys_apps"
-#define PERMS_DIR "/system"
+#define PERMS_DIR "/system/permissions"
 
 
 namespace AppManager
@@ -109,7 +109,7 @@ namespace AppManager
     extern std::vector<App*> appStack;                 // stack of the apps that are using the GUI, the last one is shown on the screen
 
     int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description);
-    void askGui(const LuaFile* lua);
+    void addPermission(App* app);
     bool isAnyVisibleApp();
 
     void init();

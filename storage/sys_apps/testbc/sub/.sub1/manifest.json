@@ -1,9 +1,0 @@
-{
-    "access": [
-        "gui",
-        "files",
-        "time"
-    ],
-    "background": false,
-    "autorun": true
-}

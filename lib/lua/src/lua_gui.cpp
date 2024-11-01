@@ -205,7 +205,6 @@ std::string LuaGui::keyboard(const std::string &placeholder, const std::string &
 void LuaGui::setMainWindow(LuaWindow *window)
 {
     this->mainWindow = window;
-    AppManager::askGui(this->lua);
 }
 
 LuaWindow *LuaGui::getMainWindow()

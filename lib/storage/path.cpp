@@ -394,4 +394,96 @@ namespace storage
         return (::rename(this->str().c_str(), to.str().c_str()) == 0);
 #endif
     }
+
+    bool Path::copy(const Path &to)
+    {
+    #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+        try {
+            if (this->isfile()) {
+                // Copy single file
+                std::filesystem::copy_file(this->str(), to.str(), 
+                    std::filesystem::copy_options::overwrite_existing);
+            }
+            else if (this->isdir()) {
+                // Copy directory and its contents recursively
+                std::filesystem::copy(this->str(), to.str(),
+                    std::filesystem::copy_options::recursive |
+                    std::filesystem::copy_options::overwrite_existing);
+            }
+            return true;
+        }
+        catch (const std::filesystem::filesystem_error& e) {
+            std::cerr << "Copy failed: " << e.what() << std::endl;
+            return false;
+        }
+    #endif
+
+    #ifdef ESP_PLATFORM
+        if (!this->exists()) {
+            return false;
+        }
+
+        if (this->isfile()) {
+            // Copy single file
+            FILE* source = fopen(this->str().c_str(), "rb");
+            if (!source) {
+                return false;
+            }
+
+            FILE* dest = fopen(to.str().c_str(), "wb");
+            if (!dest) {
+                fclose(source);
+                return false;
+            }
+
+            const size_t bufferSize = 1024;
+            uint8_t buffer[bufferSize];
+            size_t bytesRead;
+
+            while ((bytesRead = fread(buffer, 1, bufferSize, source)) > 0) {
+                if (fwrite(buffer, 1, bytesRead, dest) != bytesRead) {
+                    fclose(source);
+                    fclose(dest);
+                    return false;
+                }
+            }
+
+            fclose(source);
+            fclose(dest);
+            return true;
+        }
+        else if (this->isdir()) {
+            // Create destination directory
+            if (!to.exists() && !to.newdir()) {
+                return false;
+            }
+
+            // Copy directory contents recursively
+            std::vector<std::string> entries = this->listdir(false);
+            bool success = true;
+
+            for (const auto& entry : entries) {
+                Path sourcePath = *this / entry;
+                Path destPath = to / entry;
+
+                if (sourcePath.isfile()) {
+                    success &= sourcePath.copy(destPath);
+                }
+                else if (sourcePath.isdir()) {
+                    if (!destPath.exists() && !destPath.newdir()) {
+                        success = false;
+                        break;
+                    }
+                    success &= sourcePath.copy(destPath);
+                }
+            }
+
+            return success;
+        }
+        
+        return false;
+    #endif
+
+        return false;
+    }
 }
