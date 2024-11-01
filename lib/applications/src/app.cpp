@@ -226,6 +226,7 @@ namespace AppManager {
             std::string fullname = prefix.size() ? (prefix + "." + dir) : (dir);
             libsystem::log("Loading app \"" + fullname + "\".");
 
+            std::cout << "path: " << appPath.str() << std::endl;
 
             if (root) {
                 app = std::make_shared<App>(
@@ -234,7 +235,7 @@ namespace AppManager {
                     directory / dir / "manifest.json",
                     true
                 );
-            } else if (allowedFiles.find(appPath.str() + "\n") != std::string::npos) {
+            } else if (allowedFiles.find((appPath / "app.lua").str() + "\n") != std::string::npos) {
                 app = std::make_shared<App>(
                     dir,
                     storage::Path(directory) / dir / "app.lua",

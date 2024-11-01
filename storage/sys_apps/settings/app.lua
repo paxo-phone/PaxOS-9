@@ -153,7 +153,7 @@ function systemSettings()
             end)
 
     local sleepTimeBox = createBox(win2, 100, 73)
-        local textsleepTime = gui:label(sleepTimeBox, 16, 0, 177, 55)
+        local textsleepTime = gui:label(sleepTimeBox, 16, 0, 177, 50)
             textsleepTime:setFontSize(24)
             textsleepTime:setVerticalAlignment(CENTER_ALIGNMENT)
             textsleepTime:setText("Veille: " .. int(settings.getStandBySleepTime()/1000) .. "s")

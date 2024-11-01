@@ -113,7 +113,10 @@ namespace gui::elements
          * @brief set the value and redraw the slider based on the position clicked
          *
          */
+        
         void slide();
+        void widgetUpdate();
+        bool hasChanged() { return m_hasChanged; m_hasChanged = false; }
 
     private:
         uint16_t m_minValue;
@@ -123,6 +126,7 @@ namespace gui::elements
 
         bool m_displayValue;
         bool m_isPercentage;
+        bool m_hasChanged;
 
         color_t m_innerTextColor;
         color_t m_outerTextColor;

@@ -37,6 +37,7 @@ namespace gui::elements
         m_innerTextColor = graphics::constPackRGB565(250, 250, 250); // COLOR_LIGHT_GREY;
         m_outerTextColor = COLOR_BLACK;
         m_isPercentage = false;
+        m_hasEvents = true;
     }
 
     Slider::~Slider() = default;
@@ -100,7 +101,24 @@ namespace gui::elements
 
     void Slider::slide()
     {
-        setValue(floor((touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width));
+        //m_positionValue = (touchX - getAbsoluteX());
+        //m_Value = (m_positionValue * (m_maxValue - m_minValue)) / m_width + m_minValue;
+        float value = (touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width + m_minValue;
+        value = value<m_minValue?m_minValue:value>m_maxValue?m_maxValue:value;
+
+        if(m_Value!=value)
+        {
+            setValue(value);
+            m_hasChanged = true;
+        }
+    }
+
+    void Slider::widgetUpdate()
+    {
+        if(widgetPressed == this && (globalPressedState == PressedState::PRESSED || globalPressedState == PressedState::SCROLLX) && touchX >= 0 && touchY >= 0)
+        {
+            slide();
+        }
     }
 
     void Slider::render()

@@ -1,14 +1,9 @@
 ./storage/apps/alarme/sub/.task/app.lua
-./storage/apps/snake/app.lua
-./storage/apps/demineur/app.lua
-./storage/apps/phone/app.lua
-./storage/apps/calendrier/app.lua
-./storage/apps/alarme/sub/.task/app.lua
 ./storage/apps/alarme/app.lua
-./storage/apps/calendrier/app.lua
 ./storage/apps/messages/app.lua
-./storage/apps/phone/app.lua
 ./storage/apps/demineur/app.lua
-./storage/apps/contacts/app.lua
 ./storage/apps/snake/app.lua
+./storage/apps/phone/app.lua
+./storage/apps/contacts/app.lua
+./storage/apps/calendrier/app.lua
 ./storage/apps/calculatrice/app.lua

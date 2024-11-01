@@ -68,15 +68,8 @@ void LuaSlider::onChange(sol::protected_function func)
 
 void LuaSlider::specificUpdate()
 {
-
-    if (this->widget->isFocused(true))
+    if (onChangeFunc && widget->hasChanged())
     {
-        int oldValue = widget->getValue();
-        widget->slide();
-
-        if (onChangeFunc && oldValue != widget->getValue())
-        {
-            onChangeFunc();
-        }
+        onChangeFunc();
     }
 }
