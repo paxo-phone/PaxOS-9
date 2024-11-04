@@ -270,7 +270,7 @@ namespace GSM
     {
         return simLocked;
     }
-    
+
     void isSimLockedAsk()
     {
         std::string o = send("AT+CPIN?", "OK");
@@ -793,7 +793,9 @@ namespace GSM
     {
         send("AT+CMGF=0", "AT+CMGF=0", 100);
 
-        std::string input = send("AT+CMGL=0", "AT+CMGL", 500);
+        std::string input = send("AT+CMGL=0", "AT+CMGL", 5000); // read all messages
+
+        std::cout << input << std::endl;
 
         std::vector<std::string> pdus;
 
@@ -889,12 +891,6 @@ namespace GSM
             catch (const std::out_of_range& e) {
                 std::cerr << "Erreur : " << e.what() << std::endl;
             }
-        }
-
-        if(pdus.size())
-        {
-            if (ExternalEvents::onNewMessage)
-                ExternalEvents::onNewMessage();
         }
 
         send("AT+CMGD=1,1", "AT+CMGD", 1000);
