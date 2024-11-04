@@ -24,13 +24,18 @@
 
 std::vector<std::string> bootErrors;
 libsystem::DeviceMode deviceMode = libsystem::NORMAL;
-auto systemConfig = libsystem::FileConfig(storage::Path("system/config.bfc"));
+std::shared_ptr<libsystem::FileConfig> systemConfig = nullptr;
 
 class Restart final : public std::exception
 {
 public:
     Restart() = default;
 };
+
+void libsystem::init()
+{
+    systemConfig = std::make_shared<libsystem::FileConfig>(storage::Path("system/config.bfc"));
+}
 
 void libsystem::delay(uint64_t ms)
 {
@@ -260,7 +265,7 @@ libsystem::DeviceMode libsystem::getDeviceMode()
 
 libsystem::FileConfig libsystem::getSystemConfig()
 {
-    return systemConfig;
+    return *systemConfig;
 }
 
 libsystem::exceptions::RuntimeError::RuntimeError(const std::string &message) : runtime_error(message)
@@ -298,15 +303,15 @@ void libsystem::paxoConfig::setBrightness(int16_t brightness, bool save)
     graphics::setBrightness(brightness);
     if (save)
     {
-        systemConfig.set<uint8_t>("settings.brightness", brightness);
-        systemConfig.write();
+        systemConfig.get()->set<uint8_t>("settings.brightness", brightness);
+        systemConfig.get()->write();
     }
 }
 
 uint8_t libsystem::paxoConfig::getBrightness()
 {
-    if (systemConfig.has("settings.brightness"))
-        return systemConfig.get<uint8_t>("settings.brightness");
+    if (systemConfig.get()->has("settings.brightness"))
+        return systemConfig.get()->get<uint8_t>("settings.brightness");
     return 0;
 }
 
@@ -315,15 +320,15 @@ void libsystem::paxoConfig::setStandBySleepTime(uint64_t millis, bool save)
     StandbyMode::setSleepTime(millis);
     if (save)
     {
-        systemConfig.set<uint64_t>("settings.sleeptime", millis);
-        systemConfig.write();
+        systemConfig.get()->set<uint64_t>("settings.sleeptime", millis);
+        systemConfig.get()->write();
     }
 }
 
 uint64_t libsystem::paxoConfig::getStandBySleepTime()
 {
-    if (systemConfig.has("settings.sleeptime"))
-        return systemConfig.get<uint64_t>("settings.sleeptime");
+    if (systemConfig.get()->has("settings.sleeptime"))
+        return systemConfig.get()->get<uint64_t>("settings.sleeptime");
     return 0;
 
     //    return StandbyMode::getSleepTime();
@@ -359,24 +364,24 @@ bool libsystem::paxoConfig::connectWifi(std::string SSID, std::string passwd)
 
 color_t libsystem::paxoConfig::getBackgroundColor()
 {
-    if (systemConfig.has("settings.color.background"))
-        return static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.background"));
+    if (systemConfig.get()->has("settings.color.background"))
+        return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.background"));
     else
         return COLOR_WHITE;
 }
 
 color_t libsystem::paxoConfig::getTextColor()
 {
-    if (systemConfig.has("settings.color.text"))
-        return static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.text"));
+    if (systemConfig.get()->has("settings.color.text"))
+        return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.text"));
     else
         return COLOR_BLACK;
 }
 
 color_t libsystem::paxoConfig::getBorderColor()
 {
-    if (systemConfig.has("settings.color.border"))
-        return static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.border"));
+    if (systemConfig.get()->has("settings.color.border"))
+        return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.border"));
     else
         return COLOR_BLACK;
 }
@@ -387,8 +392,8 @@ void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save)
     std::cout << COLOR_WHITE << std::endl;
     if (save)
     {
-        systemConfig.set<uint16_t>("settings.color.background", static_cast<uint16_t>(color));
-        systemConfig.write();
+        systemConfig.get()->set<uint16_t>("settings.color.background", static_cast<uint16_t>(color));
+        systemConfig.get()->write();
     }
 }
 
@@ -401,8 +406,8 @@ void libsystem::paxoConfig::setTextColor(color_t color, bool save)
 {
     if (save)
     {
-        systemConfig.set<uint16_t>("settings.color.text", static_cast<uint16_t>(color));
-        systemConfig.write();
+        systemConfig.get()->set<uint16_t>("settings.color.text", static_cast<uint16_t>(color));
+        systemConfig.get()->write();
     }
 }
 
@@ -415,7 +420,7 @@ void libsystem::paxoConfig::setBorderColor(color_t color, bool save)
 {
     if (save)
     {
-        systemConfig.set<uint16_t>("settings.color.border", static_cast<uint16_t>(color));
-        systemConfig.write();
+        systemConfig.get()->set<uint16_t>("settings.color.border", static_cast<uint16_t>(color));
+        systemConfig.get()->write();
     }
 }

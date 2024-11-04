@@ -87,6 +87,7 @@ namespace GSM
     extern float voltage;
     extern int networkQuality;
     extern std::mutex coresync;
+    extern bool simLocked;
 
     // initialize the modem, power it on is required
     void init();
@@ -126,6 +127,10 @@ namespace GSM
     bool isFlightMode();
     // set flight mode
     void setFlightMode(bool mode);
+
+
+    bool isSimLocked();
+    bool setSimPin(const std::string &pin);
 
     // Network
     struct HttpHeader

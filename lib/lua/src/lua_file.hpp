@@ -31,6 +31,7 @@ struct Permissions {
     bool acces_web_paxo = true;
     bool acces_web = true;
     bool acces_gsm = true;
+    bool acces_password_manager = true;
 };
 
 class LuaFile {

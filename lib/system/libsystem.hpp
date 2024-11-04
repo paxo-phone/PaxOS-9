@@ -31,6 +31,8 @@
  */
 namespace libsystem
 {
+    void init();
+    
     /**
      * @brief Delay the current thread.
      *

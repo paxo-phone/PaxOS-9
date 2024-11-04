@@ -192,7 +192,8 @@ void setup()
         libsystem::registerBootError("Tip: Force boot by plugging a charger.");
 
         libsystem::displayBootErrors();
-        libsystem::restart(true, 10000);
+        
+        // TODO: Set device mode to sleep
 
         return;
     }
@@ -218,6 +219,7 @@ void setup()
     // Init de la gestiuon des Threads
     ThreadManager::init();
 
+    libsystem::init();
     libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
 
     if (!systemConfig.has("settings.brightness")) {

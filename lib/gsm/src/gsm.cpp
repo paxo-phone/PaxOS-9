@@ -5,6 +5,7 @@
 #include <ctime>
 #include <codecvt>
 
+#include <app.hpp>
 #include <path.hpp>
 #include <filestream.hpp>
 #include <imgdec.hpp>
@@ -47,6 +48,7 @@ namespace GSM
     int networkQuality = 0;
     bool flightMode = false;
     std::mutex coresync;
+    bool simLocked = false;
 
     namespace ExternalEvents
     {
@@ -262,6 +264,43 @@ namespace GSM
         }
 
         data = before + after;
+    }
+
+    bool isSimLocked()
+    {
+        return simLocked;
+    }
+
+    bool setSimPin(const std::string &pin)
+    {
+        coresync.lock();
+        std::string o = send("AT+CPIN=\"" + pin + "\"", "OK");
+        
+        PaxOS_Delay(1000);
+        
+        isSimLockedAsk();
+        coresync.unlock();
+        return isSimLocked();
+    }
+
+    void isSimLockedAsk()
+    {
+        std::string o = send("AT+CPIN?", "OK");
+        if (o.find("+CPIN: READY") != std::string::npos)
+        {
+            simLocked = false;
+        }
+        else
+        {
+            simLocked = true;
+
+            eventHandlerApp.setTimeout(new Callback<>([]()
+                {
+                    std::cout << "Sim is locked" << std::endl;
+                    AppManager::get("unlock_sim")->run();
+                }
+            ), 0);
+        }
     }
 
     void onRinging()

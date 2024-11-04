@@ -15,7 +15,7 @@ function run(arg)
 
     button = gui:button(win, 100, 380, 120, 40)
     button:setIcon("sys_apps/.oobe/resources/images/arrow_forward_ios_64px.png")
-    button:setText("Bienvenu !")
+    button:setText("Bienvenue !")
     button:onClick(function ()
         system.config.set("oobe", true)
         system.config.write()

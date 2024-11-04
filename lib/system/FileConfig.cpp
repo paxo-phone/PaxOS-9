@@ -198,6 +198,8 @@ namespace libsystem
         default:;
         }
 
+        std::cout << "Key: " << key << std::endl;
+
         const auto valueNode = std::make_shared<ValueNode>(key, value);
         m_currentNode->addValueNode(valueNode);
     }

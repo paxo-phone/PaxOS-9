@@ -367,14 +367,14 @@ namespace AppManager {
             }
         }
 
-        throw libsystem::exceptions::RuntimeError("App not found: " + appName);
+        libsystem::log("App not found: " + appName);
     }
 
     std::shared_ptr<App> get(const uint8_t index) {
         if (index < appList.size()) {
             return appList[index];
         }
-        throw libsystem::exceptions::OutOfRange("App index out of range");
+        libsystem::log("App index out of range");
     }
 
     std::shared_ptr<App> get(const lua_State* L) {
@@ -383,7 +383,7 @@ namespace AppManager {
                 return app;
             }
         }
-        throw libsystem::exceptions::RuntimeError("App not found for given lua_State instance");
+        libsystem::log("App not found for given lua_State instance");
     }
 
     std::shared_ptr<App> get(sol::state* L) {
@@ -399,25 +399,11 @@ namespace AppManager {
             return *it;
         }
 
-        throw libsystem::exceptions::RuntimeError("App not found for given sol::state instance");
+        libsystem::log("App not found for given sol::state instance");
     }
 
     App* get(const LuaFile* luaInstance) {
         return luaInstance->app;
-
-        // const auto it = std::find_if(
-        //     appList.begin(),
-        //     appList.end(),
-        //     [luaInstance](const std::shared_ptr<App>& app) {
-        //         return app->luaInstance.get() == luaInstance;
-        //     }
-        // );
-        //
-        // if (it != appList.end()) {
-        //     return **it; // Probably not safe
-        // }
-        //
-        // throw libsystem::exceptions::RuntimeError("App not found for given LuaFile instance");
     }
 
     std::shared_ptr<App> get(storage::Path path) {
@@ -433,7 +419,7 @@ namespace AppManager {
             return *it;
         }
 
-        throw libsystem::exceptions::RuntimeError("App not found at path: " + path.str());
+        libsystem::log("App not found at path: " + path.str());
     }
 
     void event_oncall() {

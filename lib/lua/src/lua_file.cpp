@@ -295,6 +295,7 @@ void LuaFile::load()
     perms.acces_time = std::find(confJson["access"].begin(), confJson["access"].end(), "time") != confJson["access"].end();
     perms.acces_web = std::find(confJson["access"].begin(), confJson["access"].end(), "web") != confJson["access"].end();
     perms.acces_web_paxo = std::find(confJson["access"].begin(), confJson["access"].end(), "web_paxo") != confJson["access"].end();
+    perms.acces_password_manager = std::find(confJson["access"].begin(), confJson["access"].end(), "password_manager") != confJson["access"].end();
 
     confJson.clear();
 
@@ -717,7 +718,7 @@ void LuaFile::load()
         // paxo.system.config.set()
         systemConfig.set_function("set", sol::overload(
                                              &paxolua::system::config::setBool,
-                                             // &paxolua::system::config::setInt,
+                                             &paxolua::system::config::setInt,
                                              &paxolua::system::config::setFloat,
                                              &paxolua::system::config::setString));
 
@@ -814,6 +815,12 @@ void LuaFile::load()
         systemSettings.set_function("setBackgroundColor", [](int color) { libsystem::paxoConfig::setBackgroundColor(color_t(color), true); });
         systemSettings.set_function("setTextColor", &libsystem::paxoConfig::setTextColor);
         systemSettings.set_function("setBorderColor", &libsystem::paxoConfig::setBorderColor);
+
+        if(perms.acces_password_manager)
+        {
+            systemSettings.set_function("setSimPin", &GSM::setSimPin);
+            systemSettings.set_function("isSimLocked", &GSM::isSimLocked);
+        }
     }
 
     { // load events
