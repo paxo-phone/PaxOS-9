@@ -130,7 +130,7 @@ namespace GSM
 
 
     bool isSimLocked();
-    bool setSimPin(const std::string &pin);
+    bool setSimPin(const std::string &pin); // use the mutex!! so do not call from this core
 
     // Network
     struct HttpHeader

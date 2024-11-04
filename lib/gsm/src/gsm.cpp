@@ -270,19 +270,7 @@ namespace GSM
     {
         return simLocked;
     }
-
-    bool setSimPin(const std::string &pin)
-    {
-        coresync.lock();
-        std::string o = send("AT+CPIN=\"" + pin + "\"", "OK");
-        
-        PaxOS_Delay(1000);
-        
-        isSimLockedAsk();
-        coresync.unlock();
-        return isSimLocked();
-    }
-
+    
     void isSimLockedAsk()
     {
         std::string o = send("AT+CPIN?", "OK");
@@ -302,6 +290,19 @@ namespace GSM
             ), 0);
         }
     }
+
+    bool setSimPin(const std::string &pin)
+    {
+        coresync.lock();
+        std::string o = send("AT+CPIN=\"" + pin + "\"", "OK");
+        
+        PaxOS_Delay(1000);
+        
+        isSimLockedAsk();
+        coresync.unlock();
+        return isSimLocked();
+    }
+
 
     void onRinging()
     {

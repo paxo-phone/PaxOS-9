@@ -71,13 +71,16 @@ void mainLoop(void* data) {
         AppManager::loop();
         eventHandlerApp.update();
 
-        if(AppManager::isAnyVisibleApp() && launcher)
+        if(AppManager::isAnyVisibleApp() && launcher)   // free the launcher is an app is running and the launcher is active
         {
             applications::launcher::free();
             launcher = false;
         }
 
-        if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())
+        if(launcher)
+            applications::launcher::update();
+
+        if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())   // si mode normal et pas d'app en cours
         {
             if(!launcher)   // si pas de launcher -> afficher un launcher
             {
@@ -86,8 +89,6 @@ void mainLoop(void* data) {
             }
             else    // si launcher -> l'update et peut être lancer une app
             {
-                applications::launcher::update();
-
                 if(applications::launcher::iconTouched())
                 {
                     // run the app
@@ -115,10 +116,14 @@ void mainLoop(void* data) {
             {
                 setDeviceMode(libsystem::NORMAL);
                 StandbyMode::disable();
+
+                #ifndef ESP_PLATFORM
+                applications::launcher::draw();
+                #endif
             } else if(launcher)
             {
-                applications::launcher::free();
-                launcher = false;
+                //applications::launcher::free();
+                //launcher = false;
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
             } else if(AppManager::isAnyVisibleApp())
@@ -137,8 +142,8 @@ void mainLoop(void* data) {
         {
             if(launcher)
             {
-                applications::launcher::free();
-                launcher = false;
+                //applications::launcher::free();
+                //launcher = false;
             }
             for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
             {
