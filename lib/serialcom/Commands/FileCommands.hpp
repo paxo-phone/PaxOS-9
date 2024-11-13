@@ -528,8 +528,8 @@ namespace serialcom
 
                         if (pos == std::string::npos)
                         {
-                            tempBuffer = tempBuffer.substr(max((uint16_t)2, tempBufferSize) - 2); // keep the last 2 bytes that could be the beginning of the next message
-                            tempBufferSize = min(tempBufferSize, (uint16_t)2);
+                            tempBuffer = tempBuffer.substr(std::max((uint16_t)2, tempBufferSize) - 2); // keep the last 2 bytes that could be the beginning of the next message
+                            tempBufferSize = std::min(tempBufferSize, (uint16_t)2);
                             continue;
                         }
 

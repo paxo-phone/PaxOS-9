@@ -4,7 +4,9 @@
 #include <cstddef>
 #include <iostream>
 #include <memory>
+#ifdef ESP_PLATFORM
 #include <Arduino.h>
+#endif
 
 namespace serialcom {
 
@@ -59,12 +61,16 @@ namespace serialcom {
             if (!this->stream || !this->originalBuffer)
                 return;
             this->stream->rdbuf(originalBuffer);
+            #ifdef ESP_PLATFORM 
             Serial.write(log.c_str(), log.size());
             if (newLine)
             {
                 Serial.write("\r\n");
                 Serial.flush();
             }
+            #else
+            std::cout.write(log.c_str(), log.size());
+            #endif
             this->stream->rdbuf(this);
         }
 
