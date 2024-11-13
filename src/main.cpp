@@ -30,7 +30,9 @@ SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
-
+#include "unistd.h"
+#include <SerialManager.hpp>
+#include "../lib/tasks/src/delay.hpp"
 
 using namespace gui::elements;
 
@@ -286,6 +288,7 @@ void setup()
 
     #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 16000);
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
     #endif
 
     // gestion de la détection du toucher de l'écran

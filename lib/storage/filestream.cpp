@@ -37,12 +37,36 @@ namespace storage
         m_stream.close();
     }
 
-    std::string FileStream::read(void)
+    std::string FileStream::read(size_t returnSize)
     {
-        std::stringstream buffer;
-        buffer << m_stream.rdbuf();
+        if (returnSize == -1)
+        {
+            std::string text = "";
 
-        return buffer.str();
+            std::string line;
+            while (std::getline(m_stream, line))
+            {
+                text += line;
+                if (line.back() != '\n')
+                    text += "\n";
+            }
+
+            return text;
+        } else
+        {
+            // Resize the string to accommodate `returnSize` bytes
+            std::string buff;
+            buff.resize(returnSize);
+
+            // Read from the stream into the buffer
+            m_stream.read(&buff[0], returnSize);  // Safe access to underlying data
+
+            // Shrink the string to the actual number of bytes read (gcount())
+            buff.resize(m_stream.gcount());
+
+            return buff;
+
+        }
     }
 
     std::string FileStream::readline(void)
@@ -86,10 +110,24 @@ namespace storage
 
     long FileStream::size(void)
     {
+        const auto position = m_stream.tellg();
+        m_stream.seekg(0, std::ios::beg);
         const auto begin = m_stream.tellg();
         m_stream.seekg(0, std::ios::end);
         const auto end = m_stream.tellg();
-        const auto fsize = (end - begin);
+        const auto fsize = (end-begin);
+        m_stream.seekg(position);
+        return fsize;
+
+    }
+
+    long FileStream::sizeFromCurrentPosition(void)
+    {
+        const auto currentPosition = m_stream.tellg();
+        m_stream.seekg (0, std::ios::end);
+        const auto end = m_stream.tellg();
+        const auto fsize = (end-currentPosition);
+        m_stream.seekg(currentPosition);
         return fsize;
     }
 
