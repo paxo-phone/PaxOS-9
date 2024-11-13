@@ -20,8 +20,6 @@ FT6236G ct;
 
 #endif
 
-int16_t graphics::brightness = 0xFF/3;
-
 namespace
 {
     bool running;
@@ -37,6 +35,8 @@ namespace
     int16_t newTouchX = 0, newTouchY = 0;
 
     bool isTouchRead = false;
+
+    uint16_t brightness = 0xFF / 3;
 }
 
 void graphics::touchIsRead()
@@ -44,24 +44,39 @@ void graphics::touchIsRead()
     isTouchRead = true;
 }
 
-void graphics::setBrightness(uint16_t value)
+uint16_t graphics::getBrightness() {
+    return brightness;
+}
+
+void graphics::setBrightness(uint16_t value, const bool temp)
 {
+    // We can maybe change "temp" to something like "dimScreen" ?
+    if (!temp) {
+        brightness = value;
+    }
+
+
+
     #ifdef ESP_PLATFORM
     static uint16_t oldValue = 0;
 
-    for (uint16_t i = oldValue; i < value; i++)
-    {
-        lcd->setBrightness(i);
+    if(oldValue == value)
+        return;
+
+    libsystem::log("Brightness: " + std::to_string(value));
+
+    while (value < oldValue) {
+        oldValue--;
+        lcd->setBrightness(oldValue);
         delay(1);
     }
 
-    for (int16_t i = oldValue; i >= value && i!=-1; i--)
-    {
-        lcd->setBrightness(i);
+    while (value > oldValue) {
+        oldValue++;
+        lcd->setBrightness(oldValue);
         delay(1);
     }
 
-    oldValue = value;
     #else
 
     // Simulate a switched off display
@@ -70,11 +85,6 @@ void graphics::setBrightness(uint16_t value)
     }
 
     #endif
-}
-
-LGFX* graphics::getLcd()
-{
-    return lcd.get();
 }
 
 graphics::GraphicsInitCode graphics::init()
@@ -235,14 +245,14 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 #endif
 }
 
-void graphics::setWindow(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+void graphics::setWindow(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
 {
-    lcd.get()->setWindow(x, y, width, height);
+    lcd->setWindow(x, y, width, height);
 }
 
 void graphics::setWindow()
 {
-    lcd.get()->setWindow(0, 0, getScreenWidth(), getScreenHeight());
+    lcd->setWindow(0, 0, getScreenWidth(), getScreenHeight());
 }
 
 void graphics::flip()

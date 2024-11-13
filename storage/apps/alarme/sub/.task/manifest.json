@@ -1,0 +1,5 @@
+{
+    "access": ["files", "files_root", "gui", "hardware", "time"],
+    "background": true,
+    "autorun": true
+}

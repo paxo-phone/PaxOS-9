@@ -7,6 +7,7 @@
 #include <filestream.hpp>
 #include <path.hpp>
 #include <hardware.hpp>
+#include <queue>
 #include <threads.hpp>
 
 #include "lua_gui.hpp"
@@ -30,6 +31,7 @@ struct Permissions {
     bool acces_web_paxo = true;
     bool acces_web = true;
     bool acces_gsm = true;
+    bool acces_password_manager = true;
 };
 
 class LuaFile {
@@ -95,6 +97,13 @@ public:
     //LuaNetwork lua_network;
 
     AppManager::App* app; // using raw pointer, because this class will NEVER call the deleter
+
+private:
+    enum Command {
+        QUIT
+    };
+
+    std::queue<Command> m_commandQueue;
 };
 
 #endif

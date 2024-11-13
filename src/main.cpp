@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 
-SET_LOOP_TASK_STACK_SIZE(8 * 1024);
+SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 
 #endif
 
@@ -25,6 +25,7 @@ SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 #include <gsm.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
+#include <FileConfig.hpp>
 #include <iostream>
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
@@ -34,22 +35,6 @@ SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 #include "../lib/tasks/src/delay.hpp"
 
 using namespace gui::elements;
-
-
-
-void ringingVibrator(void* data)
-{
-    #ifdef ESP_PLATFORM
-    while (true)
-    {
-        if(GSM::state.callState == GSM::CallState::RINGING)
-        {
-            delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);
-        }
-        delay(10);
-    }
-    #endif
-}
 
 void mainLoop(void* data) {
 #ifdef ESP_PLATFORM
@@ -62,6 +47,25 @@ void mainLoop(void* data) {
 
     GuiManager& guiManager = GuiManager::getInstance();
 
+    // ReSharper disable once CppTooWideScopeInitStatement
+    const libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
+    // TODO: Load launcher before OOBE app, to make the experience smoother.
+
+    // Check if OOBE app need to be launched
+    if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
+        // Launch OOBE app
+        try {
+            const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+
+            oobeApp->run();
+        } catch (std::runtime_error& e) {
+            //std::cerr << "Lua error: " << e.what() << std::endl;
+            //guiManager.showErrorMessage(e.what());
+            //AppManager::appList[i].kill();
+        }
+    }
+
     bool launcher = false;
     while (true)    // manage the running apps, the launcher and the sleep mode
     {
@@ -69,13 +73,16 @@ void mainLoop(void* data) {
         AppManager::loop();
         eventHandlerApp.update();
 
-        if(AppManager::isAnyVisibleApp() && launcher)
+        if(AppManager::isAnyVisibleApp() && launcher)   // free the launcher is an app is running and the launcher is active
         {
             applications::launcher::free();
             launcher = false;
         }
 
-        if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())
+        if(launcher)
+            applications::launcher::update();
+
+        if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())   // si mode normal et pas d'app en cours
         {
             if(!launcher)   // si pas de launcher -> afficher un launcher
             {
@@ -84,8 +91,6 @@ void mainLoop(void* data) {
             }
             else    // si launcher -> l'update et peut être lancer une app
             {
-                applications::launcher::update();
-
                 if(applications::launcher::iconTouched())
                 {
                     // run the app
@@ -97,7 +102,7 @@ void mainLoop(void* data) {
 
                     // Launch the app
                     try {
-                        app->run(false);
+                        app->run();
                     } catch (std::runtime_error& e) {
                         std::cerr << "Erreur: " << e.what() << std::endl;
                         // Affichage du msg d'erreur
@@ -113,10 +118,14 @@ void mainLoop(void* data) {
             {
                 setDeviceMode(libsystem::NORMAL);
                 StandbyMode::disable();
+
+                #ifndef ESP_PLATFORM
+                applications::launcher::draw();
+                #endif
             } else if(launcher)
             {
-                applications::launcher::free();
-                launcher = false;
+                //applications::launcher::free();
+                //launcher = false;
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
             } else if(AppManager::isAnyVisibleApp())
@@ -125,12 +134,18 @@ void mainLoop(void* data) {
             }
         }
 
+        if(libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
+        {
+            setDeviceMode(libsystem::NORMAL);
+            StandbyMode::disable();
+        }
+
         if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
         {
             if(launcher)
             {
-                applications::launcher::free();
-                launcher = false;
+                //applications::launcher::free();
+                //launcher = false;
             }
             for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
             {
@@ -140,10 +155,15 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        /*std::cout << "Main loop" << std::endl;
-        std::cout << "Launcher: " << launcher << std::endl;
-        std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
-        std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;*/
+        #ifdef ESP_PLATFORM
+        /*if(Serial.available())
+        {
+            std::cout << "Main loop" << std::endl;
+            std::cout << "Launcher: " << launcher << std::endl;
+            std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
+            std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
+        }*/
+        #endif
 
         StandbyMode::wait();
     }
@@ -179,7 +199,8 @@ void setup()
         libsystem::registerBootError("Tip: Force boot by plugging a charger.");
 
         libsystem::displayBootErrors();
-        libsystem::restart(true, 10000);
+        
+        // TODO: Set device mode to sleep
 
         return;
     }
@@ -202,11 +223,32 @@ void setup()
     );
     #endif // ESP_PLATFORM
 
-    // Positionnement de l'écran en mode Portrat
-    graphics::setScreenOrientation(graphics::PORTRAIT);
-
     // Init de la gestiuon des Threads
     ThreadManager::init();
+
+    libsystem::init();
+    libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
+    if (!systemConfig.has("settings.brightness")) {
+        systemConfig.set<uint8_t>("settings.brightness", 69);
+        systemConfig.write();
+    }
+
+    if (!systemConfig.has("settings.sleeptime")) {
+        systemConfig.set<uint64_t>("settings.sleeptime", 30000);
+        systemConfig.write();
+    }
+
+    if (!systemConfig.has("settings.color.background")) {
+        libsystem::paxoConfig::setBackgroundColor(0xFFFF, true);
+    }else
+    {
+        COLOR_WHITE = static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.background"));
+    }
+
+    libsystem::log("settings.brightness: " + std::to_string(systemConfig.get<uint8_t>("settings.brightness")));
+
+    graphics::setBrightness(systemConfig.get<uint8_t>("settings.brightness"));
 
     // Init launcher
     applications::launcher::init();
@@ -226,14 +268,14 @@ void setup()
     // gestion des appels entrants
     GSM::ExternalEvents::onIncommingCall = []()
     {
-        eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run(false);}), 0);
+        eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run();}), 0);
     };
 
     // Gestion de la réception d'un message
     GSM::ExternalEvents::onNewMessage = []()
     {
         #ifdef ESP_PLATFORM
-        eventHandlerBack.setTimeout(new Callback<>([](){delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);}), 0);
+        eventHandlerBack.setTimeout(new Callback<>([](){hardware::vibrator::play({1, 0, 1});}), 0);
         #endif
         
         AppManager::event_onmessage();
@@ -245,7 +287,7 @@ void setup()
     };
 
     #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &ringingVibrator, 16000);
+    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 16000);
     ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
     #endif
 
@@ -264,18 +306,9 @@ void setup()
 
     std::vector<Contacts::contact> cc = Contacts::listContacts();
 
-    /*
-    for(auto c : cc) {
-        //std::cout << c.name << " " << c.phone << std::endl;
-    }
-    */
-
-
-    /**
-     * Gestion des applications
-     */
     AppManager::init();
 
+    hardware::vibrator::play({1, 1, 0, 0, 1, 0, 1});
     mainLoop(NULL);
 }
 

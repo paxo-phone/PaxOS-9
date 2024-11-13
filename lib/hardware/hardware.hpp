@@ -2,6 +2,7 @@
 #define HARDWARE_HPP
 
 #include "clock.hpp"
+#include "vibrator.hpp"
 
 namespace hardware
 {
@@ -62,6 +63,13 @@ namespace hardware
          * @return True if the button was pressed this frame.
          */
         bool getButtonDown(Button button);
+
+        /**
+         * Return if the button was released at this frame
+         * @param button The button.
+         * @return True if the button was released this frame.
+         */
+        bool getButtonUp(Button button);
     }
 };
 

@@ -49,6 +49,7 @@ namespace storage {
             bool remove  (void) const;
             
             bool rename (const Path& to);
+            bool copy   (const Path& to);
 
             std::vector<std::string> m_steps;
         private:

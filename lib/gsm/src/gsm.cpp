@@ -5,6 +5,7 @@
 #include <ctime>
 #include <codecvt>
 
+#include <app.hpp>
 #include <path.hpp>
 #include <filestream.hpp>
 #include <imgdec.hpp>
@@ -46,6 +47,8 @@ namespace GSM
     float voltage = -1;
     int networkQuality = 0;
     bool flightMode = false;
+    std::mutex coresync;
+    bool simLocked = false;
 
     namespace ExternalEvents
     {
@@ -262,6 +265,44 @@ namespace GSM
 
         data = before + after;
     }
+
+    bool isSimLocked()
+    {
+        return simLocked;
+    }
+
+    void isSimLockedAsk()
+    {
+        std::string o = send("AT+CPIN?", "OK");
+        if (o.find("+CPIN: READY") != std::string::npos)
+        {
+            simLocked = false;
+        }
+        else
+        {
+            simLocked = true;
+
+            eventHandlerApp.setTimeout(new Callback<>([]()
+                {
+                    std::cout << "Sim is locked" << std::endl;
+                    AppManager::get("unlock_sim")->run();
+                }
+            ), 0);
+        }
+    }
+
+    bool setSimPin(const std::string &pin)
+    {
+        coresync.lock();
+        std::string o = send("AT+CPIN=\"" + pin + "\"", "OK");
+        
+        PaxOS_Delay(1000);
+        
+        isSimLockedAsk();
+        coresync.unlock();
+        return isSimLocked();
+    }
+
 
     void onRinging()
     {
@@ -752,7 +793,9 @@ namespace GSM
     {
         send("AT+CMGF=0", "AT+CMGF=0", 100);
 
-        std::string input = send("AT+CMGL=0", "AT+CMGL", 500);
+        std::string input = send("AT+CMGL=0", "AT+CMGL", 5000); // read all messages
+
+        std::cout << input << std::endl;
 
         std::vector<std::string> pdus;
 
@@ -802,7 +845,12 @@ namespace GSM
                         std::cout << "MMS: " << decoder.url << std::endl;
                         std::string number = decoder.sender;
                         std::string link = decoder.url;
+
                         getHttpMMS(number, link);
+
+                        /*eventHandlerGsm.setTimeout(     // use async
+                            new Callback<>(std::bind(&GSM::getHttpMMS, number, link))
+                        , 0);*/
                     }
                     else // PDU_type::SMS
                     {
@@ -843,12 +891,6 @@ namespace GSM
             catch (const std::out_of_range& e) {
                 std::cerr << "Erreur : " << e.what() << std::endl;
             }
-        }
-
-        if(pdus.size())
-        {
-            if (ExternalEvents::onNewMessage)
-                ExternalEvents::onNewMessage();
         }
 
         send("AT+CMGD=1,1", "AT+CMGD", 1000);
@@ -1077,6 +1119,7 @@ namespace GSM
 
     void updateHour()
     {
+        #ifdef ESP_PLATFORM
         std::string data = send("AT+CCLK?", "+CCLK:");
 
         size_t start = data.find("\"");
@@ -1117,6 +1160,16 @@ namespace GSM
         {
             return;
         }
+        #else
+        time_t now = time(0);
+        struct tm *ltm = localtime(&now);
+        years = ltm->tm_year + 1900;
+        months = ltm->tm_mon + 1;
+        days = ltm->tm_mday;
+        hours = ltm->tm_hour;
+        minutes = ltm->tm_min;
+        seconds = ltm->tm_sec;
+        #endif
 
         //std::cout << years << "-" << months << "-" << days << " " << hours << ":" << minutes << ":" << seconds << std::endl;
     }
@@ -1195,19 +1248,27 @@ namespace GSM
         keys.push_back({"+CMTI:", &GSM::onMessage});
         keys.push_back({"VOICE CALL: END", &GSM::onHangOff});
         keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
+        keys.push_back({"+HTTPACTION: ", &GSM::HttpRequest::received});
+
+        coresync.lock();
 
         while (true)
         {
-            PaxOS_Delay(5);
+            coresync.unlock();
+            PaxOS_Delay(10);
+            coresync.lock();
 
             eventHandlerGsm.update();
 
             download();
 
+            //std::cout << data << std::endl;
+
             process();
             data = "";
 
             checkRequest();
+            HttpRequest::manage();
         }
     }
 };

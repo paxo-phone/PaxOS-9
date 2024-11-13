@@ -1,211 +1,183 @@
-local tNow
-
--- récupération de la fenetre
-local win = gui:window()
-local winAlarme
-
--- Définition des couleurs de l'horloge
-local BACKGROUND_COLOR = COLOR_WHITE
-local couleur_clock = COLOR_DARK
-local couleur_aiguille_sec = COLOR_RED
-
--- liste Alarme
-listAlarme ={
-    {"lever 1", "7:30", true}, 
-    {"lever 2", "8:30", false},
-    {"lever 3", "9:30", true}
+global_list = {
+    { time = "08:30", enabled = 1 },
+    { time = "09:30", enabled = 0 }
 }
 
-
--- -------------------------------------------
---    FONCTION HELPERS
--- -------------------------------------------
-
-
-
-function int(x)
-    return math.floor(x)
+function reloadProcess()
+    system.app.stopApp("alarme..task")
+    launch("alarme..task")
 end
 
--- renvoi une string au format HH:MM:SS
-function convert_to_time(h, min, sec)
-    local strHeure = h
-    -- Gestion Heure
-    if tonumber(h) < 10 then
-        if tonumber(h) == nil then
-            strHeure = "00"
-        else
-            strHeure = "0" .. h
-        end
+function showAlarm(index)
+    win3 = gui:window()
+
+    local label = gui:label(win3, 67, 19, 186, 37)
+    label:setText("Alarmes")
+    label:setHorizontalAlignment(CENTER_ALIGNMENT)
+    label:setFontSize(32)
+
+    timel = gui:label(win3, 68, 197, 183, 45)
+    timel:setText(global_list[index].time)
+    timel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    timel:setFontSize(48)
+
+    local button = gui:button(win3, 35, 401, 250, 38)
+    button:setText("Arrêter")
+    button:onClick(function()
+        system.app.quit()
+    end)
+
+    time:setInterval(function()
+        hardware.vibrate({true, true, false, false, true, true})
+    end, 1000)
+
+    gui:setWindow(win3)
+end
+
+function openAlarm(index)
+    if(index == -1) then
+        create = true
+        index = #global_list + 1
+        table.insert(global_list, {time = "00:00", enabled = 0})
+    else
+        create = false
     end
 
-    local strMin = min
-    -- Gestion Minute
-    if tonumber(min) < 10 then
-        if tonumber(min) == nil then
-            strMin = "00"
-        else
-            strMin = "0" .. min
-        end
+    if(win2 ~= nil) then
+        gui:del(win2)
+    end
+    win2 = gui:window()
+
+    local label = gui:label(win2, 67, 19, 186, 37)
+    label:setText("Alarmes")
+    label:setHorizontalAlignment(CENTER_ALIGNMENT)
+    label:setFontSize(32)
+
+    timel = gui:label(win2, 68, 197, 183, 45)
+    timel:setText(global_list[index].time)
+    timel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    timel:setFontSize(48)
+
+    timef = {tonumber(global_list[index].time:sub(1, 1)), tonumber(global_list[index].time:sub(2, 2)), tonumber(global_list[index].time:sub(4, 4)), tonumber(global_list[index].time:sub(5, 5))}
+
+    for i = 1, 4 do
+        imgup = gui:image(win2, "up.png", 64 + (i - 1) * 48, 149, 48, 48)
+        imgup:onClick(function()
+            if(i == 1) then
+                timef[1] = (timef[1] + 1)%3
+            elseif(i == 2) then
+                timef[2] = (timef[2] + 1)%10
+            elseif(i == 3) then
+                timef[3] = (timef[3] + 1)%6
+            elseif(i == 4) then
+                timef[4] = (timef[4] + 1)%10
+            end
+
+            if(timef[1]*10 + timef[2] > 23) then
+                timef[1] = 0
+                timef[2] = 0
+            end
+
+            timel:setText(string.format("%02d:%02d", timef[1] * 10 + timef[2], timef[3] * 10 + timef[4]))
+        end)
     end
 
-    local strSec = sec
-    -- Gestion Seconde
-    if tonumber(sec) < 10 then
-        if tonumber(sec) == nil then
-            strSec = "00"
-        else
-            strSec = "0" .. sec
-        end
+    for i = 1, 4 do
+        imgdown = gui:image(win2, "down.png", 64 + (i - 1) * 48, 242, 48, 48)
+        imgdown:onClick(function()
+            if(i == 1) then
+                timef[1] = (timef[1] - 1) % 3
+            elseif(i == 2) then
+                timef[2] = (timef[2] - 1) % 10
+            elseif(i == 3) then
+                timef[3] = (timef[3] - 1) % 6
+            elseif(i == 4) then
+                timef[4] = (timef[4] - 1) % 10
+            end
+
+            if(timef[1]*10 + timef[2] > 23) then
+                timef[1] = 2
+                timef[2] = 3
+            end
+
+            timel:setText(string.format("%02d:%02d", timef[1] * 10 + timef[2], timef[3] * 10 + timef[4]))
+        end)
     end
 
-    return strHeure .. ":" .. strMin .. ":" .. strSec
-end -- convert_to_time
+    local button = gui:button(win2, 35, 401, 250, 38)
+    button:setText("Enregistrer")
+    button:onClick(function()
+        global_list[index].time = timel:getText()
+        saveTable("alarms.tab", global_list)
+        gui:del(win2)
+        gui:del(win)
+        win = nil
+        win2 = nil
 
+        reloadProcess()
 
--- Fonction d'affichage de l'heure en digital, et en mode horloge
-function afficheHeure()
+        run({})
+    end)
 
-    -- recupere l'heure
-    tNow = time:get("h,mi,s")
+    gui:setWindow(win2)
+end
 
-    local heure = tNow[1]
-    local minute = tNow[2]
-    local seconde = tNow[3]
-
-    local now = convert_to_time(heure, minute, seconde) --= table.concat(tNow, ":")
-    heure_label:setText(now)
-
-    idRefreshClock = time:setTimeout(afficheHeure, 1000)
-end -- afficheHeure
-
-
--- ---------------------------
---     Ecran principal
--- ---------------------------
-
--- Affichage initiale de l'écran
-function init()
-
-    -- Titre 
-    local title = gui:label(win, 35, 10, 144, 28)
-    title:setFontSize(24)
-    title:setText("Alarme")
-
-    -- Label de l'heure courante
-    heure_label = gui:label(win, 0, 50, 320, 30)
-    heure_label:setHorizontalAlignment(CENTER_ALIGNMENT)
-
-    -- Liste des alarmes
-    lstAlarme = gui:vlist(win, 70, 110, 250, 280)
-
-
-    for i, value in pairs(listAlarme) do
-
-        -- créer une box pour la ligne de l'alarme
-        local case = gui:box(lstAlarme, 0, 0, 250, 25)
-
-        -- Affichage de l'heure
-        local heure = gui:label(case, 0, 0, 100, 18)
-        heure:setText(value[2])
-        heure:setFontSize(16)
-
-        -- affichafe du nom
-        local nom = gui:label(case, 100, 0, 100, 18)
-        nom:setText(value[1])
-        nom:setFontSize(16)
-        nom:onClick(function() changeName(nom) end)
-
-        -- afffichage du bouton d'activation
-        local btnToggleAlarme = gui:switch(case, 200, 0, 18, 18)
-        if value[3] then
-            btnToggleAlarme:setState(true)
-            heure:setTextColor(COLOR_BLACK)
-            nom:setTextColor(COLOR_BLACK)
-        else
-            btnToggleAlarme:setState(false)
-            heure:setTextColor(COLOR_GREY)
-            nom:setTextColor(COLOR_GREY)
-
-        end 
-        btnToggleAlarme:onClick(function () fnToggleAlarme(btnToggleAlarme, heure, nom) end)
-
+function run(arg)
+    if storage:isFile("alarms.tab") then
+        global_list = loadTable("alarms.tab")
+    else
+        saveTable("alarms.tab", global_list)
     end
 
-    -- bouton +
+    if(#arg == 1) then
+        showAlarm(tonumber(arg[1]))
+        return
+    end
+
+    win = gui:window()
+
+    local label = gui:label(win, 67, 19, 186, 37)
+    label:setText("Alarmes")
+    label:setHorizontalAlignment(CENTER_ALIGNMENT)
+    label:setFontSize(32)
+
+    local list = gui:vlist(win, 86, 81, 192, 320)
+    for i, v in ipairs(global_list) do
+        local case = gui:box(list, 0, 0, 192, 50)
+            local label = gui:label(case, 0, 7, 97, 37)
+                label:setText(v.time)
+                label:setFontSize(32)
+                label:setVerticalAlignment(CENTER_ALIGNMENT)
+            local switch = gui:switch(case, 95, 15)
+                switch:setState(v.enabled == 1)
+                switch:onClick(function()
+                    global_list[i].enabled = switch:getState() and 1 or 0
+                    saveTable("alarms.tab", global_list)
+                    reloadProcess()
+                end)
+            local del = gui:image(case, "delete.png", 160, 9, 32, 32)
+                del:onClick(function()
+                    table.remove(global_list, i)
+                    saveTable("alarms.tab", global_list)
+
+                    gui:del(win)
+                    reloadProcess()
+                    run({})
+                end)
+            case:onClick(function()
+                openAlarm(i)
+            end)
+    end
+
     local add = gui:box(win, 250, 410, 40, 40)
     add:setBackgroundColor(COLOR_DARK)
     add:setRadius(20)
-    local icon_plus = gui:image(add, "plus.png", 14, 14, 12, 12, COLOR_DARK)
-    add:onClick(addAlarme)
-
-    --add:onClick(newContact)
-
-    -- bouton de test
-    testAlarme = gui:button(win, 35, 400, 200, 38)
-    testAlarme:setText("Test")
-    testAlarme:onClick(
-            closeAlarme
-            
-            --    time:setTimeout(
-            --             gui:showInfoMessage("TimeOut") 
-            --        , 
-            --        10000
-            --    )
-            
-        )
-    gui:setWindow(win)
-
-end -- init
-
-
-function fnToggleAlarme(btn, lblHeure, lblNom)
-        if btn:getState() then
-            lblHeure:setTextColor(COLOR_BLACK)
-            lblNom:setTextColor(COLOR_BLACK)
-        else
-            lblHeure:setTextColor(COLOR_GREY)
-            lblNom:setTextColor(COLOR_GREY)
-        end
-end
-
-
-function changeName(label)
     
-    local keyboard = gui:keyboard("Placeholder", label:getText())
-    label:setText(keyboard)
+        local icon_plus = gui:image(add, "plus.png", 14, 14, 12, 12, COLOR_DARK)
+
+    add:onClick(function()
+        openAlarm(-1)
+    end)
+
+    gui:setWindow(win)
 end
-
--- Fonction pour fermer la fenetre de l'application 
--- lance le timer si l'alarme est active
-function closeAlarme()
-        -- get the time diff
-        id = time:setTimeout( function() ringAlarme() end, 10000)
-        print("id"..id)
-end -- function closeAlarme
-
-
-
--- Fonction de lancement de l'alarme
-function ringAlarme()
-    print("ringAlarme")
-    gui:showInfoMessage("TimeOut")
-    hardware:setVibrator(true);
-end
-
--- ---------------------------------------
--- Ecran Ajout nouvelle alarme
--- ---------------------------------------
-
-function addAlarme()
-
-    print("addAlarme")
-
-end -- addAlarme
-
-
-
-function run()
-    init()
-    afficheHeure()
-end --run

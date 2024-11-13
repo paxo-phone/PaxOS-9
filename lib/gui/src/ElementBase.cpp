@@ -210,9 +210,11 @@ bool gui::ElementBase::update()
     if (widgetPressed != nullptr && widgetPressed != this)
         return false;
 
+    uint16_t resolution = 10;
+
     bool isScreenTouched = graphics::isTouched();
-    bool isWidgetTouched = isScreenTouched && (getAbsoluteX()-10 < touchX && touchX < getAbsoluteX() + getWidth() +10 &&
-                            getAbsoluteY()-10 < touchY && touchY < getAbsoluteY() + getHeight() +10);
+    bool isWidgetTouched = isScreenTouched && (getAbsoluteX()-resolution < touchX && touchX < getAbsoluteX() + getWidth() +resolution &&
+                            getAbsoluteY()-resolution < touchY && touchY < getAbsoluteY() + getHeight() +resolution);
 
     bool returnValue = false;
 
@@ -456,21 +458,20 @@ bool gui::ElementBase::isFocused(bool forced)
 
 void gui::ElementBase::enable()
 {
-    if(m_isEnabled)
-        return;
-    m_isEnabled = true;
-    globalGraphicalUpdate();
+    setEnabled(true);
 }
 
 void gui::ElementBase::disable()
 {
-    if(!m_isEnabled)
-        return;
-    m_isEnabled = false;
-    globalGraphicalUpdate();
+    setEnabled(false);
 }
 
 void gui::ElementBase::setEnabled(const bool enabled) {
+    if (isEnabled() == enabled) {
+        // Do nothing when already in this state.
+        return;
+    }
+
     m_isEnabled = enabled;
     globalGraphicalUpdate();
 }
