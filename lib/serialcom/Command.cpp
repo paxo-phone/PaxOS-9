@@ -9,19 +9,58 @@ namespace serialcom {
     Command::Command(char (&input)[INPUT_MAX_SIZE]) {
         bool shellMode = CommandsManager::defaultInstance->shellMode;
 
+        
+        // find the 255,254,253 header in the first bytes of the current_input
+        
+        size_t pos = -1;
+        for (size_t i = 0; i < INPUT_MAX_SIZE - 3; i++) {
+            if (input[i] == 0xff && input[i + 1] == 0xfe && input[i + 2] == 0xfd) {
+                pos = i;
+                break;
+            }
+        }
+
+        if (pos == -1 && !shellMode) {
+            // check if this is the sm command
+            bool found = false;
+
+            for (size_t i = 0; i < INPUT_MAX_SIZE - 2; i++) {
+                if (input[i] == 's' && input[i + 1] == 'm') {
+                    pos = i - 3; // to compensate the increment the +3 after that
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("ERROR: NO HEADER FOUND"));
+                return;
+            }
+        }
+
+        
+
+        size_t current_index = pos + 3;
+
+        //size_t current_index = 0;
+
         // detect the command type knowing that the maximum size that the command type can have is MAX_COMMMAND_TYPE_SIZE
-        char command_type[MAX_COMMMAND_TYPE_SIZE];
+        //char command_type[MAX_COMMMAND_TYPE_SIZE];
 
         size_t command_size = MAX_COMMMAND_TYPE_SIZE;
 
+        char command_type[MAX_COMMMAND_TYPE_SIZE];
+
         for (size_t i = 0; i < MAX_COMMMAND_TYPE_SIZE; i++) {
-            if (input[i] == ' ' || input[i] == '\0') {
+            if (input[current_index + i] == ' ' || input[current_index + i] == '\0') {
                 command_type[i] = '\0';
                 command_size = i;
                 break;
             }
-            command_type[i] = input[i];
+            command_type[i] = input[current_index + i];
         }
+
+        current_index += command_size;
 
         // match the command_type with a loop with the CommandType enum but don't forget that the input is a 16 char array
 
@@ -34,7 +73,7 @@ namespace serialcom {
                 if (shellMode) {
                     SerialManager::sharedInstance->commandLog("WARNING: COMMAND TYPE " + val + " HAS A GREATER SIZE THAN THE MAXIMUM COMMAND TYPE SIZE");
                 } else {
-                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("WARNING: COMMAND TYPE ") + val + " HAS A GREATER SIZE THAN THE MAXIMUM COMMAND TYPE SIZE");
                 }
                 continue;
             }
@@ -54,16 +93,14 @@ namespace serialcom {
             }
         }
 
-        if (type == CommandType::unknown) {
+        if (this->type == CommandType::unknown) {
             if (shellMode) {
                 SerialManager::sharedInstance->commandLog("ERROR: UNKONWN COMMAND TYPE");
             } else {
-                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("ERROR: UNKONWN COMMAND TYPE") + std::string(command_type));
             }
             return;
         }
-
-        size_t current_index = command_size;
 
         for (size_t argument_index = 0; argument_index < MAX_COMMAND_ARGUMENTS_COUNT; argument_index++) {
             // skip spaces
@@ -154,7 +191,7 @@ namespace serialcom {
                             if (shellMode) {
                                 SerialManager::sharedInstance->commandLog("ERROR: UNEXPECTED QUOTE CHARACTER AT POSITION " + std::to_string(i));
                             } else {
-                                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("ERROR: UNEXPECTED QUOTE CHARACTER AT POSITION ") + std::to_string(i));
                             }
                             this->type = CommandType::unknown;
                             for (size_t j = 0; j < MAX_COMMAND_ARGUMENTS_COUNT; j++)

@@ -10,7 +10,7 @@ namespace serialcom {
 
             static const std::shared_ptr<CommandsManager> defaultInstance;
 
-            void processCommand(const Command& command);
+            void processCommand(const Command& command1);
 
             bool shellMode = true;
 

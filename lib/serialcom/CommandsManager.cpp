@@ -66,7 +66,7 @@ namespace serialcom {
                 if (this->shellMode) {
                     SerialManager::sharedInstance->commandLog("Unknown command type");
                 } else {
-                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("Unknown command type") + std::to_string(static_cast<int>(command.type)));
                 }
         }
     }

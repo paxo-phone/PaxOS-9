@@ -96,7 +96,7 @@ namespace serialcom
 
                 SerialManager::sharedInstance->commandLog(output.dump());
             } else {
-                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+                SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("Directory ") + firstArgument + " does not exist.");
             }
         }
     }
@@ -478,7 +478,7 @@ namespace serialcom
                 {
                     if (askAgainTries >= 10)
                     {
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_ERROR_CODE);
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_ERROR_CODE + std::string("Too many tries, aborting."));
                         return;
                     }
 

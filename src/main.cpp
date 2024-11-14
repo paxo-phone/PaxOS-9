@@ -58,6 +58,10 @@ void mainLoop(void* data) {
         try {
             const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
 
+            if (oobeApp == nullptr) {
+                throw std::runtime_error("OOBE app not found.");
+            }
+
             oobeApp->run();
         } catch (std::runtime_error& e) {
             //std::cerr << "Lua error: " << e.what() << std::endl;
