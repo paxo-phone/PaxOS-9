@@ -3,7 +3,7 @@ function loadNotifs()
 
     unreadfile:open()
     notifs = unreadfile:readAll()
-    print ("unread file: " .. notifs)
+    -- print ("unread file: " .. notifs)
     unreadfile:close()
 end
 
@@ -94,14 +94,14 @@ function converation(number)
         local numberPart = message.message:match("/(%d+)%.jpg")  -- Extract the number part
 
         if(numberPart) then -- image
-            print("image " .. numberPart)
+            -- print("image " .. numberPart)
             local image = gui:image(list, "images/" .. numberPart .. "p.jpg" , 0, 0, 60, 60)
 
             image:onClick(function ()
                 openImage(string.sub(message.message, 2))
             end)
         else
-            print("message " .. message.message)
+            -- print("message " .. message.message)
             local bull = gui:box(list, 0, 0, 184, 30)
             
             local label = gui:label(bull, 0, 0, 184, 0)
@@ -134,11 +134,11 @@ function converation(number)
         
 
     add:onClick(function ()
-        print("add button clicked")
+        -- print("add button clicked")
         local msg = newMessage(number)
 
         if(msg ~= "") then
-            print("new message received: " .. msg)
+            -- print("new message received: " .. msg)
             appendMessage(msg, list)
         end
     end)

@@ -51,6 +51,11 @@ namespace Conversations
                 msg.date = messageItem.at("date").get<std::string>();
                 conv.messages.push_back(msg);
             }
+
+            if (conv.messages.size() > 20)
+            {
+                conv.messages.erase(conv.messages.begin(), conv.messages.end() - 20);
+            }
         }
         catch (const nlohmann::json::exception &e)
         {

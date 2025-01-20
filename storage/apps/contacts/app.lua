@@ -105,6 +105,7 @@ function newContact()
         gsm.addContact(c)
         print(c.name .. " " .. c.phone)
         update()
+        gsm.saveContacts()
     end)
 
     gui:setWindow(win2)

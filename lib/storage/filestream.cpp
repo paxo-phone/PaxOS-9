@@ -59,6 +59,11 @@ namespace storage
         return word;
     }
 
+    void FileStream::read(char* buffer, std::size_t len)
+    {
+        m_stream.read(buffer, len);
+    }
+
     char FileStream::readchar(void)
     {
         return m_stream.get();
@@ -90,6 +95,7 @@ namespace storage
         m_stream.seekg(0, std::ios::end);
         const auto end = m_stream.tellg();
         const auto fsize = (end - begin);
+        m_stream.seekg(0, std::ios::beg);
         return fsize;
     }
 

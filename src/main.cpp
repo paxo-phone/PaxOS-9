@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 
-SET_LOOP_TASK_STACK_SIZE(16 * 1024);
+SET_LOOP_TASK_STACK_SIZE(10 * 1024);
 
 #endif
 
@@ -35,6 +35,7 @@ SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 using namespace gui::elements;
 
 void mainLoop(void* data) {
+    libsystem::log("[STARTUP]: run mainLoop");
 #ifdef ESP_PLATFORM
     if (!backtrace_saver::isBacktraceEmpty()) {
         backtrace_saver::backtraceMessageGUI();
@@ -173,6 +174,7 @@ void setup()
      * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
      */
     hardware::init();
+    libsystem::log("[STARTUP]: Hardware initialized");
     hardware::setScreenPower(true);
 
     // Init graphics and check for errors
@@ -186,6 +188,8 @@ void setup()
         }
     }
     setScreenOrientation(graphics::PORTRAIT);
+
+    libsystem::log("[STARTUP]: Graphics initialized");
 
     // If battery is too low
     // Don't initialize ANY MORE service
@@ -211,6 +215,8 @@ void setup()
         libsystem::registerBootError("Storage initialization error.");
         libsystem::registerBootError("Please check the SD Card.");
     }
+    else
+        libsystem::log("[STARTUP]: Storage initialized");
 
     #ifdef ESP_PLATFORM
     backtrace_saver::init();
@@ -224,8 +230,12 @@ void setup()
     // Init de la gestiuon des Threads
     ThreadManager::init();
 
+    libsystem::log("[STARTUP]: Threads initialized");
+
     libsystem::init();
     libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
+    libsystem::log("[STARTUP]: Config loaded");
 
     if (!systemConfig.has("settings.brightness")) {
         systemConfig.set<uint8_t>("settings.brightness", 69);

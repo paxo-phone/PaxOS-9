@@ -62,16 +62,16 @@ bool LuaStorage::legalPath(storage::Path path)
 
 storage::Path LuaStorage::convertPath(std::string path)
 {
-    std::cout << "convertPath: " << path << std::endl;
+    //std::cout << "convertPath: " << path << std::endl;
     if (!legalPath(path))
         throw libsystem::exceptions::RuntimeError("The app is not allowed to access this path: " + path);
     
     if(path[0] == '/') {
-        std::cout << "Returning path: " << path << std::endl;
+        //std::cout << "Returning path: " << path << std::endl;
         return path;
     } else {
         storage::Path fullPath = this->lua->directory / path;
-        std::cout << "Returning full path: " << this->lua->directory.str() << " + " << path << " = " << fullPath.str() << std::endl;
+        //std::cout << "Returning full path: " << this->lua->directory.str() << " + " << path << " = " << fullPath.str() << std::endl;
         return fullPath;
     }
 }
@@ -79,7 +79,7 @@ storage::Path LuaStorage::convertPath(std::string path)
 std::unique_ptr<LuaStorageFile> LuaStorage::file(std::string filename, int mode)
 {
     storage::Path path(convertPath(filename));
-    std::cout << "path: " << path.str() << std::endl;
+    //std::cout << "path: " << path.str() << std::endl;
     
     return std::make_unique<LuaStorageFile>(path, mode);
 }

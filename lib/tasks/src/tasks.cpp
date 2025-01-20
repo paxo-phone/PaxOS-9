@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <clock.hpp>
+#include <algorithm>
 
 EventHandler::~EventHandler()
 {
