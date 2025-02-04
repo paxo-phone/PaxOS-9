@@ -319,7 +319,7 @@ void init(void* data)
 
 void setup()
 {
-    init();
+    init(NULL);
     //ThreadManager::new_thread(CORE_APP, &init, 8*1024);
 }
 
