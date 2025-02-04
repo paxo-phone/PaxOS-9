@@ -66,7 +66,7 @@ namespace StandbyMode
         {
             if(powerMode == true)
             {
-                savePower();
+                //savePower();
             }
         }
     }

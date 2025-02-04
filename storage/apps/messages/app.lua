@@ -26,20 +26,21 @@ function openImage(path)
     gui:setWindow(win3)
 end
 
-function newMessage(number)
-    local msg = gui:keyboard("Message au " .. number, "")
-
-    if(msg ~= "") then
-        gsm.newMessage(number, msg)
+function newMessage(number, callback)
+    gui:keyboard("Message au " .. number, "", 
+        function (msg)
+            if(msg ~= "") then
+                gsm.newMessage(number, msg)
+                callback()
+            end
+            
+        end)
     end
-
-    return msg
-end
-
-function appendMessage(msg, list)
-    local bull2 = gui:box(list, 0, 0, 184, 30)
     
-    label_sent = gui:label(bull2, 0, 0, 184, 0)
+    function appendMessage(msg, list)
+        local bull2 = gui:box(list, 0, 0, 184, 30)
+        
+        label_sent = gui:label(bull2, 0, 0, 184, 0)
     label_sent:setHorizontalAlignment(CENTER_ALIGNMENT)
     label_sent:setText(msg)
     label_sent:setFontSize(18)
@@ -135,12 +136,22 @@ function converation(number)
 
     add:onClick(function ()
         -- print("add button clicked")
+<<<<<<< HEAD
         local msg = newMessage(number)
 
         if(msg ~= "") then
             -- print("new message received: " .. msg)
             appendMessage(msg, list)
         end
+=======
+        local msg = newMessage(number,
+            function ()
+                if(msg ~= "") then
+                    -- print("new message received: " .. msg)
+                    appendMessage(msg, list)
+                end
+            end)
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
     end)
 
     local back = gui:image(win2, "back.png", 30, 30, 18, 18)

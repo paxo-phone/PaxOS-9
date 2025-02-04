@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 
-SET_LOOP_TASK_STACK_SIZE(10 * 1024);
+SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 
 #endif
 
@@ -168,7 +168,7 @@ void mainLoop(void* data) {
     }
 }
 
-void setup()
+void init(void* data)
 {
     /**
      * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
@@ -295,7 +295,7 @@ void setup()
     };
 
     #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 16000);
+    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2*1024);
     #endif
 
     // gestion de la détection du toucher de l'écran
@@ -309,14 +309,18 @@ void setup()
 
     // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
-    Contacts::load();
-
-    std::vector<Contacts::contact> cc = Contacts::listContacts();
+    eventHandlerApp.setTimeout(new Callback<>([](){Contacts::load();}), 0);
 
     AppManager::init();
 
     hardware::vibrator::play({1, 1, 0, 0, 1, 0, 1});
     mainLoop(NULL);
+}
+
+void setup()
+{
+    init();
+    //ThreadManager::new_thread(CORE_APP, &init, 8*1024);
 }
 
 void loop(){}

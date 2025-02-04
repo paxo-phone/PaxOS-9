@@ -24,7 +24,7 @@
 
 void ThreadManager::init()
 {
-    new_thread(CORE_BACK, &ThreadManager::simcom_thread, 32*1024);
+    new_thread(CORE_BACK, &ThreadManager::simcom_thread, 16*1024);
     new_thread(CORE_BACK, &ThreadManager::background_thread, 8*1024);
 }
 
@@ -35,7 +35,7 @@ void ThreadManager::new_thread(bool core, void(*func)(void*), int stackSize)
                     "thread",
                     stackSize,
                     nullptr,
-                    0,
+                    core,
                     nullptr);
     #else
         std::thread myThread(func, nullptr);
