@@ -137,6 +137,7 @@ function converation(number)
     add:onClick(function ()
         -- print("add button clicked")
 <<<<<<< HEAD
+<<<<<<< HEAD
         local msg = newMessage(number)
 
         if(msg ~= "") then
@@ -144,6 +145,8 @@ function converation(number)
             appendMessage(msg, list)
         end
 =======
+=======
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
         local msg = newMessage(number,
             function ()
                 if(msg ~= "") then
@@ -151,6 +154,9 @@ function converation(number)
                     appendMessage(msg, list)
                 end
             end)
+<<<<<<< HEAD
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
+=======
 >>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
     end)
 
