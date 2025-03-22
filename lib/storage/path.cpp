@@ -28,17 +28,24 @@
 #define SYSTEM_PATH_SEPARATOR '/'
 #endif
 
+#define VSPI_MOSI 23
+#define VSPI_MISO 19
+#define VSPI_SCLK 18
+#define VSPI_CS   4
+
 bool storage::init() {
 #ifdef ESP_PLATFORM
 
     constexpr uint8_t sdBeginTryCount = 4;
 
+    delay(100);
     for (int i = 0; i < sdBeginTryCount; i++) {
         if (SD.begin(4, SPI, 8000000)) {
             libsystem::log("SD card initialized.");
             return true;
         }
 
+        delay(500);
         libsystem::log("SD card initialization failed, try " + std::to_string(i + 1) + " of " + std::to_string(sdBeginTryCount) + ".");
     }
 

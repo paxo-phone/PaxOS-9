@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 
-SET_LOOP_TASK_STACK_SIZE(8 * 1024);
+SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 
 #endif
 
@@ -30,7 +30,7 @@ SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
-
+#include "esp_heap_caps.h"
 
 using namespace gui::elements;
 
@@ -41,7 +41,7 @@ void mainLoop(void* data) {
         backtrace_saver::backtraceMessageGUI();
     }
 
-    libsystem::setDeviceMode(libsystem::NORMAL);
+    //libsystem::setDeviceMode(libsystem::NORMAL);
 #endif
 
     GuiManager& guiManager = GuiManager::getInstance();
@@ -68,9 +68,12 @@ void mainLoop(void* data) {
     bool launcher = false;
     while (true)    // manage the running apps, the launcher and the sleep mode
     {
+        // printf("main loop\n");
         hardware::input::update();
         AppManager::loop();
         eventHandlerApp.update();
+
+        // printf("- 1\n");
 
         if(AppManager::isAnyVisibleApp() && launcher)   // free the launcher is an app is running and the launcher is active
         {
@@ -78,8 +81,13 @@ void mainLoop(void* data) {
             launcher = false;
         }
 
+        // printf("- 2\n");
+
         if(launcher)
             applications::launcher::update();
+
+        
+        // printf("- 3\n");
 
         if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())   // si mode normal et pas d'app en cours
         {
@@ -111,6 +119,9 @@ void mainLoop(void* data) {
             }
         }
 
+
+        // printf("- 4\n");
+
         if(getButtonDown(hardware::input::HOME))    // si on appuie sur HOME
         {
             if(libsystem::getDeviceMode() == libsystem::SLEEP)
@@ -133,11 +144,17 @@ void mainLoop(void* data) {
             }
         }
 
+
+        // printf("- 5\n");
+
         if(libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
         {
             setDeviceMode(libsystem::NORMAL);
             StandbyMode::disable();
         }
+
+
+        // printf("- 6\n");
 
         if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
         {
@@ -154,17 +171,24 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
+        // printf("- 7\n");
+
         #ifdef ESP_PLATFORM
-        /*if(Serial.available())
-        {
-            std::cout << "Main loop" << std::endl;
-            std::cout << "Launcher: " << launcher << std::endl;
-            std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
-            std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
-        }*/
+        /*multi_heap_info_t heap_info;
+
+        //Get information about other capabilities
+        heap_caps_get_info(&heap_info, MALLOC_CAP_8BIT);
+        printf("8 Bit RAM\n");
+        printf("  Free bytes: %u\n", heap_info.free_blocks);
+        printf("  Total bytes: %u\n", heap_info.total_blocks);
+        printf("  Largest free block: %u\n", heap_info.largest_free_block);
+        printf("  Minimum free bytes: %u\n", heap_info.minimum_free_bytes);*/
         #endif
 
-        StandbyMode::wait();
+        if(libsystem::getDeviceMode() == libsystem::SLEEP)
+            StandbyMode::sleepCycle();
+        else
+            StandbyMode::wait();
     }
 }
 
@@ -206,9 +230,6 @@ void init(void* data)
 
         return;
     }
-
-    // Set device mode to normal
-    setDeviceMode(libsystem::NORMAL);
 
     // Init storage and check for errors
     if (!storage::init()) {
@@ -314,13 +335,15 @@ void init(void* data)
     AppManager::init();
 
     hardware::vibrator::play({1, 1, 0, 0, 1, 0, 1});
+
     mainLoop(NULL);
 }
 
 void setup()
 {
+    //esp_task_wdt_init(5000, false);
     init(NULL);
-    //ThreadManager::new_thread(CORE_APP, &init, 8*1024);
+    //ThreadManager::new_thread(CORE_APP, &init, 12*1024);
 }
 
 void loop(){}

@@ -299,7 +299,9 @@ namespace AppManager {
     }
 
     void updateForeground() {
+        // printf("lock\n");
         threadsync.lock();
+        // printf("locked\n");
 
         // Run tick on every app
         for (const auto& app: appList) {
@@ -318,10 +320,12 @@ namespace AppManager {
 
             if (app->luaInstance != nullptr)
             {
+                // printf("-- 1\n");
                 if(app == Keyboard_manager::app)
                     Keyboard_manager::update();
                 else
                     app->luaInstance->lua_gui.update();
+                // printf("-- 2\n");
             }
 
             if(app->luaInstance->lua_gui.mainWindow == nullptr) // app has no GUI
@@ -331,6 +335,7 @@ namespace AppManager {
         }
 
         threadsync.unlock();
+        // printf("-- 3");
     }
 
     void updateBackground() {
@@ -479,24 +484,36 @@ namespace AppManager {
         std::unique_ptr<Keyboard> keyboard;
 
         void open(App* app, const std::string &placeholder, const std::string &defaultText, std::function<void(std::string)> callback) {
+            printf("---- 1\n");
             graphics::setScreenOrientation(graphics::LANDSCAPE);
+            printf("---- 2\n");
             Keyboard_manager::app = app;
             Keyboard_manager::callback = callback;
             keyboard = std::make_unique<Keyboard>(defaultText);
+            printf("---- 3\n");
             keyboard->setPlaceholder(placeholder);
+            printf("---- 4\n");
         }
 
         void update()
         {
+            // printf("--- 1\n");
             if(keyboard != nullptr)
             {
                 keyboard->updateAll();
 
+                // printf("--- 2\n");
+
                 if(keyboard->quitting() || hardware::getHomeButton())
                 {
+                    // printf("--- 3\n");
                     close();
                 }
+
+                // printf("--- 4\n");
             }
+
+            // printf("s--- 5\n");
         }
 
         void close()

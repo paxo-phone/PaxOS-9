@@ -6,6 +6,8 @@
 #include "app.hpp"
 #include "libsystem.hpp"
 
+std::vector<std::unique_ptr<KeyboardCallbackData>> callback_memory;
+
 LuaGui::LuaGui(LuaFile *lua)
 {
     this->lua = lua;
@@ -207,7 +209,34 @@ std::string LuaGui::keyboard(const std::string &placeholder, const std::string &
 void LuaGui::keyboard_async(const std::string &placeholder, const std::string &defaultText, sol::function callback)
 {
     printf("Calling keyboard_async\n");
-    AppManager::Keyboard_manager::open(this->lua->app, placeholder, defaultText, callback);
+    // Store a REFERENCE to the callback, NOT a copy of the sol::function.
+    callback_memory.push_back(std::make_unique<KeyboardCallbackData>(lua->lua.lua_state(), sol::reference(lua->lua.lua_state(), callback)));
+
+    AppManager::Keyboard_manager::open(this->lua->app, placeholder, defaultText,
+     [this, index = callback_memory.size() -1](std::string t) {
+        // Get the callback reference from storage
+        KeyboardCallbackData* data = callback_memory[index].get();
+        if (data && data->callbackRef.valid())
+        {
+            sol::protected_function callbackFunc(data->callbackRef);
+            sol::protected_function_result result = callbackFunc(t);
+
+             if (!result.valid()) {
+                 sol::error err = result;
+                 std::cerr << "Callback error: " << err.what() << std::endl;
+
+                 // Show error (same as your pushError function)
+                 std::string error_message = "The callback for keyboard_async encountered an error: ";
+                 error_message += err.what();
+                 showErrorMessage(error_message);
+             }
+
+            //Optionally Remove, see notes below
+            //callback_memory[index].reset();
+            //callback_memory.erase(callback_memory.begin() + index);
+        }
+    });
+    printf("end keyboard_async");
 }
 
 void LuaGui::setMainWindow(LuaWindow *window)

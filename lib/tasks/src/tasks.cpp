@@ -20,7 +20,7 @@ EventHandler::~EventHandler()
     intervals.clear();
 }
 
-void EventHandler::update()
+void EventHandler::update(std::function<bool ()> forced_exit)
 {
     // Handle events
     for (auto& event : events) {
@@ -40,6 +40,9 @@ void EventHandler::update()
         } else {
             ++it;
         }
+
+        if (forced_exit())
+            return;
     }
 
     // Handle intervals
@@ -63,6 +66,9 @@ void EventHandler::update()
                     i--;
                 }
             }
+
+            if (forced_exit())
+                return;
         }
     }
     catch(const std::exception& e)

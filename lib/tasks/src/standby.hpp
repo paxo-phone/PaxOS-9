@@ -2,6 +2,7 @@
 #define STANDBY_HPP
 
 #include <stdint.h>
+#include <mutex>
 
 namespace StandbyMode
 {
@@ -22,6 +23,9 @@ namespace StandbyMode
 
     void savePower();
     void restorePower();
+    void sleepCycle();
+
+    extern std::mutex buisy_io;
 }
 
 #endif

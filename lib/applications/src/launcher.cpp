@@ -89,27 +89,11 @@ namespace applications::launcher {
 void applications::launcher::init() {
     launcherWindow = std::make_shared<Window>();
     targetApp = nullptr;
+
+    draw();
 }
 
 void applications::launcher::update() {
-    // std::cout << "Launcher update" << std::endl;
-
-    if (dirty) {
-        // If dirty, free to force redraw it
-        free();
-        std::cout << "Launcher free" << std::endl;
-    }
-
-    if (!allocated) {
-        // If launcher has been freed, redraw it
-        draw();
-        //std::cout << "Launcher redraw" << std::endl;
-    }
-
-    // Update dynamic elements
-    // Do this before updating the window (so drawing it)
-    // Because it can cause weird "blinking" effects
-
     //std::cout << "launcher::update 1" << std::endl;
 
     {
@@ -189,9 +173,11 @@ void applications::launcher::update() {
     //libsystem::log("launcher::update -");
 
     // Update, draw AND update touch events
+    // printf("before\n");
     if (launcherWindow != nullptr) {
         launcherWindow->updateAll();
     }
+    // printf("after\n");
 
     // Check touch events
 
@@ -207,6 +193,8 @@ void applications::launcher::update() {
         graphics::setBrightness(newBrightness);
     }
 
+    // printf("after - 2\n");
+
 
     for (const auto& [icon, app] : applicationsIconsMap) {
         if (icon->isTouched()) {
@@ -215,14 +203,11 @@ void applications::launcher::update() {
             targetApp = app;
         }
     }
+    // printf("after - 3\n");
 }
 
 void applications::launcher::draw() {
     libsystem::log("applications::launcher::draw");
-
-    if (launcherWindow == nullptr) {
-        launcherWindow = std::make_shared<Window>();
-    }
 
     //std::cout << "launcher::update 1.1" << std::endl;
 
@@ -348,7 +333,7 @@ void applications::launcher::draw() {
         text->setFontSize(16);
         box->addChild(text);
 
-        if(storage::Path notifs = (app->path / ".." / "unread.txt"); notifs.exists()) {
+        /*if(storage::Path notifs = (app->path / ".." / "unread.txt"); notifs.exists()) {
             storage::FileStream file(notifs.str(), storage::READ);
 
             if(file.size() > 0) {
@@ -359,7 +344,7 @@ void applications::launcher::draw() {
             }
 
             file.close();
-        }
+        }*/
 
         winListApps->addChild(box);
 
@@ -396,6 +381,9 @@ void applications::launcher::draw() {
 
     lastClockUpdate = millis();
     lastBatteryUpdate = millis();
+
+
+    libsystem::log("end applications::launcher::draw");
 }
 
 bool applications::launcher::iconTouched() {
@@ -424,5 +412,5 @@ void applications::launcher::free() {
     chargingPopupBox = nullptr;
 
     allocated = false;
-    dirty = true;
+    dirty = false;
 }
