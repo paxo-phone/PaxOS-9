@@ -68,6 +68,9 @@ void hardware::setScreenPower(bool power)
 
     #ifdef ESP_PLATFORM
 
+    //pinMode(23, INPUT_PULLUP);
+    //pinMode(4, INPUT_PULLUP);
+
     digitalWrite(12, 0);
     digitalWrite(PIN_SCREEN_POWER, 0);
 

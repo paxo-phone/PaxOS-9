@@ -31,6 +31,17 @@ namespace gui::elements
         {
             m_surface->fillRect(0, getHeight()/2 - m_children[m_focusedIndex]->getHeight()/2, 1, m_children[m_focusedIndex]->getHeight(), COLOR_BLACK);
         }
+        else
+        {
+            if(m_children.size())
+            {
+                uint16_t maxHeight = m_children.back()->m_y + m_children.back()->getHeight();
+                int16_t cursor_size = (float) this->getHeight() * this->getHeight() / maxHeight;
+                int16_t cursor_y = (float) m_children[m_focusedIndex]->m_y * this->getHeight() / maxHeight;
+
+                m_surface->fillRoundRect(getWidth()-3,cursor_y,3,cursor_size,1,COLOR_GREY);
+            }
+        }
     }
 
     void VerticalList::add(ElementBase* widget)

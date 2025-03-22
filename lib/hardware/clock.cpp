@@ -5,16 +5,25 @@
 #include <chrono>
 #include <cstdint>
 
-uint64_t micros(void)
+uint64_t os_micros(void)
 {
     using namespace std::chrono;
     return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count() - 1677588060000000;
 }
 
-uint64_t millis(void)
+uint64_t os_millis(void)
 {
     using namespace std::chrono;
     return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count() - 1677588060000;
+}
+
+#else
+
+unsigned long sleepStartTimeMillis;
+long long sleepTimeCorrectionOffset = 0;
+
+unsigned long correctedMillis() {
+    return millis() + sleepTimeCorrectionOffset;
 }
 
 #endif

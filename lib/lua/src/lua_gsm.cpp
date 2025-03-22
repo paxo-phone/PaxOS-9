@@ -41,6 +41,7 @@ namespace LuaGSM
 
     void acceptCall()
     {
+        printf("lua acceptCall()\n");
 #ifdef ESP_PLATFORM
         GSM::acceptCall();
 #endif

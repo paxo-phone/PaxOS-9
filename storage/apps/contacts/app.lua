@@ -100,11 +100,21 @@ function newContact()
 
     local name = gui:input(win2, 35, 121, 250, 40)
     name:setTitle("Nom")
-    name:onClick(function () name:setText(gui:keyboard("Nom", "")) end)
+    name:onClick(function()
+        gui:keyboard("Nom", "",
+            function (number) 
+                name:setText(number)
+            end)
+        end)
 
     local num = gui:input(win2, 35, 216, 250, 40)
     num:setTitle("Numéro")
-    num:onClick(function () num:setText(gui:keyboard("Numéro", "")) end)
+    num:onClick(function()
+        gui:keyboard("Numéro", "",
+            function (number) 
+                num:setText(number)
+            end)
+        end)
 
     edit = gui:button(win2, 35, 394, 250, 38);
     edit:setText("Créer")

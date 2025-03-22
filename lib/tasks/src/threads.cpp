@@ -31,12 +31,7 @@ void ThreadManager::init()
 void ThreadManager::new_thread(bool core, void(*func)(void*), int stackSize)
 {
     #ifdef ESP_PLATFORM
-        xTaskCreate(func,
-                    "thread",
-                    stackSize,
-                    nullptr,
-                    core,
-                    nullptr);
+        xTaskCreatePinnedToCore(func, "thread", stackSize, NULL, 5, NULL, core);
     #else
         std::thread myThread(func, nullptr);
         myThread.detach();

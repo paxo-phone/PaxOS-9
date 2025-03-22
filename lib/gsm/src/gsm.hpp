@@ -46,6 +46,7 @@ namespace GSM
     {
         std::function<void(void)> function;
         uint8_t priority;
+        uint8_t id;
     };
 
     struct Key

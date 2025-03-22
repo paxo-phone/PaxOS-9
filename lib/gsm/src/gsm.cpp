@@ -13,6 +13,7 @@
 #include <threads.hpp>
 #include <graphics.hpp>
 #include <standby.hpp>
+#include <libsystem.hpp>
 
 #include "Image.hpp"
 #include "Surface.hpp"
@@ -28,6 +29,10 @@ EventHandler eventHandlerGsm;
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/semphr.h>
+#include "esp_sleep.h"
 
 #define RX 26
 #define TX 27
@@ -49,6 +54,7 @@ namespace GSM
     bool flightMode = false;
     std::mutex coresync;
     bool simLocked = false;
+    SemaphoreHandle_t sleepEndedSemaphore;
 
     namespace ExternalEvents
     {
@@ -194,7 +200,9 @@ namespace GSM
             std::cout << "[GSM] Response: " << answer << std::endl;
         }*/
 
-        delay(50);
+        delay(20);
+
+        data += answer;
 
         return answer;
 #endif
@@ -1024,7 +1032,7 @@ namespace GSM
 
     void acceptCall()
     {
-        requests.push_back({[](){ GSM::send("ATA", "OK"); }, priority::high});
+        appendRequest({[](){ GSM::send("ATA", "OK"); }, priority::high});
     }
 
     void rejectCall()
@@ -1240,6 +1248,8 @@ namespace GSM
     {
         init();
 
+        sleepEndedSemaphore = xSemaphoreCreateBinary();
+
         //PaxOS_Delay(50000);
 
         requests.push_back({[]()
@@ -1256,8 +1266,8 @@ namespace GSM
 
         eventHandlerGsm.setInterval(&GSM::getHour, 5000);
         eventHandlerGsm.setInterval(&GSM::getNetworkQuality, 10000);
-        eventHandlerGsm.setInterval([](){ requests.push_back({&GSM::getVoltage, GSM::priority::normal}); }, 5000);
-        eventHandlerGsm.setInterval([](){ requests.push_back({&GSM::onMessage, GSM::priority::normal}); }, 5000);
+        eventHandlerGsm.setInterval(&GSM::getVoltage, 5000);
+        eventHandlerGsm.setInterval(&GSM::onMessage, 5000);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});
@@ -1265,25 +1275,36 @@ namespace GSM
         keys.push_back({"VOICE CALL: BEGIN", [](){ state.callState = CallState::CALLING; }});
         keys.push_back({"+HTTPACTION: ", &GSM::HttpRequest::received});
 
-        coresync.lock();
-
         while (true)
         {
-            coresync.unlock();
-            PaxOS_Delay(10);
+            if(libsystem::getDeviceMode() == libsystem::NORMAL)
+                PaxOS_Delay(10);
+            else
+            {
+                printf("before\n");
+                xSemaphoreTake(sleepEndedSemaphore, pdMS_TO_TICKS(250));
+                printf("after\n");
+            }
+            StandbyMode::buisy_io.lock();
             coresync.lock();
 
-            eventHandlerGsm.update();
+            eventHandlerGsm.update([]() -> bool {
+                return requests.size();
+            });
 
             download();
 
-            //std::cout << data << std::endl;
+            process();
+
+            checkRequest();
 
             process();
             data = "";
 
-            checkRequest();
             HttpRequest::manage();
+
+            StandbyMode::buisy_io.unlock();
+            coresync.unlock();
         }
     }
 };

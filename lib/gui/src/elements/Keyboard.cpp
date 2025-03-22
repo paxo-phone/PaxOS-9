@@ -119,9 +119,11 @@ namespace gui::elements {
         m_capsIcon2->load();
         m_backspaceIcon->load();
         m_layoutIcon0->load();
+
         m_layoutIcon1->load();
         m_exitIcon->load();
-        m_confirmIcon->load();
+
+        //m_confirmIcon->load();
 
         // Add images to boxes
         m_capsBox->addChild(m_capsIcon0);
@@ -132,6 +134,7 @@ namespace gui::elements {
         m_layoutBox->addChild(m_layoutIcon1);
         m_exitBox->addChild(m_exitIcon);
         m_confirmBox->addChild(m_confirmIcon);
+
 
         // Add boxes
         addChild(m_capsBox);

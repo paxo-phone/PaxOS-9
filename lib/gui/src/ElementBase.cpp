@@ -134,7 +134,7 @@ bool gui::ElementBase::updateAll()
 
     if (m_parent == nullptr)
     {
-        StandbyMode::wait();
+        //StandbyMode::wait();
         if(mainWindow != this)
         {
             mainWindow = this;
