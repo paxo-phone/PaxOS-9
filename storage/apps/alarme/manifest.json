@@ -1,0 +1,4 @@
+{
+    "access": ["files", "gui", "hardware", "time"],
+    "subdir": "sub"
+}

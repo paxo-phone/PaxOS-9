@@ -2,8 +2,9 @@
 #define ELEMENTBASE_HPP
 
 #include <cstdint> // for uint16_t
-#include <Surface.hpp>
 #include <vector>
+
+#include "Surface.hpp"
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
 #define SCROLL_STEP 20
@@ -18,6 +19,9 @@ namespace gui
 
         virtual void render() = 0;
         void renderAll(bool onScreen = true);
+
+        virtual void preRender() {};
+        virtual void postRender() {};
 
         bool updateAll();
         bool update();
@@ -68,7 +72,12 @@ namespace gui
 
         void enable();
         void disable();
+        bool getIsEnabled() const;
+
         void free();    // free the buffers in the ram to allow more windows to work at the same time
+
+        void setEnabled(bool enabled);
+        [[nodiscard]] bool isEnabled() const;
 
         /**
          * \brief Get the highest parent widget in the hierachy
@@ -78,13 +87,23 @@ namespace gui
         ElementBase *getParent() const;
         void addChild(ElementBase *child);
 
+        ElementBase *getElementAt(int index);
+
         ElementBase *m_parent;
         std::vector<ElementBase *> m_children;
         static int16_t touchX, touchY;
         static int16_t lastEventTouchX, lastEventTouchY;
 
         uint16_t m_x, m_y;
+
+        // WARNING : Don't ever expose this to the Lua API
+        std::shared_ptr<graphics::Surface> getSurface();
+
+        void forceUpdate();
+
     protected:
+        void freeRamFor(uint32_t size, ElementBase* window);
+
         // variables générales
         uint16_t m_width, m_height;
 

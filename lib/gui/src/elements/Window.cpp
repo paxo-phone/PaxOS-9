@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <graphics.hpp>
 #include <Surface.hpp>
+#include <algorithm>
 
 namespace gui::elements {
     Window::Window()
@@ -16,12 +17,19 @@ namespace gui::elements {
         m_width = graphics::getScreenWidth();
         m_height = graphics::getScreenHeight();
         m_backgroundColor = COLOR_WHITE;
+
+        windows.push_back(this);
     }
 
-    Window::~Window() = default;
+    Window::~Window()
+    {
+        windows.erase(std::remove(windows.begin(), windows.end(), this), windows.end());
+    }
 
     void Window::render()
     {
         m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
     }
+
+    std::vector<Window*> Window::windows;
 } // gui::elements

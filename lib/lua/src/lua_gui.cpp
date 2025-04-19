@@ -4,9 +4,9 @@
 #include <threads.hpp>
 #include "lua_file.hpp"
 #include "app.hpp"
+#include "libsystem.hpp"
 
-
-LuaGui::LuaGui(LuaFile* lua)
+LuaGui::LuaGui(LuaFile *lua)
 {
     this->lua = lua;
 }
@@ -17,7 +17,7 @@ LuaGui::~LuaGui()
 
     for (int i = 0; i < widgets.size(); i++)
     {
-        if(widgets[i]->widget->getParent() != nullptr)
+        if (widgets[i]->widget->getParent() != nullptr)
             hasParent.push_back(true);
         else
             hasParent.push_back(false);
@@ -29,134 +29,162 @@ LuaGui::~LuaGui()
     }
 }
 
-LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height)
+LuaBox *LuaGui::box(LuaWidget *parent, int x, int y, int width, int height)
 {
-    LuaBox* w = new LuaBox(parent, x, y, width, height);
+    LuaBox *w = new LuaBox(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height)
+LuaCanvas *LuaGui::canvas(LuaWidget *parent, int x, int y, int width, int height)
 {
-    LuaCanvas* w = new LuaCanvas(parent, x, y, width, height, this->lua);
+    LuaCanvas *w = new LuaCanvas(parent, x, y, width, height, this->lua);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaImage* LuaGui::image(LuaWidget* parent, std::string path, int x, int y, int width, int height, color_t background)
+LuaImage *LuaGui::image(LuaWidget *parent, std::string path, int x, int y, int width, int height, color_t background)
 {
     storage::Path path_(path);
 
-    if(!this->lua->perms.acces_files)
+    if (!this->lua->perms.acces_files)
         return nullptr;
-    if(path_.m_steps[0]=="/" && !this->lua->perms.acces_files_root)
+    if (path_.m_steps[0] == "/" && !this->lua->perms.acces_files_root)
         return nullptr;
-    
-    if(path_.m_steps[0]!="/")
+
+    if (path_.m_steps[0] != "/")
     {
         path_ = this->lua->directory / path_;
     }
 
-    LuaImage* w = new LuaImage(parent, path_, x, y, width, height, background);
+    LuaImage *w = new LuaImage(parent, path_, x, y, width, height, background);
     widgets.push_back(w);
     w->gui = this;
 
     return w;
 }
 
-LuaLabel* LuaGui::label(LuaWidget* parent, int x, int y, int width, int height)
+LuaLabel *LuaGui::label(LuaWidget *parent, int x, int y, int width, int height)
 {
-    LuaLabel* w = new LuaLabel(parent, x, y, width, height);
+    LuaLabel *w = new LuaLabel(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaInput* LuaGui::input(LuaWidget* parent, int x, int y)
+LuaInput *LuaGui::input(LuaWidget *parent, int x, int y)
 {
-    LuaInput* w = new LuaInput(parent, x, y);
+    LuaInput *w = new LuaInput(parent, x, y);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaButton* LuaGui::button(LuaWidget* parent, int x, int y, int width, int height)
+LuaButton *LuaGui::button(LuaWidget *parent, int x, int y, int width, int height)
 {
-    LuaButton* w = new LuaButton(parent, x, y, width, height);
+    LuaButton *w = new LuaButton(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaVerticalList* LuaGui::verticalList(LuaWidget* parent, int x, int y, int width, int height)
+LuaVerticalList *LuaGui::verticalList(LuaWidget *parent, int x, int y, int width, int height)
 {
-    LuaVerticalList* w = new LuaVerticalList(parent, x, y, width, height);
+    LuaVerticalList *w = new LuaVerticalList(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaHorizontalList* LuaGui::horizontalList(LuaWidget* parent, int x, int y, int width, int height)
+LuaHorizontalList *LuaGui::horizontalList(LuaWidget *parent, int x, int y, int width, int height)
 {
-    LuaHorizontalList* w = new LuaHorizontalList(parent, x, y, width, height);
+    LuaHorizontalList *w = new LuaHorizontalList(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaSwitch* LuaGui::switchb(LuaWidget* parent, int x, int y)
+LuaSwitch *LuaGui::switchb(LuaWidget *parent, int x, int y)
 {
-    LuaSwitch* w = new LuaSwitch(parent, x, y, this);
+    LuaSwitch *w = new LuaSwitch(parent, x, y, this);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaRadio* LuaGui::radio(LuaWidget* parent, int x, int y)
+LuaRadio *LuaGui::radio(LuaWidget *parent, int x, int y)
 {
-    LuaRadio* w = new LuaRadio(parent, x, y);
+    LuaRadio *w = new LuaRadio(parent, x, y);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-
-LuaCheckbox* LuaGui::checkbox(LuaWidget* parent, int x, int y)
+LuaCheckbox *LuaGui::checkbox(LuaWidget *parent, int x, int y)
 {
-    LuaCheckbox* w = new LuaCheckbox(parent, x, y);
+    LuaCheckbox *w = new LuaCheckbox(parent, x, y);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaWindow* LuaGui::window()
+LuaSlider *LuaGui::slider(LuaWidget *parent, int x, int y, int width, int height, int minValue, int maxValue, int defaultValue)
 {
-    LuaWindow* win =  new LuaWindow();
+    LuaSlider *slider = new LuaSlider(parent, x, y, width, height, minValue, maxValue, defaultValue);
+    widgets.push_back(slider);
+    slider->gui = this;
+    return slider;
+}
+
+LuaWindow *LuaGui::window()
+{
+    LuaWindow *win = new LuaWindow();
     widgets.push_back(win);
     win->gui = this;
     return win;
 }
 
-void LuaGui::del(LuaWidget* widget)
+void LuaGui::del(LuaWidget *widget)
 {
-    delete widget;
-    if(mainWindow == widget)
-        mainWindow = nullptr;
-    widget = nullptr;
+    // prevent a widget to remove itself during its execution
+    if (lua->lua_time.running)
+    {
+        delete widget;
+        if (mainWindow == widget)
+            mainWindow = nullptr;
+        widget = nullptr;
+    }
+    else // auto enable async if not already done by lua
+    {
+        lua->eventHandler.setTimeout(
+            new Callback<>(
+                std::bind(
+                    std::function<void(LuaWidget *, LuaWidget *)>(
+                        [](LuaWidget *widget, LuaWidget *mainWindow)
+                        {
+                            delete widget;
+                            if (mainWindow == widget)
+                                mainWindow = nullptr;
+                            widget = nullptr;
+                        }),
+                    widget, mainWindow)),
+            0);
+    }
 }
 
 void LuaGui::update()
 {
-    if(mainWindow != nullptr)
+    if (mainWindow != nullptr)
     {
         mainWindow->update();
     }
 }
 
-std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText)
+std::string LuaGui::keyboard(const std::string &placeholder, const std::string &defaultText)
 {
+    libsystem::log("[WARNING]: Keyboard is deprecated. Use keyboard_async instead.");
     graphics::setScreenOrientation(graphics::LANDSCAPE);
 
     auto key = new Keyboard(defaultText);
@@ -176,4 +204,38 @@ std::string LuaGui::keyboard(const std::string& placeholder, const std::string& 
     return o;
 }
 
-void LuaGui::setMainWindow(LuaWindow* window) {this->mainWindow = window; AppManager::askGui(this->lua); }
+void LuaGui::keyboard_async(const std::string &placeholder, const std::string &defaultText, sol::function callback)
+{
+    printf("Calling keyboard_async\n");
+    AppManager::Keyboard_manager::open(this->lua->app, placeholder, defaultText, callback);
+}
+
+void LuaGui::setMainWindow(LuaWindow *window)
+{
+    this->mainWindow = window;
+}
+
+LuaWindow *LuaGui::getMainWindow()
+{
+    return this->mainWindow;
+}
+
+void LuaGui::showErrorMessage(const std::string &msg)
+{
+
+    GuiManager &guiManager = GuiManager::getInstance();
+    guiManager.showErrorMessage(msg);
+}
+
+void LuaGui::showWarningMessage(const std::string &msg)
+{
+
+    GuiManager &guiManager = GuiManager::getInstance();
+    guiManager.showWarningMessage(msg);
+}
+void LuaGui::showInfoMessage(const std::string &msg)
+{
+
+    GuiManager &guiManager = GuiManager::getInstance();
+    guiManager.showInfoMessage(msg);
+}

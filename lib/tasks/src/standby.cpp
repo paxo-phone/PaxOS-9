@@ -1,17 +1,19 @@
 #include "standby.hpp"
+#include "app.hpp"
+#include "graphics.hpp"
+#include "hardware.hpp"
+#include "gsm.hpp"
 
 #include <threads.hpp>
 #include <LovyanGFX.hpp>
 
 #ifdef ESP_PLATFORM
 
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
-#include <esp_system.h>
 
 #endif
+
+#include <gsm.hpp>
 
 #define TICKS_MS 20
 
@@ -25,7 +27,11 @@ namespace StandbyMode
 
     void trigger()
     {
+        if(enabled == true)
+            return;
         lastTrigger = millis();
+
+        graphics::setBrightness(graphics::getBrightness());
     }
 
     void triggerPower()
@@ -38,18 +44,29 @@ namespace StandbyMode
         }
     }
 
+    bool expired()
+    {
+        return millis() - lastTrigger > sleepTime;
+    }
+
+    void reset()
+    {
+        lastTrigger = millis();
+    }
+
     void update()
     {
-        if (millis() - lastTrigger > 1000)
+        if (!enabled && millis() - lastTrigger > sleepTime - 10000)
         {
-            enabled = true;
+            // Dim screen
+            graphics::setBrightness(graphics::getBrightness()/3 + 3, true);
         }
 
         if (millis() - lastPowerTrigger > 5000)
         {
             if(powerMode == true)
             {
-                savePower();
+                //savePower();
             }
         }
     }
@@ -67,6 +84,7 @@ namespace StandbyMode
     void enable()
     {
         enabled = true;
+        lastTrigger = millis();
     }
     
     void disable()

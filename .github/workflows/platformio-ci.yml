@@ -3,10 +3,10 @@ name: PlatformIO CI
 on:
   push:
     branches: 
-        - main
+        - "**"
   pull_request:
     branches:
-        - main
+        - "**"
 
 jobs:
     paxo_v5_build_test_upload:
@@ -14,20 +14,22 @@ jobs:
 
         steps:
           - name: Checkout repository
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache dependencies
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: |
                 ~/.cache/pip
                 ~/.platformio/.cache
-              key: ${{ runner.os }}-pio
+                .pio/build_cache
+                .pio/libdeps
+              key: ${{ runner.os }}-platformio-ci-paxo-v5
 
           - name: Setup Python
-            uses: actions/setup-python@v4
+            uses: actions/setup-python@v5
             with:
-              python-version: '3.11'
+              python-version: '3.13'
 
           - name: Install PlatformIO Core
             run: pip install --upgrade platformio
@@ -43,7 +45,7 @@ jobs:
               mkdir build
               cp -r .pio/build/paxo-v5/firmware.bin build
               cp -r .pio/build/paxo-v5/firmware.elf build
-              cp -r .pio/build/paxo-v5/firmware.map build
+              [[ -e .pio/build/paxo-v5/firmware.map ]] && cp -r .pio/build/paxo-v5/firmware.map build
               cp -r .pio/build/paxo-v5/bootloader.bin build
               cp -r .pio/build/paxo-v5/partitions.bin build
               cp -r storage build
@@ -52,28 +54,31 @@ jobs:
             uses: actions/upload-artifact@v4
             with:
               name: paxo-v5-build
+              include-hidden-files: true
               path: |
-                build
+                build/
 
     linux_build_test_upload:
         runs-on: ubuntu-latest
 
         steps:
           - name: Checkout repository
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache dependencies
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: |
                 ~/.cache/pip
                 ~/.platformio/.cache
-              key: ${{ runner.os }}-pio
+                .pio/build_cache
+                .pio/libdeps
+              key: ${{ runner.os }}-platformio-ci-linux
 
           - name: Setup Python
-            uses: actions/setup-python@v4
+            uses: actions/setup-python@v5
             with:
-              python-version: '3.11'
+              python-version: '3.13'
 
           - name: Install PlatformIO Core
             run: pip install --upgrade platformio
@@ -107,28 +112,31 @@ jobs:
             uses: actions/upload-artifact@v4
             with:
               name: linux-build
+              include-hidden-files: true
               path: |
-                build
+                build/
 
     macos_build_test_upload:
         runs-on: macos-latest
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Cache dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: |
                   ~/.cache/pip
                   ~/.platformio/.cache
-                key: ${{ runner.os }}-pio
+                  .pio/build_cache
+                  .pio/libdeps
+                key: ${{ runner.os }}-platformio-ci-macos
 
             - name: Setup Python
-              uses: actions/setup-python@v4
+              uses: actions/setup-python@v5
               with:
-                python-version: '3.11'
+                python-version: '3.13'
 
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
@@ -163,28 +171,31 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: macos-build
+                include-hidden-files: true
                 path: |
-                  build
+                  build/
 
     windows_build_test_upload:
         runs-on: windows-latest
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Cache dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: |
                   ~/.cache/pip
                   ~/.platformio/.cache
-                key: ${{ runner.os }}-pio
+                  .pio/build_cache
+                  .pio/libdeps
+                key: ${{ runner.os }}-platformio-ci-windows
 
             - name: Setup Python
-              uses: actions/setup-python@v4
+              uses: actions/setup-python@v5
               with:
-                python-version: '3.11'
+                python-version: '3.13'
 
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
@@ -212,9 +223,13 @@ jobs:
                 cp -r .pio/build/windows/*.dll build
                 cp -r storage build
 
+            - name: Copy required DLLs into artifact directory
+              run: python scripts/github_actions/windows/get_dll.py build
+
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
                 name: windows-build
+                include-hidden-files: true
                 path: |
-                  build
+                  build/

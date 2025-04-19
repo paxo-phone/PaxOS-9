@@ -3,7 +3,7 @@ function loadNotifs()
 
     unreadfile:open()
     notifs = unreadfile:readAll()
-    print ("unread file: " .. notifs)
+    -- print ("unread file: " .. notifs)
     unreadfile:close()
 end
 
@@ -19,20 +19,28 @@ function eraseNotif(number)
     listUpdated = true
 end
 
-function newMessage(number)
-    local msg = gui:keyboard("Message au " .. number, "")
+function openImage(path)
+    win3=gui:window()
 
-    if(msg ~= "") then
-        gsm.newMessage(number, msg)
-    end
-
-    return msg
+    local image = gui:image(win3, "images/" .. path, 0, 0, 320, 480)
+    gui:setWindow(win3)
 end
 
-function appendMessage(msg, list)
-    local bull2 = gui:box(list, 0, 0, 184, 30)
+function newMessage(number, callback)
+    gui:keyboard("Message au " .. number, "", 
+        function (msg)
+            if(msg ~= "") then
+                gsm.newMessage(number, msg)
+                callback()
+            end
+            
+        end)
+    end
     
-    label_sent = gui:label(bull2, 0, 0, 184, 0)
+    function appendMessage(msg, list)
+        local bull2 = gui:box(list, 0, 0, 184, 30)
+        
+        label_sent = gui:label(bull2, 0, 0, 184, 0)
     label_sent:setHorizontalAlignment(CENTER_ALIGNMENT)
     label_sent:setText(msg)
     label_sent:setFontSize(18)
@@ -84,45 +92,72 @@ function converation(number)
     --print("getMessages returned " .. tostring(messages))
 
     for i, message in pairs(messages) do
-        --print("message " .. tostring(i) .. " : " .. tostring(message))
-        local bull = gui:box(list, 0, 0, 184, 30)
-        
-        local label = gui:label(bull, 0, 0, 184, 0)
-        label:setHorizontalAlignment(CENTER_ALIGNMENT)
-        label:setText(message.message)
-        label:setFontSize(18)
+        local numberPart = message.message:match("/(%d+)%.jpg")  -- Extract the number part
 
-        local labelHeight = label:getTextHeight() + 8
+        if(numberPart) then -- image
+            -- print("image " .. numberPart)
+            local image = gui:image(list, "images/" .. numberPart .. "p.jpg" , 0, 0, 60, 60)
 
-        label:setHeight(labelHeight)
+            image:onClick(function ()
+                openImage(string.sub(message.message, 2))
+            end)
+        else
+            -- print("message " .. message.message)
+            local bull = gui:box(list, 0, 0, 184, 30)
+            
+            local label = gui:label(bull, 0, 0, 184, 0)
+            label:setHorizontalAlignment(CENTER_ALIGNMENT)
+            label:setText(message.message)
+            label:setFontSize(18)
 
-        local canva = gui:canvas(bull, 0, labelHeight, 68, 1)
-        canva:fillRect(0, 0, 68, 1, COLOR_DARK)
-        canva:setX(57)
+            local labelHeight = label:getTextHeight() + 8
 
-        if(message.who == false) then
-            bull:setX(96)
+            label:setHeight(labelHeight)
+
+            local canva = gui:canvas(bull, 0, labelHeight, 68, 1)
+            canva:fillRect(0, 0, 68, 1, COLOR_DARK)
+            canva:setX(57)
+
+            if(message.who == false) then
+                bull:setX(96)
+            end
+
+            bull:setHeight(labelHeight + 9)
         end
-
-        bull:setHeight(labelHeight + 9)
     end
 
     list:setIndex(#messages -1)
 
     local add = gui:box(win2, 250, 410, 40, 40)
-    add:setMainColor(COLOR_DARK)
+    add:setBackgroundColor(COLOR_DARK)
     add:setRadius(20)
         local icon_plus = gui:image(add, "plus.png", 14, 14, 12, 12, COLOR_DARK)
         
 
     add:onClick(function ()
-        print("add button clicked")
+        -- print("add button clicked")
+<<<<<<< HEAD
+<<<<<<< HEAD
         local msg = newMessage(number)
 
         if(msg ~= "") then
-            print("new message received: " .. msg)
+            -- print("new message received: " .. msg)
             appendMessage(msg, list)
         end
+=======
+=======
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
+        local msg = newMessage(number,
+            function ()
+                if(msg ~= "") then
+                    -- print("new message received: " .. msg)
+                    appendMessage(msg, list)
+                end
+            end)
+<<<<<<< HEAD
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
+=======
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
     end)
 
     local back = gui:image(win2, "back.png", 30, 30, 18, 18)
@@ -189,7 +224,7 @@ function run(arg)
         
         if notifs:find(number) then
             local unread = gui:box(case, 0, 12, 13, 13)
-            unread:setMainColor(COLOR_WARNING)
+            unread:setBackgroundColor(COLOR_WARNING)
             unread:setRadius(6)
         end
         

@@ -5,6 +5,8 @@
 
 #include "color.hpp"
 
+color_t COLOR_WHITE = 0xFFFF;
+
 color_t graphics::packRGB565(const uint8_t r, const uint8_t g, const uint8_t b)
 {
     uint16_t rgb = 0;

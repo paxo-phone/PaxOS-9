@@ -7,6 +7,8 @@
 #include <filestream.hpp>
 #include <path.hpp>
 #include <hardware.hpp>
+#include <queue>
+#include <threads.hpp>
 
 #include "lua_gui.hpp"
 #include "lua_hardware.hpp"
@@ -16,8 +18,11 @@
 #include "lua_json.hpp"
 
 
-struct Permissions
-{
+namespace AppManager {
+    class App;
+}
+
+struct Permissions {
     bool acces_gui = true;
     bool acces_files = true;
     bool acces_files_root = true;
@@ -26,11 +31,11 @@ struct Permissions
     bool acces_web_paxo = true;
     bool acces_web = true;
     bool acces_gsm = true;
+    bool acces_password_manager = true;
 };
 
-class LuaFile
-{
-    public:
+class LuaFile {
+public:
     LuaFile(storage::Path filename, storage::Path manifest);
     ~LuaFile();
 
@@ -65,13 +70,13 @@ class LuaFile
 
         void event_onmessageerror()
         {
-            if(onmessage.valid()) {
+            if(onmessageerror.valid()) {
                 sol::protected_function_result result = onmessageerror();
                 if (!result.valid()) {
                     sol::error err = result;
-                    std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
+                    std::cout << "[LuaFile] onmessageerror event error: " << err.what() << std::endl;
                 } else {
-                    std::cout << "onmessage event activated" << std::endl;
+                    std::cout << "onmessageerror event activated" << std::endl;
                 }
             }
         }
@@ -82,13 +87,23 @@ class LuaFile
     sol::state lua;
 
     storage::Path filename;
-    gui::elements::Window* current_root;
+    Window* current_root;
 
+    EventHandler eventHandler;
     LuaHardware lua_hardware;
     LuaGui lua_gui;
     LuaStorage lua_storage;
     LuaTime lua_time;
     //LuaNetwork lua_network;
+
+    AppManager::App* app; // using raw pointer, because this class will NEVER call the deleter
+
+private:
+    enum Command {
+        QUIT
+    };
+
+    std::queue<Command> m_commandQueue;
 };
 
 #endif
