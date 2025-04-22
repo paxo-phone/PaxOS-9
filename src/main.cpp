@@ -30,6 +30,7 @@ SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 static void launchOOBEApp() {
     try {
         const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+
         oobeApp->run();
     } catch (std::runtime_error& e) {
         libsystem::log("Unable to start OOBE application: " + std::string(e.what()));
@@ -85,6 +86,7 @@ static void initBacktraceSaver() {
 
 static void applySystemConfiguration() {
     libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
+
     libsystem::log("[STARTUP]: Config loaded");
     if (!systemConfig.has("settings.brightness")) {
         systemConfig.set<uint8_t>("settings.brightness", 69);
