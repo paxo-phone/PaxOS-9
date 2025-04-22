@@ -228,7 +228,7 @@ static void wakeFromSleep() {
 #endif
 }
 
-void mainLoop([[maybe_unused]] void* data) {
+[[noreturn]] void mainLoop([[maybe_unused]] void* data) {
     GuiManager& guiManager = GuiManager::getInstance();
     const libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
     bool inLauncher = false;
@@ -270,6 +270,7 @@ void mainLoop([[maybe_unused]] void* data) {
             wakeFromSleep();
         StandbyMode::wait();
     }
+    // ReSharper disable once CppDFAUnreachableCode
 }
 
 void init([[maybe_unused]] void* data) {
@@ -287,7 +288,7 @@ void setup() {
 void loop() {}
 
 #ifndef ESP_PLATFORM
-int main(int argc, char **argv) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
     graphics::SDLInit(setup);
 }
 #endif
