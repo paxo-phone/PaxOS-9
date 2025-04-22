@@ -178,9 +178,9 @@ static void initPhase2() {
 static void initPhase3() {
     libsystem::log("[Init] Begin Phase 3: Setup.");
     hardware::setVibrator(false);
-    libsystem::log("[Init] Vibrator reset.");
+    libsystem::log("[Init] {Phase 3} Vibrator reset.");
     GSM::endCall();
-    libsystem::log("[Init] Call status reset.");
+    libsystem::log("[Init] {Phase 3} Call status reset.");
     eventHandlerApp.setTimeout(new Callback<>([](){Contacts::load();}), 0);
     libsystem::log("[Init] {Phase 3} Contacts loaded.");
     AppManager::init();
