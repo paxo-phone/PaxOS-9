@@ -233,7 +233,7 @@ static void wakeFromSleep() {
     const libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
     bool inLauncher = false;
 
-    libsystem::log("[STARTUP]: run mainLoop");
+    libsystem::log("[Startup] Begin mainLoop.");
 #ifdef ESP_PLATFORM
     if (!backtrace_saver::isBacktraceEmpty())
         backtrace_saver::backtraceMessageGUI();
