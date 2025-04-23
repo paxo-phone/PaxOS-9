@@ -86,7 +86,7 @@ public:
     {
         this->callback = ca;
         this->interval = interval;
-        this->lastTrigger = millis();
+        this->lastTrigger = os_millis();
         this->id = id;
     }
 

@@ -144,10 +144,10 @@ void applications::launcher::update() {
 
     if (hardware::isCharging()) {
         if (chargingStartTime == 0) {
-            chargingStartTime = millis();
+            chargingStartTime = os_millis();
         }
 
-        if (chargingStartTime + 2000 > millis()) {
+        if (chargingStartTime + 2000 > os_millis()) {
             chargingPopupBox->enable();
         } else {
             chargingPopupBox->disable();
@@ -379,8 +379,8 @@ void applications::launcher::draw() {
     allocated = true;
     dirty = false;
 
-    lastClockUpdate = millis();
-    lastBatteryUpdate = millis();
+    lastClockUpdate = os_millis();
+    lastBatteryUpdate = os_millis();
 
 
     libsystem::log("end applications::launcher::draw");

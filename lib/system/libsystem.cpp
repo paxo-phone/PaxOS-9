@@ -315,12 +315,12 @@ uint8_t libsystem::paxoConfig::getBrightness()
     return 0;
 }
 
-void libsystem::paxoConfig::setStandBySleepTime(uint64_t millis, bool save)
+void libsystem::paxoConfig::setStandBySleepTime(uint64_t os_millis, bool save)
 {
-    StandbyMode::setSleepTime(millis);
+    StandbyMode::setSleepTime(os_millis);
     if (save)
     {
-        systemConfig.get()->set<uint64_t>("settings.sleeptime", millis);
+        systemConfig.get()->set<uint64_t>("settings.sleeptime", os_millis);
         systemConfig.get()->write();
     }
 }

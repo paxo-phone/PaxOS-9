@@ -56,6 +56,11 @@ namespace GSM
     bool simLocked = false;
     SemaphoreHandle_t sleepEndedSemaphore;
 
+    void unlockSemaphore()
+    {
+        xSemaphoreGive(GSM::sleepEndedSemaphore);
+    }
+
     namespace ExternalEvents
     {
         std::function<void(void)> onIncommingCall;
@@ -143,11 +148,11 @@ namespace GSM
     {
 #ifdef ESP_PLATFORM
         uint64_t timer = 0;
-        while (gsm.available() || timer + timeout > millis())
+        while (gsm.available() || timer + timeout > os_millis())
         {
             if (gsm.available())
             {
-                timer = millis();
+                timer = os_millis();
                 data += gsm.read();
             }
         }
@@ -163,15 +168,15 @@ namespace GSM
 
         std::cout << "[GSM] Sending request: " << message << ", " << answerKey << std::endl;
 
-        uint64_t lastChar = millis();
+        uint64_t lastChar = os_millis();
         std::string answer = "";
 
-        /*while (lastChar + timeout > millis()) // save none related messages to data.
+        /*while (lastChar + timeout > os_millis()) // save none related messages to data.
         {
             if (gsm.available())
             {
                 answer += gsm.read();
-                lastChar = millis();
+                lastChar = os_millis();
 
 
                 if(answer.find(answerKey) != std::string::npos)
@@ -182,16 +187,20 @@ namespace GSM
             }
         }*/
 
-        while (lastChar + timeout > millis() && (answer.find("OK\r\n") == std::string::npos && answer.find("ERROR\r\n") == std::string::npos))
+        while (lastChar + timeout > os_millis() && (answer.find("OK\r\n") == std::string::npos && answer.find("ERROR\r\n") == std::string::npos))
         {
             if (gsm.available())
             {
                 answer += gsm.read();
-                lastChar = millis();
+                lastChar = os_millis();
+            }
+            else
+            {
+                PaxOS_Delay(1);
             }
         }
 
-        /*if(lastChar + timeout < millis())
+        /*if(lastChar + timeout < os_millis())
         {
             std::cerr << "[GSM] Response timeout: " << answer  << std::endl;
         }
@@ -550,8 +559,8 @@ namespace GSM
 
         // recovering the size of the data
         bool result = false;
-        uint64_t timeout = millis() + 10000;
-        while (millis() < timeout) {
+        uint64_t timeout = os_millis() + 10000;
+        while (os_millis() < timeout) {
             StandbyMode::triggerPower();
             download();
 
@@ -606,7 +615,7 @@ namespace GSM
 
         gsm.readString();   // vide le buffer
         
-        uint64_t timer = millis();  // pour le timeout
+        uint64_t timer = os_millis();  // pour le timeout
         uint64_t timeout_block = 10000;    // timeout de 1 secondes
 
         uint8_t jpg = 0;    // 0 = no jpeg, 1 = jpeg found, 2 = jpeg done
@@ -626,16 +635,16 @@ namespace GSM
         for(uint32_t i = 0; i < size;) {    // pour tous les caractères de données brutes annoncés
             for (uint32_t r = 0; r < numberOfBlocks +1 && i < size; r++)    // pour tous les blocs envoyés en une fois
             {
-                while ((gsm.available() && timer + timeout_block > millis())?(gsm.read() != ':'):(true));   // wait for the garbage data to be ignored
-                while ((gsm.available() && timer + timeout_block > millis())?(gsm.read() != '\n'):(true));
+                while ((gsm.available() && timer + timeout_block > os_millis())?(gsm.read() != ':'):(true));   // wait for the garbage data to be ignored
+                while ((gsm.available() && timer + timeout_block > os_millis())?(gsm.read() != '\n'):(true));
 
                 if(r == numberOfBlocks)
                     break;
 
                 int nextBlockSize = (size - i >= blockSize) ? 1024 : (size - i);    // size of the current block, that is equal or less than 1024
-                while (gsm.available() < nextBlockSize && timer + timeout_block > millis());    // wait for the next block to be downloaded
+                while (gsm.available() < nextBlockSize && timer + timeout_block > os_millis());    // wait for the next block to be downloaded
 
-                timer = millis();
+                timer = os_millis();
 
                 if(jpg == 0)    // no jpeg for the moment
                 {
@@ -803,9 +812,15 @@ namespace GSM
 
     void onMessage()
     {
-        send("AT+CMGF=0", "AT+CMGF=0", 100);
+        //send("AT+CMGF=0", "AT+CMGF=0", 100);
 
         std::string input = send("AT+CMGL=0", "CMGL", 5000); // read all messages
+
+        if(input.find("ERROR") == std::string::npos)
+        {
+            send("AT+CMGF=0", "AT+CMGF=0", 50);
+            
+        }
 
         std::cout << "AT+CMGL=0 -----------------------------------------: " << input << std::endl;
 
@@ -908,10 +923,10 @@ namespace GSM
             {
                 if (ExternalEvents::onNewMessage)
                     ExternalEvents::onNewMessage();
+                send("AT+CMGD=1,1", "AT+CMGD", 1000);
             }
         }
 
-        send("AT+CMGD=1,1", "AT+CMGD", 1000);
     }
 
     void sendMessage(const std::string &number, const std::string &message)
@@ -995,6 +1010,8 @@ namespace GSM
 
             // todo: timeout to retry later
         }
+
+        send("AT+CMGF=0", "AT+CMGF=0", 50); // reset to PDU mode
     }
 
     void newMessage(std::string number, std::string message)
@@ -1246,6 +1263,7 @@ namespace GSM
 
     void run()
     {
+        esp_task_wdt_init(10000, false);
         init();
 
         sleepEndedSemaphore = xSemaphoreCreateBinary();
@@ -1257,6 +1275,7 @@ namespace GSM
             send("AT+CNTP=\"time.google.com\",4", "AT+CNTP");   // the number 4 is the time zone*4, so each 1 is 1 quarter hour (weird)
             send("AT+CNTP","AT+CNTP", 2000);
             send("AT+CNMI=2,1,0,0,0", "AT+CNMI");
+            send("AT+CMGF=0", "AT+CMGF=0", 300);
         }, priority::high});
 
         updateHour();
@@ -1266,8 +1285,8 @@ namespace GSM
 
         eventHandlerGsm.setInterval(&GSM::getHour, 5000);
         eventHandlerGsm.setInterval(&GSM::getNetworkQuality, 10000);
-        eventHandlerGsm.setInterval(&GSM::getVoltage, 5000);
-        eventHandlerGsm.setInterval(&GSM::onMessage, 5000);
+        eventHandlerGsm.setInterval(&GSM::getVoltage, 10000);
+        eventHandlerGsm.setInterval(&GSM::onMessage, 15000);
 
         keys.push_back({"RING", &GSM::onRinging});
         keys.push_back({"+CMTI:", &GSM::onMessage});
@@ -1282,6 +1301,7 @@ namespace GSM
             else
             {
                 printf("before\n");
+                PaxOS_Delay(1);
                 xSemaphoreTake(sleepEndedSemaphore, pdMS_TO_TICKS(250));
                 printf("after\n");
             }

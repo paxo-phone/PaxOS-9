@@ -1,6 +1,7 @@
 #include "lua_gsm.hpp"
 
 #include <standby.hpp>
+#include <clock.hpp>
 
 #include "gsm.hpp"
 #include "conversation.hpp"
@@ -21,8 +22,8 @@ namespace LuaGSM
 #ifdef ESP_PLATFORM
         GSM::newCall(number);
 
-        uint64_t timeout = millis() + 5000;
-        while (GSM::state.callFailure == false && GSM::state.callState != GSM::CallState::CALLING && millis() < timeout)
+        uint64_t timeout = os_millis() + 5000;
+        while (GSM::state.callFailure == false && GSM::state.callState != GSM::CallState::CALLING && os_millis() < timeout)
         {
             StandbyMode::wait();
             std::cout << "Waiting for call" << std::endl;

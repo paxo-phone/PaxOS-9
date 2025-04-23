@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <mutex>
 
+
 #define BAUDRATE 921600
 
 extern const char *daysOfWeek[7];
@@ -89,6 +90,8 @@ namespace GSM
     extern int networkQuality;
     extern std::mutex coresync;
     extern bool simLocked;
+
+    void unlockSemaphore();
 
     // initialize the modem, power it on is required
     void init();
@@ -182,7 +185,7 @@ namespace GSM
         uint64_t timeout = 0;   // date at which the request will timeout
         uint64_t readed = 0;
 
-        void fastKill(uint8_t code = 400);
+        void fastKill(uint16_t code = 400);
     };
 
     std::string getCurrentTimestamp();  // return the current timestamp formated
