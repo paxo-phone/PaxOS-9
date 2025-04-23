@@ -30,7 +30,9 @@ SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
-
+#include "unistd.h"
+#include <SerialManager.hpp>
+#include "../lib/tasks/src/delay.hpp"
 
 using namespace gui::elements;
 
@@ -56,6 +58,10 @@ void mainLoop(void* data) {
         // Launch OOBE app
         try {
             const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+
+            if (oobeApp == nullptr) {
+                throw std::runtime_error("OOBE app not found.");
+            }
 
             oobeApp->run();
         } catch (std::runtime_error& e) {
@@ -296,6 +302,7 @@ void init(void* data)
 
     #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2*1024);
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
     #endif
 
     // gestion de la détection du toucher de l'écran

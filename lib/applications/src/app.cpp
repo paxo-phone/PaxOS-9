@@ -373,6 +373,7 @@ namespace AppManager {
         }
 
         libsystem::log("App not found: " + appName);
+        return nullptr;
     }
 
     std::shared_ptr<App> get(const uint8_t index) {
