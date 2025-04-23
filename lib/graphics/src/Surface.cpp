@@ -9,6 +9,7 @@
 #include <filestream.hpp>
 //#include <JPEGENC.h>
 #include <iostream>
+#include <algorithm>
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
@@ -264,14 +265,41 @@ namespace graphics
         float scaleX = static_cast<float>(w) / static_cast<float>(image.getWidth());
         float scaleY = static_cast<float>(h) / static_cast<float>(image.getHeight());
 
+        if(m_sprite.getBuffer() == nullptr)
+        {
+            std::cerr << "[Error] Unable to write on an invalid sprite: " << w * h * 2 << " bytes" << std::endl;
+            return;
+        }
+
         #ifdef ESP_PLATFORM
+            if(image.getType() == PNG)
+            {
+                storage::FileStream stream(image.getPath().str(), storage::Mode::READ);
+                size_t size = stream.size();
+
+                if(!stream.isopen() || size == 0)
+                {
+                    return;
+                }
+
+                std::cout << "Reading PNG...: " << size << std::endl;
+                char* buffer = new char[size];
+                stream.read(buffer, size);
+                stream.close();
+
+                m_sprite.drawPng((uint8_t*) buffer, size, x, y, 0, 0, 0, 0, scaleX, scaleY);
+            
+                // here is the place to code the decompression
+                
+                delete[] buffer;
+            }
             switch (image.getType()) // image size with right format
             {
                 case BMP:
                     m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
                 case PNG:
-                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+                    //m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
                 case JPG:
                     m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);

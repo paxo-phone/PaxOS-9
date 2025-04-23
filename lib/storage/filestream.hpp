@@ -37,6 +37,7 @@ namespace storage
         std::string read(size_t returnSize = -1);
         std::string readline(void);
         std::string readword(void);
+        void read(char* buffer, std::size_t len);
         char readchar(void);
 
         void write(const std::string &str);

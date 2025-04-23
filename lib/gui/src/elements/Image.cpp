@@ -29,8 +29,6 @@ namespace gui::ImagesList
 
          const auto i = graphics::SImage(path);
 
-         // libsystem::log("Image: " + std::to_string(i.getType()) + ", " + std::to_string(i.getWidth()) + ", " + std::to_string(i.getHeight()) + ", " + i.getPath().str());
-
          ImageLoaded img = {
              path,
              i.getWidth(),
@@ -40,6 +38,7 @@ namespace gui::ImagesList
 
          // Clear the background if it's a transparent image ?
          // I guess so ?
+
          if(i.getType() != graphics::ImageType::BMP) {
              img.surface->clear(backgroundColor);
          }
@@ -59,7 +58,7 @@ namespace gui::ImagesList
             if (img->surface.unique())
             {
                 img = images.erase(img);
-                std::cout << "[Image] image deleted" << std::endl;
+                //std::cout << "[Image] image deleted" << std::endl;
             }
             else
             {

@@ -35,7 +35,8 @@ public:
     LuaRadio *radio(LuaWidget *parent, int x, int y);
     LuaWindow *window();
     LuaSlider *slider(LuaWidget *parent, int x, int y, int width, int height, int minValue, int maxValue, int defaultValue);
-    std::string keyboard(const std::string &placeholder, const std::string &defaultText);
+    std::string keyboard(const std::string &placeholder, const std::string &defaultText);   // deprecated
+    void keyboard_async(const std::string &placeholder, const std::string &defaultText, sol::function callback);
 
     void del(LuaWidget *widget);
 

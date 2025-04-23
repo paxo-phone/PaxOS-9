@@ -61,12 +61,22 @@ function editContact(contact)
     local name = gui:input(win3, 35, 121, 250, 40)
     name:setTitle("Nom")
     name:setText(contact.name)
-    name:onClick(function () name:setText(gui:keyboard("Nom", contact.name)) end)
+    name:onClick(function () 
+        gui:keyboard("Nom", name:getText(),
+            function (n)
+                name:setText(n)
+            end)
+        end)
 
     local num = gui:input(win3, 35, 216, 250, 40)
     num:setTitle("Numéro")
     num:setText(contact.phone)
-    num:onClick(function () num:setText(gui:keyboard("Numéro", contact.phone)) end)
+    num:onClick(function () 
+        gui:keyboard("Nom", num:getText(),
+            function (number) 
+                num:setText(number)
+            end)
+        end)
 
     edit = gui:button(win3, 35, 394, 250, 38);
     edit:setText("Modifier")
@@ -105,6 +115,7 @@ function newContact()
         gsm.addContact(c)
         print(c.name .. " " .. c.phone)
         update()
+        gsm.saveContacts()
     end)
 
     gui:setWindow(win2)

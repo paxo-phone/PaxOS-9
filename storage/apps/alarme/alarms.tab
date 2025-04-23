@@ -1,1 +1,9 @@
-{[1]={["enabled"]=0, ["time"]="15:36", }, }
+<<<<<<< HEAD
+<<<<<<< HEAD
+{[1]={["time"]="15:36", ["enabled"]=0, }, [2]={["time"]="19:05", ["enabled"]=0, }, }
+=======
+{[1]={["time"]="19:50", ["enabled"]=0, }, [2]={["enabled"]=1, ["time"]="00:10", }, }
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)
+=======
+{[1]={["time"]="19:50", ["enabled"]=0, }, [2]={["enabled"]=1, ["time"]="00:10", }, }
+>>>>>>> d9f4ab7 (Multiple settings changed to make the system more stable, less spontanious crashes, reduced stack usage, changed the keyboard in asynchronious, added a read function in storage)

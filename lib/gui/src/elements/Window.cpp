@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <graphics.hpp>
 #include <Surface.hpp>
+#include <algorithm>
 
 namespace gui::elements {
     Window::Window()

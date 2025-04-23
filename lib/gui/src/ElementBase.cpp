@@ -54,6 +54,12 @@ gui::ElementBase::~ElementBase()
             delete m_children[i];
         }
     }
+
+    if(widgetPressed == this)
+    {
+        widgetPressed = nullptr;
+        globalPressedState = PressedState::NOT_PRESSED;
+    }
 }
 
 void gui::ElementBase::renderAll(bool onScreen)

@@ -101,12 +101,21 @@ namespace AppManager
         bool background;        // app is in background
     };
 
-    // TODO : Check if "extern" is needed
-
     extern std::mutex threadsync; // mutex for thread-safe operations between threads
 
     extern std::vector<std::shared_ptr<App>> appList;   // list of apps in the apps folder
     extern std::vector<App*> appStack;                 // stack of the apps that are using the GUI, the last one is shown on the screen
+    
+    // keyboard management
+    namespace Keyboard_manager
+    {
+        void open(App* app, const std::string &placeholder, const std::string &defaultText, std::function<void(std::string)> callback);
+        void update();
+        void close();
+        extern App* app;
+        extern std::function<void(std::string)> callback;
+        extern std::unique_ptr<Keyboard> keyboard;
+    };
 
     int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description);
     void addPermission(App* app);

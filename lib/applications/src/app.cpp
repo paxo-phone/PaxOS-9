@@ -2,6 +2,7 @@
 
 #include <libsystem.hpp>
 #include <standby.hpp>
+#include <graphics.hpp>
 
 namespace AppManager {
     App::App(const std::string& name, const storage::Path& path, const storage::Path& manifest, const bool auth)
@@ -315,8 +316,12 @@ namespace AppManager {
         if (!appStack.empty()) {
             App* app = appStack.back();
 
-            if (app->luaInstance != nullptr) {
-                app->luaInstance->lua_gui.update();
+            if (app->luaInstance != nullptr)
+            {
+                if(app == Keyboard_manager::app)
+                    Keyboard_manager::update();
+                else
+                    app->luaInstance->lua_gui.update();
             }
 
             if(app->luaInstance->lua_gui.mainWindow == nullptr) // app has no GUI
@@ -466,5 +471,46 @@ namespace AppManager {
                 app->luaInstance->event_onmessageerror();
         }
         threadsync.unlock();
+    }
+
+    namespace Keyboard_manager
+    {
+        App* app = nullptr;
+        std::function<void(std::string)> callback;
+        std::unique_ptr<Keyboard> keyboard;
+
+        void open(App* app, const std::string &placeholder, const std::string &defaultText, std::function<void(std::string)> callback) {
+            graphics::setScreenOrientation(graphics::LANDSCAPE);
+            Keyboard_manager::app = app;
+            Keyboard_manager::callback = callback;
+            keyboard = std::make_unique<Keyboard>(defaultText);
+            keyboard->setPlaceholder(placeholder);
+        }
+
+        void update()
+        {
+            if(keyboard != nullptr)
+            {
+                keyboard->updateAll();
+
+                if(keyboard->quitting() || hardware::getHomeButton())
+                {
+                    close();
+                }
+            }
+        }
+
+        void close()
+        {
+            std::string result = keyboard->getText();
+            keyboard.reset();
+            Keyboard_manager::app = nullptr;
+            graphics::setScreenOrientation(graphics::PORTRAIT);
+
+            if(callback)
+            {
+                callback(result);
+            }
+        }
     }
 } // namespace AppManager

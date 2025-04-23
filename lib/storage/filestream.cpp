@@ -83,6 +83,11 @@ namespace storage
         return word;
     }
 
+    void FileStream::read(char* buffer, std::size_t len)
+    {
+        m_stream.read(buffer, len);
+    }
+
     char FileStream::readchar(void)
     {
         return m_stream.get();

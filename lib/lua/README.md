@@ -1,4 +1,3 @@
-```markdown
 # Paxos Lua API Documentation
 
 This document details the Lua API available within the Paxos operating system. This API allows developers to create applications using Lua, leveraging the system's capabilities for GUI development, file system access, hardware interaction, event handling, and more.

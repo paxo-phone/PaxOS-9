@@ -151,6 +151,8 @@ namespace GSM
     std::string send(const std::string &message, const std::string &answerKey, uint64_t timeout)
     {
 #ifdef ESP_PLATFORM
+        String temp = gsm.readString();
+        data += temp.c_str();
         gsm.println((message + "\r").c_str());
 
         std::cout << "[GSM] Sending request: " << message << ", " << answerKey << std::endl;
@@ -158,7 +160,7 @@ namespace GSM
         uint64_t lastChar = millis();
         std::string answer = "";
 
-        while (lastChar + timeout > millis()) // save none related messages to data.
+        /*while (lastChar + timeout > millis()) // save none related messages to data.
         {
             if (gsm.available())
             {
@@ -172,7 +174,7 @@ namespace GSM
                     break;
                 }
             }
-        }
+        }*/
 
         while (lastChar + timeout > millis() && (answer.find("OK\r\n") == std::string::npos && answer.find("ERROR\r\n") == std::string::npos))
         {
@@ -191,6 +193,8 @@ namespace GSM
         {
             std::cout << "[GSM] Response: " << answer << std::endl;
         }*/
+
+        delay(50);
 
         return answer;
 #endif
@@ -793,9 +797,9 @@ namespace GSM
     {
         send("AT+CMGF=0", "AT+CMGF=0", 100);
 
-        std::string input = send("AT+CMGL=0", "AT+CMGL", 5000); // read all messages
+        std::string input = send("AT+CMGL=0", "CMGL", 5000); // read all messages
 
-        std::cout << input << std::endl;
+        std::cout << "AT+CMGL=0 -----------------------------------------: " << input << std::endl;
 
         std::vector<std::string> pdus;
 
@@ -890,6 +894,12 @@ namespace GSM
             }
             catch (const std::out_of_range& e) {
                 std::cerr << "Erreur : " << e.what() << std::endl;
+            }
+
+            if(pdu.length() > 0)
+            {
+                if (ExternalEvents::onNewMessage)
+                    ExternalEvents::onNewMessage();
             }
         }
 
@@ -1232,7 +1242,12 @@ namespace GSM
 
         //PaxOS_Delay(50000);
 
-        requests.push_back({[](){ send("AT+CNTP=\"time.google.com\",8", "AT+CNTP"); send("AT+CNTP","AT+CNTP", 1000); }, priority::high});
+        requests.push_back({[]()
+        { 
+            send("AT+CNTP=\"time.google.com\",4", "AT+CNTP");   // the number 4 is the time zone*4, so each 1 is 1 quarter hour (weird)
+            send("AT+CNTP","AT+CNTP", 2000);
+            send("AT+CNMI=2,1,0,0,0", "AT+CNMI");
+        }, priority::high});
 
         updateHour();
         getNetworkQuality();

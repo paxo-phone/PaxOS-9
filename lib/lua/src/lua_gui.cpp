@@ -4,6 +4,7 @@
 #include <threads.hpp>
 #include "lua_file.hpp"
 #include "app.hpp"
+#include "libsystem.hpp"
 
 LuaGui::LuaGui(LuaFile *lua)
 {
@@ -183,6 +184,7 @@ void LuaGui::update()
 
 std::string LuaGui::keyboard(const std::string &placeholder, const std::string &defaultText)
 {
+    libsystem::log("[WARNING]: Keyboard is deprecated. Use keyboard_async instead.");
     graphics::setScreenOrientation(graphics::LANDSCAPE);
 
     auto key = new Keyboard(defaultText);
@@ -200,6 +202,12 @@ std::string LuaGui::keyboard(const std::string &placeholder, const std::string &
 
     delete key;
     return o;
+}
+
+void LuaGui::keyboard_async(const std::string &placeholder, const std::string &defaultText, sol::function callback)
+{
+    printf("Calling keyboard_async\n");
+    AppManager::Keyboard_manager::open(this->lua->app, placeholder, defaultText, callback);
 }
 
 void LuaGui::setMainWindow(LuaWindow *window)

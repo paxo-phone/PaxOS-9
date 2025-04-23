@@ -94,32 +94,36 @@ uint16_t decodeUTF8(uint8_t c) {
 
 std::string decodeString(std::string &code)
 {
-  resetUTF8decoder();
-
-  std::string code_8;
-  std::vector<uint16_t> code_16;
-
-  for (int i = 0; i < code.size(); i++)
-    code_16.push_back(decodeUTF8(code[i]));
-
-  for (int i = 0; i < code.size(); i++)
-  {
-    bool result = false;
-    for (int j = 0; j < FRCharcount; j++)
+    resetUTF8decoder();
+    std::string code_8;
+    std::vector<uint16_t> code_16;
+    
+    // First decode UTF8 characters
+    for (int i = 0; i < code.size(); i++)
+        code_16.push_back(decodeUTF8(code[i]));
+    
+    // Process each character
+    for (int i = 0; i < code.size(); i++)
     {
-      if(code_16[i] == FRCharset[j].UTF)
-      {
-          result = true;
-          code_8.push_back(FRCharset[j].latin);
-          break;
-      }
+        bool result = false;
+        
+        // Check if character exists in FRCharset table
+        for (int j = 0; j < FRCharcount; j++)
+        {
+            if(code_16[i] == FRCharset[j].UTF)
+            {
+                result = true;
+                code_8.push_back(FRCharset[j].latin);
+                break;
+            }
+        }
+        
+        // Only add ASCII characters that are printable
+        if(!result && code_16[i] <= 0x7F && isprint(code_16[i]))
+        {
+            code_8.push_back(static_cast<char>(code_16[i]));
+        }
+        // Characters above 0x7F that aren't in the table are ignored
     }
-
-    if(!result && code_16[i] <= 0xFF)
-    {
-        code_8.push_back(static_cast<char>(code_16[i]));
-    }
-  }
-
-  return code_8;
+    return code_8;
 }

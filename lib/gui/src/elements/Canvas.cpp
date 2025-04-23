@@ -2,6 +2,7 @@
 
 #include <standby.hpp>
 #include <threads.hpp>
+#include <algorithm>
 
 namespace gui::elements
 {
