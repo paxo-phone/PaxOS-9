@@ -232,6 +232,13 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 
 #ifdef ESP_PLATFORM
     sprite.pushSprite(lcd.get(), x, y);
+    // lcd.get()->waitDMA();
+    // while(lcd.get()->dmaBusy());
+    // lcd.get()->initDMA();
+    // lcd.get()->setWindow(x, y, sprite.width(), sprite.height());
+    // lcd.get()->pushImageDMA(x, y, sprite.width(), sprite.height(), sprite.getBuffer(), lgfx::color_depth_t::rgb565_2Byte, sprite.getPalette());
+    //lcd.get()->waitDMA();
+
 #else
     if (screenOrientation == LANDSCAPE)
     {

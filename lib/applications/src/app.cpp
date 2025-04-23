@@ -378,6 +378,7 @@ namespace AppManager {
         }
 
         libsystem::log("App not found: " + appName);
+        return nullptr;
     }
 
     std::shared_ptr<App> get(const uint8_t index) {
@@ -385,6 +386,7 @@ namespace AppManager {
             return appList[index];
         }
         libsystem::log("App index out of range");
+        return nullptr;
     }
 
     std::shared_ptr<App> get(const lua_State* L) {
@@ -394,6 +396,7 @@ namespace AppManager {
             }
         }
         libsystem::log("App not found for given lua_State instance");
+        return nullptr;
     }
 
     std::shared_ptr<App> get(sol::state* L) {
@@ -410,6 +413,7 @@ namespace AppManager {
         }
 
         libsystem::log("App not found for given sol::state instance");
+        return nullptr;
     }
 
     App* get(const LuaFile* luaInstance) {
@@ -430,6 +434,7 @@ namespace AppManager {
         }
 
         libsystem::log("App not found at path: " + path.str());
+        return nullptr;
     }
 
     void event_oncall() {

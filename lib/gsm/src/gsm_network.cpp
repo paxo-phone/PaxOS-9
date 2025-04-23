@@ -30,7 +30,7 @@ namespace GSM
         requests.push_back(this);
 
         state = RequestState::WAITING;
-        timeout = millis() + 10000;
+        timeout = os_millis() + 10000;
         this->callback = callback;
     }
 
@@ -41,10 +41,10 @@ namespace GSM
 
         #ifdef ESP_PLATFORM
         
-        timeout = millis() + 10000;
+        timeout = os_millis() + 10000;
 
         GSM::coresync.lock();
-        uint64_t timer = millis();  // pour le timeout
+        uint64_t timer = os_millis();  // pour le timeout
         uint64_t timeout_block = 3000;    // timeout de 1 secondes
 
         uint64_t nextBlockSize = std::min(uint64_t(1024), dataSize - readed);
@@ -55,11 +55,11 @@ namespace GSM
 
         //std::cout << "Waiting for the data" << std::endl;
 
-        while (timer + timeout_block > millis() && (!gsm.available() || gsm.read() != 'K'));    // wait for the garbage data to be ignored
-        while (timer + timeout_block > millis() && (!gsm.available() || gsm.read() != ':'));
-        while (timer + timeout_block > millis() && (!gsm.available() || gsm.read() != '\n'));
+        while (timer + timeout_block > os_millis() && (!gsm.available() || gsm.read() != 'K'));    // wait for the garbage data to be ignored
+        while (timer + timeout_block > os_millis() && (!gsm.available() || gsm.read() != ':'));
+        while (timer + timeout_block > os_millis() && (!gsm.available() || gsm.read() != '\n'));
 
-        while (gsm.available() < nextBlockSize && timer + timeout_block > millis());
+        while (gsm.available() < nextBlockSize && timer + timeout_block > os_millis());
 
         if(gsm.available() < nextBlockSize)
         {
@@ -102,7 +102,7 @@ namespace GSM
         requests.erase(std::remove(requests.begin(), requests.end(), this), requests.end());
     }
 
-    void HttpRequest::fastKill(uint8_t code)
+    void HttpRequest::fastKill(uint16_t code)
     {
         close();
         callback(code, 0);
@@ -172,14 +172,14 @@ namespace GSM
                     break;
                 case HttpRequest::RequestState::SENT:
                     // let the key be received
-                    if(millis() > currentRequest->timeout)
+                    if(os_millis() > currentRequest->timeout)
                     {
                         currentRequest->fastKill(504);
                     }
                     break;
                 case HttpRequest::RequestState::RECEIVED:
                     // let the app read the data
-                    if(millis() > currentRequest->timeout)
+                    if(os_millis() > currentRequest->timeout)
                     {
                         currentRequest->close();
                         break;
@@ -209,7 +209,7 @@ namespace GSM
             {
                 currentRequest->state = RequestState::RECEIVED;
                 currentRequest->dataSize = size;
-                currentRequest->timeout = millis() + 10000;
+                currentRequest->timeout = os_millis() + 10000;
                 currentRequest->callback(status, size);
             }
         }

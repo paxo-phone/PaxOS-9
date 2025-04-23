@@ -22,7 +22,7 @@ uint64_t os_millis(void)
 unsigned long sleepStartTimeMillis;
 long long sleepTimeCorrectionOffset = 0;
 
-unsigned long correctedMillis() {
+unsigned long os_millis() {
     return millis() + sleepTimeCorrectionOffset;
 }
 

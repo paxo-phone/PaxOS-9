@@ -11,12 +11,12 @@
 LuaTime::LuaTime(LuaFile* lua)
 {
     this->lua = lua;
-    timerFromStart = millis();
+    timerFromStart = os_millis();
 }
 
 uint32_t LuaTime::monotonic()
 {
-    return millis() - timerFromStart;
+    return os_millis() - timerFromStart;
 }
 
 int findIndex(const std::vector<std::string>& vec, const std::string& target) {

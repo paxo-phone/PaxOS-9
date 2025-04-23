@@ -63,7 +63,6 @@ namespace gui::elements
                updateFocusedIndex();
             }
         }
-        
     }
 
     void VerticalList::setIsSelected(bool selected) {
