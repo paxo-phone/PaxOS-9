@@ -11,14 +11,10 @@
 #include <cstdint>
 
 #ifdef ESP_PLATFORM
-
 #include "platforms/LGFX_ESP32_PAXO5.hpp"
-
 #else
-
 #include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
 #include "LGFX_AUTODETECT.hpp"
-
 #endif
 
 class FT6236G;
@@ -114,7 +110,7 @@ namespace graphics
      * @return The LGFX screen instance.
      */
     [[nodiscard]] LGFX* getLCD();
-#ifdef ESP_PLATFORM
+    #ifdef ESP_PLATFORM
     [[nodiscard]] FT6236G* getTouchController();
 #endif
 
