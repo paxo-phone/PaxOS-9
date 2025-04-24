@@ -16,7 +16,7 @@
 #endif
 
 #include <standby.hpp>
-
+#include <delay.hpp>
 #include <color.hpp>
 #include <graphics.hpp>
 
@@ -39,12 +39,7 @@ void libsystem::init()
 
 void libsystem::delay(uint64_t ms)
 {
-
-#ifdef ESP_PLATFORM
-    vTaskDelay(pdMS_TO_TICKS(ms));
-#else
-    SDL_Delay(ms);
-#endif
+    PaxOS_Delay(ms);
 }
 
 std::string hexToString(const uint32_t hex)

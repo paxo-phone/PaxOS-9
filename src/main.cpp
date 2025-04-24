@@ -30,7 +30,10 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
+
+#ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
+#endif
 
 using namespace gui::elements;
 

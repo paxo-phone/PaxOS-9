@@ -127,6 +127,8 @@ namespace StandbyMode
 
     void sleepCycle()
     {
+        #ifdef ESP_PLATFORM
+
         /*
             Cette fonction a été développée par Gemini (je n'ai pas réussi a la faire moi même; Si quelqu'un propose mieux :) )
             Elle a pour but de créer une pause courte de 1/4s pour économiser de l'énergie, et doit aussi corriger le décalage de delais de millis() tout en gérant quand le bloquage doit avoir lieu en fonction des autres coeurs et threads
@@ -197,6 +199,7 @@ namespace StandbyMode
         Serial.flush();
         buisy_io.unlock();
         GSM::unlockSemaphore();
+        #endif
     }
 
 
@@ -220,7 +223,11 @@ namespace StandbyMode
         #endif
         }
         else
+        #ifdef ESP_PLATFORM
             vTaskDelay(pdMS_TO_TICKS(1));
+        #else
+            SDL_Delay(1);
+        #endif
 
         #ifdef ESP_PLATFORM
         //std::cout << "CPU USAGE: " << (float) (100*(dt/TICKS_MS)) << "%" << std::endl;

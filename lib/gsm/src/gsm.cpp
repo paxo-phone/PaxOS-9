@@ -54,12 +54,15 @@ namespace GSM
     bool flightMode = false;
     std::mutex coresync;
     bool simLocked = false;
+
+    #ifdef ESP_PLATFORM
     SemaphoreHandle_t sleepEndedSemaphore;
 
     void unlockSemaphore()
     {
         xSemaphoreGive(GSM::sleepEndedSemaphore);
     }
+    #endif
 
     namespace ExternalEvents
     {
@@ -1263,10 +1266,14 @@ namespace GSM
 
     void run()
     {
+#ifdef ESP_PLATFORM
         esp_task_wdt_init(10000, false);
+#endif
         init();
 
+#ifdef ESP_PLATFORM
         sleepEndedSemaphore = xSemaphoreCreateBinary();
+#endif
 
         //PaxOS_Delay(50000);
 
@@ -1302,7 +1309,9 @@ namespace GSM
             {
                 printf("before\n");
                 PaxOS_Delay(1);
+#ifdef ESP_PLATFORM
                 xSemaphoreTake(sleepEndedSemaphore, pdMS_TO_TICKS(250));
+#endif
                 printf("after\n");
             }
             StandbyMode::buisy_io.lock();
