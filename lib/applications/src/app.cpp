@@ -79,7 +79,10 @@ namespace AppManager {
         }
     }
 
+    bool didRequestAuth = false;
+
     void App::requestAuth() {
+        didRequestAuth = true; // will be turned off in the main loop
         Window win;
 
         auto *label = new Label(0, 0, 320, 400);
