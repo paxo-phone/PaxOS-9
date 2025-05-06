@@ -6,6 +6,8 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Discord](https://img.shields.io/discord/747816102250643506?label=Discord&logo=discord)](https://discord.com/invite/MpqbWr3pUG)
 
+[Version française ici](https://github.com/paxo-phone/PaxOS-9/blob/main/README-FR.md)
+
 **PaxOS 9** is the latest iteration of PaxOS, a lightweight, open-source operating system designed primarily for PaxoPhone devices. It's built using the PlatformIO ecosystem, enabling development and deployment across its target hardware and native simulations for desktop environments.
 
 ## Table of Contents
