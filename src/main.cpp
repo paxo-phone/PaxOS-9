@@ -135,8 +135,9 @@ void mainLoop(void* data) {
                 #ifndef ESP_PLATFORM
                 applications::launcher::draw();
                 #endif
-            } else if(launcher)
+            } else if(launcher && !AppManager::didRequestAuth)
             {
+                // icicicicicici
                 //applications::launcher::free();
                 //launcher = false;
                 libsystem::setDeviceMode(libsystem::SLEEP);
@@ -144,6 +145,9 @@ void mainLoop(void* data) {
             } else if(AppManager::isAnyVisibleApp())
             {
                 AppManager::quitApp();
+            } else if (AppManager::didRequestAuth)
+            {
+                AppManager::didRequestAuth = false;
             }
         }
 
