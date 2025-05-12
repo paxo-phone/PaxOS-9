@@ -19,6 +19,7 @@
 #include <delay.hpp>
 #include <color.hpp>
 #include <graphics.hpp>
+#include <app.hpp>
 
 #include "base64.hpp"
 
@@ -247,6 +248,7 @@ void libsystem::setDeviceMode(const DeviceMode mode)
         break;
     case SLEEP:
         std::cout << "SLEEP" << std::endl;
+        AppManager::Keyboard_manager::close(false);
         graphics::setBrightness(0x00, true);
         StandbyMode::savePower();
         break;

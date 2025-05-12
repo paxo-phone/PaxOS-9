@@ -10,6 +10,7 @@
 #include <contacts.hpp>
 #include <libsystem.hpp>
 #include <standby.hpp>
+#include <gsm2.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -672,6 +673,13 @@ void LuaFile::load()
         luaGSM["rejectCall"] = &LuaGSM::rejectCall;
         luaGSM["getNumber"] = &LuaGSM::getNumber;
         luaGSM["getCallState"] = &LuaGSM::getCallState;
+        
+        luaGSM["IDLE"] = Gsm::CallState::IDLE;
+        luaGSM["DIALING"] = Gsm::CallState::DIALING;
+        luaGSM["RINGING"] = Gsm::CallState::RINGING;
+        luaGSM["ACTIVE"] = Gsm::CallState::ACTIVE;
+        luaGSM["UNKNOWN"] = Gsm::CallState::UNKNOWN;
+
 
         luaGSM["saveContacts"] = &Contacts::save;
         luaGSM["listContacts"] = &Contacts::listContacts;
@@ -819,8 +827,8 @@ void LuaFile::load()
 
         if(perms.acces_password_manager)
         {
-            systemSettings.set_function("setSimPin", &GSM::setSimPin);
-            systemSettings.set_function("isSimLocked", &GSM::isSimLocked);
+            systemSettings.set_function("setSimPin", &Gsm::setPin);
+            systemSettings.set_function("isSimLocked", &Gsm::isPinRequired);
         }
     }
 

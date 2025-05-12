@@ -2,6 +2,7 @@
 #include "delay.hpp"
 #include <clock.hpp>
 #include <gsm.hpp>
+#include <gsm2.hpp>
 
 #ifndef THREAD_HANDLER
     #define THREAD_HANDLER
@@ -49,7 +50,10 @@ void ThreadManager::background_thread(void* arg)
 
 void ThreadManager::simcom_thread(void* arg)
 {
-    GSM::run();
+    //GSM::run();
+    Gsm::init();
+    printf("[GSM] GSM initialized\n");
+    Gsm::loop();
 }
 
 void ThreadManager::app_thread(){}

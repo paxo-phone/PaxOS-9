@@ -521,16 +521,17 @@ namespace AppManager {
             // printf("s--- 5\n");
         }
 
-        void close()
+        void close(bool runcallback)
         {
-            std::string result = keyboard->getText();
-            keyboard.reset();
-            Keyboard_manager::app = nullptr;
-            graphics::setScreenOrientation(graphics::PORTRAIT);
+            if (keyboard) {
+                std::string result = keyboard->getText();
+                keyboard.reset();
+                Keyboard_manager::app = nullptr;
+                graphics::setScreenOrientation(graphics::PORTRAIT);
 
-            if(callback)
-            {
-                callback(result);
+                if (runcallback && callback) {
+                    callback(result);
+                }
             }
         }
     }

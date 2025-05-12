@@ -3,7 +3,7 @@
 #include <graphics.hpp>
 #include <ElementBase.hpp>
 #include <app.hpp>
-#include <gsm.hpp>
+#include <gsm2.hpp>
 #include <libsystem.hpp>
 #include <memory>
 #include <gui.hpp>
@@ -19,20 +19,25 @@
  */
 std::string getFormatedDate()
 {
-    uint16_t day_ = GSM::days;
-    uint16_t day = GSM::days;
-    uint16_t month = GSM::months;
-    uint16_t year = GSM::years;
+    int16_t day_ = Gsm::Time::getDay();
+    int16_t day = Gsm::Time::getDay();
+    int16_t month = Gsm::Time::getMonth();
+    int16_t year = Gsm::Time::getYear();
+
+    if(day_ == -1) day_ = 1;
+    if(day == -1) day = 1;
+    if(month == -1) month = 1;
+    if(year == -1) year = 1970;
 
     std::string dayName = daysOfWeek[(day+=month<3?year--:year-2,23*month/9+day+4+year/4-year/100+year/400)%7];
     std::string monthName = daysOfMonth[month==0?1:(month-1)];
 
-    return dayName + " " + std::to_string(GSM::days) + " " + monthName;
+    return dayName + " " + std::to_string(Gsm::Time::getDay()) + " " + monthName;
 }
 
 std::string getBatteryIconFilename() {
     const bool isCharging = hardware::isCharging();
-    const double batteryLevel = GSM::getBatteryLevel();
+    const double batteryLevel = Gsm::getBatteryLevel();  // TODO: Replace with actual battery level calculation
 
     if (batteryLevel < 0.2) {
         return isCharging ? "battery_charging_full" : "battery_0_bar";
@@ -99,23 +104,23 @@ void applications::launcher::update() {
     {
         static int min;
 
-        if(min != GSM::minutes) {
-            clockLabel->setText(std::to_string(GSM::hours) + ":" + (GSM::minutes<=9 ? "0" : "") + std::to_string(GSM::minutes));
+        if(min != Gsm::Time::getMinute()) {
+            clockLabel->setText(std::to_string(Gsm::Time::getHour()) + ":" + (Gsm::Time::getMinute()<=9 ? "0" : "") + std::to_string(Gsm::Time::getMinute()));
             dateLabel->setText(getFormatedDate());
 
-            min = GSM::minutes;
+            min = Gsm::Time::getMinute();
         }
     }
 
     //std::cout << "launcher::update 2" << std::endl;
 
     {
-        static double lastBattery = GSM::getBatteryLevel();
-        if(lastBattery != GSM::getBatteryLevel())
+        static double lastBattery = Gsm::getBatteryLevel();
+        if(lastBattery != Gsm::getBatteryLevel())
         {
-            batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
+            batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
 
-            lastBattery = GSM::getBatteryLevel();
+            lastBattery = Gsm::getBatteryLevel();
         }
     }
 
@@ -135,7 +140,7 @@ void applications::launcher::update() {
 
         if(flightModeSwitch->isTouched())
         {
-            GSM::setFlightMode(flightModeSwitch->getState());
+            Gsm::setFlightMode(flightModeSwitch->getState());
         }
     }
 
@@ -158,15 +163,15 @@ void applications::launcher::update() {
     }
 
     {
-        static int lastNetwork = GSM::getNetworkStatus();
-        if(lastNetwork != GSM::getNetworkStatus())
+        static int lastNetwork = Gsm::getNetworkQuality().first;
+        if(lastNetwork != Gsm::getNetworkQuality().first)
         {
-            if(GSM::getNetworkStatus() == 99)
+            if(Gsm::getNetworkQuality().first == 99)
                 networkLabel->setText("X");
             else
-                networkLabel->setText(std::to_string((int) GSM::getNetworkStatus() * 100 / 31) + "%");
+                networkLabel->setText(std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) + "%");
 
-            lastNetwork = GSM::getNetworkStatus();
+            lastNetwork = Gsm::getNetworkQuality().first;
         }
     }
 
@@ -215,7 +220,7 @@ void applications::launcher::draw() {
 
     // Clock
     clockLabel = new Label(86, 42, 148, 41);
-    clockLabel->setText(std::to_string(GSM::hours) + ":" + (GSM::minutes<=9 ? "0" : "") + std::to_string(GSM::minutes));    // hour
+    clockLabel->setText(std::to_string(Gsm::Time::getHour()) + ":" + (Gsm::Time::getMinute()<=9 ? "0" : "") + std::to_string(Gsm::Time::getMinute()));    // hour
     clockLabel->setVerticalAlignment(Label::Alignement::CENTER);
     clockLabel->setHorizontalAlignment(Label::Alignement::CENTER);
     clockLabel->setFontSize(36);
@@ -246,7 +251,7 @@ void applications::launcher::draw() {
 
     // Battery label
     batteryLabel = new Label(255, 10, 40, 18);
-    batteryLabel->setText(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "%");
+    batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
     batteryLabel->setVerticalAlignment(Label::Alignement::CENTER);
     batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
     batteryLabel->setFontSize(18);
@@ -258,10 +263,10 @@ void applications::launcher::draw() {
     
     {   // Network
         networkLabel = new Label(2, 2, 30, 18);
-        if(GSM::getNetworkStatus() == 99)
+        if(Gsm::getNetworkQuality().first == 99)
             networkLabel->setText("X");
         else
-            networkLabel->setText(std::to_string((int) GSM::getNetworkStatus() * 100 / 31) + "%");
+            networkLabel->setText(std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) + "%");
         networkLabel->setVerticalAlignment(Label::Alignement::CENTER);
         networkLabel->setHorizontalAlignment(Label::Alignement::CENTER);
         networkLabel->setFontSize(18);
@@ -283,7 +288,7 @@ void applications::launcher::draw() {
         flightModeBox->addChild(flightModeText);
 
         flightModeSwitch = new Switch(89, 19);
-            flightModeSwitch->setState(GSM::isFlightMode());
+            flightModeSwitch->setState(Gsm::isFlightModeActive());
         flightModeBox->addChild(flightModeSwitch);
 
         flightModeButton = new Button(169, 10, 38, 38);

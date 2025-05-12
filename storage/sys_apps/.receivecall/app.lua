@@ -1,16 +1,8 @@
 -- recevoir un appel
 
-function hangOn()
-    gui:setWindow(nil)
-    print("hang on")
-end
-
 function checkHangOn()
-    print("hang on check" .. tostring(gsm.getCallState()))
-    if (gsm.getCallState() == 0) then
-        hangOn()
-    else
-        time:setTimeout(checkHangOn, 500)
+    if(gsm.getCallState() == IDLE) then
+        gui:setWindow(nil)
     end
 end
 
@@ -28,9 +20,9 @@ function callPage()
     num:setFontSize(36)
     num:setText(gsm.getNumber())
 
-    hangOnB=gui:button(win2, 35, 394, 250, 38)
-    hangOnB:setText("Raccrocher")
-    --hangOnB:onClick(function() gsm:endCall() end)
+    hangOnB=gui:label(win2, 35, 394, 250, 38)
+    hangOnB:setHorizontalAlignment(CENTER_ALIGNMENT)
+    hangOnB:setText("Quitter pour raccrocher")
 
     gui:setWindow(win2)
 end
@@ -63,7 +55,7 @@ function run(arg)
     refuse:setText("Refuser")
     refuse:onClick(function() gsm:rejectCall() end)
     
-    time:setTimeout(checkHangOn, 5000)
+    hangonevent = time:setInterval(checkHangOn, 200)
 
     gui:setWindow(win)
 end
