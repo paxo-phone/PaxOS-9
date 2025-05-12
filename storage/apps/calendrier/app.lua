@@ -1099,14 +1099,14 @@ function displayEvent(event)
     local inputName = gui:input(winNewEvent, 60, 10, 250, 40)
     inputName:setTitle(titre)
     inputName:setText(event.name)
-    inputName:onClick(
-        function ()
-            local keyboard = gui:keyboard("Nom de l'évènement", event.name)
-            inputName:setText(keyboard)
-            event.name = keyboard
-            lblMsgError:setText("")
-        end
-    )
+    inputName:onClick(function()
+        gui:keyboard("Nom de l'évènement", event.name,
+            function(txt)
+                inputName:setText(txt)
+                event.name = txt
+                lblMsgError:setText("")
+            end)
+    end)
     -- -----------------------------------
     -- Gestion de la date & heure de début
 
