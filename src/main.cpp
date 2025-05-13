@@ -23,6 +23,7 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 #include <threads.hpp>
 #include <lua_file.hpp>
 #include <gsm.hpp>
+#include <gsm2.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
 #include <FileConfig.hpp>
@@ -140,6 +141,7 @@ void mainLoop(void* data) {
                 // icicicicicici
                 //applications::launcher::free();
                 //launcher = false;
+                while(hardware::getHomeButton());
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
             } else if(AppManager::isAnyVisibleApp())
@@ -225,7 +227,7 @@ void init(void* data)
     // If battery is too low
     // Don't initialize ANY MORE service
     // But display error
-    if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
+    /*if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
         libsystem::registerBootError("Battery level is too low.");
         libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "% < 5%");
         libsystem::registerBootError("Please charge your Paxo.");
@@ -236,7 +238,7 @@ void init(void* data)
         // TODO: Set device mode to sleep
 
         return;
-    }
+    }*/
 
     // Init storage and check for errors
     if (!storage::init()) {
@@ -302,13 +304,13 @@ void init(void* data)
      */
 
     // gestion des appels entrants
-    GSM::ExternalEvents::onIncommingCall = []()
+    Gsm::ExternalEvents::onIncommingCall = []()
     {
         eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run();}), 0);
     };
 
     // Gestion de la réception d'un message
-    GSM::ExternalEvents::onNewMessage = []()
+    Gsm::ExternalEvents::onNewMessage = []()
     {
         #ifdef ESP_PLATFORM
         eventHandlerBack.setTimeout(new Callback<>([](){hardware::vibrator::play({1, 0, 1});}), 0);
@@ -317,7 +319,7 @@ void init(void* data)
         AppManager::event_onmessage();
     };
 
-    GSM::ExternalEvents::onNewMessageError = []()
+    Gsm::ExternalEvents::onNewMessageError = []()
     {
         AppManager::event_onmessageerror();
     };
@@ -333,7 +335,7 @@ void init(void* data)
     );
 
     hardware::setVibrator(false);
-    GSM::endCall();
+    //GSM::endCall();
 
     // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
@@ -348,9 +350,11 @@ void init(void* data)
 
 void setup()
 {
-    //esp_task_wdt_init(5000, false);
+    #ifdef ESP_PLATFORM
+    esp_task_wdt_init(5000, true);
+    #endif
+    
     init(NULL);
-    //ThreadManager::new_thread(CORE_APP, &init, 12*1024);
 }
 
 void loop(){}
