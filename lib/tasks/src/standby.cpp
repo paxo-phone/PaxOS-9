@@ -132,6 +132,8 @@ namespace StandbyMode
     }
 
     void lightSleepMillis(unsigned long t) {
+        #ifdef ESP_PLATFORM
+
         // Convert milliseconds to microseconds for the timer wake-up
         uint64_t time_us = (uint64_t)t * 1000;
 
@@ -221,10 +223,13 @@ namespace StandbyMode
 
         // Calculate the correction offset
         sleepTimeCorrectionOffset += apparentSleepDurationMillis;
+        #endif
     }
 
     void sleepCycle()
     {
+        #ifdef ESP_PLATFORM
+
         if(hardware::vibrator::isPlaying())
         {
             PaxOS_Delay(50);
@@ -260,82 +265,7 @@ namespace StandbyMode
         lightSleepMillis(3000);
         buisy_io.unlock();
         Gsm::checkForMessages();
-
-        /*#ifdef ESP_PLATFORM
-
-        
-        //    Cette fonction a été développée par Gemini (je n'ai pas réussi a la faire moi même; Si quelqu'un propose mieux :) )
-        //    Elle a pour but de créer une pause courte de 1/4s pour économiser de l'énergie, et doit aussi corriger le décalage de delais de millis() tout en gérant quand le bloquage doit avoir lieu en fonction des autres coeurs et threads
-        
-
-        if(!buisy_io.try_lock())
-            return;
-
-        Serial.flush();
-        //printf("sleep mode\n");
-
-        // Record millis before sleep
-        sleepStartTimeMillis = millis();
-
-        // Get RTC time before sleep
-        time_t rtcTimeBeforeSleep;
-        time(&rtcTimeBeforeSleep);
-        char rtcBeforeBuf[30];
-        strftime(rtcBeforeBuf, sizeof(rtcBeforeBuf), "%Y-%m-%d %H:%M:%S", localtime(&rtcTimeBeforeSleep));
-        //printf("RTC Time Before Sleep: %s (%ld)\n", rtcBeforeBuf, rtcTimeBeforeSleep);
-
-        esp_sleep_enable_timer_wakeup(250000);
-
-        // Enable external wake-up on the specified pin (falling edge in this case)
-        esp_sleep_enable_ext0_wakeup(gpio_num_t(PIN_HOME_BUTTON), 0); // 0 for low level (pulled down)
-
-        // Enter light sleep
-        esp_light_sleep_start();
-
-        // Code execution resumes here after waking up
-        //printf("Woke up!\n");
-
-        // Get RTC time after wake-up
-        time_t rtcTimeAfterWakeup;
-        time(&rtcTimeAfterWakeup);
-        char rtcAfterBuf[30];
-        strftime(rtcAfterBuf, sizeof(rtcAfterBuf), "%Y-%m-%d %H:%M:%S", localtime(&rtcTimeAfterWakeup));
-        //printf("RTC Time After Wakeup: %s (%ld)\n", rtcAfterBuf, rtcTimeAfterWakeup);
-
-        double sleepDurationSeconds = difftime(rtcTimeAfterWakeup, rtcTimeBeforeSleep);
-        unsigned long actualSleepDurationMillis = static_cast<unsigned long>(sleepDurationSeconds / 1000);
-
-        // Calculate apparent sleep duration using millis
-        unsigned long apparentSleepDurationMillis = millis() - sleepStartTimeMillis;
-
-        // Calculate the correction offset
-        sleepTimeCorrectionOffset += apparentSleepDurationMillis;
-
-        //printf("Apparent sleep duration (millis): %lu ms\n", apparentSleepDurationMillis);
-        //printf("Actual sleep duration (RTC): %lu ms\n", actualSleepDurationMillis);
-        //printf("Time correction offset: %lld ms\n", sleepTimeCorrectionOffset);
-
-        // You can check the reason for wake-up if needed
-        esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
-
-        switch (wakeup_reason) {
-            case ESP_SLEEP_WAKEUP_TIMER:
-            //printf("Woke up due to timer.\n");
-            break;
-            case ESP_SLEEP_WAKEUP_EXT0:
-            //printf("Woke up due to external signal on GPIO %d\n", PIN_HOME_BUTTON);
-            break;
-            default:
-            //printf("Woke up due to other reason: %d\n", wakeup_reason);
-            break;
-        }
-
-        Serial.flush();
-        buisy_io.unlock();
-        //GSM::unlockSemaphore();   TODO: reactivate it
-        #endif*/
-
-
+        #endif
     }
 
 

@@ -310,7 +310,8 @@ namespace Gsm
             case 0x7B: return "\xC3\xA4"; /* ä */ // Also 0x5B - use 0x5B mapping? Let's be consistent
             case 0x7C: return "\xC3\xB6"; /* ö */ // Also 0x5C - use 0x5C mapping?
             case 0x7D: return "\xC3\xBC"; /* ü */ // Also 0x5D - use 0x5D mapping?
-            case 0x7E: return "\xC3\xA0"; /* à */
+            // Original: case 0x7E: return "\xC3\xA0"; /* à */
+            case 0x7E: return "a"; // Map 'à' to 'a' as a workaround for display limitations
             case 0x7F: return "\xE2\x82\xAC"; /* € (commonly mapped to 0x7F without ESC) */
             default:
                 // Unhandled or undefined septets -> Map to '?'
@@ -372,7 +373,7 @@ namespace Gsm
     
         for (int i = 0; i < num_septets; ++i) {
             if (current_octet_idx >= packed_octets.size()) {
-                printf("[PDU Decode] unpack7BitData: Ran out of octets for %d septets (Needed %d total). Index %d.\n", num_septets, packed_octets.size() * 8 / 7, i);
+                printf("[PDU Decode] unpack7BitData: Ran out of octets for %d septets. Index %d.\n", num_septets, packed_octets.size() * 8 / 7, i);
                 break;
             }
             unsigned char current_septet;
@@ -810,8 +811,8 @@ namespace Gsm
     }
 
     // Forward declarations for helper functions
-    bool isEndIdentifier(const std::__cxx11::string &data);
-    bool isURC(const std::__cxx11::string &data);
+    bool isEndIdentifier(const std::string &data);
+    bool isURC(const std::string &data);
     // end of forward declarations
 
     static void queueReadSms(const std::string& memory_store, int index) {
@@ -2019,6 +2020,7 @@ namespace Gsm
     // --- Main Processing Loop (run) ---
     void run()
     {
+        #ifdef ESP_PLATFORM
         enum class SerialRunState { NO_COMMAND, COMMAND_RUNNING, SENDING_PDU_DATA };
         static SerialRunState state = SerialRunState::NO_COMMAND;
         static std::chrono::steady_clock::time_point lastCommandTime;
@@ -2145,6 +2147,7 @@ namespace Gsm
                 state = SerialRunState::NO_COMMAND;
             }
         }
+        #endif
     } 
 
 

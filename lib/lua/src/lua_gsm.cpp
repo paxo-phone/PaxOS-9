@@ -56,6 +56,22 @@ namespace LuaGSM
 #endif
     }
 
+
+    bool isPinNeeded()
+    {
+        return Gsm::isPinRequired();
+    }
+
+    void setPin(std::string pin)
+    {
+        Gsm::setPin(pin);
+    }
+
+    void setFlightMode(bool mode)
+    {
+        Gsm::setFlightMode(mode);
+    }
+
     std::string getNumber()
     {
         return Gsm::getLastIncomingNumber();

@@ -320,7 +320,7 @@ namespace gui::elements {
                 for (int i = 0; i < OUTPUT_VOCAB_SIZE; i++) {
                     if (key == output_index_to_char[i]) {
                         proba = probabilities[i];
-                        std::cout << "Key: " << key << ", Probability: " << proba << std::endl;
+                        //std::cout << "Key: " << key << ", Probability: " << proba << std::endl;
                         break;
                     }
                 }

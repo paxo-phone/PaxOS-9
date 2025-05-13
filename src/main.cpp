@@ -346,9 +346,11 @@ void init(void* data)
 
 void setup()
 {
+    #ifdef ESP_PLATFORM
     esp_task_wdt_init(5000, true);
+    #endif
+    
     init(NULL);
-    //ThreadManager::new_thread(CORE_APP, &init, 12*1024);
 }
 
 void loop(){}
