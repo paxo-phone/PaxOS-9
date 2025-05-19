@@ -214,6 +214,11 @@ void applications::launcher::update() {
 void applications::launcher::draw() {
     libsystem::log("applications::launcher::draw");
 
+    if (!launcherWindow) {
+        std::cout << "launcherWindow not present, aborting draw()" << std::endl;
+        return;
+    }
+
     //std::cout << "launcher::update 1.1" << std::endl;
 
     StandbyMode::triggerPower();
