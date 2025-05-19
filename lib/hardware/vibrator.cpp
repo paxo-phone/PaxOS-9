@@ -1,5 +1,6 @@
 #include <vibrator.hpp>
 
+#include <gsm2.hpp>
 
 namespace hardware
 {    
@@ -10,13 +11,18 @@ namespace hardware
         {
             vibrator::pattern = pattern;
         }
+
+        bool isPlaying()
+        {
+            return pattern.size() > 0;
+        }
         
         void thread(void* data)
         {
             #ifdef ESP_PLATFORM
             while (true)
             {
-                if(GSM::state.callState == GSM::CallState::RINGING)
+                if(Gsm::getCallState() == Gsm::CallState::RINGING)
                 {
                     delay(200); hardware::setVibrator(true); delay(100); hardware::setVibrator(false);
                 }
@@ -24,8 +30,8 @@ namespace hardware
                 if(pattern.size() > 0)
                 {
                     hardware::setVibrator(pattern[0]);
-                    pattern.erase(pattern.begin());
                     delay(100);
+                    pattern.erase(pattern.begin());
 
                     if(pattern.size() == 0)
                     {

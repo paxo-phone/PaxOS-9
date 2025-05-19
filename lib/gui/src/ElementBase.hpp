@@ -113,6 +113,7 @@ namespace gui
         uint16_t m_borderSize;
         uint16_t m_borderRadius;
 
+        uint16_t hitboxFactor = 10; // factor to increase the hitbox of the widget in pixels
 
         // variables sur les mouvements
         bool m_verticalScrollEnabled;

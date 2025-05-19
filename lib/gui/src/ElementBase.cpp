@@ -216,11 +216,10 @@ bool gui::ElementBase::update()
     if (widgetPressed != nullptr && widgetPressed != this)
         return false;
 
-    uint16_t resolution = 10;
-
     bool isScreenTouched = graphics::isTouched();
-    bool isWidgetTouched = isScreenTouched && (getAbsoluteX()-resolution < touchX && touchX < getAbsoluteX() + getWidth() +resolution &&
-                            getAbsoluteY()-resolution < touchY && touchY < getAbsoluteY() + getHeight() +resolution);
+
+    bool isWidgetTouched = isScreenTouched && (getAbsoluteX()-hitboxFactor < touchX && touchX < getAbsoluteX() + getWidth() + hitboxFactor &&
+                            getAbsoluteY()-hitboxFactor < touchY && touchY < getAbsoluteY() + getHeight() + hitboxFactor);
 
     bool returnValue = false;
 
