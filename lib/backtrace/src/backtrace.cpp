@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 
-#include <gsm.hpp>
+#include <gsm2.hpp>
 #include <path.hpp>
 #include <filestream.hpp>
 #include <gui.hpp>
@@ -74,7 +74,7 @@ namespace backtrace_saver {
             return false;
         }
 
-        storage::Path path = storage::Path("logs/backtrace_" + GSM::getCurrentTimestampNoSpaces() + ".txt");
+        storage::Path path = storage::Path("logs/backtrace_" + Gsm::getCurrentTimestampNoSpaces() + ".txt");
 
         if (!path.exists() && !path.newfile())
         {
