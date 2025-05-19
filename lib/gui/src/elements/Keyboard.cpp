@@ -331,7 +331,7 @@ namespace gui::elements {
                 //$DYNAMIC_HITBOX_PLACEHOLDER$
                 float dx = static_cast<float>(x) - centerX;
                 float dy = static_cast<float>(y) - centerY;
-                float distance = std::sqrt(dx * dx + dy * dy) - proba * 150.0f;
+                float distance = std::sqrt(dx * dx + dy * dy) - proba * 100.0f;
 
                 if (distance < bestDistance) {
                     bestDistance = distance;

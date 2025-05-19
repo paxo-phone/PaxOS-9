@@ -66,6 +66,13 @@ namespace StandbyMode
 
     void update()
     {
+        if(Gsm::CallState() != Gsm::CallState::IDLE)
+        {
+            trigger();
+            lastTrigger = os_millis();
+            return;
+        }
+
         if (!enabled && os_millis() - lastTrigger > sleepTime - 10000)
         {
             // Dim screen
