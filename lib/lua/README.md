@@ -37,8 +37,8 @@ gui.setWindow(win) -- Set the window active
 * `label(parent, x, y, width, height)`: Creates a text label.
 * `input(parent, x, y)`: Creates a text input field.
 * `button(parent, x, y, width, height)`: Creates a button.
-* `verticalList(parent, x, y, width, height)`: Creates a vertically scrollable list.
-* `horizontalList(parent, x, y, width, height)`: Creates a horizontally scrollable list.
+* `vList(parent, x, y, width, height)`: Creates a vertically scrollable list.
+* `hList(parent, x, y, width, height)`: Creates a horizontally scrollable list.
 * `checkbox(parent, x, y)`: Creates a checkbox widget.
 * `switch(parent, x, y)`: Creates a switch widget.
 * `radio(parent, x, y)`: Creates a radio button widget.
