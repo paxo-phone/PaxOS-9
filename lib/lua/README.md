@@ -23,8 +23,8 @@ This module allows creating graphical user interface elements.
 **Example:**
 
 ```lua
-local win = gui.window()  -- Create a window
-local box = gui.box(win, 10, 10, 100, 50)  -- Create a box inside the window
+local win = gui:window()  -- Create a window
+local box = gui:box(win, 10, 10, 100, 50)  -- Create a box inside the window
 gui.setWindow(win) -- Set the window active
 ```
 
