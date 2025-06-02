@@ -8,7 +8,6 @@
 namespace serialcom {
     Command::Command(char (&input)[INPUT_MAX_SIZE]) {
         bool shellMode = CommandsManager::defaultInstance->shellMode;
-
         
         // find the 255,254,253 header in the first bytes of the current_input
         
@@ -38,9 +37,26 @@ namespace serialcom {
             }
         }
 
-        
-
         size_t current_index = pos + 3;
+
+        // skip spaces and null bytes
+
+        while (input[current_index] == ' ' || input[current_index] == '\0') {
+            current_index++;
+        }
+
+        size_t input_size = 0;
+        for (size_t i = 0; i < INPUT_MAX_SIZE; i++) {
+            if (input[i] == '\0') {
+                input_size = i;
+                break;
+            }
+            this->rawInput[input_size] = input[i];
+            input_size++;
+        }
+        this->rawInputSize = input_size;
+
+
 
         //size_t current_index = 0;
 
@@ -60,38 +76,26 @@ namespace serialcom {
             command_type[i] = input[current_index + i];
         }
 
+        memcpy(this->rawCommandType, command_type, MAX_COMMMAND_TYPE_SIZE);
+
         current_index += command_size;
 
         // match the command_type with a loop with the CommandType enum but don't forget that the input is a 16 char array
 
         this->type = CommandType::unknown;
+
         for (auto const& [key, val] : command_types_raw_strings) {
-            if (val.size() == 0) {
-                continue;
-            }
-            if (MAX_COMMMAND_TYPE_SIZE < val.size()) {
-                if (shellMode) {
-                    SerialManager::sharedInstance->commandLog("WARNING: COMMAND TYPE " + val + " HAS A GREATER SIZE THAN THE MAXIMUM COMMAND TYPE SIZE");
-                } else {
-                    SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE + std::string("WARNING: COMMAND TYPE ") + val + " HAS A GREATER SIZE THAN THE MAXIMUM COMMAND TYPE SIZE");
-                }
+            if (val.size() != command_size) {
                 continue;
             }
 
-            bool broken = false;
-
-            for(size_t i = 0; i < val.size(); i++) {
-                if (command_type[i] != val[i]) {
-                    broken = true;
-                    break;
-                }
-            }
-            if (!broken)
-            {
+            if (memcmp(command_type, val.c_str(), command_size) == 0) {
                 this->type = key;
                 break;
             }
         }
+
+        this->rawCommandTypeSize = command_size;
 
         if (this->type == CommandType::unknown) {
             if (shellMode) {
@@ -125,18 +129,9 @@ namespace serialcom {
             for (size_t i = current_index; i < current_index + MAX_ARGUMENT_SIZE; i++)
             {
                 if (input[i] == '\0' || input[i] == '\n') {
-                    if (isEscaping) {
-                        // escaping end of input
-                        isEscaping = false;
-                        this->arguments[argument_index][argument_char_index] = input[i];
-                        current_index = i + 1;
-                        break;
-                    } else {
-                        // end of input
-                        this->arguments[argument_index][argument_char_index] = '\0';
-                        current_index = i + 1;
-                        break;
-                    }
+                    // end of input
+                    this->arguments[argument_index][argument_char_index] = '\0';
+                    return;
                 } else if (input[i] == '\\') {
                     if (isEscaping) {
                         // escaping backslash

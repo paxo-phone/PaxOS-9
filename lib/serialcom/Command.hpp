@@ -41,6 +41,10 @@ namespace serialcom {
         static std::unordered_map<CommandType, std::string> command_types_raw_strings;
         
         CommandType type;
+        char rawCommandType[MAX_COMMMAND_TYPE_SIZE] = {'\0'};
+        size_t rawCommandTypeSize = 0;
+        char rawInput[INPUT_MAX_SIZE] = {'\0'};
+        size_t rawInputSize = 0;
 
         Command(char (&input)[INPUT_MAX_SIZE]);
 
