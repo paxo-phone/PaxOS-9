@@ -64,23 +64,27 @@ namespace serialcom {
         this->commandLogBufferHash = pseudoHash;
     }
 
-    void SerialManager::singleCommandLog(const std::string& message)
+    void SerialManager::singleCommandLog(const std::string& message, const char command_id[COMMAND_ID_SIZE])
     {
         SerialManager::sharedInstance->startCommandLog();
         SerialManager::sharedInstance->commandLog(message);
-        SerialManager::sharedInstance->finishCommandLog(CommandsManager::defaultInstance->shellMode);
+        SerialManager::sharedInstance->finishCommandLog(CommandsManager::defaultInstance->shellMode, command_id);
     }
 
-    void SerialManager::finishCommandLog(bool shellMode)
+    void SerialManager::finishCommandLog(bool shellMode, const char command_id[COMMAND_ID_SIZE])
     {
         if (shellMode)
         {
             this->coutBuffer.directLog(std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex), true);
         } else {
             constexpr char startBytes[4] = { static_cast<char>(0xff), static_cast<char>(0xfe), static_cast<char>(0xfd), static_cast<char>(0xfc) };
-            std::string startBytesString(reinterpret_cast<const char *>(&startBytes), sizeof(startBytes));
+            std::string startBytesString(reinterpret_cast<const char *>(startBytes), 4);
 
             this->coutBuffer.directLog(startBytesString, false);
+
+            std::string command_id_string(reinterpret_cast<const char *>(command_id), COMMAND_ID_SIZE);
+
+            this->coutBuffer.directLog(command_id_string, false);
 
             std::string bufferIndex(reinterpret_cast<const char *>(&this->commandLogBufferIndex), sizeof(this->commandLogBufferIndex));
 
@@ -138,7 +142,7 @@ namespace serialcom {
                 Command newCommand = Command(serialManager->current_input);
                 serialManager->startCommandLog();
                 CommandsManager::defaultInstance->processCommand(newCommand);
-                serialManager->finishCommandLog(CommandsManager::defaultInstance->shellMode);
+                serialManager->finishCommandLog(CommandsManager::defaultInstance->shellMode, newCommand.command_id);
                 serialManager->newData = false;
             }
 

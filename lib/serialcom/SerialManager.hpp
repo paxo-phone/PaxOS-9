@@ -24,9 +24,9 @@ namespace serialcom {
 
         void commandLog(const std::string& message); // log by a command result only
 
-        void singleCommandLog(const std::string& message); // log by a command result only
+        void singleCommandLog(const std::string& message, const char command_id[COMMAND_ID_SIZE] = {0}); // log by a command result only
 
-        void finishCommandLog(bool shellMode);
+        void finishCommandLog(bool shellMode, const char command_id[COMMAND_ID_SIZE] = {0});
 
         void forceFlushBuffers();
 

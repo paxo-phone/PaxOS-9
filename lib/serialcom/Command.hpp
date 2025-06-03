@@ -6,10 +6,12 @@
 #include <string>
 
 namespace serialcom {
+    const size_t COMMAND_HEADER_SIZE = 3; // 0xFF, 0xFE, 0xFD
+    const size_t COMMAND_ID_SIZE = 8;
     const size_t MAX_COMMMAND_TYPE_SIZE = 16;
     const size_t MAX_ARGUMENT_SIZE = 512;
     const size_t MAX_COMMAND_ARGUMENTS_COUNT = 3;
-    constexpr size_t INPUT_MAX_SIZE = MAX_COMMMAND_TYPE_SIZE + MAX_COMMAND_ARGUMENTS_COUNT * MAX_ARGUMENT_SIZE;
+    constexpr size_t INPUT_MAX_SIZE = COMMAND_HEADER_SIZE + COMMAND_ID_SIZE + MAX_COMMMAND_TYPE_SIZE + MAX_COMMAND_ARGUMENTS_COUNT * MAX_ARGUMENT_SIZE;
 
     struct Command {
         enum class CommandType {
@@ -41,13 +43,11 @@ namespace serialcom {
         static std::unordered_map<CommandType, std::string> command_types_raw_strings;
         
         CommandType type;
-        char rawCommandType[MAX_COMMMAND_TYPE_SIZE] = {'\0'};
-        size_t rawCommandTypeSize = 0;
-        char rawInput[INPUT_MAX_SIZE] = {'\0'};
-        size_t rawInputSize = 0;
 
         Command(char (&input)[INPUT_MAX_SIZE]);
 
         char arguments[MAX_COMMAND_ARGUMENTS_COUNT][MAX_ARGUMENT_SIZE] = {'\0'};
+
+        char command_id[COMMAND_ID_SIZE] = {'\0'};
     };
 }

@@ -39,6 +39,10 @@ namespace serialcom {
 
         size_t current_index = pos + 3;
 
+        memcpy(this->command_id, input + current_index, COMMAND_ID_SIZE);
+
+        current_index += COMMAND_ID_SIZE;
+
         // skip spaces and null bytes
 
         while (input[current_index] == ' ' || input[current_index] == '\0') {
@@ -51,10 +55,8 @@ namespace serialcom {
                 input_size = i;
                 break;
             }
-            this->rawInput[input_size] = input[i];
             input_size++;
         }
-        this->rawInputSize = input_size;
 
 
 
@@ -76,8 +78,6 @@ namespace serialcom {
             command_type[i] = input[current_index + i];
         }
 
-        memcpy(this->rawCommandType, command_type, MAX_COMMMAND_TYPE_SIZE);
-
         current_index += command_size;
 
         // match the command_type with a loop with the CommandType enum but don't forget that the input is a 16 char array
@@ -94,8 +94,6 @@ namespace serialcom {
                 break;
             }
         }
-
-        this->rawCommandTypeSize = command_size;
 
         if (this->type == CommandType::unknown) {
             if (shellMode) {

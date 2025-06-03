@@ -354,7 +354,7 @@ namespace serialcom
 
             std::string fileSizeString(reinterpret_cast<const char *>(&fileSize), sizeof(fileSize));
             SerialManager::sharedInstance->commandLog(fileSizeString);
-            SerialManager::sharedInstance->finishCommandLog(false);
+            SerialManager::sharedInstance->finishCommandLog(false, command.command_id);
         }
 
         if (fileStream.size() == 0 && this->shellMode)
@@ -380,7 +380,7 @@ namespace serialcom
             }
             else
             {
-                SerialManager::sharedInstance->singleCommandLog(chunk);
+                SerialManager::sharedInstance->singleCommandLog(chunk, command.command_id);
             }
             chunk.clear();
             
@@ -470,7 +470,7 @@ namespace serialcom
             {
                 size_t receivedSize = 0;
 
-                SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+                SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, command.command_id);
 
                 uint16_t askAgainTries = 0; 
 
@@ -478,7 +478,7 @@ namespace serialcom
                 {
                     if (askAgainTries >= 10)
                     {
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_ERROR_CODE + std::string("Too many tries, aborting."));
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_ERROR_CODE + std::string("Too many tries, aborting."), command.command_id);
                         return;
                     }
 
@@ -496,7 +496,7 @@ namespace serialcom
                         if (tries >= 1000)
                         {
                             shouldRestartLoop = true;
-                            SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN);
+                            SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN, command.command_id);
                             askAgainTries++;
                             break;
                         }
@@ -557,7 +557,7 @@ namespace serialcom
                     {
                         fileStream.close();
                         uploadPath.remove();
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, command.command_id);
                         return;
                     }
 
@@ -574,7 +574,7 @@ namespace serialcom
 
                     if (checksum != (uint32_t)tempChecksum)
                     {
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN + std::string("checksum don't match, expected ") + std::to_string(checksum) + " got " + std::to_string(tempChecksum));
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN + std::string("checksum don't match, expected ") + std::to_string(checksum) + " got " + std::to_string(tempChecksum), command.command_id);
                         askAgainTries++;
                         continue;
                     }
@@ -585,7 +585,7 @@ namespace serialcom
 
                     tempBuffer = "";
 
-                    SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+                    SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, command.command_id);
 
                     askAgainTries = 0;
                 }
