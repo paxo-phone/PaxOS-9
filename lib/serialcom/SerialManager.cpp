@@ -66,9 +66,12 @@ namespace serialcom {
 
     void SerialManager::singleCommandLog(const std::string& message, const char command_id[COMMAND_ID_SIZE])
     {
+        bool consoleState = this->getConsoleLockState();
+        this->changeConsoleLockTo(true);
         SerialManager::sharedInstance->startCommandLog();
         SerialManager::sharedInstance->commandLog(message);
         SerialManager::sharedInstance->finishCommandLog(CommandsManager::defaultInstance->shellMode, command_id);
+        this->changeConsoleLockTo(consoleState);
     }
 
     void SerialManager::finishCommandLog(bool shellMode, const char command_id[COMMAND_ID_SIZE])

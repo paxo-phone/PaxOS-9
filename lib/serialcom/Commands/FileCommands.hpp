@@ -310,6 +310,8 @@ namespace serialcom
         }
     }
 
+    // WARNING: you have to set the command id of a download command to something with trailing zeros, the index of the chunk sent will be added (+) to the two last bytey of the command id.
+    // first chunk index is 1, max index is 2^16 - 1 = 65535
     // arg1 = file to download
     // output = file content in chunks of 2048 bytes (or less for the last chunk), each one encoded in base64
     /* if !shellMode
@@ -348,13 +350,10 @@ namespace serialcom
             //SerialManager::sharedInstance->commandLog("File size " + std::to_string(fileStream.size()) + " : " + std::to_string(fileStream.size() + 1) + " : " + BOOL_STR(fileStream.size() == 0));
             SerialManager::sharedInstance->commandLog(FILE_SIZE_MESSAGE(std::to_string(fileStream.size())));
         else {
-            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
-
             uint32_t fileSize = fileStream.size();
 
             std::string fileSizeString(reinterpret_cast<const char *>(&fileSize), sizeof(fileSize));
-            SerialManager::sharedInstance->commandLog(fileSizeString);
-            SerialManager::sharedInstance->finishCommandLog(false, command.command_id);
+            SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE + fileSizeString, command.command_id);
         }
 
         if (fileStream.size() == 0 && this->shellMode)
@@ -364,14 +363,20 @@ namespace serialcom
             return;
         }
 
-        std::string chunk;
+        uint16_t chunkIndex = 1;
 
-        char nextChar = fileStream.readchar();
-        while (nextChar != std::char_traits<char>::eof() && fileStream.sizeFromCurrentPosition() > 0)
+        #define CHUNK_SIZE 2048
+
+        while (true) 
         {
-            chunk += nextChar;
+            char buffer[CHUNK_SIZE];         
+            memcpy(buffer, "\0", CHUNK_SIZE);  
 
-            chunk += fileStream.read(2047);
+            std::streamsize readSize = fileStream.read(buffer, CHUNK_SIZE);
+
+            if (readSize <= 0) { break; } // EOF or no more data
+
+            std::string chunk(buffer, static_cast<size_t>(readSize));
 
             if (this->shellMode)
             {
@@ -380,11 +385,17 @@ namespace serialcom
             }
             else
             {
-                SerialManager::sharedInstance->singleCommandLog(chunk, command.command_id);
+                // add chunkIndex to the command id (ex command id is 0x1234567890123400, chunkIndex is 1, command id will be 0x1234567890123401)
+                char commandIdWithChunkIndex[COMMAND_ID_SIZE];
+                memcpy(commandIdWithChunkIndex, command.command_id, COMMAND_ID_SIZE);
+                uint16_t truncatedIndex = static_cast<uint16_t>(chunkIndex & 0xFFFF);
+                commandIdWithChunkIndex[COMMAND_ID_SIZE - 1] = static_cast<char>( truncatedIndex & 0xFF );
+                commandIdWithChunkIndex[COMMAND_ID_SIZE - 2] = static_cast<char>((truncatedIndex >> 8) & 0xFF);
+
+                chunkIndex++;
+                 
+                SerialManager::sharedInstance->singleCommandLog(chunk, commandIdWithChunkIndex);
             }
-            chunk.clear();
-            
-            nextChar = fileStream.readchar();
         }
         
         fileStream.close();
@@ -538,11 +549,11 @@ namespace serialcom
 
                         tempBufferSize -= pos + 3;
 
-                        if (tempBufferSize > 8)
+                        if (tempBufferSize > 16) // commandId + header
                         {
                             expectedSize = tempBuffer[0] + (tempBuffer[1] << 8);
                             
-                            if (tempBufferSize >= expectedSize + 8)
+                            if (tempBufferSize >= expectedSize + 16)
                                 break;
                         }
 
@@ -552,8 +563,10 @@ namespace serialcom
                     if (shouldRestartLoop)
                         continue;
 
-                    
-                    uint16_t cursor = 2;
+                    char commandId[COMMAND_ID_SIZE] = {'\0'};
+                    memcpy(commandId, tempBuffer.c_str() + 2 /* skip size */, COMMAND_ID_SIZE);
+
+                    uint16_t cursor = 10; // the two bytes before are the size
 
                     uint16_t options = tempBuffer[cursor++] + (tempBuffer[cursor++] << 8);
 
@@ -561,7 +574,7 @@ namespace serialcom
                     {
                         fileStream.close();
                         uploadPath.remove();
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, command.command_id);
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, commandId);
                         return;
                     }
 
@@ -578,7 +591,7 @@ namespace serialcom
 
                     if (checksum != (uint32_t)tempChecksum)
                     {
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN, command.command_id);
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN, commandId);
                         askAgainTries++;
                         continue;
                     }
@@ -589,7 +602,7 @@ namespace serialcom
 
                     tempBuffer = "";
 
-                    SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, command.command_id);
+                    SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, commandId);
 
                     askAgainTries = 0;
                 }

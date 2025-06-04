@@ -61,7 +61,7 @@ namespace GSM
     {
 #ifdef ESP_PLATFORM
 
-        Serial.println("GSM initializing");
+        std::cout << "GSM initializing" << std::endl;
         pinMode(32, OUTPUT); // define pin mode
 
         /*digitalWrite(32, 1); // power on the module
@@ -80,7 +80,7 @@ namespace GSM
             String data = gsm.readString();
             if (data.indexOf("OK") != -1)
             {
-                Serial.println("GSM responding at 115200");
+                std::cout << "GSM responding at 115200" << std::endl;
 
                 gsm.println("AT+IPR=921600");
                 gsm.flush();
@@ -90,8 +90,8 @@ namespace GSM
             }
             else
             {
-                Serial.println("GSM not responding at 115200, trying 921600");
-                Serial.println(data);
+                std::cout << "GSM not responding at 115200, trying 921600" << std::endl;
+                std::cout << data << std::endl;
 
                 gsm.updateBaudRate(921600);
             
@@ -100,18 +100,18 @@ namespace GSM
                 String data = gsm.readString();
                 if (data.indexOf("OK") != -1)
                 {
-                    Serial.println("GSM responding at 921600");
+                    std::cout << "GSM responding at 921600" << std::endl;
                     return;
                 }
                 else
                 {
-                    Serial.println("GSM not responding at 115200 and 921600");
-                    Serial.println(data);
+                    std::cout << "GSM not responding at 115200 and 921600" << std::endl;
+                    std::cout << data << std::endl;
 
 
                     if(!rebooted)
                     {
-                        Serial.println("Powering on the module");
+                        std::cout << "Powering on the module" << std::endl;
                         digitalWrite(32, 1); // power on the module
                         delay(60);  // according to the datasheet t > 50ms
                         digitalWrite(32, 0);

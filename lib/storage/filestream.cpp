@@ -83,9 +83,10 @@ namespace storage
         return word;
     }
 
-    void FileStream::read(char* buffer, std::size_t len)
+    std::size_t FileStream::read(char* buffer, std::size_t len)
     {
         m_stream.read(buffer, len);
+        return m_stream.gcount(); // Returns the number of characters read
     }
 
     char FileStream::readchar(void)

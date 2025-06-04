@@ -58,10 +58,7 @@ namespace serialcom {
 
         void directLog(const std::string& log, bool newLine)
         {
-            if (!this->stream || !this->originalBuffer)
-                return;
-            this->stream->rdbuf(originalBuffer);
-            #ifdef ESP_PLATFORM 
+            #ifdef ESP_PLATFORM
             Serial.write(log.c_str(), log.size());
             if (newLine)
             {
@@ -69,9 +66,12 @@ namespace serialcom {
                 Serial.flush();
             }
             #else
+            if (!this->stream || !this->originalBuffer)
+                return;
+            this->stream->rdbuf(originalBuffer);
             std::cout.write(log.c_str(), log.size());
-            #endif
             this->stream->rdbuf(this);
+            #endif
         }
 
         std::streambuf* changeDefaultBuffer(std::streambuf* buffer)
@@ -93,14 +93,14 @@ namespace serialcom {
                 return Base::overflow(ch);
             
             // TODO: find a way to force flush on overflow without compromising an eventual command log.
-            if (canFlushOnOverflow)
+            if (canFlushOnOverflow) {
                 flushBuffer();
-            else {
+                *(this->stream) << (char)ch;
+            } else {
                 this->buffer.fill(0);
                 Base::setp(buffer.data(), buffer.data() + size);
             }
                 
-            *(this->stream) << (char)ch;
             return 1; // overflow management succeeded
         }
 
