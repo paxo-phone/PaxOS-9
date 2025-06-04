@@ -524,18 +524,19 @@ namespace serialcom
                                 newData = true;
                         }
 
-                        size_t pos = tempBuffer.find(std::string((char)0xff + "") + (char)0xfe + (char)0xfd);
+                        size_t pos = tempBuffer.find(std::string("\xFF\xFE\xFD", 3));
 
                         if (pos == std::string::npos)
                         {
                             tempBuffer = tempBuffer.substr(std::max((uint16_t)2, tempBufferSize) - 2); // keep the last 2 bytes that could be the beginning of the next message
                             tempBufferSize = std::min(tempBufferSize, (uint16_t)2);
+
                             continue;
                         }
 
-                        tempBuffer = tempBuffer.substr(pos + 2);
+                        tempBuffer = tempBuffer.substr(pos + 3);
 
-                        tempBufferSize -= pos + 2;
+                        tempBufferSize -= pos + 3;
 
                         if (tempBufferSize > 8)
                         {
@@ -545,15 +546,18 @@ namespace serialcom
                                 break;
                         }
 
-                        PaxOS_Delay(10);
+                        PaxOS_Delay(20);
                     }
 
                     if (shouldRestartLoop)
                         continue;
 
-                    uint16_t options = tempBuffer[2] + (tempBuffer[3] << 8);
+                    
+                    uint16_t cursor = 2;
 
-                    if (options & 0x0001) // wants to end the communication
+                    uint16_t options = tempBuffer[cursor++] + (tempBuffer[cursor++] << 8);
+
+                    if (options & 0x1) // wants to end the communication
                     {
                         fileStream.close();
                         uploadPath.remove();
@@ -561,11 +565,11 @@ namespace serialcom
                         return;
                     }
 
-                    uint32_t checksum = tempBuffer[4] + (tempBuffer[5] << 8) + (tempBuffer[6] << 16) + (tempBuffer[7] << 24);
+                    uint32_t checksum = tempBuffer[cursor++] + (tempBuffer[cursor++] << 8) + (tempBuffer[cursor++] << 16) + (tempBuffer[cursor++] << 24);
 
                     uint64_t tempChecksum = 0;
 
-                    tempBuffer = tempBuffer.substr(8, expectedSize);
+                    tempBuffer = tempBuffer.substr(cursor, expectedSize);
                     
                     for (char c : tempBuffer)
                     {
@@ -574,7 +578,7 @@ namespace serialcom
 
                     if (checksum != (uint32_t)tempChecksum)
                     {
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN + std::string("checksum don't match, expected ") + std::to_string(checksum) + " got " + std::to_string(tempChecksum), command.command_id);
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN, command.command_id);
                         askAgainTries++;
                         continue;
                     }

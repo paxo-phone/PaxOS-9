@@ -77,8 +77,8 @@ namespace serialcom {
         {
             this->coutBuffer.directLog(std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex), true);
         } else {
-            constexpr char startBytes[4] = { static_cast<char>(0xff), static_cast<char>(0xfe), static_cast<char>(0xfd), static_cast<char>(0xfc) };
-            std::string startBytesString(reinterpret_cast<const char *>(startBytes), 4);
+            constexpr char startBytes[3] = { static_cast<char>(0xff), static_cast<char>(0xfe), static_cast<char>(0xfd) };
+            std::string startBytesString(reinterpret_cast<const char *>(startBytes), 3);
 
             this->coutBuffer.directLog(startBytesString, false);
 
