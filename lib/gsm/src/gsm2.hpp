@@ -10,6 +10,8 @@
 #include <functional>
 #include <memory>
 
+inline long long getCurrentTimestamp();
+
 namespace Gsm
 {
     // --- Request Structure (Internal Use) ---
