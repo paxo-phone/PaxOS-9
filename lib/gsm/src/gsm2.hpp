@@ -37,6 +37,42 @@ namespace Gsm
         extern std::function<void(void)> onNewMessageError;
     }
 
+    // --- HTTP Request Structure ---
+    enum class HttpResult {
+        OK,
+        TIMEOUT,
+        BUSY,
+        INIT_FAILED,
+        DNS_ERROR,
+        CONNECTION_FAILED,
+        MODULE_ERROR,
+        SERVER_ERROR,
+        NOT_FOUND,
+        READ_ERROR
+    };
+
+    struct HttpGetCallbacks {
+        std::function<void(HttpResult result)> on_init;
+        std::function<void(const std::string_view& data)> on_data;
+        std::function<void(void)> on_complete;
+    };
+
+    enum class HttpState {
+        IDLE,
+        INITIALIZING,
+        ACTION_IN_PROGRESS,
+        READING, // Covers the entire block-reading loop
+        TERMINATING
+    };
+    static HttpState currentHttpState = HttpState::IDLE;
+    static HttpGetCallbacks currentHttpCallbacks;
+    static int httpBytesTotal = 0;
+    static int httpBytesRead = 0;
+
+    // Forward declarations for our new helper functions
+    static void _completeHttpRequest(HttpResult result);
+    static void _queueNextHttpRead();
+
     // --- Public Function Declarations ---
 
     // Initialization and Core Loop

@@ -151,23 +151,23 @@ namespace Gsm
                                 timeValid = true;
                                 lastTimeUpdateTime = std::chrono::steady_clock::now();
                                 parsed_ok = true;
-                                printf("[GSM Time] Updated: %04d/%02d/%02d %02d:%02d:%02d (Offset: %c%02d quarters)\n",
-                                       year, month, day, hour, minute, second, sign, l_zz);
+                                // printf("[GSM Time] Updated: %04d/%02d/%02d %02d:%02d:%02d (Offset: %c%02d quarters)\n",
+                                //       year, month, day, hour, minute, second, sign, l_zz);
                             } else {
-                                printf("[GSM Time] Parsed fields out of range: %s\n", time_str.c_str());
+                                // printf("[GSM Time] Parsed fields out of range: %s\n", time_str.c_str());
                             }
                         } else {
-                            printf("[GSM Time] Failed to parse time string with sscanf (Fields read: %d): %s\n", fields_read, time_str.c_str());
+                            // printf("[GSM Time] Failed to parse time string with sscanf (Fields read: %d): %s\n", fields_read, time_str.c_str());
                         }
                     } else {
-                         printf("[GSM Time] Could not find quotes in +CCLK response.\n");
+                         // printf("[GSM Time] Could not find quotes in +CCLK response.\n");
                     }
                 } else {
-                     printf("[GSM Time] +CCLK: not found in response.\n");
+                     // printf("[GSM Time] +CCLK: not found in response.\n");
                 }
 
                 if (!parsed_ok) {
-                    printf("[GSM Time] Failed to update time.\n");
+                    // printf("[GSM Time] Failed to update time.\n");
                 }
                 return false; 
             };
@@ -175,7 +175,7 @@ namespace Gsm
         }
 
         void syncNetworkTime() {
-            printf("[GSM Time] Queuing network time sync (AT+CCLK?).\n");
+            // printf("[GSM Time] Queuing network time sync (AT+CCLK?).\n");
             updateTimeInternal();
         }
 
@@ -373,7 +373,7 @@ namespace Gsm
     
         for (int i = 0; i < num_septets; ++i) {
             if (current_octet_idx >= packed_octets.size()) {
-                printf("[PDU Decode] unpack7BitData: Ran out of octets for %d septets. Index %d.\n", num_septets, packed_octets.size() * 8 / 7, i);
+                // printf("[PDU Decode] unpack7BitData: Ran out of octets for %d septets. Index %d.\n", num_septets, packed_octets.size() * 8 / 7, i);
                 break;
             }
             unsigned char current_septet;
@@ -425,7 +425,7 @@ namespace Gsm
         std::string utf8_text;
         for (size_t i = offset; i < ucs2_bytes.size(); i += 2) {
             if (i + 1 >= ucs2_bytes.size()) {
-                printf("[PDU Decode] UCS2 decode ran out of bytes (expected pairs).\n");
+                // printf("[PDU Decode] UCS2 decode ran out of bytes (expected pairs).\n");
                 utf8_text += "?"; // Append placeholder if pair is incomplete
                 break;
             }
@@ -443,7 +443,7 @@ namespace Gsm
             } else if (ucs2_code_unit >= 0xD800 && ucs2_code_unit <= 0xDFFF) {
                  // Surrogate pairs - UCS-2 technically doesn't have surrogates, this range is reserved.
                  // Treat as error or placeholder in standard UCS-2 decoding.
-                 printf("[PDU Decode] Encountered reserved surrogate range in UCS-2 data: 0x%04X\n", ucs2_code_unit);
+                 // printf("[PDU Decode] Encountered reserved surrogate range in UCS-2 data: 0x%04X\n", ucs2_code_unit);
                  utf8_text += "?"; // Placeholder for invalid/unhandled UCS-2
             }
             else {
@@ -465,7 +465,7 @@ namespace Gsm
             if (sca_len_octets > 0) {
                  // Skip SCA Type of Address and Value
                  if (current_pos + sca_len_octets * 2 > pdu_hex_string.length()) {
-                     printf("[PDU Decode] PDU string too short for SCA data.\n");
+                     // printf("[PDU Decode] PDU string too short for SCA data.\n");
                      return false;
                  }
                  current_pos += sca_len_octets * 2;
@@ -474,7 +474,7 @@ namespace Gsm
     
             // TPDU Type Octet (TP-MTI, TP-UDHI, etc.)
             if (current_pos + 2 > pdu_hex_string.length()) {
-                 printf("[PDU Decode] PDU string too short for TPDU Type.\n");
+                 // printf("[PDU Decode] PDU string too short for TPDU Type.\n");
                  return false;
             }
             unsigned char tpdu_type_octet = hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos+1]);
@@ -487,19 +487,19 @@ namespace Gsm
     
                 // Originating Address (OA) - Length and Value
                 if (current_pos + 2 > pdu_hex_string.length()) {
-                     printf("[PDU Decode] PDU string too short for OA length.\n");
+                     // printf("[PDU Decode] PDU string too short for OA length.\n");
                      return false;
                 }
                 int oa_len_digits = hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos+1]);
                 current_pos += 2;
                 if (current_pos + 2 > pdu_hex_string.length()) { // Type of Address (OA)
-                     printf("[PDU Decode] PDU string too short for OA Type.\n");
+                     // printf("[PDU Decode] PDU string too short for OA Type.\n");
                      return false;
                 }
                 current_pos += 2; // Skip OA Type of Address (assuming 1 octet)
                 int oa_addr_len_octets = (oa_len_digits + 1) / 2;
                 if (current_pos + oa_addr_len_octets * 2 > pdu_hex_string.length()) {
-                    printf("[PDU Decode] PDU string too short for OA data.\n");
+                    // printf("[PDU Decode] PDU string too short for OA data.\n");
                     return false;
                 }
                 std::string oa_hex = pdu_hex_string.substr(current_pos, oa_addr_len_octets * 2);
@@ -508,14 +508,14 @@ namespace Gsm
     
                 // TP-PID (Protocol Identifier)
                 if (current_pos + 2 > pdu_hex_string.length()) {
-                    printf("[PDU Decode] PDU string too short for TP-PID.\n");
+                    // printf("[PDU Decode] PDU string too short for TP-PID.\n");
                     return false;
                 }
                 current_pos += 2; // Skip TP-PID (assuming 1 octet)
     
                 // TP-DCS (Data Coding Scheme)
                 if (current_pos + 2 > pdu_hex_string.length()) {
-                    printf("[PDU Decode] PDU string too short for TP-DCS.\n");
+                    // printf("[PDU Decode] PDU string too short for TP-DCS.\n");
                     return false;
                 }
                 unsigned char tp_dcs = hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos+1]);
@@ -539,7 +539,7 @@ namespace Gsm
                      is_8bit_encoding = true; // 8 bit data (auto-detection or message class)
                 } else if (dcs_group == 0x80) { // Group 10xx - Reserved
                      // Treat as unknown, potentially default 7-bit? PDU spec says reserved.
-                     printf("[PDU Decode] Reserved DCS group 10xx (0x%02X).\n", tp_dcs);
+                     // printf("[PDU Decode] Reserved DCS group 10xx (0x%02X).\n", tp_dcs);
                      return false; // Indicate failure for clarity
                 } else if (dcs_group == 0xC0) { // Group 11xx - Message class
                      if ((tp_dcs & 0x20) == 0x00) { // 110x - Message class
@@ -547,18 +547,18 @@ namespace Gsm
                          else if (dcs_char_set == 0x01) is_8bit_encoding = true; // Class 0/1/2/3, 8 bit
                          else if (dcs_char_set == 0x02) is_ucs2_encoding = true; // Class 0/1/2/3, UCS-2
                      } else { // 111x - Reserved
-                         printf("[PDU Decode] Reserved DCS group 111x (0x%02X).\n", tp_dcs);
+                         // printf("[PDU Decode] Reserved DCS group 111x (0x%02X).\n", tp_dcs);
                          return false; // Indicate failure
                      }
                 } else { // Should not happen with 0xC0 mask
-                     printf("[PDU Decode] Unknown DCS byte structure: 0x%02X\n", tp_dcs);
+                     // printf("[PDU Decode] Unknown DCS byte structure: 0x%02X\n", tp_dcs);
                      return false;
                 }
     
     
                 // TP-SCTS (Service Centre Time Stamp)
                 if (current_pos + 7 * 2 > pdu_hex_string.length()) {
-                     printf("[PDU Decode] PDU string too short for SCTS.\n");
+                     // printf("[PDU Decode] PDU string too short for SCTS.\n");
                      return false;
                 }
                 std::string scts_hex = pdu_hex_string.substr(current_pos, 7 * 2);
@@ -569,7 +569,7 @@ namespace Gsm
     
                 // TP-UDL (User Data Length)
                  if (current_pos + 2 > pdu_hex_string.length()) {
-                    printf("[PDU Decode] PDU string too short for TP-UDL.\n");
+                    // printf("[PDU Decode] PDU string too short for TP-UDL.\n");
                     return false;
                 }
                 unsigned char tp_udl = hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos+1]);
@@ -584,18 +584,18 @@ namespace Gsm
                     // UDL is number of octets.
                     ud_expected_octet_len = tp_udl;
                 } else {
-                     printf("[PDU Decode] User Data: Unknown encoding determined by DCS 0x%02X.\n", tp_dcs);
+                     // printf("[PDU Decode] User Data: Unknown encoding determined by DCS 0x%02X.\n", tp_dcs);
                      return false;
                 }
     
                 if (current_pos + ud_expected_octet_len * 2 > pdu_hex_string.length()) {
-                    printf("[PDU Decode] PDU string too short for User Data (Expected %d octets).\n", ud_expected_octet_len);
+                    // printf("[PDU Decode] PDU string too short for User Data (Expected %d octets).\n", ud_expected_octet_len);
                     // Attempt to read what's left, but this is likely corrupt data
                     ud_expected_octet_len = (pdu_hex_string.length() - current_pos) / 2;
-                    printf("[PDU Decode] Using remaining %d octets for UD.\n", ud_expected_octet_len);
+                    // printf("[PDU Decode] Using remaining %d octets for UD.\n", ud_expected_octet_len);
                     if (ud_expected_octet_len < 0) ud_expected_octet_len = 0; // Safety
                     if (ud_expected_octet_len == 0) {
-                         printf("[PDU Decode] No User Data bytes available.\n");
+                         // printf("[PDU Decode] No User Data bytes available.\n");
                          result.messageContent = "";
                          // Proceed to return true if all previous mandatory fields were parsed
                          return true; 
@@ -610,7 +610,7 @@ namespace Gsm
                 if (result.hasUserDataHeader && !ud_bytes.empty()) {
                     udh_octet_len = ud_bytes[0] + 1; // The first byte is the length of the rest of the header
                     if (udh_octet_len > ud_bytes.size()) {
-                        printf("[PDU Decode] UDH length (%d) exceeds available UD bytes (%zu).\n", udh_octet_len, ud_bytes.size());
+                        // printf("[PDU Decode] UDH length (%d) exceeds available UD bytes (%zu).\n", udh_octet_len, ud_bytes.size());
                         udh_octet_len = 0; // Treat as no UDH
                         result.hasUserDataHeader = false;
                     } else {
@@ -629,7 +629,7 @@ namespace Gsm
                                  unsigned char iei = ud_bytes[ie_pos];
                                  unsigned char iedl = ud_bytes[ie_pos+1];
                                  if (ie_pos + 1 + iedl >= udh_octet_len) { // Ensure IE data is within UDH bounds
-                                     printf("[PDU Decode] UDH IE length (%d) goes beyond UDH bounds (current_pos=%d, udh_len=%d).\n", iedl, ie_pos, udh_octet_len);
+                                     // printf("[PDU Decode] UDH IE length (%d) goes beyond UDH bounds (current_pos=%d, udh_len=%d).\n", iedl, ie_pos, udh_octet_len);
                                      break; // Stop processing UDH IEs
                                  }
     
@@ -638,7 +638,7 @@ namespace Gsm
                                     // Check common WAP Push/MMS ports
                                     if (dest_port == 2948 || dest_port == 9200 || dest_port == 9201 || dest_port == 9202 || dest_port == 9203) {
                                         result.type = SmsType::MMS_NOTIFICATION;
-                                        printf("[PDU Decode] Detected MMS Notification via Destination Port %hu.\n", dest_port);
+                                        // printf("[PDU Decode] Detected MMS Notification via Destination Port %hu.\n", dest_port);
                                         break; // Found the indicator, no need to check other IEs
                                     }
                                  }
@@ -655,7 +655,7 @@ namespace Gsm
                             // The actual TP-UDL includes UDH length in septets for 7-bit
                             // The total number of septets is tp_udl. Septets for UD = tp_udl - udh_septet_len.
                             // This calculation isn't strictly needed here, the unpacker just needs the offset.
-                            printf("[PDU Decode] UDH is %d octets, %d septets for 7bit offset.\n", udh_octet_len, udh_septet_len);
+                            // printf("[PDU Decode] UDH is %d octets, %d septets for 7bit offset.\n", udh_octet_len, udh_septet_len);
                         }
                     }
                 }
@@ -675,17 +675,17 @@ namespace Gsm
                         msg_data_8bit += static_cast<char>(ud_bytes[k]);
                     }
                     result.messageContent = msg_data_8bit;
-                    printf("[PDU Decode] Decoded 8-bit data (direct byte map).\n");
+                    // printf("[PDU Decode] Decoded 8-bit data (direct byte map).\n");
                 } else if (is_ucs2_encoding) {
                      // For UCS-2, tp_udl is the TOTAL number of octets (including UDH).
                      // The actual message data starts after the UDH.
                      if ((ud_bytes.size() - udh_octet_len) % 2 != 0) {
-                          printf("[PDU Decode] UCS2 data length after UDH is odd. Data may be truncated.\n");
+                          // printf("[PDU Decode] UCS2 data length after UDH is odd. Data may be truncated.\n");
                      }
                      result.messageContent = ucs2BytesToUtf8(ud_bytes, udh_octet_len);
-                     printf("[PDU Decode] Decoded UCS-2 data to UTF-8.\n");
+                     // printf("[PDU Decode] Decoded UCS-2 data to UTF-8.\n");
                 } else {
-                    printf("[PDU Decode] Cannot decode User Data due to unknown encoding.\n");
+                    // printf("[PDU Decode] Cannot decode User Data due to unknown encoding.\n");
                     return false;
                 }
     
@@ -700,9 +700,9 @@ namespace Gsm
                         } else {
                             result.mmsUrl = result.messageContent.substr(http_pos, url_end - http_pos);
                         }
-                        printf("[PDU Decode] Extracted potential MMS URL: %s\n", result.mmsUrl.c_str());
+                        // printf("[PDU Decode] Extracted potential MMS URL: %s\n", result.mmsUrl.c_str());
                     } else {
-                        printf("[PDU Decode] MMS Notification received, but no URL found starting with 'http'.\n");
+                        // printf("[PDU Decode] MMS Notification received, but no URL found starting with 'http'.\n");
                     }
                     // The message content for MMS notifications is often the raw WAP Push SI data,
                     // so keeping it or clearing it depends on need. Let's keep the decoded version.
@@ -710,13 +710,13 @@ namespace Gsm
     
             } else if (tp_mti == 0x02) { // TP-STATUS-REPORT
                 result.type = SmsType::STATUS_REPORT;
-                printf("[PDU Decode] SMS Status Report received (further parsing not implemented).\n");
+                // printf("[PDU Decode] SMS Status Report received (further parsing not implemented).\n");
                 // Status reports are not messages to store/display as conversation text.
                 // We can return true here if the structure is valid, even if full parsing isn't done.
                 // Mandatory fields: TP-SCA (handled by SCA len), TP-MTI, TP-MR, TP-RA, TP-SCTS, TP-DT, TP-ST.
                 // We've parsed up to SCTS. Need to skip DT and ST.
                 if (current_pos + 7*2 + 2 > pdu_hex_string.length()) { // Skip TP-DT (7 octets) + TP-ST (1 octet)
-                     printf("[PDU Decode] PDU string too short for Status Report DT/ST fields.\n");
+                     // printf("[PDU Decode] PDU string too short for Status Report DT/ST fields.\n");
                      // Return false or try to handle partial? Let's return true if mandatory fields were mostly ok.
                      // For now, just acknowledging the type and returning true is sufficient based on the prompt.
                      // If more robust status report handling is needed, this part needs fleshing out.
@@ -724,41 +724,41 @@ namespace Gsm
                 return true;
     
             } else {
-                printf("[PDU Decode] Unhandled TP-MTI: 0x%02X\n", tp_mti);
+                // printf("[PDU Decode] Unhandled TP-MTI: 0x%02X\n", tp_mti);
                 return false;
             }
     
             return true; // Parsing successful
         } catch (const std::exception& e) {
-            printf("[PDU Decode] Exception: %s. PDU: %s\n", e.what(), pdu_hex_string.c_str());
+            // printf("[PDU Decode] Exception: %s. PDU: %s\n", e.what(), pdu_hex_string.c_str());
             return false;
         } catch (...) { // Catch any other unexpected errors
-             printf("[PDU Decode] Unknown Exception during PDU decoding. PDU: %s\n", pdu_hex_string.c_str());
+             // printf("[PDU Decode] Unknown Exception during PDU decoding. PDU: %s\n", pdu_hex_string.c_str());
              return false;
         }
     }
 
     static void processAndStoreSms(const std::string& pdu_hex_string, int message_idx) {
-        printf("[GSM SMS] Processing PDU for index %d: %s\n", message_idx, pdu_hex_string.c_str());
+        // printf("[GSM SMS] Processing PDU for index %d: %s\n", message_idx, pdu_hex_string.c_str());
         DecodedPdu decoded_sms;
         if (decodePduDeliver(pdu_hex_string, decoded_sms)) {
-            printf("[GSM SMS] Decoded: Sender='%s', Type=%d, Message='%s'\n",
-                   decoded_sms.senderNumber.c_str(), static_cast<int>(decoded_sms.type), decoded_sms.messageContent.c_str());
+            // printf("[GSM SMS] Decoded: Sender='%s', Type=%d, Message='%s'\n",
+            //       decoded_sms.senderNumber.c_str(), static_cast<int>(decoded_sms.type), decoded_sms.messageContent.c_str());
             if (!decoded_sms.mmsUrl.empty()) {
-                printf("[GSM SMS] MMS URL: %s\n", decoded_sms.mmsUrl.c_str());
+                // printf("[GSM SMS] MMS URL: %s\n", decoded_sms.mmsUrl.c_str());
             }
 
             if (decoded_sms.type == SmsType::TEXT_SMS || decoded_sms.type == SmsType::MMS_NOTIFICATION) {
                 if (decoded_sms.type == SmsType::MMS_NOTIFICATION) {
-                    printf("[GSM SMS] MMS Notification from: %s\n", decoded_sms.senderNumber.c_str());
+                    // printf("[GSM SMS] MMS Notification from: %s\n", decoded_sms.senderNumber.c_str());
                     if (!decoded_sms.mmsUrl.empty()) {
-                        printf("[GSM SMS] MMS URL found: %s. Triggering getHttpMMS (placeholder).\n", decoded_sms.mmsUrl.c_str());
+                        // printf("[GSM SMS] MMS URL found: %s. Triggering getHttpMMS (placeholder).\n", decoded_sms.mmsUrl.c_str());
                         // Your actual call: getHttpMMS(decoded_sms.senderNumber, decoded_sms.mmsUrl);
                     } else {
-                         printf("[GSM SMS] MMS Notification, but no URL extracted.\n");
+                         // printf("[GSM SMS] MMS Notification, but no URL extracted.\n");
                     }
                 } else { 
-                    printf("[GSM SMS] Text SMS from: %s, Message: %s\n", decoded_sms.senderNumber.c_str(), decoded_sms.messageContent.c_str());
+                    // printf("[GSM SMS] Text SMS from: %s, Message: %s\n", decoded_sms.senderNumber.c_str(), decoded_sms.messageContent.c_str());
                     
                     auto contact = Contacts::getByNumber("+" + decoded_sms.senderNumber);
 
@@ -797,16 +797,16 @@ namespace Gsm
             delete_req->command = "AT+CMGD=" + std::to_string(message_idx);
             delete_req->callback = [message_idx](const std::string& response) -> bool {
                 if (response.find("OK") != std::string::npos) {
-                    printf("[GSM SMS] Successfully deleted SMS at index %d.\n", message_idx);
+                    // printf("[GSM SMS] Successfully deleted SMS at index %d.\n", message_idx);
                 } else {
-                    printf("[GSM SMS] Failed to delete SMS at index %d. Response: %s\n", message_idx, response.c_str());
+                    // printf("[GSM SMS] Failed to delete SMS at index %d. Response: %s\n", message_idx, response.c_str());
                 }
                 return false; 
             };
             requests.push_back(delete_req);
 
         } else {
-            printf("[GSM SMS] Failed to decode PDU for message at index %d.\n", message_idx);
+            // printf("[GSM SMS] Failed to decode PDU for message at index %d.\n", message_idx);
         }
     }
 
@@ -816,7 +816,7 @@ namespace Gsm
     // end of forward declarations
 
     static void queueReadSms(const std::string& memory_store, int index) {
-        printf("[GSM SMS] Queuing read for SMS from %s at index %d.\n", memory_store.c_str(), index);
+        // printf("[GSM SMS] Queuing read for SMS from %s at index %d.\n", memory_store.c_str(), index);
         auto request = std::make_shared<Request>();
         request->command = "AT+CMGR=" + std::to_string(index);
         request->callback = [index](const std::string& response_block) -> bool {
@@ -844,7 +844,7 @@ namespace Gsm
             if (found_pdu) {
                 processAndStoreSms(pdu_line, index);
             } else {
-                printf("[GSM SMS] Failed to extract PDU from AT+CMGR response for index %d. Block:\n%s\n", index, response_block.c_str());
+                // printf("[GSM SMS] Failed to extract PDU from AT+CMGR response for index %d. Block:\n%s\n", index, response_block.c_str());
             }
             return false; 
         };
@@ -852,7 +852,7 @@ namespace Gsm
     }
 
     void checkForMessages() {
-        printf("[GSM SMS] Queuing check for all stored messages (AT+CMGL=0).\n");
+        // printf("[GSM SMS] Queuing check for all stored messages (AT+CMGL=0).\n");
         auto request = std::make_shared<Request>();
         // AT+CMGL=0: List ALL messages.
         // If CMGF=0 (PDU mode), this should list the PDU data directly for each message.
@@ -893,32 +893,32 @@ namespace Gsm
                             current_message_idx = std::stoi(index_str);
                             expect_pdu_next = true;
                             // current_pdu_line = ""; // Reset if accumulating multi-line PDUs
-                            printf("[GSM SMS] Found +CMGL header for index %d. Expecting PDU.\n", current_message_idx);
+                            // printf("[GSM SMS] Found +CMGL header for index %d. Expecting PDU.\n", current_message_idx);
                         } catch (const std::invalid_argument& ia) {
-                            printf("[GSM SMS] Failed to parse index (invalid_argument) from +CMGL line: '%s'. Line: '%s'\n", index_str.c_str(), line.c_str());
+                            // printf("[GSM SMS] Failed to parse index (invalid_argument) from +CMGL line: '%s'. Line: '%s'\n", index_str.c_str(), line.c_str());
                             expect_pdu_next = false;
                             current_message_idx = -1;
                         } catch (const std::out_of_range& oor) {
-                            printf("[GSM SMS] Failed to parse index (out_of_range) from +CMGL line: '%s'. Line: '%s'\n", index_str.c_str(), line.c_str());
+                            // printf("[GSM SMS] Failed to parse index (out_of_range) from +CMGL line: '%s'. Line: '%s'\n", index_str.c_str(), line.c_str());
                             expect_pdu_next = false;
                             current_message_idx = -1;
                         }
                     } else {
-                        printf("[GSM SMS] Malformed +CMGL line (no comma for index): %s\n", line.c_str());
+                        // printf("[GSM SMS] Malformed +CMGL line (no comma for index): %s\n", line.c_str());
                         expect_pdu_next = false;
                         current_message_idx = -1;
                     }
                 } else if (expect_pdu_next && current_message_idx != -1) {
                     // This line should be the PDU data.
                     std::string pdu_data_line = line;
-                    printf("[GSM SMS] Received PDU for index %d: %s\n", current_message_idx, pdu_data_line.c_str());
+                    // printf("[GSM SMS] Received PDU for index %d: %s\n", current_message_idx, pdu_data_line.c_str());
                     processAndStoreSms(pdu_data_line, current_message_idx); // This will also queue deletion
                     messages_found_and_processed++;
                     expect_pdu_next = false;
                     current_message_idx = -1;
                 } else if (isEndIdentifier(line) || isURC(line)) {
                     if (expect_pdu_next) {
-                        printf("[GSM SMS] Expected PDU data for index %d, but received '%s' instead.\n", current_message_idx, line.c_str());
+                        // printf("[GSM SMS] Expected PDU data for index %d, but received '%s' instead.\n", current_message_idx, line.c_str());
                         expect_pdu_next = false;
                         current_message_idx = -1;
                     }
@@ -927,20 +927,20 @@ namespace Gsm
     
             if (command_ok) {
                 if (messages_found_and_processed > 0) {
-                    printf("[GSM SMS] AT+CMGL=0 successful. Processed %d messages.\n", messages_found_and_processed);
+                    // printf("[GSM SMS] AT+CMGL=0 successful. Processed %d messages.\n", messages_found_and_processed);
                 } else {
                     // This is normal if there are no messages at all.
-                    printf("[GSM SMS] AT+CMGL=0 successful. No messages found in storage.\n");
+                    // printf("[GSM SMS] AT+CMGL=0 successful. No messages found in storage.\n");
                 }
             } else if (command_error) {
                 // An ERROR with AT+CMGL=0 is more concerning.
-                printf("[GSM SMS] AT+CMGL=0 command returned ERROR. Module may not support it or other issue.\n");
+                // printf("[GSM SMS] AT+CMGL=0 command returned ERROR. Module may not support it or other issue.\n");
                 reboot();
             } else {
                 if (messages_found_and_processed > 0) {
-                     printf("[GSM SMS] AT+CMGL=0 response did not explicitly contain OK/ERROR, but %d messages were processed. Block:\n%s\n", messages_found_and_processed, response_block.c_str());
+                     // printf("[GSM SMS] AT+CMGL=0 response did not explicitly contain OK/ERROR, but %d messages were processed. Block:\n%s\n", messages_found_and_processed, response_block.c_str());
                 } else {
-                     printf("[GSM SMS] AT+CMGL=0 response did not contain OK/ERROR and no messages found/processed. Block:\n%s\n", response_block.c_str());
+                     // printf("[GSM SMS] AT+CMGL=0 response did not contain OK/ERROR and no messages found/processed. Block:\n%s\n", response_block.c_str());
                 }
             }
             return false;
@@ -971,10 +971,10 @@ namespace Gsm
                 currentBer = ber;
                 networkQualityValid = true;
                 lastQualityUpdateTime = std::chrono::steady_clock::now();
-                printf("[GSM State] Updated Network Quality: RSSI=%d, BER=%d\n", currentRssi, currentBer);
+                // printf("[GSM State] Updated Network Quality: RSSI=%d, BER=%d\n", currentRssi, currentBer);
             } else {
                  networkQualityValid = false; 
-                 printf("[GSM State] Failed to update Network Quality.\n");
+                 // printf("[GSM State] Failed to update Network Quality.\n");
             }
             return false; 
         };
@@ -997,28 +997,28 @@ namespace Gsm
                          attached = (status == 1);
                          success = true; 
                      } catch (...) {
-                          printf("[GSM State] Failed to parse CGATT status value: %s\n", value_str.c_str());
+                          // printf("[GSM State] Failed to parse CGATT status value: %s\n", value_str.c_str());
                           success = false; 
                      }
                  } else { success = false; } 
             } else if (response.find("OK") != std::string::npos && response.find("ERROR") == std::string::npos) {
                  attached = false;
                  success = true; 
-                 printf("[GSM State] GPRS Status: OK received but no +CGATT line. Assuming detached.\n");
+                 // printf("[GSM State] GPRS Status: OK received but no +CGATT line. Assuming detached.\n");
             } else if (response.find("ERROR") != std::string::npos) {
                  attached = false;
                  success = true; 
-                 printf("[GSM State] GPRS Status: Command Error (Expected without SIM/Network).\n");
+                 // printf("[GSM State] GPRS Status: Command Error (Expected without SIM/Network).\n");
             }
 
             if (success) {
                 isGprsAttached = attached;
                 gprsStateValid = true;
                 lastGprsUpdateTime = std::chrono::steady_clock::now();
-                printf("[GSM State] Updated GPRS Status: %s\n", isGprsAttached ? "Attached" : "Detached");
+                // printf("[GSM State] Updated GPRS Status: %s\n", isGprsAttached ? "Attached" : "Detached");
             } else {
                  gprsStateValid = false; 
-                 printf("[GSM State] Failed to update GPRS Status.\n");
+                 // printf("[GSM State] Failed to update GPRS Status.\n");
             }
             return false;
         };
@@ -1045,17 +1045,17 @@ namespace Gsm
                     }
                     success = true;
                 } catch (...) {
-                     printf("[GSM State] Failed to parse CFUN level: %s\n", value.c_str());
+                     // printf("[GSM State] Failed to parse CFUN level: %s\n", value.c_str());
                 }
             }
             if (success) {
                 flightModeState = flightMode;
                 flightModeStateValid = true;
                 lastFlightModeUpdateTime = std::chrono::steady_clock::now();
-                printf("[GSM State] Updated Flight Mode Status: %s\n", flightModeState ? "ON (RF OFF)" : "OFF (RF ON)");
+                // printf("[GSM State] Updated Flight Mode Status: %s\n", flightModeState ? "ON (RF OFF)" : "OFF (RF ON)");
             } else {
                  flightModeStateValid = false; 
-                 printf("[GSM State] Failed to update Flight Mode Status.\n");
+                 // printf("[GSM State] Failed to update Flight Mode Status.\n");
             }
             return false;
         };
@@ -1102,14 +1102,14 @@ namespace Gsm
                             voltage = std::stoi(voltage_str_raw); 
                             parsed_value_ok = true; 
                         } else {
-                             printf("[GSM State] Voltage Line Found but voltage string was empty after cleaning. (Original Data Part: '%s')\n", data_part.c_str());
+                             // printf("[GSM State] Voltage Line Found but voltage string was empty after cleaning. (Original Data Part: '%s')\n", data_part.c_str());
                         }
                     } catch (const std::invalid_argument& ia) {
-                        printf("[GSM State] Voltage Line Found but failed to parse numeric voltage value from cleaned string '%s' (Original Data Part: '%s')\n",
-                               voltage_str_raw.c_str(), data_part.c_str());
+                        // printf("[GSM State] Voltage Line Found but failed to parse numeric voltage value from cleaned string '%s' (Original Data Part: '%s')\n",
+                        //       voltage_str_raw.c_str(), data_part.c_str());
                     } catch (const std::out_of_range& oor) {
-                        printf("[GSM State] Voltage Line Found but numeric value out of range from cleaned string '%s' (Original Data Part: '%s')\n",
-                               voltage_str_raw.c_str(), data_part.c_str());
+                        // printf("[GSM State] Voltage Line Found but numeric value out of range from cleaned string '%s' (Original Data Part: '%s')\n",
+                        //       voltage_str_raw.c_str(), data_part.c_str());
                     }
                     break; 
                  }
@@ -1132,21 +1132,21 @@ namespace Gsm
 
                 voltageValid = true;
                 lastVoltageUpdateTime = std::chrono::steady_clock::now();
-                printf("[GSM State] Updated Voltage: %d mV\n", currentVoltage_mV);
+                // printf("[GSM State] Updated Voltage: %d mV\n", currentVoltage_mV);
                 update_successful = true;
             } else if (!cmd_success && response.find("ERROR") != std::string::npos) {
-                 printf("[GSM State] Voltage Update: Command Error received.\n");
+                 // printf("[GSM State] Voltage Update: Command Error received.\n");
             } else if (cmd_success && !found_cbc_line) {
-                 printf("[GSM State] Voltage Update: OK received but +CBC line not found.\n");
+                 // printf("[GSM State] Voltage Update: OK received but +CBC line not found.\n");
             } else if (cmd_success && found_cbc_line && !parsed_value_ok) {
-                 printf("[GSM State] Voltage Update: OK received, +CBC line found, but failed to parse voltage value.\n");
+                 // printf("[GSM State] Voltage Update: OK received, +CBC line found, but failed to parse voltage value.\n");
             } else if (!cmd_success && !found_cbc_line) {
-                 printf("[GSM State] Voltage Update: Unexpected response state (No OK/ERROR/CBC).\n");
+                 // printf("[GSM State] Voltage Update: Unexpected response state (No OK/ERROR/CBC).\n");
             }
 
             if (!update_successful) {
                  voltageValid = false; 
-                 printf("[GSM State] Failed to update Voltage state this cycle.\n");
+                 // printf("[GSM State] Failed to update Voltage state this cycle.\n");
             }
             return false; 
         };
@@ -1201,22 +1201,22 @@ namespace Gsm
                 } else if (parsed_status == "NOT INSERTED" || parsed_status.find("NO SIM") != std::string::npos || parsed_status.find("NOT READY") != std::string::npos) {
                     needsPin = true; 
                     status_determined = true;
-                    printf("[GSM State] PIN Status: SIM Not Inserted or Not Ready.\n");
+                    // printf("[GSM State] PIN Status: SIM Not Inserted or Not Ready.\n");
                 } else {
                     needsPin = true; 
                     status_determined = true;
-                    printf("[GSM State] PIN Status: Unknown Module Status (%s)\n", parsed_status.c_str());
+                    // printf("[GSM State] PIN Status: Unknown Module Status (%s)\n", parsed_status.c_str());
                 }
             } else if (!cmd_success && response.find("ERROR") != std::string::npos) {
-                 printf("[GSM State] PIN Status: Command Error received.\n");
+                 // printf("[GSM State] PIN Status: Command Error received.\n");
                  needsPin = true;
                  status_determined = false; 
             } else if (cmd_success && !found_cpin_line) {
-                 printf("[GSM State] PIN Status: OK received but no +CPIN line found.\n");
+                 // printf("[GSM State] PIN Status: OK received but no +CPIN line found.\n");
                  needsPin = true; 
                  status_determined = false;
             } else {
-                 printf("[GSM State] PIN Status: Unexpected response state.\n");
+                 // printf("[GSM State] PIN Status: Unexpected response state.\n");
                  needsPin = true;
                  status_determined = false;
             }
@@ -1225,10 +1225,10 @@ namespace Gsm
                 pinRequiresPin = needsPin;
                 pinStatusValid = true;
                 lastPinStatusUpdateTime = std::chrono::steady_clock::now();
-                printf("[GSM State] Updated PIN Status: %s\n", pinRequiresPin ? "Required/Not Ready" : "Ready");
+                // printf("[GSM State] Updated PIN Status: %s\n", pinRequiresPin ? "Required/Not Ready" : "Ready");
             } else {
                  pinStatusValid = false; 
-                 printf("[GSM State] Failed to update PIN Status (Parsing/Command Error or Unknown State).\n");
+                 // printf("[GSM State] Failed to update PIN Status (Parsing/Command Error or Unknown State).\n");
             }
             return false; 
         };
@@ -1255,17 +1255,17 @@ namespace Gsm
                     }
                     success = true;
                 } catch (...) {
-                     printf("[GSM State] Failed to parse CMGF mode: %s\n", value.c_str());
+                     // printf("[GSM State] Failed to parse CMGF mode: %s\n", value.c_str());
                 }
             }
             if (success) {
                 pduModeEnabled = pduMode;
                 pduModeStateValid = true;
                 lastPduModeUpdateTime = std::chrono::steady_clock::now();
-                printf("[GSM State] Updated PDU Mode Status: %s\n", pduModeEnabled ? "Enabled (0)" : "Disabled (1)");
+                // printf("[GSM State] Updated PDU Mode Status: %s\n", pduModeEnabled ? "Enabled (0)" : "Disabled (1)");
             } else {
                  pduModeStateValid = false; 
-                 printf("[GSM State] Failed to update PDU Mode Status.\n");
+                 // printf("[GSM State] Failed to update PDU Mode Status.\n");
             }
             return false;
         };
@@ -1277,22 +1277,22 @@ namespace Gsm
     void init()
     {
         #ifdef ESP_PLATFORM
-        printf("[GSM] Initializing...\n");
+        // printf("[GSM] Initializing...\n");
         pinMode(GSM_PWR_PIN, OUTPUT);
         digitalWrite(GSM_PWR_PIN, 0); 
         gsm.setRxBufferSize(4096); 
 
-        printf("[GSM] Ensuring module is off before power cycle...\n");
+        // printf("[GSM] Ensuring module is off before power cycle...\n");
         digitalWrite(GSM_PWR_PIN, 1); 
         delay(1500); 
         digitalWrite(GSM_PWR_PIN, 0); 
         delay(3000); 
 
-        printf("[GSM] Powering on module...\n");
+        // printf("[GSM] Powering on module...\n");
         digitalWrite(GSM_PWR_PIN, 1); 
         delay(1200); 
         digitalWrite(GSM_PWR_PIN, 0); 
-        printf("[GSM] Module power sequence complete. Waiting for boot (10s)...\n");
+        // printf("[GSM] Module power sequence complete. Waiting for boot (10s)...\n");
         delay(10000); 
 
 
@@ -1300,7 +1300,7 @@ namespace Gsm
         int attempts = 0;
         const int max_attempts = 3; 
 
-        printf("[GSM] Attempting communication at 921600 bps...\n");
+        // printf("[GSM] Attempting communication at 921600 bps...\n");
         gsm.begin(921600, SERIAL_8N1, RX, TX);
         delay(100); 
 
@@ -1312,17 +1312,17 @@ namespace Gsm
             Serial.print("[GSM RX @921600]: "); Serial.println(data);
 
             if (data.indexOf("OK") != -1) {
-                printf("[GSM] Communication established at 921600 bps.\n");
+                // printf("[GSM] Communication established at 921600 bps.\n");
                 comm_ok = true;
             } else {
-                printf("[GSM] No valid response at 921600. Retrying...\n");
+                // printf("[GSM] No valid response at 921600. Retrying...\n");
                 delay(2000); 
             }
             attempts++;
         }
 
         if (!comm_ok) {
-            printf("[GSM] Failed at 921600. Trying 115200 bps...\n");
+            // printf("[GSM] Failed at 921600. Trying 115200 bps...\n");
             gsm.updateBaudRate(115200); 
             delay(100);
             attempts = 0;
@@ -1334,7 +1334,7 @@ namespace Gsm
                 Serial.print("[GSM RX @115200]: "); Serial.println(data);
 
                 if (data.indexOf("OK") != -1) {
-                    printf("[GSM] Communication established at 115200 bps. Setting preferred rate (921600)...\n");
+                    // printf("[GSM] Communication established at 115200 bps. Setting preferred rate (921600)...\n");
                     gsm.println("AT+IPR=921600"); 
                     delay(100); gsm.flush(); 
                     gsm.updateBaudRate(921600); 
@@ -1342,16 +1342,16 @@ namespace Gsm
                     gsm.println("AT"); delay(500); data = ""; while(gsm.available()) { data += (char)gsm.read(); }
                     Serial.print("[GSM RX @921600]: "); Serial.println(data);
                     if (data.indexOf("OK") != -1) {
-                         printf("[GSM] Communication verified at 921600.\n");
+                         // printf("[GSM] Communication verified at 921600.\n");
                          comm_ok = true;
                     } else {
-                         printf("[GSM] Failed to verify communication after setting 921600. Sticking with 115200.\n");
+                         // printf("[GSM] Failed to verify communication after setting 921600. Sticking with 115200.\n");
                          gsm.updateBaudRate(115200);
                          delay(100);
                          comm_ok = true; 
                     }
                 } else {
-                    printf("[GSM] No valid response at 115200. Retrying...\n");
+                    // printf("[GSM] No valid response at 115200. Retrying...\n");
                     delay(2000);
                 }
                 attempts++;
@@ -1360,10 +1360,10 @@ namespace Gsm
 
 
         if (comm_ok) {
-             printf("[GSM] Module Initialized.\n");
+             // printf("[GSM] Module Initialized.\n");
              currentCallState = CallState::IDLE; 
 
-             printf("[GSM] Queuing initial state checks...\n");
+             // printf("[GSM] Queuing initial state checks...\n");
              updatePinStatusInternal();        
              updateGprsAttachmentStatusInternal(); 
              updateFlightModeStatusInternal();   
@@ -1377,10 +1377,10 @@ namespace Gsm
              return; 
         }
 
-        printf("[GSM] Initialization failed after all attempts.\n");
+        // printf("[GSM] Initialization failed after all attempts.\n");
         currentCallState = CallState::UNKNOWN; 
         #else
-        printf("[GSM] Dummy Init Completed.\n");
+        // printf("[GSM] Dummy Init Completed.\n");
         currentCallState = CallState::IDLE;
         #endif
     }
@@ -1393,18 +1393,18 @@ namespace Gsm
             init();
             return false;
         };
-        printf("[GSM] Rebooting module...\n");
+        // printf("[GSM] Rebooting module...\n");
         requests.push_back(req);
     }
 
     void uploadSettings()
     {
-        printf("[GSM] Configuring module settings (URCs)...\n");
+        // printf("[GSM] Configuring module settings (URCs)...\n");
 
         auto requestClip = std::make_shared<Request>();
         requestClip->command = "AT+CLIP=1";
         requestClip->callback = [](const std::string& response) -> bool {
-            printf("[GSM Settings] CLIP %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
+            // printf("[GSM Settings] CLIP %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
             return false;
         };
         requests.push_back(requestClip);
@@ -1412,7 +1412,7 @@ namespace Gsm
         auto requestClcc = std::make_shared<Request>();
         requestClcc->command = "AT+CLCC=1";
         requestClcc->callback = [](const std::string& response) -> bool {
-            printf("[GSM Settings] CLCC URC %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
+            // printf("[GSM Settings] CLCC URC %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
             return false;
         };
         requests.push_back(requestClcc);
@@ -1420,7 +1420,7 @@ namespace Gsm
         auto requestCnmi = std::make_shared<Request>();
         requestCnmi->command = "AT+CNMI=2,1,0,0,0";
         requestCnmi->callback = [](const std::string& response) -> bool {
-            printf("[GSM Settings] CNMI %s.\n", (response.find("OK") != std::string::npos) ? "configured" : "failed");
+            // printf("[GSM Settings] CNMI %s.\n", (response.find("OK") != std::string::npos) ? "configured" : "failed");
             return false;
         };
         requests.push_back(requestCnmi);
@@ -1428,7 +1428,7 @@ namespace Gsm
         auto requestHourSync = std::make_shared<Request>();
         requestHourSync->command = "AT+CNTP=\"time.google.com\",8";
         requestHourSync->callback = [](const std::string& response) -> bool {
-            printf("[GSM Settings] Hour Sync %s.\n", (response.find("OK") != std::string::npos) ? "configured" : "failed");
+            // printf("[GSM Settings] Hour Sync %s.\n", (response.find("OK") != std::string::npos) ? "configured" : "failed");
             return false;
         };
         requests.push_back(requestHourSync);
@@ -1436,7 +1436,7 @@ namespace Gsm
         auto requestMinuteSync = std::make_shared<Request>();
         requestMinuteSync->command = "AT+CNTP";
         requestMinuteSync->callback = [](const std::string& response) -> bool {
-            printf("[GSM Settings] Hour Sync Status: %s.\n", response.c_str());
+            // printf("[GSM Settings] Hour Sync Status: %s.\n", response.c_str());
             return false;
         };
         requests.push_back(requestMinuteSync);
@@ -1444,7 +1444,7 @@ namespace Gsm
         auto requestCreg = std::make_shared<Request>();
         requestCreg->command = "AT+CREG=1";
         requestCreg->callback = [](const std::string& response) -> bool {
-             printf("[GSM Settings] CREG URC %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
+             // printf("[GSM Settings] CREG URC %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
              return false;
         };
         requests.push_back(requestCreg);
@@ -1452,7 +1452,7 @@ namespace Gsm
         auto requestCgreg = std::make_shared<Request>();
         requestCgreg->command = "AT+CGREG=1";
         requestCgreg->callback = [](const std::string& response) -> bool {
-             printf("[GSM Settings] CGREG URC %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
+             // printf("[GSM Settings] CGREG URC %s.\n", (response.find("OK") != std::string::npos) ? "enabled" : "failed");
              if (response.find("OK") != std::string::npos) {
                  updateGprsAttachmentStatusInternal();
              }
@@ -1464,11 +1464,11 @@ namespace Gsm
         // After setting PDU mode, check for any stored messages
         setPduMode(true, [](bool success){
             if(success) {
-                printf("[GSM Settings] PDU Mode (CMGF=0) set successfully for SMS.\n");
+                // printf("[GSM Settings] PDU Mode (CMGF=0) set successfully for SMS.\n");
                 // After setting PDU mode, check for any stored messages
                 checkForMessages(); // <<< ADDED CALL HERE
             }
-            else printf("[GSM Settings] Failed to set PDU Mode (CMGF=0) for SMS.\n");
+            else {} // printf("[GSM Settings] Failed to set PDU Mode (CMGF=0) for SMS.\n");
         });
     }
 
@@ -1499,7 +1499,7 @@ namespace Gsm
 
     void processURC(std::string data)
     {
-        printf("[GSM URC]: %s\n", data.c_str());
+        // printf("[GSM URC]: %s\n", data.c_str());
 
         if (data.find("RING") == 0) {
             currentCallState = CallState::RINGING;
@@ -1509,12 +1509,36 @@ namespace Gsm
             size_t secondQuote = data.find('"', firstQuote + 1);
             if (firstQuote != std::string::npos && secondQuote != std::string::npos) {
                 lastIncomingCallNumber = data.substr(firstQuote + 1, secondQuote - firstQuote - 1);
-                printf("[GSM State] Incoming call from: %s\n", lastIncomingCallNumber.c_str());
+                // printf("[GSM State] Incoming call from: %s\n", lastIncomingCallNumber.c_str());
                 if(ExternalEvents::onIncommingCall)
                     ExternalEvents::onIncommingCall();
                 if(currentCallState != CallState::RINGING) {
                     currentCallState = CallState::RINGING;
                 }
+            }
+        } else if (data.rfind("+HTTPACTION:", 0) == 0) {
+            if (currentHttpState != HttpState::ACTION_IN_PROGRESS) return;
+
+            int statusCode = 0, dataLen = 0;
+            sscanf(data.c_str(), "+HTTPACTION: %*d,%d,%d", &statusCode, &dataLen);
+
+            // printf("[GSM HTTP] Action URC. Status: %d, Length: %d\n", statusCode, dataLen);
+
+            if (statusCode >= 200 && statusCode < 300) {
+                if (dataLen > 0) {
+                    httpBytesTotal = dataLen;
+                    httpBytesRead = 0;
+                    currentHttpState = HttpState::READING;
+                    _queueNextHttpRead(); 
+                } else {
+                    _completeHttpRequest(HttpResult::OK);
+                }
+            } else if (statusCode == 404) {
+                _completeHttpRequest(HttpResult::NOT_FOUND);
+            } else if (statusCode >= 400) {
+                _completeHttpRequest(HttpResult::SERVER_ERROR);
+            } else {
+                _completeHttpRequest(HttpResult::CONNECTION_FAILED);
             }
         } else if (data.find("+CLCC:") == 0) {
             std::stringstream ss_clcc(data.substr(6)); 
@@ -1535,16 +1559,16 @@ namespace Gsm
                         default: break; 
                     }
                      if (currentCallState != previousState) {
-                        printf("[GSM State] Call state updated via CLCC: %d -> %d\n", static_cast<int>(previousState), static_cast<int>(currentCallState));
+                        // printf("[GSM State] Call state updated via CLCC: %d -> %d\n", static_cast<int>(previousState), static_cast<int>(currentCallState));
                         if (currentCallState == CallState::IDLE) {
                             lastIncomingCallNumber = ""; 
                         }
                      }
-                } catch (...) { printf("[GSM URC] Failed to parse CLCC status.\n"); }
+                } catch (...) {} // printf("[GSM URC] Failed to parse CLCC status.\n"); }
             }
              if (data == "+CLCC:") { 
                  if (currentCallState != CallState::IDLE) {
-                     printf("[GSM State] Empty +CLCC URC received, assuming IDLE.\n");
+                     // printf("[GSM State] Empty +CLCC URC received, assuming IDLE.\n");
                      currentCallState = CallState::IDLE;
                      lastIncomingCallNumber = "";
                  }
@@ -1552,13 +1576,13 @@ namespace Gsm
 
         } else if (data == "NO CARRIER" || data == "BUSY" || data == "NO ANSWER") {
             if (currentCallState != CallState::IDLE) {
-                 printf("[GSM State] Call terminated/failed URC (%s). Setting state to IDLE.\n", data.c_str());
+                 // printf("[GSM State] Call terminated/failed URC (%s). Setting state to IDLE.\n", data.c_str());
                  currentCallState = CallState::IDLE;
                  lastIncomingCallNumber = "";
             }
         }
         else if (data.find("+CMTI:") == 0) { 
-            printf("[GSM URC] New SMS received indication: %s\n", data.c_str());
+            // printf("[GSM URC] New SMS received indication: %s\n", data.c_str());
             size_t first_quote = data.find('"');
             size_t second_quote = data.find('"', first_quote + 1);
             size_t comma_after_quote = data.find(',', second_quote +1);
@@ -1575,14 +1599,14 @@ namespace Gsm
                     int msg_idx = std::stoi(index_str);
                     queueReadSms(mem_store, msg_idx);
                 } catch (const std::exception& e) {
-                    printf("[GSM URC] Failed to parse +CMTI index: %s. Data: %s\n", e.what(), data.c_str());
+                    // printf("[GSM URC] Failed to parse +CMTI index: %s. Data: %s\n", e.what(), data.c_str());
                 }
             } else {
-                 printf("[GSM URC] Failed to parse +CMTI format. Data: %s\n", data.c_str());
+                 // printf("[GSM URC] Failed to parse +CMTI format. Data: %s\n", data.c_str());
             }
         }
         else if (data.find("+CREG:") == 0 || data.find("+CGREG:") == 0) {
-            printf("[GSM URC] Network registration URC: %s\n", data.c_str());
+            // printf("[GSM URC] Network registration URC: %s\n", data.c_str());
             size_t comma_pos = data.find(',');
             if (comma_pos != std::string::npos) {
                 try {
@@ -1595,17 +1619,17 @@ namespace Gsm
 
                     if (data.find("+CGREG:") == 0) { 
                         if (!gprsStateValid || isGprsAttached != attached) {
-                             printf("[GSM State] GPRS state updated via URC: %s (Stat=%d)\n", attached ? "Attached" : "Detached", stat);
+                             // printf("[GSM State] GPRS state updated via URC: %s (Stat=%d)\n", attached ? "Attached" : "Detached", stat);
                              isGprsAttached = attached;
                              gprsStateValid = true; 
                              lastGprsUpdateTime = std::chrono::steady_clock::now();
                         }
                     }
-                } catch (...) { printf("[GSM URC] Failed to parse REG status.\n"); }
+                } catch (...) {} // printf("[GSM URC] Failed to parse REG status.\n"); }
             }
         }
         else if (data == "Call Ready" || data == "SMS Ready" || data == "+SIMREADY") {
-            printf("[GSM URC] Module Ready URC: %s\n", data.c_str());
+            // printf("[GSM URC] Module Ready URC: %s\n", data.c_str());
             if (currentCallState == CallState::UNKNOWN) {
                 currentCallState = CallState::IDLE;
             }
@@ -1614,10 +1638,10 @@ namespace Gsm
             }
         }
         else if (data.find("+CGEV:") == 0) {
-             printf("[GSM URC] GPRS/EPS Event: %s\n", data.c_str());
+             // printf("[GSM URC] GPRS/EPS Event: %s\n", data.c_str());
              if (data.find("DETACH") != std::string::npos) {
                  if (isGprsAttached) {
-                     printf("[GSM State] GPRS detached via CGEV URC.\n");
+                     // printf("[GSM State] GPRS detached via CGEV URC.\n");
                      isGprsAttached = false;
                      gprsStateValid = true; 
                      lastGprsUpdateTime = std::chrono::steady_clock::now();
@@ -1650,7 +1674,7 @@ namespace Gsm
         request->command = "AT+CPIN=" + pin;
         request->callback = [completionCallback](const std::string& response) -> bool {
             bool success = (response.find("OK") != std::string::npos);
-            printf("[GSM Action] setPin %s.\n", success ? "succeeded" : "failed");
+            // printf("[GSM Action] setPin %s.\n", success ? "succeeded" : "failed");
             if (success) {
                 pinRequiresPin = false;
                 pinStatusValid = true; 
@@ -1670,7 +1694,7 @@ namespace Gsm
         request->command = "AT+CFUN=" + std::string(enableFlightMode ? "4" : "1");
         request->callback = [completionCallback, enableFlightMode](const std::string& response) -> bool {
             bool success = (response.find("OK") != std::string::npos);
-             printf("[GSM Action] setFlightMode(%s) command %s.\n", enableFlightMode ? "ON" : "OFF", success ? "accepted" : "rejected");
+             // printf("[GSM Action] setFlightMode(%s) command %s.\n", enableFlightMode ? "ON" : "OFF", success ? "accepted" : "rejected");
             if (success) {
                 flightModeState = enableFlightMode;
                 flightModeStateValid = true; 
@@ -1689,7 +1713,7 @@ namespace Gsm
         request->command = "AT+CMGF=" + std::string(enablePdu ? "0" : "1");
         request->callback = [completionCallback, enablePdu](const std::string& response) -> bool {
             bool success = (response.find("OK") != std::string::npos);
-            printf("[GSM Action] setPduMode(%s) %s.\n", enablePdu ? "PDU" : "Text", success ? "succeeded" : "failed");
+            // printf("[GSM Action] setPduMode(%s) %s.\n", enablePdu ? "PDU" : "Text", success ? "succeeded" : "failed");
              if (success) {
                 pduModeEnabled = enablePdu;
                 pduModeStateValid = true;
@@ -1713,10 +1737,10 @@ namespace Gsm
             std::string trimmed_response = response;
             size_t last_char_pos = trimmed_response.find_last_not_of(" \t\r\n");
             if (last_char_pos != std::string::npos && trimmed_response[last_char_pos] == '>') {
-                printf("[GSM Action] PDU prompt received.\n");
+                // printf("[GSM Action] PDU prompt received.\n");
                 return true; 
             } else {
-                printf("[GSM Action] Failed to get PDU prompt '>'. Response block:\n%s---\n", response.c_str());
+                // printf("[GSM Action] Failed to get PDU prompt '>'. Response block:\n%s---\n", response.c_str());
                 if (completionCallback) completionCallback(false, -1);
                 return false; 
             }
@@ -1737,15 +1761,15 @@ namespace Gsm
                 if (response.find("OK") != std::string::npos) {
                     success = true;
                 } else {
-                     printf("[GSM Action] +CMGS found but no OK received.\n");
+                     // printf("[GSM Action] +CMGS found but no OK received.\n");
                 }
             } else if (response.find("OK") != std::string::npos) {
-                 printf("[GSM Action] OK received without +CMGS reference.\n");
+                 // printf("[GSM Action] OK received without +CMGS reference.\n");
                  success = false; 
             } else if (response.find("ERROR") != std::string::npos) {
                  success = false;
             }
-            printf("[GSM Action] sendMessagePDU %s (MR: %d).\n", success ? "succeeded" : "failed", messageRef);
+            // printf("[GSM Action] sendMessagePDU %s (MR: %d).\n", success ? "succeeded" : "failed", messageRef);
             if (completionCallback) {
                 completionCallback(success, messageRef);
             }
@@ -1878,7 +1902,7 @@ namespace Gsm
                           cleanNumber.end());
 
         if (cleanNumber.empty()) {
-            printf("[PDU Encode] Error: Recipient number is empty or invalid.\n");
+            // printf("[PDU Encode] Error: Recipient number is empty or invalid.\n");
             return {"", -1}; 
         }
         pdu += byteToHex(static_cast<unsigned char>(cleanNumber.length())); cmgsLength++;
@@ -1892,7 +1916,7 @@ namespace Gsm
         int septetCount = 0; 
         std::string packedUserData = pack7Bit(message, septetCount);
         if (septetCount > 160) {
-             printf("[PDU Encode] Warning: Message length (%d septets) exceeds 160.\n", septetCount);
+             // printf("[PDU Encode] Warning: Message length (%d septets) exceeds 160.\n", septetCount);
         }
         pdu += byteToHex(static_cast<unsigned char>(septetCount)); cmgsLength++;
         pdu += packedUserData;
@@ -1906,17 +1930,17 @@ namespace Gsm
     void sendMySms(const std::string& recipient, const std::string& text) {
         std::pair<std::string, int> pduData = Gsm::encodePduSubmit(recipient, text);
         if (pduData.second == -1) {
-            printf("[SMS Example] Failed to encode PDU for SMS.\n");
+            // printf("[SMS Example] Failed to encode PDU for SMS.\n");
             return;
         }
         std::string pduString = pduData.first;
         int cmgsLength = pduData.second;
-        printf("[SMS Example] PDU to send: %s\n", pduString.c_str());
-        printf("[SMS Example] Length for AT+CMGS: %d\n", cmgsLength);
+        // printf("[SMS Example] PDU to send: %s\n", pduString.c_str());
+        // printf("[SMS Example] Length for AT+CMGS: %d\n", cmgsLength);
 
         Gsm::sendMessagePDU(pduString, cmgsLength, [recipient, text](bool success, int messageRef) {
             if (success) {
-                printf("[SMS Example] SMS sent successfully! Message Reference: %d\n", messageRef);
+                // printf("[SMS Example] SMS sent successfully! Message Reference: %d\n", messageRef);
 
                 Conversations::Conversation conv;
                 storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + recipient + ".json");
@@ -1932,14 +1956,14 @@ namespace Gsm
                 Conversations::saveConversation(convPath, conv);
                 
             } else {
-                printf("[SMS Example] Failed to send SMS.\n");
+                // printf("[SMS Example] Failed to send SMS.\n");
             }
         });
     }
 
     void call(const std::string& number, std::function<void(bool success)> completionCallback) {
         if (currentCallState != CallState::IDLE) {
-            printf("[GSM Action] Cannot call, state is not IDLE (%d).\n", static_cast<int>(currentCallState));
+            // printf("[GSM Action] Cannot call, state is not IDLE (%d).\n", static_cast<int>(currentCallState));
             if (completionCallback) completionCallback(false);
             return;
         }
@@ -1947,7 +1971,7 @@ namespace Gsm
         request->command = "ATD" + number + ";"; 
         request->callback = [completionCallback, number](const std::string& response) -> bool {
             bool success = (response.find("OK") != std::string::npos);
-            printf("[GSM Action] call(%s) command %s.\n", number.c_str(), success ? "accepted" : "rejected");
+            // printf("[GSM Action] call(%s) command %s.\n", number.c_str(), success ? "accepted" : "rejected");
             if (success) {
                 currentCallState = CallState::DIALING; 
             }
@@ -1961,7 +1985,7 @@ namespace Gsm
 
     void acceptCall(std::function<void(bool success)> completionCallback) {
          if (currentCallState != CallState::RINGING) {
-             printf("[GSM Action] Cannot accept call, state is not RINGING (%d).\n", static_cast<int>(currentCallState));
+             // printf("[GSM Action] Cannot accept call, state is not RINGING (%d).\n", static_cast<int>(currentCallState));
             if (completionCallback) completionCallback(false);
             return;
         }
@@ -1969,11 +1993,11 @@ namespace Gsm
         request->command = "ATA";
         request->callback = [completionCallback](const std::string& response) -> bool {
             bool success = (response.find("OK") != std::string::npos);
-            printf("[GSM Action] acceptCall command %s.\n", success ? "accepted" : "rejected");
+            // printf("[GSM Action] acceptCall command %s.\n", success ? "accepted" : "rejected");
             if (success) {
                 currentCallState = CallState::ACTIVE; 
             } else {
-                 printf("[GSM Action] ATA command failed. Call state might be inconsistent.\n");
+                 // printf("[GSM Action] ATA command failed. Call state might be inconsistent.\n");
             }
             if (completionCallback) {
                 completionCallback(success); 
@@ -1985,7 +2009,7 @@ namespace Gsm
 
     void rejectCall(std::function<void(bool success)> completionCallback) {
          if (currentCallState == CallState::IDLE || currentCallState == CallState::UNKNOWN) {
-             printf("[GSM Action] Cannot reject/hangup, no call active/ringing/dialing (%d).\n", static_cast<int>(currentCallState));
+             // printf("[GSM Action] Cannot reject/hangup, no call active/ringing/dialing (%d).\n", static_cast<int>(currentCallState));
             if (completionCallback) completionCallback(false);
             return;
         }
@@ -1993,12 +2017,12 @@ namespace Gsm
         request->command = "AT+CHUP";
         request->callback = [completionCallback](const std::string& response) -> bool {
             bool success = (response.find("OK") != std::string::npos);
-             printf("[GSM Action] rejectCall/hangup command %s.\n", success ? "accepted" : "rejected");
+             // printf("[GSM Action] rejectCall/hangup command %s.\n", success ? "accepted" : "rejected");
             if (success) {
                 currentCallState = CallState::IDLE;
                 lastIncomingCallNumber = "";
             } else {
-                 printf("[GSM Action] AT+CHUP command failed. Call state might be inconsistent.\n");
+                 // printf("[GSM Action] AT+CHUP command failed. Call state might be inconsistent.\n");
             }
             if (completionCallback) {
                 completionCallback(success); 
@@ -2006,6 +2030,157 @@ namespace Gsm
             return false;
         };
         requests.push_back(request);
+    }
+
+    void httpGet(const std::string& url, HttpGetCallbacks callbacks) {
+        if (currentHttpState != HttpState::IDLE) {
+            // printf("[GSM HTTP] Error: Cannot start GET. State is not IDLE.\n");
+            if (callbacks.on_complete) {
+                // TODO: Queue the request
+                callbacks.on_complete();
+            }
+            return;
+        }
+
+        // printf("[GSM HTTP] Transaction started for URL: %s\n", url.c_str());
+
+        currentHttpState = HttpState::INITIALIZING;
+        currentHttpCallbacks = std::move(callbacks);
+        httpBytesTotal = 0;
+        httpBytesRead = 0;
+
+        auto initReq = std::make_shared<Request>();
+        auto setCidReq = std::make_shared<Request>();
+        auto setUrlReq = std::make_shared<Request>();
+        auto actionReq = std::make_shared<Request>();
+
+        // 1. INIT
+        initReq->command = "AT+HTTPINIT";
+        initReq->callback = [](const std::string& response) -> bool {
+            // printf("[GSM HTTP] INIT response: %s\n", response.c_str());
+            if (response.find("OK") == std::string::npos) {
+                _completeHttpRequest(HttpResult::INIT_FAILED);
+                return false;
+            }
+            return true;
+        };
+
+        // 2. SET CID
+        /*setCidReq->command = "AT+HTTPPARA=\"CID\",1";
+        setCidReq->callback = [](const std::string& response) -> bool {
+            if (response.find("OK") == std::string::npos) {
+                _completeHttpRequest(HttpResult::MODULE_ERROR);
+                return false;
+            }
+            return true;
+        };*/
+
+        // 3. SET URL
+        setUrlReq->command = "AT+HTTPPARA=\"URL\",\"" + url + "\"";
+        setUrlReq->callback = [](const std::string& response) -> bool {
+            if (response.find("OK") == std::string::npos) {
+                _completeHttpRequest(HttpResult::MODULE_ERROR);
+                return false;
+            }
+            return true;
+        };
+
+        // 4. ACTION
+        actionReq->command = "AT+HTTPACTION=0";
+        actionReq->callback = [](const std::string& response) -> bool {
+            if (response.find("OK") == std::string::npos) {
+                _completeHttpRequest(HttpResult::MODULE_ERROR);
+                return false;
+            }
+            currentHttpState = HttpState::ACTION_IN_PROGRESS;
+            return false;
+        };
+
+        initReq->next = setUrlReq;
+        //setCidReq->next = setUrlReq;
+        setUrlReq->next = actionReq;
+        requests.push_back(initReq);
+    }
+
+    static bool onHttpReadBlock(const std::string& response) {
+        if(response.find("OK") == std::string::npos) {
+            // printf("[GSM HTTP] Read block failed, response: %s\n", response.c_str());
+            _completeHttpRequest(HttpResult::READ_ERROR);
+            return false; // This command is done, don't chain to a `next`.
+        }
+
+        return false;
+
+        // The response contains: +HTTPREAD: <len>\r\n<binary data>\r\nOK\r\n
+        size_t header_start = response.find("+HTTPREAD:");
+        if (header_start == std::string::npos) {
+            _completeHttpRequest(HttpResult::READ_ERROR);
+            return false;
+        }
+
+        size_t header_end = response.find("\r\n", header_start);
+        if (header_end == std::string::npos) {
+            _completeHttpRequest(HttpResult::READ_ERROR);
+            return false;
+        }
+
+        // Extract the length of this specific chunk
+        int chunk_len = 0;
+        sscanf(response.c_str() + header_start, "+HTTPREAD: %d", &chunk_len);
+
+        if (chunk_len > 0) {
+            size_t data_start = header_end + 2; // Skip the \r\n
+            
+            if (data_start + chunk_len > response.length()) {
+                _completeHttpRequest(HttpResult::READ_ERROR);
+                return false;
+            }
+
+            // Create a span of the data chunk and call the user's callback
+            if (currentHttpCallbacks.on_data) {
+                std::string_view data_chunk(response.data() + data_start, chunk_len);
+                // printf("[GSM HTTP] Read %d bytes of data.\n", chunk_len);
+                currentHttpCallbacks.on_data(data_chunk);
+            }
+            httpBytesRead += chunk_len;
+        }
+
+        // After processing the block, decide the next step.
+        if (httpBytesRead >= httpBytesTotal) {
+            _completeHttpRequest(HttpResult::OK);
+        } else {
+            _queueNextHttpRead();
+        }
+
+        return false; // This command is done, don't chain to a `next`.
+    }
+
+    static void _queueNextHttpRead() {
+        auto readReq = std::make_shared<Request>();
+        readReq->command = "AT+HTTPREAD=1024";
+        readReq->callback = onHttpReadBlock;
+        requests.push_back(readReq);
+    }
+
+    // Helper to centralize cleanup and callback invocation
+    static void _completeHttpRequest(HttpResult result) {
+        // printf("[GSM HTTP] Completing transaction with result: %d\n", static_cast<int>(result));
+
+        if (currentHttpCallbacks.on_complete) {
+            currentHttpCallbacks.on_complete();
+        }
+
+        currentHttpCallbacks = {};
+        currentHttpState = HttpState::TERMINATING;
+
+        auto termReq = std::make_shared<Request>();
+        termReq->command = "AT+HTTPTERM";
+        termReq->callback = [](const std::string&) -> bool {
+            // printf("[GSM HTTP] Session terminated.\n");
+            currentHttpState = HttpState::IDLE;
+            return false;
+        };
+        requests.insert(requests.begin(), termReq);
     }
 
     // --- Public Refresh Functions ---
@@ -2027,15 +2202,17 @@ namespace Gsm
         const std::chrono::milliseconds commandTimeoutDuration(15000); 
         const std::chrono::milliseconds pduTimeoutDuration(30000); 
 
-        static std::string currentResponseBlock = ""; 
-        static std::string lineBuffer = ""; 
+        static std::string currentResponseBlock = "";
+        currentResponseBlock.reserve(2048);
+        static std::string lineBuffer;
+        lineBuffer.reserve(2048);
 
         if (state == SerialRunState::NO_COMMAND && !requests.empty())
         {
             currentRequest = requests.front();
             requests.erase(requests.begin()); 
 
-            printf("[GSM TX]: %s\n", currentRequest->command.c_str());
+            // printf("[GSM TX]: %s\n", currentRequest->command.c_str());
             currentResponseBlock = ""; 
 
             if (currentRequest->command.find('\x1A') != std::string::npos) {
@@ -2077,7 +2254,7 @@ namespace Gsm
             if ((state == SerialRunState::COMMAND_RUNNING) && currentRequest &&
                  line == currentRequest->command)
             {
-                 printf("[GSM] Echo ignored: %s\n", line.c_str());
+                 // printf("[GSM] Echo ignored: %s\n", line.c_str());
                  continue; 
             }
 
@@ -2087,6 +2264,54 @@ namespace Gsm
             if (potentialURC && (state == SerialRunState::NO_COMMAND || !isFinalReply)) {
                 processURC(line);
                 continue;
+            }
+
+            if(line.find("+HTTPREAD:") != std::string::npos)
+            {
+                // printf("[GSM HTTP] Reading HTTP data block: %s\n", line.c_str());
+                size_t datasize = 0;
+                if (sscanf(line.c_str(), "+HTTPREAD: %zu", &datasize) == 1) {
+                    // printf("[GSM HTTP] Expected data size: %zu bytes\n", datasize);
+                } else {
+                    // printf("[GSM HTTP] Failed to parse data size from line: %s\n", line.c_str());
+                }
+
+                if (datasize > 0) {
+                    std::string data;
+                    data.reserve(datasize);
+
+                    // Read buffered data first
+                    if (!lineBuffer.empty()) {
+                        size_t to_copy = std::min(datasize, lineBuffer.size());
+                        data.append(lineBuffer.substr(0, to_copy));
+                        lineBuffer.erase(0, to_copy);
+                        datasize -= to_copy;
+                    }
+
+                    // Continue reading from gsm until size is correct
+                    while (datasize > 0 && gsm.available()) {
+                        char c = gsm.read();
+                        data.push_back(c);
+                        datasize--;
+                    }
+
+                    if (data.size() == data.capacity()) {
+                        // printf("[GSM HTTP] Complete data read successfully: %d bytes\n", data.size());
+                        std::string_view dataView(data.data(), data.size());
+                        if (currentHttpCallbacks.on_data)
+                            currentHttpCallbacks.on_data(dataView);
+                        httpBytesRead += data.size();
+
+                        if (httpBytesRead >= httpBytesTotal) {
+                            _completeHttpRequest(HttpResult::OK);
+                        } else {
+                            _queueNextHttpRead(); 
+                        }
+                    } else {
+                        // printf("[GSM HTTP] Incomplete data read. Expected: %zu, Read: %zu\n", data.capacity(), data.size());
+                        _completeHttpRequest(HttpResult::READ_ERROR);
+                    }
+                }
             }
 
             if (state == SerialRunState::COMMAND_RUNNING || state == SerialRunState::SENDING_PDU_DATA)
@@ -2103,7 +2328,7 @@ namespace Gsm
 
                     if (isPduPrompt && executeNext && currentRequest && currentRequest->next) {
                         requests.insert(requests.begin(), currentRequest->next);
-                        printf("[GSM] PDU prompt handled, queuing PDU data send.\n");
+                        // printf("[GSM] PDU prompt handled, queuing PDU data send.\n");
                         currentRequest = nullptr;
                         state = SerialRunState::NO_COMMAND;
                         currentResponseBlock = ""; 
@@ -2111,14 +2336,14 @@ namespace Gsm
                     else if (isFinalReply) {
                         if (executeNext && currentRequest && currentRequest->next) {
                             requests.insert(requests.begin(), currentRequest->next);
-                            printf("[GSM] Chaining next request.\n");
+                            // printf("[GSM] Chaining next request.\n");
                         }
                         currentRequest = nullptr;
                         state = SerialRunState::NO_COMMAND; 
                         currentResponseBlock = ""; 
                     }
                     else if (isPduPrompt) {
-                         printf("[GSM] PDU prompt received but no chaining requested or possible.\n");
+                         // printf("[GSM] PDU prompt received but no chaining requested or possible.\n");
                          currentRequest = nullptr;
                          state = SerialRunState::NO_COMMAND;
                          currentResponseBlock = "";
@@ -2126,7 +2351,7 @@ namespace Gsm
                 } 
             } 
             else if (!potentialURC) { 
-                 printf("[GSM] Unexpected data (State: NO_COMMAND): %s\n", line.c_str());
+                 // printf("[GSM] Unexpected data (State: NO_COMMAND): %s\n", line.c_str());
             }
         } 
 
@@ -2134,9 +2359,9 @@ namespace Gsm
         if (state != SerialRunState::NO_COMMAND) {
             auto timeout = (state == SerialRunState::SENDING_PDU_DATA) ? pduTimeoutDuration : commandTimeoutDuration;
             if ((std::chrono::steady_clock::now() - lastCommandTime) > timeout) {
-                printf("[GSM] Command Timeout! State: %d, Command: %s\n",
-                       static_cast<int>(state),
-                       currentRequest ? currentRequest->command.c_str() : "N/A");
+                // printf("[GSM] Command Timeout! State: %d, Command: %s\n",
+                //       static_cast<int>(state),
+                //       currentRequest ? currentRequest->command.c_str() : "N/A");
 
                 if (currentRequest && currentRequest->callback) {
                     currentRequest->callback("TIMEOUT_ERROR"); 
@@ -2148,7 +2373,32 @@ namespace Gsm
             }
         }
         #endif
-    } 
+    }
+
+    void downloadFile(const std::string& url) {
+        Gsm::HttpGetCallbacks my_callbacks;
+        size_t file_data_size = 0;
+
+        my_callbacks.on_init = [](Gsm::HttpResult result) {
+            std::cout << "HTTP GET operation initialized: " << static_cast<int>(result) << std::endl;
+        };
+
+        // This lambda now accepts a pointer and a size.
+        my_callbacks.on_data = [&](const std::string_view &data) {
+            std::cout << "Received data chunk of size: " << data.size() << " bytes." << std::endl;
+            /*std::cout << "============== DATA CHUNK ==============" << std::endl;
+            std::cout << data << std::endl;
+            std::cout << "=========================================" << std::endl;*/
+            file_data_size += data.length();
+        };
+
+        my_callbacks.on_complete = [&]() {
+            std::cout << "Download complete! Total size: " << file_data_size << " bytes." << std::endl;
+        };
+
+        // Start the operation (this call doesn't change)
+        Gsm::httpGet(url, my_callbacks);
+    }
 
 
     void loop()
@@ -2158,7 +2408,7 @@ namespace Gsm
         }, 5000); 
 
         eventHandlerGsm.setInterval([&]() {
-            printf("[GSM] Running medium frequency checks.\n");
+            // printf("[GSM] Running medium frequency checks.\n");
             refreshConnectionStatus();
             refreshVoltage();
             refreshPinStatus();
@@ -2166,8 +2416,10 @@ namespace Gsm
 
         eventHandlerGsm.setInterval([&]() {
             Time::syncNetworkTime();
-        }, 5000); 
+        }, 5000);
 
+
+        eventHandlerGsm.setTimeout(new Callback<>([](){ downloadFile("https://www.google.com"); }), 10000); 
 
         while (true) {
             StandbyMode::buisy_io.lock();
