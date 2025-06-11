@@ -1,5 +1,4 @@
 #include <hardware.hpp>
-#include <gsm.hpp>
 #include <vector>
 
 namespace hardware

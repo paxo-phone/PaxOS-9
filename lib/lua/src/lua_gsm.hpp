@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <vector>
 #include <SOL2/sol.hpp>
-#include "gsm.hpp"
 #include "conversation.hpp"
 
 namespace LuaGSM

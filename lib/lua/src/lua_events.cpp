@@ -5,7 +5,6 @@
 #include <tasks.hpp>
 #include <threads.hpp>
 #include <hardware.hpp>
-#include <gsm.hpp>
 #include <gsm2.hpp>
 #include "lua_file.hpp"
 

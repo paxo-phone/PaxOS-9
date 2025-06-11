@@ -22,7 +22,6 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 #include <path.hpp>
 #include <threads.hpp>
 #include <lua_file.hpp>
-#include <gsm.hpp>
 #include <gsm2.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
@@ -72,12 +71,9 @@ void mainLoop(void* data) {
     bool launcher = false;
     while (true)    // manage the running apps, the launcher and the sleep mode
     {
-        // printf("main loop\n");
         hardware::input::update();
         AppManager::loop();
         eventHandlerApp.update();
-
-        // printf("- 1\n");
 
         if(AppManager::isAnyVisibleApp() && launcher)   // free the launcher is an app is running and the launcher is active
         {
@@ -85,13 +81,9 @@ void mainLoop(void* data) {
             launcher = false;
         }
 
-        // printf("- 2\n");
-
         if(launcher)
             applications::launcher::update();
 
-        
-        // printf("- 3\n");
 
         if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())   // si mode normal et pas d'app en cours
         {
@@ -123,9 +115,6 @@ void mainLoop(void* data) {
             }
         }
 
-
-        // printf("- 4\n");
-
         if(getButtonDown(hardware::input::HOME))    // si on appuie sur HOME
         {
             if(libsystem::getDeviceMode() == libsystem::SLEEP)
@@ -138,9 +127,12 @@ void mainLoop(void* data) {
                 #endif
             } else if(launcher)
             {
-                //applications::launcher::free();
-                //launcher = false;
                 while(hardware::getHomeButton());
+
+                for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
+                {
+                    AppManager::quitApp();
+                }
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
             } else if(AppManager::isAnyVisibleApp())
@@ -149,9 +141,6 @@ void mainLoop(void* data) {
             }
         }
 
-
-        // printf("- 5\n");
-
         if(libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
         {
             setDeviceMode(libsystem::NORMAL);
@@ -159,15 +148,8 @@ void mainLoop(void* data) {
         }
 
 
-        // printf("- 6\n");
-
-        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
+        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())    // innactivity detected -> go to sleep mode
         {
-            if(launcher)
-            {
-                //applications::launcher::free();
-                //launcher = false;
-            }
             for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
             {
                 AppManager::quitApp();
@@ -175,8 +157,6 @@ void mainLoop(void* data) {
             libsystem::setDeviceMode(libsystem::SLEEP);
             StandbyMode::enable();
         }
-
-        // printf("- 7\n");
 
         #ifdef ESP_PLATFORM
         /*multi_heap_info_t heap_info;

@@ -13,6 +13,7 @@
 #include <cmath> // For ceil
 #include <iomanip> // For std::setw, std::setfill
 #include <stdexcept> // For exceptions in helpers (optional)
+#include <mutex> // For thread safety
 
 #include <delay.hpp> // Assumes PaxOS_Delay
 #include <standby.hpp> // Assumes StandbyMode
@@ -38,7 +39,9 @@
 #include <contacts.hpp>
 #include <filestream.hpp>
 
-// Dummy implementation
+const char *daysOfWeek[7] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
+const char *daysOfMonth[12] = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"};
+
 inline long long getCurrentTimestamp() {
     return std::chrono::duration_cast<std::chrono::seconds>(
                std::chrono::system_clock::now().time_since_epoch())
@@ -92,6 +95,8 @@ namespace Gsm
     // Request Queue & Current Request (Internal)
     static std::vector<std::shared_ptr<Request>> requests;
     static std::shared_ptr<Request> currentRequest = nullptr;
+
+    static std::mutex requestMutex; // Mutex for thread-safe request handling
 
     namespace ExternalEvents
     {
@@ -1670,6 +1675,7 @@ namespace Gsm
 
     // --- Public Action Functions ---
     void setPin(const std::string& pin, std::function<void(bool success)> completionCallback) {
+        requestMutex.lock();
         auto request = std::make_shared<Request>();
         request->command = "AT+CPIN=" + pin;
         request->callback = [completionCallback](const std::string& response) -> bool {
@@ -1687,6 +1693,7 @@ namespace Gsm
             return false;
         };
         requests.push_back(request);
+        requestMutex.unlock();
     }
 
     void setFlightMode(bool enableFlightMode, std::function<void(bool success)> completionCallback) {
@@ -1705,7 +1712,9 @@ namespace Gsm
             }
             return false;
         };
+        requestMutex.lock();
         requests.push_back(request);
+        requestMutex.unlock();
     }
 
      void setPduMode(bool enablePdu, std::function<void(bool success)> completionCallback) {
@@ -1724,7 +1733,9 @@ namespace Gsm
             }
             return false;
         };
+        requestMutex.lock();
         requests.push_back(request);
+        requestMutex.unlock();
     }
 
     void sendMessagePDU(const std::string& pdu, int length, std::function<void(bool success, int messageRef)> completionCallback) {
@@ -1775,8 +1786,10 @@ namespace Gsm
             }
             return false; 
         };
-        request1->next = request2; 
-        requests.push_back(request1); 
+        request1->next = request2;
+        requestMutex.lock();
+        requests.push_back(request1);
+        requestMutex.unlock();
     }
 
     static std::string byteToHex(unsigned char byte) {
@@ -1980,7 +1993,9 @@ namespace Gsm
             }
             return false;
         };
+        requestMutex.lock();
         requests.push_back(request);
+        requestMutex.unlock();
     }
 
     void acceptCall(std::function<void(bool success)> completionCallback) {
@@ -2004,7 +2019,9 @@ namespace Gsm
             }
             return false;
         };
+        requestMutex.lock();
         requests.push_back(request);
+        requestMutex.unlock();
     }
 
     void rejectCall(std::function<void(bool success)> completionCallback) {
@@ -2029,7 +2046,9 @@ namespace Gsm
             }
             return false;
         };
+        requestMutex.lock();
         requests.push_back(request);
+        requestMutex.unlock();
     }
 
     void httpGet(const std::string& url, HttpGetCallbacks callbacks) {
@@ -2099,7 +2118,10 @@ namespace Gsm
         initReq->next = setUrlReq;
         //setCidReq->next = setUrlReq;
         setUrlReq->next = actionReq;
+
+        requestMutex.lock();
         requests.push_back(initReq);
+        requestMutex.unlock();
     }
 
     static bool onHttpReadBlock(const std::string& response) {
@@ -2207,6 +2229,8 @@ namespace Gsm
         static std::string lineBuffer;
         lineBuffer.reserve(2048);
 
+        requestMutex.lock();
+
         if (state == SerialRunState::NO_COMMAND && !requests.empty())
         {
             currentRequest = requests.front();
@@ -2227,7 +2251,12 @@ namespace Gsm
             }
         }
 
-        std::string incomingData = "";
+        requestMutex.unlock();
+
+        static std::string incomingData = "";
+        incomingData.clear();
+        incomingData.reserve(2048);
+
         #ifdef ESP_PLATFORM
         while (gsm.available()) {
             char c = gsm.read();
@@ -2326,6 +2355,8 @@ namespace Gsm
                         executeNext = currentRequest->callback(currentResponseBlock);
                     }
 
+                    requestMutex.lock();
+
                     if (isPduPrompt && executeNext && currentRequest && currentRequest->next) {
                         requests.insert(requests.begin(), currentRequest->next);
                         // printf("[GSM] PDU prompt handled, queuing PDU data send.\n");
@@ -2348,12 +2379,14 @@ namespace Gsm
                          state = SerialRunState::NO_COMMAND;
                          currentResponseBlock = "";
                     }
+
+                    requestMutex.unlock();
                 } 
             } 
             else if (!potentialURC) { 
                  // printf("[GSM] Unexpected data (State: NO_COMMAND): %s\n", line.c_str());
             }
-        } 
+        }
 
 
         if (state != SerialRunState::NO_COMMAND) {

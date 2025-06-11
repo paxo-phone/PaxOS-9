@@ -3,7 +3,6 @@
 #include <standby.hpp>
 #include <clock.hpp>
 
-#include "gsm.hpp"
 #include <gsm2.hpp>
 #include "conversation.hpp"
 

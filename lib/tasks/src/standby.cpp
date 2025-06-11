@@ -22,8 +22,6 @@
 
 #endif
 
-#include <gsm.hpp>
-
 #define TICKS_MS 20
 
 namespace StandbyMode
