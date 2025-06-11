@@ -50,7 +50,12 @@ uint16_t graphics::getBrightness() {
 
 void graphics::setBrightness(uint16_t value, const bool temp)
 {
-    // We can maybe change "temp" to something like "dimScreen" ?
+    static bool running = false;
+    if(running)
+        return;
+    running = true;
+
+
     if (!temp) {
         brightness = value;
     }
@@ -61,7 +66,10 @@ void graphics::setBrightness(uint16_t value, const bool temp)
     static uint16_t oldValue = 0;
 
     if(oldValue == value)
+    {
+        running = false;
         return;
+    }
 
     libsystem::log("Brightness: " + std::to_string(value));
 
@@ -85,6 +93,8 @@ void graphics::setBrightness(uint16_t value, const bool temp)
     }
 
     #endif
+
+    running = false;
 }
 
 graphics::GraphicsInitCode graphics::init()

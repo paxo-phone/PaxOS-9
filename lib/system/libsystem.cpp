@@ -248,8 +248,10 @@ void libsystem::setDeviceMode(const DeviceMode mode)
         break;
     case SLEEP:
         std::cout << "SLEEP" << std::endl;
+        gui::ElementBase::resetStates();
         AppManager::Keyboard_manager::close(false);
-        graphics::setBrightness(0x00, true);
+        graphics::setBrightness(0, true);
+        std::cout << "Set brightness to 0" << std::endl;
         StandbyMode::savePower();
         break;
     }

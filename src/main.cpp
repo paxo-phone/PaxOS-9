@@ -115,8 +115,10 @@ void mainLoop(void* data) {
             }
         }
 
-        if(getButtonDown(hardware::input::HOME))    // si on appuie sur HOME
+        if(hardware::getHomeButton())    // si on appuie sur HOME
         {
+            while(hardware::getHomeButton());
+
             if(libsystem::getDeviceMode() == libsystem::SLEEP)
             {
                 setDeviceMode(libsystem::NORMAL);
@@ -127,14 +129,9 @@ void mainLoop(void* data) {
                 #endif
             } else if(launcher)
             {
-                while(hardware::getHomeButton());
-
-                for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
-                {
-                    AppManager::quitApp();
-                }
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
+                continue;
             } else if(AppManager::isAnyVisibleApp())
             {
                 AppManager::quitApp();
@@ -158,22 +155,16 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        #ifdef ESP_PLATFORM
-        /*multi_heap_info_t heap_info;
-
-        //Get information about other capabilities
-        heap_caps_get_info(&heap_info, MALLOC_CAP_8BIT);
-        printf("8 Bit RAM\n");
-        printf("  Free bytes: %u\n", heap_info.free_blocks);
-        printf("  Total bytes: %u\n", heap_info.total_blocks);
-        printf("  Largest free block: %u\n", heap_info.largest_free_block);
-        printf("  Minimum free bytes: %u\n", heap_info.minimum_free_bytes);*/
-        #endif
-
         if(libsystem::getDeviceMode() == libsystem::SLEEP)
             StandbyMode::sleepCycle();
         else
             StandbyMode::wait();
+
+        std::cout << "states: "
+                  << "StandbyMode: " << (StandbyMode::state() ? "enabled" : "disabled")
+                  << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal" : "sleep")
+                  << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ? "true" : "false")
+                  << std::endl;
     }
 }
 

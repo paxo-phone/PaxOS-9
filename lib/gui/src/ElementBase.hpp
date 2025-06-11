@@ -7,7 +7,7 @@
 #include "Surface.hpp"
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
-#define SCROLL_STEP 20
+#define SCROLL_STEP 1
 
 namespace gui
 {
@@ -16,6 +16,7 @@ namespace gui
     public:
         ElementBase();
         virtual ~ElementBase();
+        static void resetStates();
 
         virtual void render() = 0;
         void renderAll(bool onScreen = true);
@@ -67,8 +68,6 @@ namespace gui
         /**
          * \brief When the widget is no longer considered as touched even if the finger is still on the screen
          */virtual void onNotClicked() {}
-
-        virtual void onScroll() {}
 
         void enable();
         void disable();
@@ -163,6 +162,7 @@ namespace gui
         virtual void onScrollDown() {};
         virtual void onScrollLeft() {};
         virtual void onScrollRight() {};
+        virtual void onScroll(int16_t x, int16_t y) {};
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
         std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr

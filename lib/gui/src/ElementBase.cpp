@@ -18,6 +18,22 @@ int16_t gui::ElementBase::lastEventTouchX, gui::ElementBase::lastEventTouchY;
 bool gui::ElementBase::scrolling = false;
 gui::ElementBase::PressedState gui::ElementBase::globalPressedState = gui::ElementBase::PressedState::NOT_PRESSED;
 
+void gui::ElementBase::resetStates()
+{
+    gui::ElementBase::widgetPressed = nullptr;
+    gui::ElementBase::mainWindow = nullptr;
+    gui::ElementBase::touchX = -1;
+    gui::ElementBase::touchY = -1;
+    gui::ElementBase::originTouchX = -1;
+    gui::ElementBase::originTouchY = -1;
+    gui::ElementBase::m_lastTouchX = -1;
+    gui::ElementBase::m_lastTouchY = -1;
+    gui::ElementBase::lastEventTouchX = -1;
+    gui::ElementBase::lastEventTouchY = -1;
+    gui::ElementBase::scrolling = false;
+    gui::ElementBase::globalPressedState = gui::ElementBase::PressedState::NOT_PRESSED;
+}
+
 gui::ElementBase::ElementBase() : m_x(0), m_y(0),
                                   m_width(0), m_height(0),
                                   m_backgroundColor(COLOR_WHITE),
@@ -287,6 +303,8 @@ bool gui::ElementBase::update()
 
                 if(nearScrollableObject == this)
                 {
+                    onScroll(touchX - m_lastTouchX, touchY - m_lastTouchY);
+
                     while(m_lastTouchY + SCROLL_STEP < touchY)
                     {
                         onScrollUp();
