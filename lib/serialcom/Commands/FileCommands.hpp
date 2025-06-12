@@ -480,131 +480,140 @@ namespace serialcom
             } else
             {
                 size_t receivedSize = 0;
-
                 SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, command.command_id);
 
-                uint16_t askAgainTries = 0; 
+                uint16_t askAgainTries = 0;
+                
+                std::string tempBuffer;
+                tempBuffer.reserve(4096); // Pre-reserve memory to avoid reallocations while reading.
 
-                while (receivedSize < fileSize)
-                {
-                    if (askAgainTries >= 10)
-                    {
+                while (receivedSize < fileSize) {
+                    if (askAgainTries >= 10) {
                         SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_ERROR_CODE + std::string("Too many tries, aborting."), command.command_id);
                         return;
                     }
 
-                    std::string tempBuffer;
-                    uint16_t expectedSize = 0;
+                    std::string_view packetView; 
+                    
+                    uint16_t timeoutTries = 0;
+                    bool shouldAbortPacket = false;
 
-                    uint16_t tries = 0;
-                    uint16_t tempBufferSize = 0;
-                    bool newData = false;
+                    uint16_t expectedDataSize = 0; 
 
+                    while (true) {
+                        PaxOS_Delay(5);
 
-                    bool shouldRestartLoop = false;
-                    while (true)
-                    {
-                        if (tries >= 1000)
-                        {
-                            shouldRestartLoop = true;
-                            SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN, command.command_id);
-                            askAgainTries++;
-                            break;
-                        }
-                        tries++;
-                        
-
+                        bool newDataRead = false;
                         #ifdef ESP_PLATFORM
-                        #define dataAvailable Serial.available() > 0
+                        #define dataAvailable (Serial.available() > 0)
                         #else
                         #define dataAvailable std::cin.peek() != EOF
                         #endif
-                        while (dataAvailable && newData == false && tempBufferSize < 4096) {
+                        while (dataAvailable && tempBuffer.size() < 4096) {
                             #ifdef ESP_PLATFORM
-                            char rc = Serial.read();
+                            int rc = Serial.read();
                             #else
-                            char rc = std::cin.get();
+                            int rc = std::cin.get();
                             #endif
-
-                            if (rc != -1)
-                            {
-                                tempBuffer += rc;
-                                tempBufferSize++;   
-                            }  
-                            else
-                                newData = true;
+                            if (rc != -1) {
+                                tempBuffer += static_cast<char>(rc);
+                                newDataRead = true;
+                            }
                         }
 
-                        size_t pos = tempBuffer.find(std::string("\xFF\xFE\xFD", 3));
+                        if (newDataRead) {
+                            timeoutTries = 0;
+                        } else {
+                            timeoutTries++;
+                            if (timeoutTries >= 1000) { // 5ms * 1000 = 5 second timeout
+                                shouldAbortPacket = true;
+                                break;
+                            }
+                        }
+                        
+                        std::string_view bufferView(tempBuffer);
+                        constexpr std::string_view MAGIC_BYTES("\xFF\xFE\xFD", 3);
+                        
+                        size_t magicPos = bufferView.find(MAGIC_BYTES);
 
-                        if (pos == std::string::npos)
-                        {
-                            tempBuffer = tempBuffer.substr(std::max((uint16_t)2, tempBufferSize) - 2); // keep the last 2 bytes that could be the beginning of the next message
-                            tempBufferSize = std::min(tempBufferSize, (uint16_t)2);
-
+                        if (magicPos == std::string_view::npos) {
+                            if (bufferView.size() >= MAGIC_BYTES.size()) {
+                                tempBuffer.erase(0, bufferView.size() - (MAGIC_BYTES.size() - 1));
+                            }
                             continue;
                         }
 
-                        tempBuffer = tempBuffer.substr(pos + 3);
-
-                        tempBufferSize -= pos + 3;
-
-                        if (tempBufferSize > 16) // commandId + header
-                        {
-                            expectedSize = tempBuffer[0] + (tempBuffer[1] << 8);
-                            
-                            if (tempBufferSize >= expectedSize + 16)
-                                break;
+                        if (magicPos > 0) {
+                            tempBuffer.erase(0, magicPos);
+                            bufferView = tempBuffer;
                         }
 
-                        PaxOS_Delay(20);
+                        // [Magic 3B][CmdID 8B][PayloadSize 2B] = 13B
+                        constexpr size_t HEADER_PREFIX_LEN = 13;
+                        if (bufferView.size() < HEADER_PREFIX_LEN) {
+                            continue;
+                        }
+
+                        // We have enough for the prefix, now read the expected data payload size.
+                        expectedDataSize = static_cast<uint8_t>(bufferView[11]) + (static_cast<uint8_t>(bufferView[12]) << 8);
+
+                        // [Prefix 13B][Options 2B][Checksum 4B][Index 2B][Data]
+                        constexpr size_t METADATA_LEN = 8;
+                        const size_t totalPacketSize = HEADER_PREFIX_LEN + METADATA_LEN + expectedDataSize;
+
+                        if (bufferView.size() < totalPacketSize) {
+                            continue;
+                        }
+
+                        packetView = bufferView.substr(0, totalPacketSize);
+                        break;
                     }
 
-                    if (shouldRestartLoop)
-                        continue;
-
-                    char commandId[COMMAND_ID_SIZE] = {'\0'};
-                    memcpy(commandId, tempBuffer.c_str() + 2 /* skip size */, COMMAND_ID_SIZE);
-
-                    uint16_t cursor = 10; // the two bytes before are the size
-
-                    uint16_t options = tempBuffer[cursor++] + (tempBuffer[cursor++] << 8);
-
-                    if (options & 0x1) // wants to end the communication
-                    {
-                        fileStream.close();
-                        uploadPath.remove();
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, commandId);
-                        return;
-                    }
-
-                    uint32_t checksum = tempBuffer[cursor++] + (tempBuffer[cursor++] << 8) + (tempBuffer[cursor++] << 16) + (tempBuffer[cursor++] << 24);
-
-                    uint64_t tempChecksum = 0;
-
-                    tempBuffer = tempBuffer.substr(cursor, expectedSize);
-                    
-                    for (char c : tempBuffer)
-                    {
-                        tempChecksum = (tempChecksum + c) % 4294967295;
-                    }
-
-                    if (checksum != (uint32_t)tempChecksum)
-                    {
-                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN, commandId);
+                    if (shouldAbortPacket) {
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN, command.command_id);
                         askAgainTries++;
                         continue;
                     }
 
-                    fileStream.write(tempBuffer);
+                    // --- Packet Processing ---
 
-                    receivedSize += expectedSize;
+                    std::string_view optionsView = packetView.substr(13, 2);
+                    std::string_view checksumView = packetView.substr(15, 4);
+                    std::string_view indexView = packetView.substr(19, 2);
+                    std::string_view dataView = packetView.substr(21, expectedDataSize);
 
-                    tempBuffer = "";
+                    uint16_t options = static_cast<uint8_t>(optionsView[0]) + (static_cast<uint8_t>(optionsView[1]) << 8);
 
-                    SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, commandId);
+                    if (options & 0x1) { // End of communication flag
+                        fileStream.close();
+                        uploadPath.remove();
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE, command.command_id);
+                        return;
+                    }
 
-                    askAgainTries = 0;
+                    uint32_t receivedChecksum = static_cast<uint32_t>(static_cast<uint8_t>(checksumView[0]))     |
+                                            (static_cast<uint32_t>(static_cast<uint8_t>(checksumView[1])) << 8)  |
+                                            (static_cast<uint32_t>(static_cast<uint8_t>(checksumView[2])) << 16) |
+                                            (static_cast<uint32_t>(static_cast<uint8_t>(checksumView[3])) << 24);
+                    
+                    uint16_t packetIndex = static_cast<uint8_t>(indexView[0]) + (static_cast<uint8_t>(indexView[1]) << 8);
+
+                    uint32_t calculatedChecksum = 0;
+                    for (unsigned char c : dataView) {
+                        calculatedChecksum = (calculatedChecksum + c) % 4294967295;
+                    }
+
+                    if (receivedChecksum != calculatedChecksum) {
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_CHUNK_NEED_TRANSFER_AGAIN + std::to_string(packetIndex), command.command_id);
+                        askAgainTries++;
+                    } else {
+                        fileStream.write(dataView.data(), dataView.size());
+                        receivedSize += dataView.size();
+                        SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_NO_ERROR_CODE + std::to_string(packetIndex), command.command_id);
+                        askAgainTries = 0;
+                    }
+
+                    tempBuffer.erase(0, packetView.size());
                 }
             }
 
