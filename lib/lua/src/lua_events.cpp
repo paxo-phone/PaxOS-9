@@ -5,7 +5,7 @@
 #include <tasks.hpp>
 #include <threads.hpp>
 #include <hardware.hpp>
-#include <gsm.hpp>
+#include <gsm2.hpp>
 #include "lua_file.hpp"
 
 LuaTime::LuaTime(LuaFile* lua)
@@ -46,8 +46,7 @@ sol::table LuaTime::get(std::string format)
 
     std::vector<std::string> identifiers = {"s","mi","h","d","mo","y"};
 
-    std::vector<int> date = {GSM::seconds,GSM::minutes,GSM::hours,GSM::days,GSM::months,GSM::years};
-
+    std::vector<int> date = {Gsm::Time::getSecond(),Gsm::Time::getMinute(),Gsm::Time::getHour(),Gsm::Time::getDay(),Gsm::Time::getMonth(),Gsm::Time::getYear()};
     
     // ajouter les valeurs aux index des identifiers
 

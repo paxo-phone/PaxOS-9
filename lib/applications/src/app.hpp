@@ -112,7 +112,7 @@ namespace AppManager
     {
         void open(App* app, const std::string &placeholder, const std::string &defaultText, std::function<void(std::string)> callback);
         void update();
-        void close();
+        void close(bool runcallback = true);
         extern App* app;
         extern std::function<void(std::string)> callback;
         extern std::unique_ptr<Keyboard> keyboard;

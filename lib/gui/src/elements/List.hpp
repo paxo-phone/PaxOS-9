@@ -25,6 +25,7 @@ namespace gui::elements
         void updateFocusedIndex();
         void onScrollUp();
         void onScrollDown();
+        void onScroll(int16_t x, int16_t y);
 
         enum SelectionFocus
         {

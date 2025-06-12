@@ -1,13 +1,19 @@
 #ifndef ELEMENTBASE_HPP
 #define ELEMENTBASE_HPP
 
+// #define USE_DOUBLE_BUFFERING
+
 #include <cstdint> // for uint16_t
 #include <vector>
 
 #include "Surface.hpp"
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
+#ifdef USE_DOUBLE_BUFFERING
+#define SCROLL_STEP 1
+#else
 #define SCROLL_STEP 20
+#endif
 
 namespace gui
 {
@@ -16,6 +22,7 @@ namespace gui
     public:
         ElementBase();
         virtual ~ElementBase();
+        static void resetStates();
 
         virtual void render() = 0;
         void renderAll(bool onScreen = true);
@@ -68,8 +75,6 @@ namespace gui
          * \brief When the widget is no longer considered as touched even if the finger is still on the screen
          */virtual void onNotClicked() {}
 
-        virtual void onScroll() {}
-
         void enable();
         void disable();
         bool getIsEnabled() const;
@@ -113,6 +118,7 @@ namespace gui
         uint16_t m_borderSize;
         uint16_t m_borderRadius;
 
+        uint16_t hitboxFactor = 10; // factor to increase the hitbox of the widget in pixels
 
         // variables sur les mouvements
         bool m_verticalScrollEnabled;
@@ -162,8 +168,10 @@ namespace gui
         virtual void onScrollDown() {};
         virtual void onScrollLeft() {};
         virtual void onScrollRight() {};
+        virtual void onScroll(int16_t x, int16_t y) {};
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
+        std::shared_ptr<graphics::Surface> m_surface_for_dma; // double buffer for DMA transfer
         std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr
     protected:
         void localGraphicalUpdate();

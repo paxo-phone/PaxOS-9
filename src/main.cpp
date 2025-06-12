@@ -22,7 +22,7 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 #include <path.hpp>
 #include <threads.hpp>
 #include <lua_file.hpp>
-#include <gsm.hpp>
+#include <gsm2.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
 #include <FileConfig.hpp>
@@ -71,12 +71,9 @@ void mainLoop(void* data) {
     bool launcher = false;
     while (true)    // manage the running apps, the launcher and the sleep mode
     {
-        // printf("main loop\n");
         hardware::input::update();
         AppManager::loop();
         eventHandlerApp.update();
-
-        // printf("- 1\n");
 
         if(AppManager::isAnyVisibleApp() && launcher)   // free the launcher is an app is running and the launcher is active
         {
@@ -84,13 +81,9 @@ void mainLoop(void* data) {
             launcher = false;
         }
 
-        // printf("- 2\n");
-
         if(launcher)
             applications::launcher::update();
 
-        
-        // printf("- 3\n");
 
         if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())   // si mode normal et pas d'app en cours
         {
@@ -122,11 +115,10 @@ void mainLoop(void* data) {
             }
         }
 
-
-        // printf("- 4\n");
-
-        if(getButtonDown(hardware::input::HOME))    // si on appuie sur HOME
+        if(hardware::getHomeButton())    // si on appuie sur HOME
         {
+            while(hardware::getHomeButton());
+
             if(libsystem::getDeviceMode() == libsystem::SLEEP)
             {
                 setDeviceMode(libsystem::NORMAL);
@@ -137,11 +129,9 @@ void mainLoop(void* data) {
                 #endif
             } else if(launcher && !AppManager::didRequestAuth)
             {
-                // icicicicicici
-                //applications::launcher::free();
-                //launcher = false;
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
+                continue;
             } else if(AppManager::isAnyVisibleApp())
             {
                 AppManager::quitApp();
@@ -151,9 +141,6 @@ void mainLoop(void* data) {
             }
         }
 
-
-        // printf("- 5\n");
-
         if(libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
         {
             setDeviceMode(libsystem::NORMAL);
@@ -161,15 +148,8 @@ void mainLoop(void* data) {
         }
 
 
-        // printf("- 6\n");
-
-        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
+        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())    // innactivity detected -> go to sleep mode
         {
-            if(launcher)
-            {
-                //applications::launcher::free();
-                //launcher = false;
-            }
             for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
             {
                 AppManager::quitApp();
@@ -178,24 +158,16 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        // printf("- 7\n");
-
-        #ifdef ESP_PLATFORM
-        /*multi_heap_info_t heap_info;
-
-        //Get information about other capabilities
-        heap_caps_get_info(&heap_info, MALLOC_CAP_8BIT);
-        printf("8 Bit RAM\n");
-        printf("  Free bytes: %u\n", heap_info.free_blocks);
-        printf("  Total bytes: %u\n", heap_info.total_blocks);
-        printf("  Largest free block: %u\n", heap_info.largest_free_block);
-        printf("  Minimum free bytes: %u\n", heap_info.minimum_free_bytes);*/
-        #endif
-
         if(libsystem::getDeviceMode() == libsystem::SLEEP)
             StandbyMode::sleepCycle();
         else
             StandbyMode::wait();
+
+        /*std::cout << "states: "
+                  << "StandbyMode: " << (StandbyMode::state() ? "enabled" : "disabled")
+                  << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal" : "sleep")
+                  << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ? "true" : "false")
+                  << std::endl;*/
     }
 }
 
@@ -225,7 +197,7 @@ void init(void* data)
     // If battery is too low
     // Don't initialize ANY MORE service
     // But display error
-    if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
+    /*if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
         libsystem::registerBootError("Battery level is too low.");
         libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "% < 5%");
         libsystem::registerBootError("Please charge your Paxo.");
@@ -236,7 +208,7 @@ void init(void* data)
         // TODO: Set device mode to sleep
 
         return;
-    }
+    }*/
 
     // Init storage and check for errors
     if (!storage::init()) {
@@ -302,13 +274,13 @@ void init(void* data)
      */
 
     // gestion des appels entrants
-    GSM::ExternalEvents::onIncommingCall = []()
+    Gsm::ExternalEvents::onIncommingCall = []()
     {
         eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run();}), 0);
     };
 
     // Gestion de la réception d'un message
-    GSM::ExternalEvents::onNewMessage = []()
+    Gsm::ExternalEvents::onNewMessage = []()
     {
         #ifdef ESP_PLATFORM
         eventHandlerBack.setTimeout(new Callback<>([](){hardware::vibrator::play({1, 0, 1});}), 0);
@@ -317,7 +289,7 @@ void init(void* data)
         AppManager::event_onmessage();
     };
 
-    GSM::ExternalEvents::onNewMessageError = []()
+    Gsm::ExternalEvents::onNewMessageError = []()
     {
         AppManager::event_onmessageerror();
     };
@@ -333,7 +305,7 @@ void init(void* data)
     );
 
     hardware::setVibrator(false);
-    GSM::endCall();
+    //GSM::endCall();
 
     // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
@@ -348,9 +320,11 @@ void init(void* data)
 
 void setup()
 {
-    //esp_task_wdt_init(5000, false);
+    #ifdef ESP_PLATFORM
+    esp_task_wdt_init(5000, true);
+    #endif
+    
     init(NULL);
-    //ThreadManager::new_thread(CORE_APP, &init, 12*1024);
 }
 
 void loop(){}

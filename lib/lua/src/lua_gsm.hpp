@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <vector>
 #include <SOL2/sol.hpp>
-#include "gsm.hpp"
 #include "conversation.hpp"
 
 namespace LuaGSM
@@ -15,6 +14,9 @@ namespace LuaGSM
     void endCall();
     void acceptCall();
     void rejectCall();
+    bool isPinNeeded();
+    void setPin(std::string pin);
+    void setFlightMode(bool mode);
     std::string getNumber();
     uint8_t getCallState();
     sol::table getMessages(const std::string &number, sol::state& lua);

@@ -163,6 +163,12 @@ namespace gui::elements
         }
     }
 
+    void VerticalList::onScroll(int16_t x, int16_t y)
+    {
+        /*m_verticalScroll -= y;
+        localGraphicalUpdate();*/
+    }
+
     void VerticalList::setSelectionFocus(SelectionFocus focus)
     {
         m_selectionFocus = focus;

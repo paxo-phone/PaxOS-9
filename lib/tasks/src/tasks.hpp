@@ -124,7 +124,7 @@ class EventHandler
 
     ~EventHandler();
 
-    void update(std::function<bool ()> forced_exit = []() -> bool { return true; });
+    void update(std::function<bool ()> forced_exit = []() -> bool { return false; });
 
     uint32_t addEventListener(Function* condition, Function* callback);
     void removeEventListener(uint32_t id);
