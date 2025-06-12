@@ -30,6 +30,7 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
+#include <network.hpp>
 
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
@@ -171,6 +172,56 @@ void mainLoop(void* data) {
     }
 }
 
+void perform_google_request() {
+    // 1. Create a request object
+    auto request = std::make_shared<Network::Request>();
+    request->url = "http://www.google.com";
+    request->method = Network::HttpMethod::GET;
+
+    // 2. Define your callbacks
+    request->on_response = [](int http_code) {
+        std::cout << "Request Response Code: " << http_code << std::endl;
+    };
+
+    request->on_data = [](const char* data, int len) {
+        std::cout << "Received data chunk of size: " << len << std::endl;
+        // Note: data is not null-terminated, use the 'len'
+        // std::cout.write(data, len); 
+    };
+
+    request->on_complete = [](Network::NetworkStatus status) {
+        if (status == Network::NetworkStatus::OK) {
+            std::cout << "Request completed successfully!" << std::endl;
+        } else {
+            std::cout << "Request failed with status: " << static_cast<int>(status) << std::endl;
+        }
+    };
+
+    // 3. Submit the request to the queue
+    Network::submitRequest(request);
+}
+
+// Example: Connect to Wi-Fi first
+void setup_and_run_request() {
+    // Set policy to Wi-Fi only
+    Network::setRoutingPolicy(Network::RoutingPolicy::CELLULAR_ONLY);
+
+    // Connect to Wi-Fi
+    if (Network::connectWifi("Cecile et Jerome", "19751973")) {
+        std::cout << "Connection initiated..." << std::endl;
+        // The connection happens asynchronously. In a real app, you'd wait for
+        // Network::isWifiConnected() to become true before sending requests.
+
+        while (!Network::isWifiConnected()) {
+            std::cout << "Waiting for Wi-Fi connection..." << std::endl;
+            usleep(1000000); // Sleep for 1 second
+        }
+        std::cout << "Wi-Fi connected!" << std::endl;
+        // Now perform the request
+        perform_google_request();
+    }
+}
+
 void init(void* data)
 {
     /**
@@ -268,6 +319,10 @@ void init(void* data)
         libsystem::displayBootErrors();
         libsystem::restart(true, 10000);
     }
+
+    Network::init(); // Add this line to initialize the network manager
+    libsystem::log("[STARTUP]: Network initialized");
+    eventHandlerApp.setTimeout(new Callback<>(setup_and_run_request), 15000);
 
     /**
      * Gestion des eventHandlers pour les evenements

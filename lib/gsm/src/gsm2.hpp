@@ -88,6 +88,7 @@ namespace Gsm
     // Forward declarations for our new helper functions
     static void _completeHttpRequest(HttpResult result);
     static void _queueNextHttpRead();
+    void httpGet(const std::string& url, HttpGetCallbacks callbacks);
 
     // --- Public Function Declarations ---
 
