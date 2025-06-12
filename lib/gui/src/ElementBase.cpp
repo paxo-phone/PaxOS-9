@@ -127,7 +127,21 @@ void gui::ElementBase::renderAll(bool onScreen)
         else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
             graphics::setWindow(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
+
+            #if defined(ESP_PLATFORM) && defined(USE_DOUBLE_BUFFERING)
+            // swap buffers for double buffering
+            
+            if(m_surface_for_dma == nullptr)
+            {
+
+            }
+            while (graphics::getLCD()->dmaBusy());
+            m_surface_for_dma.swap(m_surface);
+            graphics::getLCD()->pushImageDMA(getAbsoluteX(), getAbsoluteY(), m_surface_for_dma.get()->getWidth(), m_surface_for_dma.get()->getHeight(), m_surface_for_dma.get()->m_sprite.getBuffer(), lgfx::color_depth_t::rgb565_2Byte, m_surface_for_dma.get()->m_sprite.getPalette());
+            
+            #else
             graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
+            #endif
             graphics::setWindow();
 
             setChildrenDrawn();

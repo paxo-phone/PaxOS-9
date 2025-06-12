@@ -137,7 +137,7 @@ namespace gui::elements
 
     void VerticalList::onScrollUp()
     {
-        /*if(m_focusedIndex != 0)
+        if(m_focusedIndex != 0)
         {
             if (m_autoSelect) {
                 select(m_focusedIndex - 1);
@@ -146,12 +146,12 @@ namespace gui::elements
                 m_focusedIndex--;
                 updateFocusedIndex();
             }
-        }*/
+        }
     }
     
     void VerticalList::onScrollDown()
     {
-        /*if(m_focusedIndex+1 != m_children.size())
+        if(m_focusedIndex+1 != m_children.size())
         {
             if (m_autoSelect) {
                 select(m_focusedIndex + 1);
@@ -160,13 +160,13 @@ namespace gui::elements
                 m_focusedIndex++;
                 updateFocusedIndex();
             }
-        }*/
+        }
     }
 
     void VerticalList::onScroll(int16_t x, int16_t y)
     {
-        m_verticalScroll -= y;
-        localGraphicalUpdate();
+        /*m_verticalScroll -= y;
+        localGraphicalUpdate();*/
     }
 
     void VerticalList::setSelectionFocus(SelectionFocus focus)

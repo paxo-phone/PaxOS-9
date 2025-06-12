@@ -22,7 +22,7 @@
 
 #endif
 
-#define TICKS_MS 20
+#define TICKS_MS 2
 
 namespace StandbyMode
 {

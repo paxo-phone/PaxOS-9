@@ -1,13 +1,19 @@
 #ifndef ELEMENTBASE_HPP
 #define ELEMENTBASE_HPP
 
+// #define USE_DOUBLE_BUFFERING
+
 #include <cstdint> // for uint16_t
 #include <vector>
 
 #include "Surface.hpp"
 
 typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
+#ifdef USE_DOUBLE_BUFFERING
 #define SCROLL_STEP 1
+#else
+#define SCROLL_STEP 20
+#endif
 
 namespace gui
 {
@@ -165,6 +171,7 @@ namespace gui
         virtual void onScroll(int16_t x, int16_t y) {};
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
+        std::shared_ptr<graphics::Surface> m_surface_for_dma; // double buffer for DMA transfer
         std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr
     protected:
         void localGraphicalUpdate();

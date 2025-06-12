@@ -160,11 +160,11 @@ void mainLoop(void* data) {
         else
             StandbyMode::wait();
 
-        std::cout << "states: "
+        /*std::cout << "states: "
                   << "StandbyMode: " << (StandbyMode::state() ? "enabled" : "disabled")
                   << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal" : "sleep")
                   << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ? "true" : "false")
-                  << std::endl;
+                  << std::endl;*/
     }
 }
 
