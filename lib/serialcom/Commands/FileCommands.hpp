@@ -490,6 +490,8 @@ namespace serialcom
                 while (receivedSize < fileSize) {
                     if (askAgainTries >= 10) {
                         SerialManager::sharedInstance->singleCommandLog(NON_SHELL_MODE_ERROR_CODE + std::string("Too many tries, aborting."), command.command_id);
+                        uploadPath.remove();
+                        fileStream.close();
                         return;
                     }
 
