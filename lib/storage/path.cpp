@@ -355,7 +355,7 @@ namespace storage
     {
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 
-        if (!std::filesystem::exists(this->str()))
+        if (std::filesystem::exists(this->str()))
         {
             /*
                 enum class copy_options : unsigned short {
@@ -477,7 +477,6 @@ namespace storage
                     if (!childPath.remove())
                         return false;
                     //serialcom::SerialManager::sharedInstance->commandLog("Removing child " + child);
-                    childPath.remove();
                     std::cout << "Removing child " << childPath.str() << std::endl;
                 }
             }

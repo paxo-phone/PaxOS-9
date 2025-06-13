@@ -41,17 +41,9 @@ namespace storage
     {
         if (returnSize == -1)
         {
-            std::string text = "";
-
-            std::string line;
-            while (std::getline(m_stream, line))
-            {
-                text += line;
-                if (line.back() != '\n')
-                    text += "\n";
-            }
-
-            return text;
+            std::stringstream buffer;
+            buffer << m_stream.rdbuf();
+            return buffer.str();
         } else
         {
             // Resize the string to accommodate `returnSize` bytes
