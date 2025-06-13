@@ -182,6 +182,9 @@ void init(void* data)
     /**
      * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
      */
+    #ifdef ESP_PLATFORM
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
+    #endif
     hardware::init();
     libsystem::log("[STARTUP]: Hardware initialized");
     hardware::setScreenPower(true);
@@ -302,7 +305,6 @@ void init(void* data)
 
     #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2*1024);
-    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
     #endif
 
     // gestion de la détection du toucher de l'écran
