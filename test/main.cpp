@@ -16,7 +16,9 @@
 
 #include "gsm/conversation_test.cpp"
 #include "gsm/contacts_test.cpp"
+#if ESP_PLATFORM
 #include "serialcom/command.cpp"
+#endif
 
 #if ESP_PLATFORM
 
