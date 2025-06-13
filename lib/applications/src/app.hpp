@@ -104,14 +104,15 @@ namespace AppManager
     extern std::mutex threadsync; // mutex for thread-safe operations between threads
 
     extern std::vector<std::shared_ptr<App>> appList;   // list of apps in the apps folder
-    extern std::vector<App*> appStack;                 // stack of the apps that are using the GUI, the last one is shown on the screen
+    extern std::vector<App*> appStack;                  // stack of the apps that are using the GUI, the last one is shown on the screen
+    extern bool didRequestAuth;                         // a boolean indicating whether the request auth action has been triggered, should be turned off in the main loop
     
     // keyboard management
     namespace Keyboard_manager
     {
         void open(App* app, const std::string &placeholder, const std::string &defaultText, std::function<void(std::string)> callback);
         void update();
-        void close();
+        void close(bool runcallback = true);
         extern App* app;
         extern std::function<void(std::string)> callback;
         extern std::unique_ptr<Keyboard> keyboard;

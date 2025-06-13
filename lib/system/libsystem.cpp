@@ -16,9 +16,10 @@
 #endif
 
 #include <standby.hpp>
-
+#include <delay.hpp>
 #include <color.hpp>
 #include <graphics.hpp>
+#include <app.hpp>
 
 #include "base64.hpp"
 
@@ -39,12 +40,7 @@ void libsystem::init()
 
 void libsystem::delay(uint64_t ms)
 {
-
-#ifdef ESP_PLATFORM
-    vTaskDelay(pdMS_TO_TICKS(ms));
-#else
-    SDL_Delay(ms);
-#endif
+    PaxOS_Delay(ms);
 }
 
 std::string hexToString(const uint32_t hex)
@@ -252,7 +248,10 @@ void libsystem::setDeviceMode(const DeviceMode mode)
         break;
     case SLEEP:
         std::cout << "SLEEP" << std::endl;
-        graphics::setBrightness(0x00, true);
+        gui::ElementBase::resetStates();
+        AppManager::Keyboard_manager::close(false);
+        graphics::setBrightness(0, true);
+        std::cout << "Set brightness to 0" << std::endl;
         StandbyMode::savePower();
         break;
     }
@@ -315,12 +314,12 @@ uint8_t libsystem::paxoConfig::getBrightness()
     return 0;
 }
 
-void libsystem::paxoConfig::setStandBySleepTime(uint64_t millis, bool save)
+void libsystem::paxoConfig::setStandBySleepTime(uint64_t os_millis, bool save)
 {
-    StandbyMode::setSleepTime(millis);
+    StandbyMode::setSleepTime(os_millis);
     if (save)
     {
-        systemConfig.get()->set<uint64_t>("settings.sleeptime", millis);
+        systemConfig.get()->set<uint64_t>("settings.sleeptime", os_millis);
         systemConfig.get()->write();
     }
 }

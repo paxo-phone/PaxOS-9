@@ -262,6 +262,7 @@ namespace graphics
 
     void Surface::drawImage(const SImage &image, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
     {
+        printf("IMG--3-drawImage-1\n");
         float scaleX = static_cast<float>(w) / static_cast<float>(image.getWidth());
         float scaleY = static_cast<float>(h) / static_cast<float>(image.getHeight());
 
@@ -286,12 +287,16 @@ namespace graphics
                 char* buffer = new char[size];
                 stream.read(buffer, size);
                 stream.close();
+                std::cout << "End Reading PNG...: " << size << std::endl;
 
                 m_sprite.drawPng((uint8_t*) buffer, size, x, y, 0, 0, 0, 0, scaleX, scaleY);
-            
+                m_sprite.releasePngMemory();
                 // here is the place to code the decompression
                 
                 delete[] buffer;
+                std::cout << "End Reading PNG...: " << size << std::endl;
+
+                return;
             }
             switch (image.getType()) // image size with right format
             {
@@ -299,7 +304,9 @@ namespace graphics
                     m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
                 break;
                 case PNG:
-                    //m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+                    printf("IMG--3-drawImage-2\n");
+                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+                    printf("IMG--3-drawImage-3\n");
                 break;
                 case JPG:
                     m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);

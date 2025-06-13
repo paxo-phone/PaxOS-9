@@ -86,7 +86,7 @@ public:
     {
         this->callback = ca;
         this->interval = interval;
-        this->lastTrigger = millis();
+        this->lastTrigger = os_millis();
         this->id = id;
     }
 
@@ -124,7 +124,7 @@ class EventHandler
 
     ~EventHandler();
 
-    void update();
+    void update(std::function<bool ()> forced_exit = []() -> bool { return false; });
 
     uint32_t addEventListener(Function* condition, Function* callback);
     void removeEventListener(uint32_t id);

@@ -20,7 +20,7 @@ EventHandler::~EventHandler()
     intervals.clear();
 }
 
-void EventHandler::update()
+void EventHandler::update(std::function<bool ()> forced_exit)
 {
     // Handle events
     for (auto& event : events) {
@@ -30,7 +30,7 @@ void EventHandler::update()
     }
 
     // Handle timeouts
-    auto now = millis();
+    auto now = os_millis();
     for (auto it = timeouts.begin(); it != timeouts.end();) {
         if (now >= (*it)->timeout) {
             auto* timeout = *it;
@@ -40,6 +40,9 @@ void EventHandler::update()
         } else {
             ++it;
         }
+
+        if (forced_exit())
+            return;
     }
 
     // Handle intervals
@@ -63,6 +66,9 @@ void EventHandler::update()
                     i--;
                 }
             }
+
+            if (forced_exit())
+                return;
         }
     }
     catch(const std::exception& e)
@@ -87,7 +93,7 @@ void EventHandler::removeEventListener(uint32_t id) {
 
 uint32_t EventHandler::setTimeout(Function* callback, uint64_t timeout) {
     uint32_t id = findAvailableId();
-    timeouts.push_back(new Timeout(callback, millis() + timeout, id));
+    timeouts.push_back(new Timeout(callback, os_millis() + timeout, id));
     return id;
 }
 

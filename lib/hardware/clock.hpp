@@ -19,15 +19,22 @@
   * @return Entier représentant le nombre de microsecondes depuis une date fixée
   * @remark Cette fonction est déjà présente sur l'esp32
   */
-uint64_t micros(void);
+uint64_t os_millis(void);
 
 /**
   * @brief Retourne le nombre de millisecondes depuis une date fixée
   * @return Entier représentant le nombre de microsecondes depuis une date fixée
   * @remark Cette fonction est déjà présente sur l'esp32
   */
-uint64_t millis(void);
+uint64_t os_millis(void);
 
-#endif /* #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) */
+#else /* #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) */
+
+extern unsigned long sleepStartTimeMillis;
+extern long long sleepTimeCorrectionOffset;
+
+unsigned long os_millis();
+
+#endif
 
 #endif /* TIME_HPP */

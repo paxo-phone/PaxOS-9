@@ -1,7 +1,7 @@
 garg = nil
 
 function hangOn()
-    if(#garg == 0) then
+    if(garg ~= nil) then
         gui:setWindow(win)
     end
     print("hang on")

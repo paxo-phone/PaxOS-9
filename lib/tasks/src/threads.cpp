@@ -1,7 +1,7 @@
 #include "threads.hpp"
 #include "delay.hpp"
 #include <clock.hpp>
-#include <gsm.hpp>
+#include <gsm2.hpp>
 
 #ifndef THREAD_HANDLER
     #define THREAD_HANDLER
@@ -31,12 +31,7 @@ void ThreadManager::init()
 void ThreadManager::new_thread(bool core, void(*func)(void*), int stackSize)
 {
     #ifdef ESP_PLATFORM
-        xTaskCreate(func,
-                    "thread",
-                    stackSize,
-                    nullptr,
-                    core,
-                    nullptr);
+        xTaskCreatePinnedToCore(func, "thread", stackSize, NULL, 5, NULL, core);
     #else
         std::thread myThread(func, nullptr);
         myThread.detach();
@@ -54,7 +49,10 @@ void ThreadManager::background_thread(void* arg)
 
 void ThreadManager::simcom_thread(void* arg)
 {
-    GSM::run();
+    //GSM::run();
+    Gsm::init();
+    printf("[GSM] GSM initialized\n");
+    Gsm::loop();
 }
 
 void ThreadManager::app_thread(){}

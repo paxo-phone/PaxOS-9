@@ -12,6 +12,8 @@
 #include "Image.hpp"
 #include "Label.hpp"
 
+#define OUTPUT_VOCAB_SIZE 27
+
 namespace gui::elements {
     class Keyboard final : public ElementBase {
     public:
@@ -76,6 +78,8 @@ namespace gui::elements {
 
         uint8_t m_trackpadTicks;
         int32_t m_trackpadLastDeltaX;
+
+        float probabilities[OUTPUT_VOCAB_SIZE] = {0.0f};
 
         void drawKeys() const;
 

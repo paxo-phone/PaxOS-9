@@ -238,10 +238,10 @@ namespace libsystem
         /**
          * @brief Set the StandBy Sleep in milliseconds
          * if the save parameter is specified, save it to the config file
-         * @param millis
+         * @param os_millis
          * @param save
          */
-        void setStandBySleepTime(uint64_t millis, bool save = false);
+        void setStandBySleepTime(uint64_t os_millis, bool save = false);
 
         /**
          * @brief Get the StandBy Sleep Time from the config file

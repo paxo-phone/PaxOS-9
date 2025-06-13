@@ -17,6 +17,14 @@
 
 class LuaFile;
 
+struct KeyboardCallbackData {
+    sol::reference callbackRef; // Store a reference, NOT a sol::function
+    lua_State* L;             // Keep the lua_State alive.
+
+    KeyboardCallbackData(lua_State* L, sol::reference&& ref) : L(L), callbackRef(std::move(ref)) {}
+};
+extern std::vector<std::unique_ptr<KeyboardCallbackData>> callback_memory;
+
 class LuaGui
 {
 public:

@@ -167,6 +167,58 @@ function systemSettings()
     gui:setWindow(win2)
 end
 
+function PaxOSSettings()
+
+    win2 = gui:window()
+
+    local backbox = gui:box(win2, 19, 19, 166, 27)
+        local icon = gui:image(backbox, "back.png", 0, 3, 18, 18)
+        local text = gui:label(backbox, 25, 0, 166, 27)
+            text:setFontSize(20)
+            text:setVerticalAlignment(CENTER_ALIGNMENT)
+            text:setText("Paramètres")
+        backbox:onClick(function()
+            gui:setWindow(win)
+            gui:del(win2)
+        end)
+
+    local title = gui:label(win2, 88, 85, 143, 42)
+    title:setFontSize(36)
+    title:setHorizontalAlignment(CENTER_ALIGNMENT)
+    title:setVerticalAlignment(CENTER_ALIGNMENT)
+    title:setText("PaxOS-9")
+
+    local versionLabel = gui:label(win2, 88, 130, 143, 25)
+    versionLabel:setFontSize(20)
+    versionLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    versionLabel:setVerticalAlignment(CENTER_ALIGNMENT)
+    versionLabel:setTextColor(COLOR_GREY)
+    versionLabel:setText("Version : 9.0.0.0")
+
+    local licenceLabel = gui:label(win2, 86, 155, 150, 25)
+    licenceLabel:setFontSize(20)
+    licenceLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    licenceLabel:setVerticalAlignment(CENTER_ALIGNMENT)
+    licenceLabel:setTextColor(COLOR_GREY)
+    licenceLabel:setText("Licence : AGPL-3.0")
+
+    local updateLabel = gui:label(win2, 20, 240, 280, 100)
+    updateLabel:setFontSize(18)
+    updateLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    updateLabel:setVerticalAlignment(CENTER_ALIGNMENT)
+    updateLabel:setTextColor(COLOR_GREY)
+    updateLabel:setText("Merci de vous rendre sur paxo.fr/flash (avec Chrome) pour rechercher des mises à jour disponible.")
+
+    local infoLabel = gui:label(win2, 20, 370, 280, 80)
+    infoLabel:setFontSize(22)
+    infoLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    infoLabel:setVerticalAlignment(CENTER_ALIGNMENT)
+    infoLabel:setText("Pour toute autre information rendez-vous sur Paxo.fr ")
+
+
+    gui:setWindow(win2)
+end
+
 function run() -- create the menu
     win = gui:window()
 
@@ -208,6 +260,15 @@ function run() -- create the menu
         local img = gui:image(box_personalization, "r_arrow.png", 219, 15, 25, 25)
         -- box_personalization:onClick(personalizationSettings)
         box_personalization:onClick(initColorScreen)
+    
+    local box_PaxOS = gui:box(win, 30, 338, 260, 55, boxHeight_base)
+        local text_PaxOS = gui:label(box_PaxOS, 16, 0, 190, 55)
+            text_PaxOS:setFontSize(30)
+            text_PaxOS:setVerticalAlignment(CENTER_ALIGNMENT)
+            text_PaxOS:setText("PaxOS")
+        local img = gui:image(box_PaxOS, "r_arrow.png", 219, 15, 25, 25)
+        box_PaxOS:onClick(PaxOSSettings)
+    
     gui:setWindow(win)
 end
 

@@ -18,6 +18,22 @@ int16_t gui::ElementBase::lastEventTouchX, gui::ElementBase::lastEventTouchY;
 bool gui::ElementBase::scrolling = false;
 gui::ElementBase::PressedState gui::ElementBase::globalPressedState = gui::ElementBase::PressedState::NOT_PRESSED;
 
+void gui::ElementBase::resetStates()
+{
+    gui::ElementBase::widgetPressed = nullptr;
+    gui::ElementBase::mainWindow = nullptr;
+    gui::ElementBase::touchX = -1;
+    gui::ElementBase::touchY = -1;
+    gui::ElementBase::originTouchX = -1;
+    gui::ElementBase::originTouchY = -1;
+    gui::ElementBase::m_lastTouchX = -1;
+    gui::ElementBase::m_lastTouchY = -1;
+    gui::ElementBase::lastEventTouchX = -1;
+    gui::ElementBase::lastEventTouchY = -1;
+    gui::ElementBase::scrolling = false;
+    gui::ElementBase::globalPressedState = gui::ElementBase::PressedState::NOT_PRESSED;
+}
+
 gui::ElementBase::ElementBase() : m_x(0), m_y(0),
                                   m_width(0), m_height(0),
                                   m_backgroundColor(COLOR_WHITE),
@@ -111,7 +127,21 @@ void gui::ElementBase::renderAll(bool onScreen)
         else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
             graphics::setWindow(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
+
+            #if defined(ESP_PLATFORM) && defined(USE_DOUBLE_BUFFERING)
+            // swap buffers for double buffering
+            
+            if(m_surface_for_dma == nullptr)
+            {
+
+            }
+            while (graphics::getLCD()->dmaBusy());
+            m_surface_for_dma.swap(m_surface);
+            graphics::getLCD()->pushImageDMA(getAbsoluteX(), getAbsoluteY(), m_surface_for_dma.get()->getWidth(), m_surface_for_dma.get()->getHeight(), m_surface_for_dma.get()->m_sprite.getBuffer(), lgfx::color_depth_t::rgb565_2Byte, m_surface_for_dma.get()->m_sprite.getPalette());
+            
+            #else
             graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
+            #endif
             graphics::setWindow();
 
             setChildrenDrawn();
@@ -134,7 +164,7 @@ bool gui::ElementBase::updateAll()
 
     if (m_parent == nullptr)
     {
-        StandbyMode::wait();
+        //StandbyMode::wait();
         if(mainWindow != this)
         {
             mainWindow = this;
@@ -216,11 +246,10 @@ bool gui::ElementBase::update()
     if (widgetPressed != nullptr && widgetPressed != this)
         return false;
 
-    uint16_t resolution = 10;
-
     bool isScreenTouched = graphics::isTouched();
-    bool isWidgetTouched = isScreenTouched && (getAbsoluteX()-resolution < touchX && touchX < getAbsoluteX() + getWidth() +resolution &&
-                            getAbsoluteY()-resolution < touchY && touchY < getAbsoluteY() + getHeight() +resolution);
+
+    bool isWidgetTouched = isScreenTouched && (getAbsoluteX()-hitboxFactor < touchX && touchX < getAbsoluteX() + getWidth() + hitboxFactor &&
+                            getAbsoluteY()-hitboxFactor < touchY && touchY < getAbsoluteY() + getHeight() + hitboxFactor);
 
     bool returnValue = false;
 
@@ -288,6 +317,8 @@ bool gui::ElementBase::update()
 
                 if(nearScrollableObject == this)
                 {
+                    onScroll(touchX - m_lastTouchX, touchY - m_lastTouchY);
+
                     while(m_lastTouchY + SCROLL_STEP < touchY)
                     {
                         onScrollUp();

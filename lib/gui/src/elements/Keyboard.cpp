@@ -12,6 +12,7 @@
 #include "Box.hpp"
 #include "Filter.hpp"
 #include "Image.hpp"
+#include <dynamic_hitboxes.hpp>
 
 // Layouts
 constexpr char LAYOUT_LOWERCASE = 0;
@@ -119,9 +120,11 @@ namespace gui::elements {
         m_capsIcon2->load();
         m_backspaceIcon->load();
         m_layoutIcon0->load();
+
         m_layoutIcon1->load();
         m_exitIcon->load();
-        m_confirmIcon->load();
+
+        //m_confirmIcon->load();
 
         // Add images to boxes
         m_capsBox->addChild(m_capsIcon0);
@@ -132,6 +135,7 @@ namespace gui::elements {
         m_layoutBox->addChild(m_layoutIcon1);
         m_exitBox->addChild(m_exitIcon);
         m_confirmBox->addChild(m_confirmIcon);
+
 
         // Add boxes
         addChild(m_capsBox);
@@ -296,43 +300,50 @@ namespace gui::elements {
             return KEY_NULL;
         }
 
-        uint8_t row;
-        uint8_t column;
+        int bestRow = -1;
+        int bestColumn = -1;
+        float bestDistance = 1e9f;
 
-        // Get the row
-        if (y <= 180) {
-            // First Row
-            row = 0;
+        // Define the number of keys per row and the vertical centers for each row
+        const int keysPerRow[4] = {10, 10, 9, 3};
+        const int rowCenterY[4] = {160, 200, 240, 280}; // Centers of rows: (140+180)/2, (180+220)/2, etc.
 
-            // Get column
-            column = getKeyCol(x, 10);
-        } else if (y <= 220) {
-            // Second Row
-            row = 1;
+        // Iterate over all keys
+        for (int row = 0; row < 4; row++) {
+            uint8_t keyCount = keysPerRow[row];
+            float keyWidth = 420.0f / static_cast<float>(keyCount);
+            for (uint8_t col = 0; col < keyCount; col++) {
+                // Get the key
+                char key = getLayoutCharMap()[row][col];
+                float proba = 0.0f;
 
-            // Get column
-            column = getKeyCol(x, 10);
-        } else if (y <= 260) {
-            // Third Row
-            row = 2;
+                for (int i = 0; i < OUTPUT_VOCAB_SIZE; i++) {
+                    if (key == output_index_to_char[i]) {
+                        proba = probabilities[i];
+                        //std::cout << "Key: " << key << ", Probability: " << proba << std::endl;
+                        break;
+                    }
+                }
 
-            // Get column
-            column = getKeyCol(x, 9);
-        } else {
-            // Last Row
-            row = 3;
+                float centerX = 30.0f + (col + 0.5f) * keyWidth;
+                float centerY = static_cast<float>(rowCenterY[row]);
 
-            // Get column
-            if (x <= 110) {
-                column = 0;
-            } else if (x <= 370) {
-                column = 1;
-            } else {
-                column = 2;
+                //$DYNAMIC_HITBOX_PLACEHOLDER$
+                float dx = static_cast<float>(x) - centerX;
+                float dy = static_cast<float>(y) - centerY;
+                float distance = std::sqrt(dx * dx + dy * dy) - proba * 100.0f;
+
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    bestRow = row;
+                    bestColumn = col;
+                }
             }
         }
 
-        return getLayoutCharMap()[row][column];
+        char keyPressed = getLayoutCharMap()[bestRow][bestColumn];
+        std::cout << "Key pressed: " << keyPressed << std::endl;
+        return keyPressed;
     }
 
     uint8_t Keyboard::getKeyCol(const int16_t x, const uint8_t keyCount) {
@@ -408,6 +419,29 @@ namespace gui::elements {
 
             m_label->setCursorEnabled(true);
         }
+
+        
+        char last1 = ' ', last2 = ' ', last3 = ' ';
+        std::string alphabets;
+        for (char c : m_buffer) {
+            if (std::isalpha(static_cast<unsigned char>(c))) {
+                alphabets.push_back(c);
+            }
+        }
+
+        if (alphabets.size() >= 3) {
+            last1 = alphabets[alphabets.size() - 3];
+            last2 = alphabets[alphabets.size() - 2];
+            last3 = alphabets[alphabets.size() - 1];
+        } else if (alphabets.size() == 2) {
+            last1 = alphabets[0];
+            last2 = alphabets[1];
+        } else if (alphabets.size() == 1) {
+            last1 = alphabets[0];
+        }
+
+        std::cout << "Last 3 letters: " << last1 << last2 << last3 << std::endl;
+        predict_next_char_probs(last1, last2, last3, const_cast<float*>(probabilities));
     }
 
     void Keyboard::updateCapsIcon() const {

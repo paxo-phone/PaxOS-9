@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 
-SET_LOOP_TASK_STACK_SIZE(8 * 1024);
+SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 
 #endif
 
@@ -22,7 +22,7 @@ SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 #include <path.hpp>
 #include <threads.hpp>
 #include <lua_file.hpp>
-#include <gsm.hpp>
+#include <gsm2.hpp>
 #include <app.hpp>
 #include <contacts.hpp>
 #include <FileConfig.hpp>
@@ -30,6 +30,9 @@ SET_LOOP_TASK_STACK_SIZE(8 * 1024);
 #include <libsystem.hpp>
 #include <GuiManager.hpp>
 #include <standby.hpp>
+#ifdef ESP_PLATFORM
+#include "esp_heap_caps.h"
+#endif
 #include "unistd.h"
 #include <SerialManager.hpp>
 #include "../lib/tasks/src/delay.hpp"
@@ -43,7 +46,7 @@ void mainLoop(void* data) {
         backtrace_saver::backtraceMessageGUI();
     }
 
-    libsystem::setDeviceMode(libsystem::NORMAL);
+    //libsystem::setDeviceMode(libsystem::NORMAL);
 #endif
 
     GuiManager& guiManager = GuiManager::getInstance();
@@ -87,6 +90,7 @@ void mainLoop(void* data) {
         if(launcher)
             applications::launcher::update();
 
+
         if(libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())   // si mode normal et pas d'app en cours
         {
             if(!launcher)   // si pas de launcher -> afficher un launcher
@@ -117,8 +121,10 @@ void mainLoop(void* data) {
             }
         }
 
-        if(getButtonDown(hardware::input::HOME))    // si on appuie sur HOME
+        if(hardware::getHomeButton())    // si on appuie sur HOME
         {
+            while(hardware::getHomeButton());
+
             if(libsystem::getDeviceMode() == libsystem::SLEEP)
             {
                 setDeviceMode(libsystem::NORMAL);
@@ -127,15 +133,17 @@ void mainLoop(void* data) {
                 #ifndef ESP_PLATFORM
                 applications::launcher::draw();
                 #endif
-            } else if(launcher)
+            } else if(launcher && !AppManager::didRequestAuth)
             {
-                //applications::launcher::free();
-                //launcher = false;
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
+                continue;
             } else if(AppManager::isAnyVisibleApp())
             {
                 AppManager::quitApp();
+            } else if (AppManager::didRequestAuth)
+            {
+                AppManager::didRequestAuth = false;
             }
         }
 
@@ -145,13 +153,9 @@ void mainLoop(void* data) {
             StandbyMode::disable();
         }
 
-        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
+
+        if(libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())    // innactivity detected -> go to sleep mode
         {
-            if(launcher)
-            {
-                //applications::launcher::free();
-                //launcher = false;
-            }
             for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)  // define a limit on how many apps can be stopped (prevent from a loop)
             {
                 AppManager::quitApp();
@@ -160,17 +164,16 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        #ifdef ESP_PLATFORM
-        /*if(Serial.available())
-        {
-            std::cout << "Main loop" << std::endl;
-            std::cout << "Launcher: " << launcher << std::endl;
-            std::cout << "Visible app: " << AppManager::isAnyVisibleApp() << std::endl;
-            std::cout << "Device mode: " << libsystem::getDeviceMode() << std::endl;
-        }*/
-        #endif
+        if(libsystem::getDeviceMode() == libsystem::SLEEP)
+            StandbyMode::sleepCycle();
+        else
+            StandbyMode::wait();
 
-        StandbyMode::wait();
+        /*std::cout << "states: "
+                  << "StandbyMode: " << (StandbyMode::state() ? "enabled" : "disabled")
+                  << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal" : "sleep")
+                  << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ? "true" : "false")
+                  << std::endl;*/
     }
 }
 
@@ -200,7 +203,7 @@ void init(void* data)
     // If battery is too low
     // Don't initialize ANY MORE service
     // But display error
-    if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
+    /*if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
         libsystem::registerBootError("Battery level is too low.");
         libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "% < 5%");
         libsystem::registerBootError("Please charge your Paxo.");
@@ -211,10 +214,7 @@ void init(void* data)
         // TODO: Set device mode to sleep
 
         return;
-    }
-
-    // Set device mode to normal
-    setDeviceMode(libsystem::NORMAL);
+    }*/
 
     // Init storage and check for errors
     if (!storage::init()) {
@@ -280,13 +280,13 @@ void init(void* data)
      */
 
     // gestion des appels entrants
-    GSM::ExternalEvents::onIncommingCall = []()
+    Gsm::ExternalEvents::onIncommingCall = []()
     {
         eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run();}), 0);
     };
 
     // Gestion de la réception d'un message
-    GSM::ExternalEvents::onNewMessage = []()
+    Gsm::ExternalEvents::onNewMessage = []()
     {
         #ifdef ESP_PLATFORM
         eventHandlerBack.setTimeout(new Callback<>([](){hardware::vibrator::play({1, 0, 1});}), 0);
@@ -295,7 +295,7 @@ void init(void* data)
         AppManager::event_onmessage();
     };
 
-    GSM::ExternalEvents::onNewMessageError = []()
+    Gsm::ExternalEvents::onNewMessageError = []()
     {
         AppManager::event_onmessageerror();
     };
@@ -312,7 +312,7 @@ void init(void* data)
     );
 
     hardware::setVibrator(false);
-    GSM::endCall();
+    //GSM::endCall();
 
     // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
@@ -321,13 +321,17 @@ void init(void* data)
     AppManager::init();
 
     hardware::vibrator::play({1, 1, 0, 0, 1, 0, 1});
+
     mainLoop(NULL);
 }
 
 void setup()
 {
+    #ifdef ESP_PLATFORM
+    esp_task_wdt_init(5000, true);
+    #endif
+    
     init(NULL);
-    //ThreadManager::new_thread(CORE_APP, &init, 8*1024);
 }
 
 void loop(){}

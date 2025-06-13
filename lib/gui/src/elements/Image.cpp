@@ -20,33 +20,37 @@ namespace gui::ImagesList
     std::vector<ImageLoaded> images;
 
    std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF) {
-         // ReSharper disable once CppUseStructuredBinding
-         for (const auto& image : images) {
-             if (image.path.str() == path.str() && image.width == width && image.height == height) {
-                 return image.surface;
-             }
-         }
+        printf("IMG--1\n");
+        // ReSharper disable once CppUseStructuredBinding
+        for (const auto& image : images) {
+            if (image.path.str() == path.str() && image.width == width && image.height == height) {
+                printf("IMG--2\n");
+                return image.surface;
+            }
+        }
 
-         const auto i = graphics::SImage(path);
+        const auto i = graphics::SImage(path);
 
-         ImageLoaded img = {
-             path,
-             i.getWidth(),
-             i.getHeight(),
-             std::make_shared<graphics::Surface>(width, height)
-         };
+        ImageLoaded img = {
+            path,
+            i.getWidth(),
+            i.getHeight(),
+            std::make_shared<graphics::Surface>(width, height)
+        };
 
-         // Clear the background if it's a transparent image ?
-         // I guess so ?
+        // Clear the background if it's a transparent image ?
+        // I guess so ?
 
-         if(i.getType() != graphics::ImageType::BMP) {
-             img.surface->clear(backgroundColor);
-         }
+        if(i.getType() != graphics::ImageType::BMP) {
+            img.surface->clear(backgroundColor);
+        }
 
-         img.surface->drawImage(i, 0, 0, width, height);
-
+        printf("IMG--3-1\n");
+        img.surface->drawImage(i, 0, 0, width, height);
+        printf("IMG--3-2\n");
         images.push_back(img);
 
+        printf("IMG--3\n");
         return img.surface;
     }
 
