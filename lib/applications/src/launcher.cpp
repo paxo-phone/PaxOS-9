@@ -99,7 +99,7 @@ void applications::launcher::init() {
 }
 
 void applications::launcher::update() {
-    printf("start launcher update\n");
+    //printf("start launcher update\n");
 
     {
         static int min;
@@ -208,7 +208,7 @@ void applications::launcher::update() {
             targetApp = app;
         }
     }
-    printf("end launcher update\n");
+    //printf("end launcher update\n");
 }
 
 void applications::launcher::draw() {

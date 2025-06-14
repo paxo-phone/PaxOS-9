@@ -20,11 +20,11 @@ namespace gui::ImagesList
     std::vector<ImageLoaded> images;
 
    std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF) {
-        printf("IMG--1\n");
+        //printf("IMG--1\n");
         // ReSharper disable once CppUseStructuredBinding
         for (const auto& image : images) {
             if (image.path.str() == path.str() && image.width == width && image.height == height) {
-                printf("IMG--2\n");
+                //printf("IMG--2\n");
                 return image.surface;
             }
         }
@@ -45,12 +45,12 @@ namespace gui::ImagesList
             img.surface->clear(backgroundColor);
         }
 
-        printf("IMG--3-1\n");
+        //printf("IMG--3-1\n");
         img.surface->drawImage(i, 0, 0, width, height);
-        printf("IMG--3-2\n");
+        //printf("IMG--3-2\n");
         images.push_back(img);
 
-        printf("IMG--3\n");
+        //printf("IMG--3\n");
         return img.surface;
     }
 

@@ -37,12 +37,28 @@ namespace storage
         m_stream.close();
     }
 
-    std::string FileStream::read(void)
+    std::string FileStream::read(size_t returnSize)
     {
-        std::stringstream buffer;
-        buffer << m_stream.rdbuf();
+        if (returnSize == -1)
+        {
+            std::stringstream buffer;
+            buffer << m_stream.rdbuf();
+            return buffer.str();
+        } else
+        {
+            // Resize the string to accommodate `returnSize` bytes
+            std::string buff;
+            buff.resize(returnSize);
 
-        return buffer.str();
+            // Read from the stream into the buffer
+            m_stream.read(&buff[0], returnSize);  // Safe access to underlying data
+
+            // Shrink the string to the actual number of bytes read (gcount())
+            buff.resize(m_stream.gcount());
+
+            return buff;
+
+        }
     }
 
     std::string FileStream::readline(void)
@@ -59,9 +75,10 @@ namespace storage
         return word;
     }
 
-    void FileStream::read(char* buffer, std::size_t len)
+    std::size_t FileStream::read(char* buffer, std::size_t len)
     {
         m_stream.read(buffer, len);
+        return m_stream.gcount(); // Returns the number of characters read
     }
 
     char FileStream::readchar(void)
@@ -91,11 +108,24 @@ namespace storage
 
     long FileStream::size(void)
     {
+        const auto position = m_stream.tellg();
+        m_stream.seekg(0, std::ios::beg);
         const auto begin = m_stream.tellg();
         m_stream.seekg(0, std::ios::end);
         const auto end = m_stream.tellg();
-        const auto fsize = (end - begin);
-        m_stream.seekg(0, std::ios::beg);
+        const auto fsize = (end-begin);
+        m_stream.seekg(position);
+        return fsize;
+
+    }
+
+    long FileStream::sizeFromCurrentPosition(void)
+    {
+        const auto currentPosition = m_stream.tellg();
+        m_stream.seekg (0, std::ios::end);
+        const auto end = m_stream.tellg();
+        const auto fsize = (end-currentPosition);
+        m_stream.seekg(currentPosition);
         return fsize;
     }
 
