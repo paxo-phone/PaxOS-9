@@ -1,7 +1,7 @@
 #ifndef ELEMENTBASE_HPP
 #define ELEMENTBASE_HPP
 
-// #define USE_DOUBLE_BUFFERING
+#define USE_DOUBLE_BUFFERING
 
 #include <cstdint> // for uint16_t
 #include <vector>
@@ -161,6 +161,7 @@ namespace gui
         bool isInside(); // si le widget est visible dans son parent
 
         static int16_t m_lastTouchX, m_lastTouchY;
+        static bool wasPressed; // if the screen was pressed in the last update
         void getLastTouchPosAbs(int16_t* x, int16_t* y) const;
         void getLastTouchPosRel(int16_t* x, int16_t* y) const;
 
@@ -172,6 +173,7 @@ namespace gui
 
         std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
         std::shared_ptr<graphics::Surface> m_surface_for_dma; // double buffer for DMA transfer
+        bool do_use_double_buffering = false;
         std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr
     protected:
         void localGraphicalUpdate();

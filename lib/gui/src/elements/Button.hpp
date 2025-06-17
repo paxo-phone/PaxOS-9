@@ -31,6 +31,8 @@ namespace gui::elements
 
         void setText(std::string text);
         void setIcon(storage::Path path);
+        void onClick();
+        void onNotClicked();
 
         void setBorderColor(color_t color) {
             if (m_label == nullptr) {
@@ -86,6 +88,7 @@ namespace gui::elements
         Label* m_label;
         Image* m_image;
         bool m_theme;
+        color_t m_backgroundColorSave;
     };
 } // gui::elements
 

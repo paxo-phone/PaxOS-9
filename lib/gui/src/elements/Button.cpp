@@ -1,5 +1,6 @@
 #include "Button.hpp"
 #include <iostream>
+#include <color.hpp>
 
 namespace gui::elements
 {
@@ -17,6 +18,7 @@ namespace gui::elements
         this->m_borderSize = 2;
         this->m_backgroundColor = COLOR_WHITE;
         this->m_borderRadius = 17;
+        this->m_backgroundColorSave = m_borderSize;
 
         m_theme = BUTTON_WHITE;
 
@@ -33,6 +35,35 @@ namespace gui::elements
             this->m_width, this->m_height, 
             this->m_borderRadius, this->m_borderSize, 
             this->m_backgroundColor, this->m_borderColor);
+    }
+
+    void Button::onClick()  // 
+    {
+        m_backgroundColorSave = this->m_borderSize;
+        this->m_borderSize += 2;
+
+        //m_surface->applyFilter(graphics::Surface::Filter::DARKEN, 100);
+
+        /*uint8_t r, g, b;
+
+        graphics::unpackRGB565(this->m_backgroundColor, &r, &g, &b);
+
+        r/= 3;
+        g/= 3;
+        b/= 3;
+
+        this->m_backgroundColor = graphics::packRGB565(r, g, b);*/
+
+        localGraphicalUpdate();
+
+        //m_isDrawn = false;
+    }
+
+    void Button::onNotClicked()
+    {
+        //this->m_backgroundColor = this->m_backgroundColorSave;
+        m_borderSize = m_backgroundColorSave;
+        localGraphicalUpdate();
     }
 
     void Button::format()

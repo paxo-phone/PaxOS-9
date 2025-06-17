@@ -139,6 +139,8 @@ namespace StandbyMode
     void lightSleepMillis(unsigned long t) {
         #ifdef ESP_PLATFORM
 
+        graphics::getLCD()->waitDMA();
+        
         // Convert milliseconds to microseconds for the timer wake-up
         uint64_t time_us = (uint64_t)t * 1000;
 

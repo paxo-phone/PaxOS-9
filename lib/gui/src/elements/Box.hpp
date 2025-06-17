@@ -19,7 +19,16 @@ namespace gui::elements
         Box(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~Box() override;
 
+        void onClick();
+        void onNotClicked();
+
         void render() override;
+        void postRender() override;
+    
+        private:
+        color_t m_borderColorSave;
+        bool pressed = false;
+        uint8_t m_borderSizeSave;
     };
 } // gui::elements
 
