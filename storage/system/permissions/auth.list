@@ -7,3 +7,4 @@
 ./storage/apps/contacts/app.lua
 ./storage/apps/calendrier/app.lua
 ./storage/apps/calculatrice/app.lua
+./storage/apps/chrono/app.lua

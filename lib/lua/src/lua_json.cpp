@@ -23,7 +23,13 @@ std::string LuaJson::get()
 
 LuaJson LuaJson::op(std::string key)
 {
-    return LuaJson(json[key]);
+    try {
+        return LuaJson(json.at(key));
+    } catch (const nlohmann::json::out_of_range&) {
+        // Return a null LuaJson if key is not found
+        nlohmann::json null_json = nullptr;
+        return LuaJson(null_json);
+    }
 }
 
 void LuaJson::set(std::string id, std::string value)
