@@ -45,6 +45,7 @@ namespace storage {
             bool isdir   (void) const;
             bool newfile (void) const;
             bool newdir  (void) const;
+            bool copyTo  (const Path& destinationPath) const;
             bool remove  (void) const;
             
             bool rename (const Path& to);

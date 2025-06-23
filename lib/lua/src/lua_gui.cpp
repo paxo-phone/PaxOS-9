@@ -236,7 +236,7 @@ void LuaGui::keyboard_async(const std::string &placeholder, const std::string &d
             //callback_memory.erase(callback_memory.begin() + index);
         }
     });
-    printf("end keyboard_async");
+    //printf("end keyboard_async");
 }
 
 void LuaGui::setMainWindow(LuaWindow *window)

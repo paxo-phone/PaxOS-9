@@ -1101,7 +1101,8 @@ namespace Gsm
             delay(500);
             String data = "";
             while(gsm.available()) { data += (char)gsm.read(); }
-            Serial.print("[GSM RX @921600]: "); Serial.println(data);
+
+            std::cout << "[GSM RX @921600]: " << data.c_str() << std::endl;
 
             if (data.indexOf("OK") != -1) {
                 comm_ok = true;
@@ -1120,7 +1121,7 @@ namespace Gsm
                 delay(500);
                 String data = "";
                 while(gsm.available()) { data += (char)gsm.read(); }
-                Serial.print("[GSM RX @115200]: "); Serial.println(data);
+                std::cout << "[GSM RX @115200]: " << data.c_str() << std::endl;
 
                 if (data.indexOf("OK") != -1) {
                     gsm.println("AT+IPR=921600");
@@ -1128,7 +1129,7 @@ namespace Gsm
                     gsm.updateBaudRate(921600);
                     delay(100);
                     gsm.println("AT"); delay(500); data = ""; while(gsm.available()) { data += (char)gsm.read(); }
-                    Serial.print("[GSM RX @921600]: "); Serial.println(data);
+                    std::cout << "[GSM RX @921600]: " << data.c_str() << std::endl;
                     if (data.indexOf("OK") != -1) {
                          comm_ok = true;
                     } else {
