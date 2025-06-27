@@ -116,7 +116,11 @@ void applications::launcher::update() {
         static double lastBattery = Gsm::getBatteryLevel();
         if(lastBattery != Gsm::getBatteryLevel())
         {
-            batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
+            if (Gsm::getBatteryLevel() < 0.0) {
+                batteryLabel->setText("X");
+            } else {
+                batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
+            }
 
             lastBattery = Gsm::getBatteryLevel();
         }
@@ -253,7 +257,11 @@ void applications::launcher::draw() {
 
     // Battery label
     batteryLabel = new Label(255, 10, 40, 18);
-    batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
+    if (Gsm::getBatteryLevel() < 0.0) {
+        batteryLabel->setText("X");
+    } else {
+        batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
+    }
     batteryLabel->setVerticalAlignment(Label::Alignement::CENTER);
     batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
     batteryLabel->setFontSize(18);
