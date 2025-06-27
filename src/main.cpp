@@ -177,19 +177,8 @@ void mainLoop(void* data) {
     }
 }
 
-void init(void* data)
+static bool initGraphics()
 {
-    /**
-     * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
-     */
-    #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
-    #endif
-    hardware::init();
-    libsystem::log("[STARTUP]: Hardware initialized");
-    hardware::setScreenPower(true);
-
-    // Init graphics and check for errors
     if (const graphics::GraphicsInitCode graphicsInitCode = graphics::init(); graphicsInitCode != graphics::SUCCESS) {
         libsystem::registerBootError("Graphics initialization error.");
 
@@ -198,149 +187,160 @@ void init(void* data)
         } else if (graphicsInitCode == graphics::ERROR_FAULTY_TOUCHSCREEN) {
             libsystem::registerBootError("Faulty touchscreen detected.");
         }
+        return false;
     }
     setScreenOrientation(graphics::PORTRAIT);
+    libsystem::info("Graphics initialized successfully.");
+    return true;
+}
 
-    libsystem::log("[STARTUP]: Graphics initialized");
-
-    // If battery is too low
-    // Don't initialize ANY MORE service
-    // But display error
-    /*if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
-        libsystem::registerBootError("Battery level is too low.");
-        libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100)) + "% < 5%");
-        libsystem::registerBootError("Please charge your Paxo.");
-        libsystem::registerBootError("Tip: Force boot by plugging a charger.");
-
-        libsystem::displayBootErrors();
-        
-        // TODO: Set device mode to sleep
-
-        return;
-    }*/
-
-    // Init storage and check for errors
+static bool initStorage()
+{
     if (!storage::init()) {
         libsystem::registerBootError("Storage initialization error.");
         libsystem::registerBootError("Please check the SD Card.");
+        return false;
     }
-    else
-        libsystem::log("[STARTUP]: Storage initialized");
+    libsystem::info("[STARTUP]: Storage initialized");
+    return true;
+}
 
-    #ifdef ESP_PLATFORM
-    backtrace_saver::init();
-    std::cout << "backtrace: " << backtrace_saver::getBacktraceMessage() << std::endl;
-    backtrace_saver::backtraceEventId = eventHandlerBack.addEventListener(
-        new Condition<>(&backtrace_saver::shouldSaveBacktrace),
-        new Callback<>(&backtrace_saver::saveBacktrace)
-    );
-    #endif // ESP_PLATFORM
-
-    // Init de la gestiuon des Threads
-    ThreadManager::init();
-
-    libsystem::log("[STARTUP]: Threads initialized");
-
+static bool initLibSystem()
+{
     libsystem::init();
     libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
-
-    libsystem::log("[STARTUP]: Config loaded");
 
     if (!systemConfig.has("settings.brightness")) {
         systemConfig.set<uint8_t>("settings.brightness", 69);
         systemConfig.write();
     }
-
     if (!systemConfig.has("settings.sleeptime")) {
         systemConfig.set<uint64_t>("settings.sleeptime", 30000);
         systemConfig.write();
     }
-
     if (!systemConfig.has("settings.color.background")) {
         libsystem::paxoConfig::setBackgroundColor(0xFFFF, true);
-    }else
-    {
-        COLOR_WHITE = static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.background"));
+    } else {
+        // FIXME: That's not the right way to do it, but it works for now.
+        COLOR_WHITE = systemConfig.get<uint16_t>("settings.color.background");
     }
-
-    libsystem::log("settings.brightness: " + std::to_string(systemConfig.get<uint8_t>("settings.brightness")));
-
     graphics::setBrightness(systemConfig.get<uint8_t>("settings.brightness"));
+    libsystem::info("LibSystem initialized successfully.");
+    return true;
+}
 
-    // Init launcher
-    applications::launcher::init();
-
-    // When everything is initialized
-    // Check if errors occurred
-    // If so, restart
-    if (libsystem::hasBootErrors()) {
-        libsystem::displayBootErrors();
-        libsystem::restart(true, 10000);
-    }
-
-    /**
-     * Gestion des eventHandlers pour les evenements
-     */
-
-    // gestion des appels entrants
-    Gsm::ExternalEvents::onIncommingCall = []()
-    {
-        eventHandlerApp.setTimeout(new Callback<>([](){AppManager::get(".receivecall")->run();}), 0);
+static bool registerEventHandlers() {
+    Gsm::ExternalEvents::onIncommingCall = [] {
+        eventHandlerApp.setTimeout(
+            new Callback<>([] {
+                AppManager::get(".receivecall")->run();
+            }),
+            0
+        );
     };
-
-    // Gestion de la réception d'un message
-    Gsm::ExternalEvents::onNewMessage = []()
-    {
-        #ifdef ESP_PLATFORM
-        eventHandlerBack.setTimeout(new Callback<>([](){hardware::vibrator::play({1, 0, 1});}), 0);
-        #endif
-        
+    Gsm::ExternalEvents::onNewMessage = [] {
+#ifdef ESP_PLATFORM
+        eventHandlerBack.setTimeout(new Callback<>([] {
+            hardware::vibrator::play({1, 0, 1});
+        }), 0);
+#endif
         AppManager::event_onmessage();
     };
-
-    Gsm::ExternalEvents::onNewMessageError = []()
-    {
+    Gsm::ExternalEvents::onNewMessageError = [] {
         AppManager::event_onmessageerror();
     };
-
-    #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2*1024);
-    #endif
-
-    // gestion de la détection du toucher de l'écran
     eventHandlerBack.setInterval(
         &graphics::touchUpdate,
         10
     );
+    return true;
+}
+
+void init(void* data)
+{
+    ThreadManager::init();
+#ifdef ESP_PLATFORM
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
+    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2*1024);
+#endif // ESP_PLATFORM
+
+    hardware::init();
+    hardware::setScreenPower(true);
+
+    libsystem::info("Hardware initialized.");
+
+    if (!initGraphics()) {
+        libsystem::displayBootErrors();
+        libsystem::restart(true, 10000);
+        return;
+    }
+
+    if (Gsm::getBatteryLevel() < 0.0) {
+        libsystem::registerBootError("Battery error.");
+        libsystem::displayBootErrors();
+        libsystem::restart(true, 10000);
+        return;
+    }
+
+    if (!initStorage()) {
+        libsystem::displayBootErrors();
+        libsystem::restart(true, 10000);
+        return;
+    }
+
+#ifdef ESP_PLATFORM
+    backtrace_saver::init();
+    libsystem::info("Backtrace: " + backtrace_saver::getBacktraceMessage());
+    backtrace_saver::backtraceEventId = eventHandlerBack.addEventListener(
+        new Condition<>(&backtrace_saver::shouldSaveBacktrace),
+        new Callback<>(&backtrace_saver::saveBacktrace)
+    );
+#endif // ESP_PLATFORM
+
+    initLibSystem();
+
+    applications::launcher::init();
+
+    registerEventHandlers();
 
     hardware::setVibrator(false);
     //GSM::endCall();
 
-    // Chargement des contacts
-    std::cout << "[Main] Loading Contacts" << std::endl;
     eventHandlerApp.setTimeout(new Callback<>([](){Contacts::load();}), 0);
+
+    libsystem::info("Loaded contacts.");
 
     AppManager::init();
 
-    hardware::vibrator::play({1, 1, 0, 0, 1, 0, 1});
+    hardware::vibrator::play({
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true
+    });
 
-    mainLoop(NULL);
+    libsystem::info("Initialization completed.");
+
+    mainLoop(nullptr);
 }
 
 void setup()
 {
-    #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
     esp_task_wdt_init(5000, true);
-    #endif
+#endif
     
-    init(NULL);
+    init(nullptr);
 }
 
-void loop(){}
+void loop()
+{}
 
 #ifndef ESP_PLATFORM
 
-// Native main
 int main(int argc, char **argv)
 {
     graphics::SDLInit(setup);
