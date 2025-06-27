@@ -194,6 +194,20 @@ static bool initGraphics()
     return true;
 }
 
+static bool checkBattery() {
+    if (hardware::input::getButtonState(hardware::input::HOME) == hardware::input::PRESSED) {
+        libsystem::info("Battery check skipped by HOME button press.");
+        return true;
+    }
+    if (Gsm::getBatteryLevel() < 0.0) {
+        libsystem::registerBootError("Battery error.");
+        libsystem::registerBootError("Hold the HOME button when booting to skip this check.");
+        return false;
+    }
+    libsystem::info("Battery level: " + std::to_string(Gsm::getBatteryLevel()));
+    return true;
+}
+
 static bool initStorage()
 {
     if (!storage::init()) {
@@ -274,14 +288,11 @@ void init([[maybe_unused]] void *data)
         libsystem::restart(true, 10000);
         return;
     }
-
-    if (Gsm::getBatteryLevel() < 0.0) {
-        libsystem::registerBootError("Battery error.");
+    if (!checkBattery()) {
         libsystem::displayBootErrors();
         libsystem::restart(true, 10000);
         return;
     }
-
     if (!initStorage()) {
         libsystem::displayBootErrors();
         libsystem::restart(true, 10000);
