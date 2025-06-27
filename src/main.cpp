@@ -256,12 +256,12 @@ static bool registerEventHandlers() {
     return true;
 }
 
-void init(void* data)
+void init([[maybe_unused]] void *data)
 {
     ThreadManager::init();
 #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
-    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2*1024);
+    ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2 * 1024);
 #endif // ESP_PLATFORM
 
     hardware::init();
