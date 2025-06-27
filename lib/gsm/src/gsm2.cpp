@@ -961,7 +961,7 @@ namespace Gsm
     double getBatteryLevel() {
 #ifdef ESP_PLATFORM
         if (currentVoltage_mV == -1) {
-            return 1;
+            return -1.0;
         }
         const double voltage_V = currentVoltage_mV / 1000.0;
         const double batteryLevel = 3.083368 * std::pow(voltage_V, 3) - 37.21203 * std::pow(voltage_V, 2) + 150.5735 * voltage_V - 203.3347;
