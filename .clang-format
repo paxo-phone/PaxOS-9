@@ -1,0 +1,51 @@
+# PaxOS-9 Clang Format Configuration
+BasedOnStyle: LLVM
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Line length
+ColumnLimit: 100
+
+# Braces
+BreakBeforeBraces: Attach
+
+# Whitespaces & Format
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+SpaceAfterCStyleCast: true
+SpaceBeforeAssignmentOperators: true
+
+# Alignment
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+AlignTrailingComments: true
+
+# Line breaks
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Empty
+
+# Pointers & References
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# Headers
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+
+# Comments
+# noinspection YAMLSchemaValidation
+ReflowComments: true
+
+# C++
+Standard: c++20
+Cpp11BracedListStyle: true
+FixNamespaceComments: true
