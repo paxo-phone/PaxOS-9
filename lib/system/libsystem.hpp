@@ -5,7 +5,6 @@
 #ifndef LIBSYSTEM_HPP
 #define LIBSYSTEM_HPP
 
-#include <cstdint>
 #include <stdexcept>
 #include <string>
 #include <color.hpp>
@@ -55,7 +54,29 @@ namespace libsystem
      *
      * @todo Save logs.
      */
+    [[deprecated("Use libsystem::info(), libsystem::warn() and libsystem::error() instead.")]]
     void log(const std::string &message);
+
+    /**
+     * @brief Log an info message.
+     *
+     * @param message The log message.
+     */
+    void info(const std::string &message);
+
+    /**
+     * @brief Log a warning message.
+     *
+     * @param message The log message.
+     */
+    void warn(const std::string &message);
+
+    /**
+     * @brief Log an error message.
+     *
+     * @param message The log message.
+     */
+    void error(const std::string &message);
 
     /**
      * @defgroup boot_errors Error management at boot time.

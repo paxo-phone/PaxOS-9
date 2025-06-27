@@ -179,14 +179,29 @@ void libsystem::panic(const std::string &message, const bool restart)
 
 void libsystem::log(const std::string &message)
 {
-    std::cout << "[LOG] " << message << std::endl;
+    info(message);
+}
+
+void libsystem::info(const std::string &message)
+{
+    std::cout << "[INFO] " << message << std::endl;
+}
+
+void libsystem::warn(const std::string &message)
+{
+    std::cout << "[WARN] " << message << std::endl;
+}
+
+void libsystem::error(const std::string &message)
+{
+    std::cerr << "[ERROR] " << message << std::endl;
 }
 
 void libsystem::registerBootError(const std::string &message)
 {
     bootErrors.emplace_back(message);
 
-    log("[Boot Error] " + message);
+    error("Boot: " + message);
 }
 
 bool libsystem::hasBootErrors()
@@ -264,6 +279,7 @@ libsystem::DeviceMode libsystem::getDeviceMode()
 
 libsystem::FileConfig libsystem::getSystemConfig()
 {
+    // FIXME: Are we copying the shared pointer here?
     return *systemConfig;
 }
 
