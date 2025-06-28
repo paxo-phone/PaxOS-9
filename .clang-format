@@ -22,7 +22,7 @@ InsertBraces: false
 RemoveBracesLLVM: true
 
 # SINGLE LINE CONSTRUCTS - ALLOW COMPACT FORMATTING
-AllowShortIfStatementsOnASingleLine: WithoutElse    # Allow: if (x) return;
+AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: true                  # Allow: for (...) stmt;
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortLambdasOnASingleLine: Empty
