@@ -45,11 +45,20 @@ def get_files():
 def format_files(formatter_path, paths):
     for file in paths:
         full_path = os.path.join(PROJECT_DIR, file)
-        subprocess.run([formatter_path, "-i", full_path], check=True)
+        subprocess.run(
+            [
+                formatter_path,
+                f"--style=file:{os.path.join(PROJECT_DIR, ".clang-format")}",
+                "-i",
+                full_path
+            ],
+            check=True
+        )
         print(f"✓ {file}")
 
 
 if __name__ == "__main__":
+    os.chdir(PROJECT_DIR)
     clang_format_path = get_clang_format_path()
     print("Using clang-format at:", clang_format_path)
     files = get_files()
