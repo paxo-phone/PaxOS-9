@@ -15,7 +15,7 @@ def get_clang_format_path():
 
 
 def get_ignore_list():
-    with open(".clang-format-ignore", "r") as f:
+    with open(os.path.join(PROJECT_DIR, ".clang-format-ignore"), "r") as f:
         ignore_list = [line.strip() for line in f if line.strip() and not line.startswith("#")]
     return ignore_list
 
