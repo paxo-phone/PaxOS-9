@@ -4,10 +4,10 @@
 #include <iostream>
 #include <standby.hpp>
 
-namespace gui::elements {
-    Filter::Filter(
-        const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height
-    ) {
+namespace gui::elements
+{
+    Filter::Filter(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
+    {
         this->m_x = x;
         this->m_y = y;
         this->m_width = width;
@@ -16,13 +16,15 @@ namespace gui::elements {
         m_screenSurface = std::make_shared<graphics::Surface>(m_width, m_height);
     }
 
-    void Filter::render() {
+    void Filter::render()
+    {
         std::cout << "RENDER FILTER" << std::endl;
 
         m_surface->pushSurface(m_screenSurface.get(), 0, 0);
     }
 
-    void Filter::apply() const {
+    void Filter::apply() const
+    {
         std::cout << "APPLY FILTER" << std::endl;
 
         StandbyMode::triggerPower();

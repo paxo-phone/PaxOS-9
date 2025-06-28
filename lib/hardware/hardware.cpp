@@ -21,7 +21,8 @@
 
 #endif
 
-void hardware::init() {
+void hardware::init()
+{
 #ifdef ESP_PLATFORM
 
     psramInit();
@@ -62,7 +63,8 @@ void hardware::init() {
 #endif
 }
 
-void hardware::setScreenPower(bool power) {
+void hardware::setScreenPower(bool power)
+{
     // TODO : Explain what it does
 
 #ifdef ESP_PLATFORM
@@ -93,7 +95,8 @@ void hardware::setScreenPower(bool power) {
 #endif
 }
 
-void hardware::setVibrator(bool state) {
+void hardware::setVibrator(bool state)
+{
 #ifdef ESP_PLATFORM
 
     digitalWrite(PIN_VIBRATOR, state);
@@ -101,7 +104,8 @@ void hardware::setVibrator(bool state) {
 #endif
 }
 
-bool hardware::getHomeButton() {
+bool hardware::getHomeButton()
+{
 #ifdef ESP_PLATFORM
 
     return !digitalRead(PIN_HOME_BUTTON);
@@ -116,7 +120,8 @@ bool hardware::getHomeButton() {
 #endif
 }
 
-uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin) {
+uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin)
+{
 #ifdef ESP_PLATFORM
 
     if (begin) Wire.begin(sda, scl);
@@ -124,8 +129,10 @@ uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin) {
     uint8_t count = 0;
 
     // Address 0 is broadcast
-    for (uint8_t i = 1; i < 128; i++) {
-        if (checkI2C(i, sda, scl, false) == SUCCESS) {
+    for (uint8_t i = 1; i < 128; i++)
+    {
+        if (checkI2C(i, sda, scl, false) == SUCCESS)
+        {
             libsystem::log("Found I2C device at address: " + std::to_string(i));
             count++;
         }
@@ -141,7 +148,8 @@ uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin) {
 }
 
 hardware::I2CResponse
-    hardware::checkI2C(const uint8_t address, const int sda, const int scl, const bool begin) {
+    hardware::checkI2C(const uint8_t address, const int sda, const int scl, const bool begin)
+{
 #ifdef ESP_PLATFORM
     if (begin) Wire.begin(sda, scl);
     Wire.beginTransmission(address);
@@ -152,7 +160,8 @@ hardware::I2CResponse
 #endif
 }
 
-bool hardware::isCharging() {
+bool hardware::isCharging()
+{
     // Found between 2700 < 3000
     // But tested with good chargers
 
@@ -163,19 +172,23 @@ bool hardware::isCharging() {
 #endif
 }
 
-namespace hardware::input {
+namespace hardware::input
+{
     InputFrame lastFrame;
     InputFrame frame;
 } // namespace hardware::input
 
-void hardware::input::update() {
+void hardware::input::update()
+{
     lastFrame = frame;
 
     frame.homeButtonState = getHomeButton() ? PRESSED : RELEASED;
 }
 
-hardware::input::ButtonState hardware::input::getButtonState(const Button button) {
-    switch (button) {
+hardware::input::ButtonState hardware::input::getButtonState(const Button button)
+{
+    switch (button)
+    {
     case HOME:
         return getHomeButton() ? PRESSED : RELEASED;
     default:
@@ -183,8 +196,10 @@ hardware::input::ButtonState hardware::input::getButtonState(const Button button
     }
 }
 
-bool hardware::input::getButtonDown(const Button button) {
-    switch (button) {
+bool hardware::input::getButtonDown(const Button button)
+{
+    switch (button)
+    {
     case HOME:
         return lastFrame.homeButtonState == RELEASED && frame.homeButtonState == PRESSED;
     default:
@@ -192,8 +207,10 @@ bool hardware::input::getButtonDown(const Button button) {
     }
 }
 
-bool hardware::input::getButtonUp(const Button button) {
-    switch (button) {
+bool hardware::input::getButtonUp(const Button button)
+{
+    switch (button)
+    {
     case HOME:
         return lastFrame.homeButtonState == PRESSED && frame.homeButtonState == RELEASED;
     default:

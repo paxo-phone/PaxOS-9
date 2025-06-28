@@ -4,7 +4,8 @@
 
 using namespace serialcom;
 
-TEST(Commands, FILE_COMMANDS) {
+TEST(Commands, FILE_COMMANDS)
+{
     storage::init();
 
     /*

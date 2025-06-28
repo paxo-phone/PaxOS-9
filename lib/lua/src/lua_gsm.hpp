@@ -8,7 +8,8 @@
 #include <string>
 #include <vector>
 
-namespace LuaGSM {
+namespace LuaGSM
+{
     void newMessage(std::string number, std::string message);
     void newCall(std::string number);
     void endCall();

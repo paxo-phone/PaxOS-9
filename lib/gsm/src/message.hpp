@@ -5,8 +5,10 @@
 #include <string>
 #include <vector>
 
-namespace Message {
-    struct Message {
+namespace Message
+{
+    struct Message
+    {
         std::string number;
         std::string message;
         std::string date;

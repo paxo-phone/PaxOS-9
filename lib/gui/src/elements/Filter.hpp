@@ -5,11 +5,13 @@
 
 #include <filestream.hpp>
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @deprecated Not compatible with device.
      */
-    class Filter final : public ElementBase {
+    class Filter final : public ElementBase
+    {
       public:
         typedef std::pair<int16_t, int16_t> point_t;
 

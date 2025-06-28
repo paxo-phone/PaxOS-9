@@ -5,22 +5,28 @@
 
 #include <path.hpp>
 
-class LuaButton : public LuaWidget {
+class LuaButton : public LuaWidget
+{
   public:
     LuaButton(LuaWidget* parent, int x, int y, int width, int height);
-    void setText(const std::string& text) {
+    void setText(const std::string& text)
+    {
         widget->setText(text);
     }
-    std::string getText() {
+    std::string getText()
+    {
         return widget->getText();
     }
-    void setIcon(const std::string& path) {
+    void setIcon(const std::string& path)
+    {
         widget->setIcon(storage::Path(path));
     }
-    void setTheme(bool theme) {
+    void setTheme(bool theme)
+    {
         widget->setTheme(theme);
     }
-    void format() {
+    void format()
+    {
         widget->format();
     }
 

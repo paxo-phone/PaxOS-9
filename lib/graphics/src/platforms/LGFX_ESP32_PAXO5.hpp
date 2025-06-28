@@ -4,13 +4,15 @@
 
 #include <LovyanGFX.hpp>
 
-class LGFX : public lgfx::LGFX_Device {
+class LGFX : public lgfx::LGFX_Device
+{
     lgfx::Panel_ILI9488 _panel_instance;
     lgfx::Bus_SPI _bus_instance; // SPIバスのインスタンス
     lgfx::Light_PWM _light_instance;
 
   public:
-    LGFX(void) {
+    LGFX(void)
+    {
         {
             auto cfg = _bus_instance.config();
 

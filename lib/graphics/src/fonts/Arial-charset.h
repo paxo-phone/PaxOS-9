@@ -4,7 +4,8 @@
 
 const uint8_t FRCharcount = 40;
 
-struct CharsetTable {
+struct CharsetTable
+{
     uint16_t UTF;
     uint8_t latin;
 };

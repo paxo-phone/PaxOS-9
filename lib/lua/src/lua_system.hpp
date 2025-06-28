@@ -7,7 +7,8 @@
 
 #include <string>
 
-namespace paxolua::system::config {
+namespace paxolua::system::config
+{
     bool getBool(const std::string& key);
     int getInt(const std::string& key);
     float getFloat(const std::string& key);

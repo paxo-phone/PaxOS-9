@@ -9,63 +9,79 @@
 #include <Arduino.h>
 #endif
 
-namespace LuaGSM {
-    void newMessage(std::string number, std::string message) {
+namespace LuaGSM
+{
+    void newMessage(std::string number, std::string message)
+    {
         Gsm::sendMySms(number, message);
     }
 
-    void newCall(std::string number) {
+    void newCall(std::string number)
+    {
 #ifdef ESP_PLATFORM
         static int callsuccess = 0; // 0 = not called, 1 = failed, 2 = call success
 
-        Gsm::call(number, [&](bool success) {
-            callsuccess = 1 + success;
-        });
+        Gsm::call(
+            number,
+            [&](bool success)
+            {
+                callsuccess = 1 + success;
+            }
+        );
 
         uint64_t timeout = os_millis() + 5000;
         while (callsuccess == 0 && os_millis() < timeout) StandbyMode::wait();
 #endif
     }
 
-    void endCall() {
+    void endCall()
+    {
 #ifdef ESP_PLATFORM
         Gsm::rejectCall();
 #endif
     }
 
-    void acceptCall() {
+    void acceptCall()
+    {
 #ifdef ESP_PLATFORM
         Gsm::acceptCall();
 #endif
     }
 
-    void rejectCall() {
+    void rejectCall()
+    {
 #ifdef ESP_PLATFORM
         Gsm::rejectCall();
 #endif
     }
 
-    bool isPinNeeded() {
+    bool isPinNeeded()
+    {
         return Gsm::isPinRequired();
     }
 
-    void setPin(std::string pin) {
+    void setPin(std::string pin)
+    {
         Gsm::setPin(pin);
     }
 
-    void setFlightMode(bool mode) {
+    void setFlightMode(bool mode)
+    {
         Gsm::setFlightMode(mode);
     }
 
-    std::string getNumber() {
+    std::string getNumber()
+    {
         return Gsm::getLastIncomingNumber();
     }
 
-    uint8_t getCallState() {
+    uint8_t getCallState()
+    {
         return (uint8_t) Gsm::getCallState();
     }
 
-    sol::table getMessages(const std::string& number, sol::state& lua) {
+    sol::table getMessages(const std::string& number, sol::state& lua)
+    {
         Conversations::Conversation conv;
         conv.number = number;
         std::string convFilePath = std::string(MESSAGES_LOCATION) + "/" + number + ".json";

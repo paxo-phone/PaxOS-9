@@ -5,11 +5,13 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-TEST(ConversationTest, SaveLoadConversation) {
+TEST(ConversationTest, SaveLoadConversation)
+{
     // Chemin du répertoire des messages
     storage::Path messagesDir(MESSAGES_LOCATION);
     std::cout << "Checking if directory exists: " << messagesDir.str() << std::endl;
-    if (!messagesDir.exists()) {
+    if (!messagesDir.exists())
+    {
         std::cout << "Directory does not exist. Creating..." << std::endl;
         std::string command = "mkdir -p " + messagesDir.str();
         system(command.c_str());
@@ -33,7 +35,8 @@ TEST(ConversationTest, SaveLoadConversation) {
     nlohmann::json json;
     json["number"] = conv.number;
 
-    for (const auto& msg : conv.messages) {
+    for (const auto& msg : conv.messages)
+    {
         json["messages"].push_back({{"message", msg.message}, {"who", msg.who}, {"date", msg.date}}
         );
     }
@@ -49,7 +52,8 @@ TEST(ConversationTest, SaveLoadConversation) {
     Conversations::Conversation loadedConv;
     loadedConv.number = loadedJson["number"].get<std::string>();
 
-    for (const auto& item : loadedJson["messages"]) {
+    for (const auto& item : loadedJson["messages"])
+    {
         Conversations::Message msg{
             item["message"].get<std::string>(),
             item["who"].get<bool>(),
@@ -62,7 +66,8 @@ TEST(ConversationTest, SaveLoadConversation) {
     ASSERT_EQ(conv.number, loadedConv.number);
     ASSERT_EQ(conv.messages.size(), loadedConv.messages.size());
 
-    for (size_t i = 0; i < conv.messages.size(); ++i) {
+    for (size_t i = 0; i < conv.messages.size(); ++i)
+    {
         ASSERT_EQ(conv.messages[i].message, loadedConv.messages[i].message);
         ASSERT_EQ(conv.messages[i].who, loadedConv.messages[i].who);
         ASSERT_EQ(conv.messages[i].date, loadedConv.messages[i].date);

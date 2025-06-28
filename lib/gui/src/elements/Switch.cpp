@@ -4,8 +4,10 @@
 #include <cstdio>
 #include <graphics.hpp>
 
-namespace gui::elements {
-    Switch::Switch(const uint16_t x, const uint16_t y) {
+namespace gui::elements
+{
+    Switch::Switch(const uint16_t x, const uint16_t y)
+    {
         m_x = x;
         m_y = y;
         m_width = 40;
@@ -15,27 +17,34 @@ namespace gui::elements {
 
     Switch::~Switch() = default;
 
-    void Switch::render() {
+    void Switch::render()
+    {
         m_surface->clear(m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor());
-        if (!m_state) {
+        if (!m_state)
+        {
             m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_GREY);
             m_surface->fillRoundRect(4, 3, 14, 14, 7, COLOR_WHITE);
-        } else {
+        }
+        else
+        {
             m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_BLACK);
             m_surface->fillRoundRect(22, 3, 14, 14, 7, COLOR_WHITE);
         }
     }
 
-    void Switch::onReleased() {
+    void Switch::onReleased()
+    {
         setState(!m_state);
     }
 
-    void Switch::setState(bool state) {
+    void Switch::setState(bool state)
+    {
         this->m_state = state;
         localGraphicalUpdate();
     }
 
-    bool Switch::getState() {
+    bool Switch::getState()
+    {
         return m_state;
     }
 } // namespace gui::elements

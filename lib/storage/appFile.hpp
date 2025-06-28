@@ -9,7 +9,8 @@
 
 using json = nlohmann::json;
 
-namespace appFile {
+namespace appFile
+{
     std::string load(std::string filename);
     json parse(std::string str);
     void save(std::string filename, json jsonObj);

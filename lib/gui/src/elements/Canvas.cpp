@@ -4,8 +4,10 @@
 #include <standby.hpp>
 #include <threads.hpp>
 
-namespace gui::elements {
-    Canvas::Canvas(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
+namespace gui::elements
+{
+    Canvas::Canvas(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+    {
         this->m_x = x;
         this->m_y = y;
         this->m_width = width;
@@ -14,31 +16,36 @@ namespace gui::elements {
 
     void Canvas::render() {}
 
-    void Canvas::setPixel(int16_t x, int16_t y, color_t color) {
+    void Canvas::setPixel(int16_t x, int16_t y, color_t color)
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->setPixel(x, y, color);
         this->localGraphicalUpdate();
     }
 
-    void Canvas::drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color) {
+    void Canvas::drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color)
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->drawRect(x, y, w, h, color);
         this->localGraphicalUpdate();
     }
 
-    void Canvas::fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color) {
+    void Canvas::fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color)
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->fillRect(x, y, w, h, color);
         this->localGraphicalUpdate();
     }
 
-    void Canvas::drawCircle(int16_t x, int16_t y, uint16_t radius, color_t color) {
+    void Canvas::drawCircle(int16_t x, int16_t y, uint16_t radius, color_t color)
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->drawCircle(x, y, radius, color);
         this->localGraphicalUpdate();
     }
 
-    void Canvas::fillCircle(int16_t x, int16_t y, uint16_t radius, color_t color) {
+    void Canvas::fillCircle(int16_t x, int16_t y, uint16_t radius, color_t color)
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->fillCircle(x, y, radius, color);
         this->localGraphicalUpdate();
@@ -46,7 +53,8 @@ namespace gui::elements {
 
     void Canvas::drawRoundRect(
         int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t radius, color_t color
-    ) {
+    )
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->drawRoundRect(x, y, w, h, radius, color);
         this->localGraphicalUpdate();
@@ -54,13 +62,15 @@ namespace gui::elements {
 
     void Canvas::fillRoundRect(
         int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t radius, color_t color
-    ) {
+    )
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->fillRoundRect(x, y, w, h, radius, color);
         this->localGraphicalUpdate();
     }
 
-    void Canvas::drawPolygon(std::vector<std::pair<int16_t, int16_t>> vertices, color_t color) {
+    void Canvas::drawPolygon(std::vector<std::pair<int16_t, int16_t>> vertices, color_t color)
+    {
         StandbyMode::triggerPower();
         if (vertices.empty()) return;
 
@@ -68,7 +78,8 @@ namespace gui::elements {
 
         std::pair<int16_t, int16_t> currentPosition = firstPosition;
 
-        for (std::pair<int16_t, int16_t> vertex : vertices) {
+        for (std::pair<int16_t, int16_t> vertex : vertices)
+        {
             this->drawLine(
                 currentPosition.first,
                 currentPosition.second,
@@ -89,11 +100,13 @@ namespace gui::elements {
         );
     }
 
-    void Canvas::fillPolygon(std::vector<std::pair<int16_t, int16_t>> vertices, color_t color) {
+    void Canvas::fillPolygon(std::vector<std::pair<int16_t, int16_t>> vertices, color_t color)
+    {
         StandbyMode::triggerPower();
         if (vertices.empty()) return;
 
-        for (std::pair<int16_t, int16_t> vertex : vertices) {
+        for (std::pair<int16_t, int16_t> vertex : vertices)
+        {
             // std::cout << "Vertex: " << vertex.first << ", " << vertex.second <<
             // std::endl;
         }
@@ -102,14 +115,16 @@ namespace gui::elements {
         point_t topVertex = *std::max_element(
             vertices.begin(),
             vertices.end(),
-            [](const point_t& lhs, const point_t& rhs) {
+            [](const point_t& lhs, const point_t& rhs)
+            {
                 return lhs.second > rhs.second;
             }
         );
         point_t bottomVertex = *std::max_element(
             vertices.begin(),
             vertices.end(),
-            [](const point_t& lhs, const point_t& rhs) {
+            [](const point_t& lhs, const point_t& rhs)
+            {
                 return lhs.second < rhs.second;
             }
         );
@@ -117,7 +132,8 @@ namespace gui::elements {
         size_t verticesCount = vertices.size();
 
         // for each line in the polygon, from the top to the bottom
-        for (int16_t y = topVertex.second; y < bottomVertex.second; y++) {
+        for (int16_t y = topVertex.second; y < bottomVertex.second; y++)
+        {
             const int16_t k_minimumXIntersection = this->m_width - 1;
             const int16_t k_maximumXIntersection = 0;
 
@@ -125,7 +141,8 @@ namespace gui::elements {
             int16_t maximumXIntersection =
                 k_maximumXIntersection; // the maximum value they could take
 
-            for (uint16_t i = 0; i < verticesCount; i++) {
+            for (uint16_t i = 0; i < verticesCount; i++)
+            {
                 point_t vertex1 = vertices[i];
                 point_t vertex2 = vertices
                     [(i + 1) % verticesCount /* to get the first vertex if we reach
@@ -146,10 +163,11 @@ namespace gui::elements {
                     if (xIntersection > maximumXIntersection) maximumXIntersection = xIntersection;
 
                     if (minimumXIntersection <= k_maximumXIntersection &&
-                        maximumXIntersection >= k_minimumXIntersection) { // no need to continue
-                                                                          // iterating, we already
-                                                                          // known that the whole
-                                                                          // line has to be filled
+                        maximumXIntersection >= k_minimumXIntersection)
+                    { // no need to continue
+                      // iterating, we already
+                      // known that the whole
+                      // line has to be filled
                         break;
                     }
                 }
@@ -159,13 +177,15 @@ namespace gui::elements {
         }
     }
 
-    void Canvas::drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color) {
+    void Canvas::drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color)
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->drawLine(x1, y1, x2, y2, color);
         this->localGraphicalUpdate();
     }
 
-    void Canvas::drawText(int16_t x, int16_t y, std::string& text, color_t color, float fontSize) {
+    void Canvas::drawText(int16_t x, int16_t y, std::string& text, color_t color, float fontSize)
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->setFontSize(fontSize);
         this->getAndSetSurface()->drawText(text, x, y, color);
@@ -176,7 +196,8 @@ namespace gui::elements {
     void Canvas::drawTextCentered(
         int16_t x, int16_t y, std::string& text, color_t color, bool horizontallyCentered,
         bool verticallyCentered, float fontSize
-    ) {
+    )
+    {
         this->drawTextCenteredInRect(
             x,
             y,
@@ -192,7 +213,8 @@ namespace gui::elements {
     void Canvas::drawTextCenteredInRect(
         int16_t x, int16_t y, uint16_t w, uint16_t h, std::string& text, color_t color,
         bool horizontallyCentered, bool verticallyCentered, float fontSize
-    ) {
+    )
+    {
         StandbyMode::triggerPower();
         this->getAndSetSurface()->setFontSize(fontSize);
         this->getAndSetSurface()

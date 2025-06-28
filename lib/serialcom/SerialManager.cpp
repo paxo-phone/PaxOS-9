@@ -10,11 +10,13 @@
 #include <Arduino.h>
 #endif
 
-namespace serialcom {
+namespace serialcom
+{
     const std::shared_ptr<SerialManager> SerialManager::sharedInstance =
         std::make_shared<SerialManager>();
 
-    SerialManager::SerialManager() {
+    SerialManager::SerialManager()
+    {
 #ifdef ESP_PLATFORM
         Serial.begin(115200);
 #endif
@@ -25,7 +27,8 @@ namespace serialcom {
         this->cerrBuffer.installOnStream(&std::cerr);
     }
 
-    SerialManager::~SerialManager() {
+    SerialManager::~SerialManager()
+    {
 #ifdef ESP_PLATFORM
         Serial.end();
 #endif
@@ -33,13 +36,15 @@ namespace serialcom {
         std::ios_base::sync_with_stdio(true);
     }
 
-    void SerialManager::changeConsoleLockTo(bool newState) {
+    void SerialManager::changeConsoleLockTo(bool newState)
+    {
         this->consoleLocked = newState;
         this->coutBuffer.canFlushOnOverflow = !newState;
         this->cerrBuffer.canFlushOnOverflow = !newState;
     }
 
-    void SerialManager::startCommandLog() {
+    void SerialManager::startCommandLog()
+    {
         this->commandLogBuffer.fill(0);
         this->commandLogBufferIndex = 0;
         this->commandLogBufferHash = 0;
@@ -53,7 +58,8 @@ namespace serialcom {
         uint64_t pseudoHash = this->commandLogBufferHash;
 
         for (char c : message)
-            if (this->commandLogBufferIndex < MAX_OUTPUT_SIZE) {
+            if (this->commandLogBufferIndex < MAX_OUTPUT_SIZE)
+            {
                 this->commandLogBuffer[this->commandLogBufferIndex] = c;
                 this->commandLogBufferIndex++;
                 pseudoHash = (pseudoHash + c) % 4294967295;
@@ -64,7 +70,8 @@ namespace serialcom {
 
     void SerialManager::singleCommandLog(
         const std::string& message, const char command_id[COMMAND_ID_SIZE]
-    ) {
+    )
+    {
         bool consoleState = this->getConsoleLockState();
         this->changeConsoleLockTo(true);
         SerialManager::sharedInstance->startCommandLog();
@@ -76,13 +83,17 @@ namespace serialcom {
         this->changeConsoleLockTo(consoleState);
     }
 
-    void SerialManager::finishCommandLog(bool shellMode, const char command_id[COMMAND_ID_SIZE]) {
-        if (shellMode) {
+    void SerialManager::finishCommandLog(bool shellMode, const char command_id[COMMAND_ID_SIZE])
+    {
+        if (shellMode)
+        {
             this->coutBuffer.directLog(
                 std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex),
                 true
             );
-        } else {
+        }
+        else
+        {
             constexpr char startBytes[3] =
                 {static_cast<char>(0xff), static_cast<char>(0xfe), static_cast<char>(0xfd)};
             std::string startBytesString(reinterpret_cast<const char*>(startBytes), 3);
@@ -123,31 +134,39 @@ namespace serialcom {
         this->startCommandLog();
     }
 
-    void SerialManager::forceFlushBuffers() {
-        if (!this->consoleLocked) {
+    void SerialManager::forceFlushBuffers()
+    {
+        if (!this->consoleLocked)
+        {
             this->coutBuffer.flushBuffer();
             this->cerrBuffer.flushBuffer();
         }
     }
 
-    std::streambuf* SerialManager::changeDefaultCoutBuffer(std::streambuf* buffer) {
+    std::streambuf* SerialManager::changeDefaultCoutBuffer(std::streambuf* buffer)
+    {
         return this->coutBuffer.changeDefaultBuffer(buffer);
     }
 
-    std::streambuf* SerialManager::changeDefaultCerrBuffer(std::streambuf* buffer) {
+    std::streambuf* SerialManager::changeDefaultCerrBuffer(std::streambuf* buffer)
+    {
         return this->cerrBuffer.changeDefaultBuffer(buffer);
     }
 
 #ifdef ESP_PLATFORM
-    void SerialManager::serialLoop(void*) {
+    void SerialManager::serialLoop(void*)
+    {
 #else
-    void SerialManager::serialLoop() {
+    void SerialManager::serialLoop()
+    {
 #endif
         SerialManager* serialManager = SerialManager::sharedInstance.get();
         std::cout << "Serial loop started" << std::endl;
-        while (true) {
+        while (true)
+        {
             serialManager->getInputCommand();
-            if (serialManager->newData) {
+            if (serialManager->newData)
+            {
                 if (CommandsManager::defaultInstance->shellMode) std::cout << std::endl;
                 Command newCommand = Command(serialManager->current_input);
                 serialManager->startCommandLog();
@@ -159,7 +178,8 @@ namespace serialcom {
                 serialManager->newData = false;
             }
 
-            if (!serialManager->consoleLocked) {
+            if (!serialManager->consoleLocked)
+            {
                 serialManager->coutBuffer.flushBuffer();
                 serialManager->cerrBuffer.flushBuffer();
             }
@@ -168,23 +188,28 @@ namespace serialcom {
         }
     }
 
-    void SerialManager::getInputCommand() {
+    void SerialManager::getInputCommand()
+    {
         static size_t ndx = 0;
         char endMarker = '\n';
         char rc;
 
-        while (this->isNewInputAvailable() && newData == false) {
+        while (this->isNewInputAvailable() && newData == false)
+        {
 #ifdef ESP_PLATFORM
             rc = Serial.read();
 #else
             rc = std::cin.get();
 #endif
 
-            if (rc != endMarker) {
+            if (rc != endMarker)
+            {
                 current_input[ndx] = rc;
                 ndx++;
                 if (ndx >= INPUT_MAX_SIZE) ndx = INPUT_MAX_SIZE - 1;
-            } else {
+            }
+            else
+            {
                 current_input[ndx] = '\0'; // terminate the string
                 ndx = 0;
                 newData = true;
@@ -192,7 +217,8 @@ namespace serialcom {
         }
     }
 
-    bool SerialManager::isNewInputAvailable() const {
+    bool SerialManager::isNewInputAvailable() const
+    {
 #ifdef ESP_PLATFORM
         return Serial.available() > 0;
 #else

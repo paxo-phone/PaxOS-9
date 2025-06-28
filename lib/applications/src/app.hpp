@@ -13,8 +13,10 @@
 #define SYSTEM_APP_DIR "/sys_apps"
 #define PERMS_DIR "/system/permissions"
 
-namespace AppManager {
-    struct Permissions {
+namespace AppManager
+{
+    struct Permissions
+    {
         // It's better with english (access)
 
         bool acces_gui = false; // graphics
@@ -27,7 +29,8 @@ namespace AppManager {
         bool acces_gsm = false;        // messages, calls
     };
 
-    class App {
+    class App
+    {
       public:
         App(const std::string& name, const storage::Path& path, const storage::Path& manifest,
             bool auth);
@@ -89,7 +92,8 @@ namespace AppManager {
 
         std::string errors; // errors pushed from the app
 
-        enum AppState { // app state
+        enum AppState
+        { // app state
             RUNNING,
             RUNNING_BACKGROUND,
             SLEEPING,
@@ -110,7 +114,8 @@ namespace AppManager {
                                 // been triggered, should be turned off in the main loop
 
     // keyboard management
-    namespace Keyboard_manager {
+    namespace Keyboard_manager
+    {
         void open(
             App* app, const std::string& placeholder, const std::string& defaultText,
             std::function<void(std::string)> callback

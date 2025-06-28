@@ -4,16 +4,21 @@
 #include <libsystem.hpp>
 #include <standby.hpp>
 
-namespace AppManager {
+namespace AppManager
+{
     App::App(
         const std::string& name, const storage::Path& path, const storage::Path& manifest,
         const bool auth
     ) :
         name(name), fullName(name), path(path), manifest(manifest), auth(auth),
-        luaInstance(nullptr), app_state(NOT_RUNNING), background(false) {}
+        luaInstance(nullptr), app_state(NOT_RUNNING), background(false)
+    {
+    }
 
-    void App::run(const std::vector<std::string>& parameters) {
-        if (!auth) {
+    void App::run(const std::vector<std::string>& parameters)
+    {
+        if (!auth)
+        {
             requestAuth();
 
             if (!auth) return;
@@ -30,8 +35,10 @@ namespace AppManager {
         luaInstance->run(parameters);
     }
 
-    void App::wakeup() {
-        if (app_state == NOT_RUNNING) {
+    void App::wakeup()
+    {
+        if (app_state == NOT_RUNNING)
+        {
             std::cerr << "Error: App is not running" << std::endl;
             return;
         }
@@ -40,26 +47,32 @@ namespace AppManager {
         luaInstance->wakeup();
     }
 
-    void App::sleep() {
+    void App::sleep()
+    {
         app_state = SLEEPING;
     }
 
-    bool App::isRunning() const {
+    bool App::isRunning() const
+    {
         return this->luaInstance != nullptr;
     }
 
-    bool App::isLoaded() const {
+    bool App::isLoaded() const
+    {
         return app_state != NOT_RUNNING;
     }
 
-    bool App::isVisible() const {
+    bool App::isVisible() const
+    {
         if (!isLoaded()) return false;
 
         return appStack.back() == this;
     }
 
-    void App::kill() {
-        if (luaInstance != nullptr) {
+    void App::kill()
+    {
+        if (luaInstance != nullptr)
+        {
             luaInstance->stop();
             luaInstance.reset(); // delete luaInstance
 
@@ -77,7 +90,8 @@ namespace AppManager {
 
     bool didRequestAuth = false;
 
-    void App::requestAuth() {
+    void App::requestAuth()
+    {
         didRequestAuth = true; // will be turned off in the main loop
         Window win;
 
@@ -99,20 +113,23 @@ namespace AppManager {
 
         // TODO: Add "Cancel" button
 
-        while (true) {
+        while (true)
+        {
             win.updateAll();
             eventHandlerApp.update();
 
             if (hardware::getHomeButton()) break;
 
-            if (btn->isTouched()) {
+            if (btn->isTouched())
+            {
                 AppManager::addPermission(this);
                 break;
             }
         }
     }
 
-    std::string App::toString() const {
+    std::string App::toString() const
+    {
         return "{name = " + name + ", fullName = " + fullName + ", path = " + path.str() +
                ", manifest = " + manifest.str() + ", auth = " + std::to_string(auth) +
                ", state = " + std::to_string(app_state) + "}";
@@ -133,12 +150,15 @@ namespace AppManager {
     int pushError(
         lua_State* L, sol::optional<const std::exception&> maybe_exception,
         const sol::string_view description
-    ) {
+    )
+    {
         std::shared_ptr<App> erroredApp;
 
-        for (auto& app : appList) {
+        for (auto& app : appList)
+        {
             // Get the corresponding Lua app
-            if (app->luaInstance->lua.lua_state() == L) {
+            if (app->luaInstance->lua.lua_state() == L)
+            {
                 // Save app
                 erroredApp = app;
 
@@ -181,7 +201,8 @@ namespace AppManager {
         return 0;
     }
 
-    void addPermission(App* app) {
+    void addPermission(App* app)
+    {
         app->auth = true;
 
         storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
@@ -200,7 +221,8 @@ namespace AppManager {
         nman.close();
     }
 
-    void loadDir(const storage::Path& directory, bool root = false, std::string prefix = "") {
+    void loadDir(const storage::Path& directory, bool root = false, std::string prefix = "")
+    {
         std::vector<std::string> dirs = storage::Path(directory).listdir();
 
         storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
@@ -209,7 +231,8 @@ namespace AppManager {
 
         // libsystem::log("auth.list : " + allowedFiles);
 
-        for (auto dir : dirs) {
+        for (auto dir : dirs)
+        {
             auto appPath = storage::Path(directory) / dir;
             // libsystem::log("Loading app at \"" + appPath.str() + "\".");
 
@@ -219,7 +242,8 @@ namespace AppManager {
             std::string manifestContent = manifestStream.read();
             manifestStream.close();
 
-            if (!nlohmann::json::accept(manifestContent)) {
+            if (!nlohmann::json::accept(manifestContent))
+            {
                 std::cerr << "Error: invalid manifest at \"" << manifestPath.str() << "\""
                           << std::endl;
                 continue;
@@ -234,21 +258,26 @@ namespace AppManager {
 
             std::cout << "path: " << appPath.str() << std::endl;
 
-            if (root) {
+            if (root)
+            {
                 app = std::make_shared<App>(
                     dir,
                     directory / dir / "app.lua",
                     directory / dir / "manifest.json",
                     true
                 );
-            } else if (allowedFiles.find((appPath / "app.lua").str() + "\n") != std::string::npos) {
+            }
+            else if (allowedFiles.find((appPath / "app.lua").str() + "\n") != std::string::npos)
+            {
                 app = std::make_shared<App>(
                     dir,
                     storage::Path(directory) / dir / "app.lua",
                     storage::Path(PERMS_DIR) / (fullname + ".json"),
                     true
                 );
-            } else {
+            }
+            else
+            {
                 app = std::make_shared<App>(
                     dir,
                     storage::Path(directory) / dir / "app.lua",
@@ -270,9 +299,12 @@ namespace AppManager {
 
             if (manifest["subdir"].is_string()) // todo, restrict only for subdirs
             {
-                if ((app.get()->path / "../" / manifest["subdir"]).exists()) {
+                if ((app.get()->path / "../" / manifest["subdir"]).exists())
+                {
                     loadDir(app.get()->path / "../" / manifest["subdir"], root, app->fullName);
-                } else {
+                }
+                else
+                {
                     std::cerr << "Error: subdir \""
                               << (app.get()->path / "../" / manifest["subdir"]).str()
                               << "\" does not exist" << std::endl;
@@ -281,29 +313,34 @@ namespace AppManager {
 
             appList.push_back(app);
 
-            if (manifest["autorun"].is_boolean()) {
+            if (manifest["autorun"].is_boolean())
+            {
                 if (manifest["autorun"] && app->background) app.get()->run();
             }
         }
     }
 
-    void init() {
+    void init()
+    {
         loadDir(storage::Path(APP_DIR));
         loadDir(storage::Path(SYSTEM_APP_DIR), true);
     }
 
-    void loop() {
+    void loop()
+    {
         updateForeground();
         updateBackground();
     }
 
-    void updateForeground() {
+    void updateForeground()
+    {
         // printf("lock\n");
         threadsync.lock();
         // printf("locked\n");
 
         // Run tick on every app
-        for (const auto& app : appList) {
+        for (const auto& app : appList)
+        {
             if (app->background == false) // app is not in background
             {
                 if (app->isRunning()) app->luaInstance->loop();
@@ -311,10 +348,12 @@ namespace AppManager {
         }
 
         // Update foreground app GUI
-        if (!appStack.empty()) {
+        if (!appStack.empty())
+        {
             App* app = appStack.back();
 
-            if (app->luaInstance != nullptr) {
+            if (app->luaInstance != nullptr)
+            {
                 // printf("-- 1\n");
                 if (app == Keyboard_manager::app)
                     Keyboard_manager::update();
@@ -331,11 +370,13 @@ namespace AppManager {
         // printf("-- 3");
     }
 
-    void updateBackground() {
+    void updateBackground()
+    {
         threadsync.lock();
 
         // Run tick on every app
-        for (const auto& app : appList) {
+        for (const auto& app : appList)
+        {
             if (app->background == true) // app is in background
             {
                 if (app->isRunning()) // app is running
@@ -346,7 +387,8 @@ namespace AppManager {
         threadsync.unlock();
     }
 
-    void quitApp() {
+    void quitApp()
+    {
         if (appStack.empty())
             throw libsystem::exceptions::RuntimeError("Cannot quit an app if no app is running.");
 
@@ -357,11 +399,13 @@ namespace AppManager {
         app->kill();
     }
 
-    bool isAnyVisibleApp() {
+    bool isAnyVisibleApp()
+    {
         return !appStack.empty();
     }
 
-    std::shared_ptr<App> get(const std::string& appName) {
+    std::shared_ptr<App> get(const std::string& appName)
+    {
         for (const auto& app : AppManager::appList)
             if (app->fullName == appName) return app;
 
@@ -369,24 +413,31 @@ namespace AppManager {
         return nullptr;
     }
 
-    std::shared_ptr<App> get(const uint8_t index) {
+    std::shared_ptr<App> get(const uint8_t index)
+    {
         if (index < appList.size()) return appList[index];
         libsystem::log("App index out of range");
         return nullptr;
     }
 
-    std::shared_ptr<App> get(const lua_State* L) {
+    std::shared_ptr<App> get(const lua_State* L)
+    {
         for (const auto& app : appList)
             if (app->luaInstance != nullptr && app->luaInstance->lua.lua_state() == L) return app;
         libsystem::log("App not found for given lua_State instance");
         return nullptr;
     }
 
-    std::shared_ptr<App> get(sol::state* L) {
-        const auto it =
-            std::find_if(appList.begin(), appList.end(), [L](const std::shared_ptr<App>& app) {
+    std::shared_ptr<App> get(sol::state* L)
+    {
+        const auto it = std::find_if(
+            appList.begin(),
+            appList.end(),
+            [L](const std::shared_ptr<App>& app)
+            {
                 return &app->luaInstance->lua == L;
-            });
+            }
+        );
 
         if (it != appList.end()) return *it;
 
@@ -394,15 +445,21 @@ namespace AppManager {
         return nullptr;
     }
 
-    App* get(const LuaFile* luaInstance) {
+    App* get(const LuaFile* luaInstance)
+    {
         return luaInstance->app;
     }
 
-    std::shared_ptr<App> get(storage::Path path) {
-        const auto it =
-            std::find_if(appList.begin(), appList.end(), [&path](const std::shared_ptr<App>& app) {
+    std::shared_ptr<App> get(storage::Path path)
+    {
+        const auto it = std::find_if(
+            appList.begin(),
+            appList.end(),
+            [&path](const std::shared_ptr<App>& app)
+            {
                 return app->path == path;
-            });
+            }
+        );
 
         if (it != appList.end()) return *it;
 
@@ -410,14 +467,16 @@ namespace AppManager {
         return nullptr;
     }
 
-    void event_oncall() {
+    void event_oncall()
+    {
         threadsync.lock();
         for (auto& app : appList)
             if (app->luaInstance != nullptr && app->isRunning()) app->luaInstance->event_oncall();
         threadsync.unlock();
     }
 
-    void event_onlowbattery() {
+    void event_onlowbattery()
+    {
         threadsync.lock();
         for (auto& app : appList)
             if (app->luaInstance != nullptr && app->isRunning())
@@ -425,7 +484,8 @@ namespace AppManager {
         threadsync.unlock();
     }
 
-    void event_oncharging() {
+    void event_oncharging()
+    {
         threadsync.lock();
         for (auto& app : appList)
             if (app->luaInstance != nullptr && app->isRunning())
@@ -433,7 +493,8 @@ namespace AppManager {
         threadsync.unlock();
     }
 
-    void event_onmessage() {
+    void event_onmessage()
+    {
         threadsync.lock();
         for (auto& app : appList)
             if (app->luaInstance != nullptr && app->isRunning())
@@ -441,7 +502,8 @@ namespace AppManager {
         threadsync.unlock();
     }
 
-    void event_onmessageerror() {
+    void event_onmessageerror()
+    {
         threadsync.lock();
         for (auto& app : appList)
             if (app->luaInstance != nullptr && app->isRunning())
@@ -449,7 +511,8 @@ namespace AppManager {
         threadsync.unlock();
     }
 
-    namespace Keyboard_manager {
+    namespace Keyboard_manager
+    {
         App* app = nullptr;
         std::function<void(std::string)> callback;
         std::unique_ptr<Keyboard> keyboard;
@@ -457,7 +520,8 @@ namespace AppManager {
         void open(
             App* app, const std::string& placeholder, const std::string& defaultText,
             std::function<void(std::string)> callback
-        ) {
+        )
+        {
             // printf("---- 1\n");
             graphics::setScreenOrientation(graphics::LANDSCAPE);
             // printf("---- 2\n");
@@ -469,14 +533,17 @@ namespace AppManager {
             // printf("---- 4\n");
         }
 
-        void update() {
+        void update()
+        {
             // printf("--- 1\n");
-            if (keyboard != nullptr) {
+            if (keyboard != nullptr)
+            {
                 keyboard->updateAll();
 
                 // printf("--- 2\n");
 
-                if (keyboard->quitting() || hardware::getHomeButton()) {
+                if (keyboard->quitting() || hardware::getHomeButton())
+                {
                     // printf("--- 3\n");
                     close();
                 }
@@ -487,8 +554,10 @@ namespace AppManager {
             // printf("s--- 5\n");
         }
 
-        void close(bool runcallback) {
-            if (keyboard) {
+        void close(bool runcallback)
+        {
+            if (keyboard)
+            {
                 std::string result = keyboard->getText();
                 keyboard.reset();
                 Keyboard_manager::app = nullptr;

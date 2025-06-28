@@ -9,16 +9,25 @@
 #define LABEL_MEDIUM 24
 #define LABEL_BIG 36
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @brief Widget label displays text
      **/
-    class Label final : public ElementBase {
+    class Label final : public ElementBase
+    {
       public:
         Label(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~Label() override;
 
-        enum Alignement { CENTER, LEFT, RIGHT, UP, DOWN };
+        enum Alignement
+        {
+            CENTER,
+            LEFT,
+            RIGHT,
+            UP,
+            DOWN
+        };
 
         void render() override;
 
@@ -40,7 +49,8 @@ namespace gui::elements {
         void setCursorIndex(int16_t cursorIndex);
 
       private:
-        struct ParseDataOutput {
+        struct ParseDataOutput
+        {
             std::vector<std::string> m_lines;
 
             uint16_t m_cursorIndex; // X

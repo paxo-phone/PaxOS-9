@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 
-std::string convert_semi_octet(const std::string& s) {
+std::string convert_semi_octet(const std::string& s)
+{
     std::string o;
-    for (uint32_t i = 0; i < s.size(); i += 2) {
+    for (uint32_t i = 0; i < s.size(); i += 2)
+    {
         o += s[i + 1];
         o += s[i];
     }
@@ -18,12 +20,14 @@ std::string convert_semi_octet(const std::string& s) {
     return o;
 }
 
-std::string decodeGSM7bit(const std::string& encoded) {
+std::string decodeGSM7bit(const std::string& encoded)
+{
     std::string decoded;
     int length = encoded.length() / 2;
     int bitOffset = 0;
 
-    for (int i = 0; i < length; ++i) {
+    for (int i = 0; i < length; ++i)
+    {
         int byteIndex = (i * 7) / 8;
         int shift = bitOffset % 8;
 
@@ -41,9 +45,11 @@ std::string decodeGSM7bit(const std::string& encoded) {
     return decoded;
 }
 
-int hex_to_int(const std::string& s) {
+int hex_to_int(const std::string& s)
+{
     int result = 0;
-    for (char c : s) {
+    for (char c : s)
+    {
         result *= 16;
         if (c >= '0' && c <= '9')
             result += c - '0';
@@ -55,7 +61,8 @@ int hex_to_int(const std::string& s) {
     return result;
 }
 
-int hexCharToInt(char c) {
+int hexCharToInt(char c)
+{
     if (c >= '0' && c <= '9') return c - '0';
     if (c >= 'a' && c <= 'f') return c - 'a' + 10;
     if (c >= 'A' && c <= 'F') return c - 'A' + 10;
@@ -63,20 +70,25 @@ int hexCharToInt(char c) {
 }
 
 // Function to convert a Latin-1 encoded hexadecimal string to a UTF-8 string
-std::string latin1HexToUtf8(const std::string& hexString) {
+std::string latin1HexToUtf8(const std::string& hexString)
+{
     std::ostringstream utf8Stream;
 
-    for (size_t i = 0; i < hexString.length(); i += 2) {
+    for (size_t i = 0; i < hexString.length(); i += 2)
+    {
         // Convert the two hex characters to a byte
         char byte =
             static_cast<char>((hexCharToInt(hexString[i]) << 4) | hexCharToInt(hexString[i + 1]));
 
         // Convert the byte from Latin-1 to UTF-8
         unsigned char ubyte = static_cast<unsigned char>(byte);
-        if (ubyte < 0x80) {
+        if (ubyte < 0x80)
+        {
             // 1-byte UTF-8 (ASCII)
             utf8Stream << byte;
-        } else {
+        }
+        else
+        {
             // 2-byte UTF-8
             utf8Stream << static_cast<char>(0xC0 | (ubyte >> 6));
             utf8Stream << static_cast<char>(0x80 | (ubyte & 0x3F));
@@ -86,9 +98,11 @@ std::string latin1HexToUtf8(const std::string& hexString) {
     return utf8Stream.str();
 }
 
-std::string hex_to_text(const std::string& s) {
+std::string hex_to_text(const std::string& s)
+{
     std::string result;
-    for (size_t i = 0; i < s.length(); i += 2) {
+    for (size_t i = 0; i < s.length(); i += 2)
+    {
         char c = static_cast<char>(hex_to_int(s.substr(i, 2)));
         if (c >= 32 && c < 127)
             result += c;
@@ -98,11 +112,13 @@ std::string hex_to_text(const std::string& s) {
     return result;
 }
 
-bool getBit(uint8_t byte, uint8_t bit) {
+bool getBit(uint8_t byte, uint8_t bit)
+{
     return (byte & (1 << bit)) != 0;
 }
 
-PDU decodePDU(std::string pdu) {
+PDU decodePDU(std::string pdu)
+{
     std::string number;
     std::string text;
     std::string url;
@@ -163,17 +179,24 @@ PDU decodePDU(std::string pdu) {
     PDU_type mode = UNKNOWN;
     bool is_unicode = false;
 
-    if (getBit(DSC, 3) == 0 && getBit(DSC, 2) == 0) {
+    if (getBit(DSC, 3) == 0 && getBit(DSC, 2) == 0)
+    {
         // std::cout << "SMS mode" << std::endl;
         mode = SMS;
-    } else if (getBit(DSC, 3) == 0 && getBit(DSC, 2) == 1) {
+    }
+    else if (getBit(DSC, 3) == 0 && getBit(DSC, 2) == 1)
+    {
         // std::cout << "MMS mode" << std::endl;
         mode = MMS;
-    } else if (getBit(DSC, 3) == 1 && getBit(DSC, 2) == 0) {
+    }
+    else if (getBit(DSC, 3) == 1 && getBit(DSC, 2) == 0)
+    {
         is_unicode = true;
         mode = SMS;
         // std::cout << "SMS mode with unicode" << std::endl;
-    } else {
+    }
+    else
+    {
         // std::cout << "Unknown mode" << std::endl;
     }
     // std::cout << "DSC: " << (int) getBit(DSC, 3) << (int) getBit(DSC, 2) << "
@@ -186,10 +209,12 @@ PDU decodePDU(std::string pdu) {
     std::string Message = pdu.substr(i, Message_length * 2);
     i += Message_length * 2;
 
-    if (mode == SMS) {
+    if (mode == SMS)
+    {
         number = "+" + Adress;
 
-        if (is_unicode) {
+        if (is_unicode)
+        {
             for (int j = 0; j < Message.length(); j += 2)
                 if (Message.substr(j, 2) == "00")
                     Message = Message.substr(0, j) + Message.substr(j + 2);
@@ -197,10 +222,14 @@ PDU decodePDU(std::string pdu) {
             // std::cout << "Message unicode: " << Message << std::endl;
 
             text = latin1HexToUtf8(Message);
-        } else {
+        }
+        else
+        {
             text = decodeGSM7bit(Message);
         }
-    } else {
+    }
+    else
+    {
         Message = hex_to_text(Message);
 
         number = Message.substr(Message.find("+"), Message.find("/") - Message.find("+"));

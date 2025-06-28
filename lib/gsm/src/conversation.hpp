@@ -11,14 +11,17 @@
 #define MESSAGES_NOTIF_LOCATION "apps/messages/unread.txt"
 #define MAX_MESSAGES 40
 
-namespace Conversations {
-    struct Message {
+namespace Conversations
+{
+    struct Message
+    {
         std::string message;
         bool who; // false = myself, true = the other
         std::string date;
     };
 
-    struct Conversation {
+    struct Conversation
+    {
         std::string number;
         std::vector<Message> messages;
     };

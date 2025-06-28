@@ -27,26 +27,31 @@ std::vector<std::string> bootErrors;
 libsystem::DeviceMode deviceMode = libsystem::NORMAL;
 std::shared_ptr<libsystem::FileConfig> systemConfig = nullptr;
 
-class Restart final : public std::exception {
+class Restart final : public std::exception
+{
   public:
     Restart() = default;
 };
 
-void libsystem::init() {
+void libsystem::init()
+{
     systemConfig = std::make_shared<libsystem::FileConfig>(storage::Path("system/config.bfc"));
 }
 
-void libsystem::delay(uint64_t ms) {
+void libsystem::delay(uint64_t ms)
+{
     PaxOS_Delay(ms);
 }
 
-std::string hexToString(const uint32_t hex) {
+std::string hexToString(const uint32_t hex)
+{
     std::stringstream stringStream;
     stringStream << std::hex << hex;
     return stringStream.str();
 }
 
-void libsystem::panic(const std::string& message, const bool restart) {
+void libsystem::panic(const std::string& message, const bool restart)
+{
     setScreenOrientation(graphics::PORTRAIT);
 
 #ifdef ESP_PLATFORM
@@ -126,7 +131,8 @@ void libsystem::panic(const std::string& message, const bool restart) {
     lcd->printf("\n\nThe device will restart in 5 seconds.");
 
     // Vibrate to alert user
-    for (uint8_t i = 0; i < 3; i++) {
+    for (uint8_t i = 0; i < 3; i++)
+    {
         hardware::setVibrator(true);
         delay(100);
         hardware::setVibrator(false);
@@ -149,11 +155,13 @@ void libsystem::panic(const std::string& message, const bool restart) {
     // esp_partition_get_sha256(esp_ota_get_running_partition(), nullptr);
 
     // Wait 5 seconds and check touch
-    for (int i = panicDelay; i > 0; i--) {
+    for (int i = panicDelay; i > 0; i--)
+    {
         TOUCHINFO touchInfo;
         touchController->getSamples(&touchInfo);
 
-        if (!isQRShown && touchInfo.count > 0) {
+        if (!isQRShown && touchInfo.count > 0)
+        {
             lcd->qrcode(
                 qrCodeData.c_str(),
                 screenWidth - qrCodeWidth - 30,
@@ -175,21 +183,25 @@ void libsystem::panic(const std::string& message, const bool restart) {
     if (restart) libsystem::restart(true, 0, true);
 }
 
-void libsystem::log(const std::string& message) {
+void libsystem::log(const std::string& message)
+{
     std::cout << "[LOG] " << message << std::endl;
 }
 
-void libsystem::registerBootError(const std::string& message) {
+void libsystem::registerBootError(const std::string& message)
+{
     bootErrors.emplace_back(message);
 
     log("[Boot Error] " + message);
 }
 
-bool libsystem::hasBootErrors() {
+bool libsystem::hasBootErrors()
+{
     return !bootErrors.empty();
 }
 
-void libsystem::displayBootErrors() {
+void libsystem::displayBootErrors()
+{
     LGFX* lcd = graphics::getLCD();
 
     lcd->setFont(&DejaVu18);
@@ -201,7 +213,8 @@ void libsystem::displayBootErrors() {
     const int32_t fontHeight = lcd->fontHeight();
 
     // Draw every boot errors
-    for (int32_t i = 0; i < bootErrors.size(); i++) {
+    for (int32_t i = 0; i < bootErrors.size(); i++)
+    {
         const std::string& message = bootErrors[i];
 
         lcd->setCursor(
@@ -215,7 +228,8 @@ void libsystem::displayBootErrors() {
     }
 }
 
-void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBacktrace) {
+void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBacktrace)
+{
     if (timeout > 0) delay(timeout);
 
 #ifdef ESP_PLATFORM
@@ -225,10 +239,12 @@ void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBack
 #endif
 }
 
-void libsystem::setDeviceMode(const DeviceMode mode) {
+void libsystem::setDeviceMode(const DeviceMode mode)
+{
     deviceMode = mode;
 
-    switch (mode) {
+    switch (mode)
+    {
     case NORMAL:
         StandbyMode::restorePower();
         graphics::setBrightness(graphics::getBrightness());
@@ -244,64 +260,78 @@ void libsystem::setDeviceMode(const DeviceMode mode) {
     }
 }
 
-libsystem::DeviceMode libsystem::getDeviceMode() {
+libsystem::DeviceMode libsystem::getDeviceMode()
+{
     return deviceMode;
 }
 
-libsystem::FileConfig libsystem::getSystemConfig() {
+libsystem::FileConfig libsystem::getSystemConfig()
+{
     return *systemConfig;
 }
 
 libsystem::exceptions::RuntimeError::RuntimeError(const std::string& message) :
-    runtime_error(message) {
+    runtime_error(message)
+{
     panic(message, false);
 }
 
-libsystem::exceptions::RuntimeError::RuntimeError(const char* message) : runtime_error(message) {
+libsystem::exceptions::RuntimeError::RuntimeError(const char* message) : runtime_error(message)
+{
     panic(message, false);
 }
 
-libsystem::exceptions::OutOfRange::OutOfRange(const std::string& message) : out_of_range(message) {
+libsystem::exceptions::OutOfRange::OutOfRange(const std::string& message) : out_of_range(message)
+{
     panic(message, false);
 }
 
-libsystem::exceptions::OutOfRange::OutOfRange(const char* message) : out_of_range(message) {
+libsystem::exceptions::OutOfRange::OutOfRange(const char* message) : out_of_range(message)
+{
     panic(message, false);
 }
 
 libsystem::exceptions::InvalidArgument::InvalidArgument(const std::string& message) :
-    invalid_argument(message) {
+    invalid_argument(message)
+{
     panic(message, false);
 }
 
 libsystem::exceptions::InvalidArgument::InvalidArgument(const char* message) :
-    invalid_argument(message) {
+    invalid_argument(message)
+{
     panic(message, false);
 }
 
-void libsystem::paxoConfig::setBrightness(int16_t brightness, bool save) {
+void libsystem::paxoConfig::setBrightness(int16_t brightness, bool save)
+{
     graphics::setBrightness(brightness);
-    if (save) {
+    if (save)
+    {
         systemConfig.get()->set<uint8_t>("settings.brightness", brightness);
         systemConfig.get()->write();
     }
 }
 
-uint8_t libsystem::paxoConfig::getBrightness() {
+uint8_t libsystem::paxoConfig::getBrightness()
+{
     if (systemConfig.get()->has("settings.brightness"))
         return systemConfig.get()->get<uint8_t>("settings.brightness");
     return 0;
 }
 
-void libsystem::paxoConfig::setStandBySleepTime(uint64_t os_millis, bool save) {
+void libsystem::paxoConfig::setStandBySleepTime(uint64_t os_millis, bool save)
+{
     StandbyMode::setSleepTime(os_millis);
-    if (save) {
+    if (save)
+    {
         systemConfig.get()->set<uint64_t>("settings.sleeptime", os_millis);
         systemConfig.get()->write();
     }
 }
 
-uint64_t libsystem::paxoConfig::getStandBySleepTime() {
+uint64_t libsystem::paxoConfig::getStandBySleepTime()
+{
     if (systemConfig.get()->has("settings.sleeptime"))
         return systemConfig.get()->get<uint64_t>("settings.sleeptime");
     return 0;
@@ -309,11 +339,13 @@ uint64_t libsystem::paxoConfig::getStandBySleepTime() {
     //    return StandbyMode::getSleepTime();
 }
 
-std::string libsystem::paxoConfig::getOSVersion() {
+std::string libsystem::paxoConfig::getOSVersion()
+{
     return OS_VERSION;
 }
 
-std::vector<std::string> libsystem::paxoConfig::getAvailableWifiSSID() {
+std::vector<std::string> libsystem::paxoConfig::getAvailableWifiSSID()
+{
 
     std::vector<std::string> lstSSID;
     lstSSID.push_back("Wifi 1");
@@ -325,39 +357,46 @@ std::vector<std::string> libsystem::paxoConfig::getAvailableWifiSSID() {
     return lstSSID;
 }
 
-std::string libsystem::paxoConfig::getConnectedWifi() {
+std::string libsystem::paxoConfig::getConnectedWifi()
+{
     return "Wifi 4";
 }
 
-bool libsystem::paxoConfig::connectWifi(std::string SSID, std::string passwd) {
+bool libsystem::paxoConfig::connectWifi(std::string SSID, std::string passwd)
+{
     return true;
 }
 
-color_t libsystem::paxoConfig::getBackgroundColor() {
+color_t libsystem::paxoConfig::getBackgroundColor()
+{
     if (systemConfig.get()->has("settings.color.background"))
         return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.background"));
     else
         return COLOR_WHITE;
 }
 
-color_t libsystem::paxoConfig::getTextColor() {
+color_t libsystem::paxoConfig::getTextColor()
+{
     if (systemConfig.get()->has("settings.color.text"))
         return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.text"));
     else
         return COLOR_BLACK;
 }
 
-color_t libsystem::paxoConfig::getBorderColor() {
+color_t libsystem::paxoConfig::getBorderColor()
+{
     if (systemConfig.get()->has("settings.color.border"))
         return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.border"));
     else
         return COLOR_BLACK;
 }
 
-void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save) {
+void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save)
+{
     COLOR_WHITE = color;
     std::cout << COLOR_WHITE << std::endl;
-    if (save) {
+    if (save)
+    {
         systemConfig.get()->set<uint16_t>(
             "settings.color.background",
             static_cast<uint16_t>(color)
@@ -371,8 +410,10 @@ void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save) {
  *
  * @param color
  */
-void libsystem::paxoConfig::setTextColor(color_t color, bool save) {
-    if (save) {
+void libsystem::paxoConfig::setTextColor(color_t color, bool save)
+{
+    if (save)
+    {
         systemConfig.get()->set<uint16_t>("settings.color.text", static_cast<uint16_t>(color));
         systemConfig.get()->write();
     }
@@ -383,8 +424,10 @@ void libsystem::paxoConfig::setTextColor(color_t color, bool save) {
  *
  * @param color
  */
-void libsystem::paxoConfig::setBorderColor(color_t color, bool save) {
-    if (save) {
+void libsystem::paxoConfig::setBorderColor(color_t color, bool save)
+{
+    if (save)
+    {
         systemConfig.get()->set<uint16_t>("settings.color.border", static_cast<uint16_t>(color));
         systemConfig.get()->write();
     }

@@ -5,7 +5,8 @@
 #include <string>
 #include <unordered_map>
 
-namespace serialcom {
+namespace serialcom
+{
     const size_t COMMAND_HEADER_SIZE = 3; // 0xFF, 0xFE, 0xFD
     const size_t COMMAND_ID_SIZE = 8;
     const size_t MAX_COMMMAND_TYPE_SIZE = 16;
@@ -15,8 +16,10 @@ namespace serialcom {
                                       MAX_COMMMAND_TYPE_SIZE +
                                       MAX_COMMAND_ARGUMENTS_COUNT * MAX_ARGUMENT_SIZE;
 
-    struct Command {
-        enum class CommandType {
+    struct Command
+    {
+        enum class CommandType
+        {
             sm,
             console,
 

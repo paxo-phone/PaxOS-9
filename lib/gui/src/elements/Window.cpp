@@ -9,8 +9,10 @@
 #include <cstdio>
 #include <graphics.hpp>
 
-namespace gui::elements {
-    Window::Window() {
+namespace gui::elements
+{
+    Window::Window()
+    {
         m_x = 0;
         m_y = 0;
         m_width = graphics::getScreenWidth();
@@ -20,11 +22,13 @@ namespace gui::elements {
         windows.push_back(this);
     }
 
-    Window::~Window() {
+    Window::~Window()
+    {
         windows.erase(std::remove(windows.begin(), windows.end(), this), windows.end());
     }
 
-    void Window::render() {
+    void Window::render()
+    {
         m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
     }
 

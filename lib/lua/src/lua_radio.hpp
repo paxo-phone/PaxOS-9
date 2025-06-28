@@ -3,14 +3,17 @@
 
 #include "lua_widget.hpp"
 
-class LuaRadio : public LuaWidget {
+class LuaRadio : public LuaWidget
+{
   public:
     LuaRadio(LuaWidget* parent, int x, int y);
 
-    void setState(bool state) {
+    void setState(bool state)
+    {
         widget->setState(state);
     }
-    bool getState() {
+    bool getState()
+    {
         return widget->getState();
     }
 

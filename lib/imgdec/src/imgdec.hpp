@@ -8,11 +8,19 @@
 #include <cstdint>
 #include <path.hpp>
 
-namespace imgdec {
-    enum IMGType { ERROR, BMP, PNG, JPG };
+namespace imgdec
+{
+    enum IMGType
+    {
+        ERROR,
+        BMP,
+        PNG,
+        JPG
+    };
 
     typedef struct IMGData IMGData;
-    struct IMGData {
+    struct IMGData
+    {
         IMGType type = ERROR;
 
         uint32_t width = -1;

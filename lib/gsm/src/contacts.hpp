@@ -6,8 +6,10 @@
 
 #define CONTACTS_LOCATION "/apps/contacts"
 
-namespace Contacts {
-    struct contact {
+namespace Contacts
+{
+    struct contact
+    {
         std::string name;
         std::string phone;
     };

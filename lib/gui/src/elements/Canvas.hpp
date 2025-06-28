@@ -5,12 +5,14 @@
 
 #include <filestream.hpp>
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @brief It is a simple virtual screen where you can draw pixels or shapes as
      *you want. Useful for games or custom widgets
      **/
-    class Canvas final : public ElementBase {
+    class Canvas final : public ElementBase
+    {
       public:
         typedef std::pair<int16_t, int16_t> point_t;
 

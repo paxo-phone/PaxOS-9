@@ -6,7 +6,8 @@
 
 using namespace serialcom;
 
-TEST(Commands, CONSOLE_COMMAND) {
+TEST(Commands, CONSOLE_COMMAND)
+{
     SerialManager::sharedInstance->changeConsoleLockTo(false);
 
     testCommand("console lock", true, Command::CommandType::console, CONSOLE_LOCKED);

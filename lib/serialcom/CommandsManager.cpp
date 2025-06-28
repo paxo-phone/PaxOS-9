@@ -6,12 +6,15 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace serialcom {
+namespace serialcom
+{
     const std::shared_ptr<CommandsManager> CommandsManager::defaultInstance =
         std::make_shared<CommandsManager>();
 
-    void CommandsManager::processCommand(const Command& command) {
-        switch (command.type) {
+    void CommandsManager::processCommand(const Command& command)
+    {
+        switch (command.type)
+        {
         case Command::CommandType::sm:
             processSMCommand(command);
             break;
@@ -65,9 +68,12 @@ namespace serialcom {
             processLteCommand(command);
             break; */
         default:
-            if (this->shellMode) {
+            if (this->shellMode)
+            {
                 SerialManager::sharedInstance->commandLog("Unknown command type");
-            } else {
+            }
+            else
+            {
                 SerialManager::sharedInstance->commandLog(
                     NON_SHELL_MODE_ERROR_CODE + std::string("Unknown command type")
                 );

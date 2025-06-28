@@ -10,11 +10,13 @@
 // a la liste des programes a executer et quitte. et le thread app l'éxécute
 // immédiatement.
 
-namespace AppManager {
+namespace AppManager
+{
     class App;
 }
 
-namespace applications::launcher {
+namespace applications::launcher
+{
     void init(); // load the launcher
     void free(); // free the launcher
 

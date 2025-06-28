@@ -4,7 +4,8 @@
 #include "clock.hpp"
 #include "vibrator.hpp"
 
-namespace hardware {
+namespace hardware
+{
     void init();
 
     void setScreenPower(bool power);
@@ -12,7 +13,8 @@ namespace hardware {
     bool getHomeButton();
 
     // https://www.arduino.cc/reference/en/language/functions/communication/wire/endtransmission/
-    enum I2CResponse {
+    enum I2CResponse
+    {
         SUCCESS = 0,
         ERROR_DATA_TOO_LONG = 1,
         ERROR_NACK_ADDRESS = 2,
@@ -29,12 +31,21 @@ namespace hardware {
     /**
      * Namespace managing every hardware input on the PaxoPhone.
      */
-    namespace input {
-        enum Button { HOME };
+    namespace input
+    {
+        enum Button
+        {
+            HOME
+        };
 
-        enum ButtonState { PRESSED, RELEASED };
+        enum ButtonState
+        {
+            PRESSED,
+            RELEASED
+        };
 
-        struct InputFrame {
+        struct InputFrame
+        {
             ButtonState homeButtonState = RELEASED;
         };
 

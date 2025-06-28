@@ -9,7 +9,8 @@ extern EventHandler eventHandlerApp;
 #define CORE_APP 1
 #define CORE_BACK 0
 
-namespace ThreadManager {
+namespace ThreadManager
+{
     void init();
     void new_thread(bool core, void (*func)(void*), int stackSize = 10000);
 

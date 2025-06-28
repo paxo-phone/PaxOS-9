@@ -8,8 +8,10 @@
 #include <shared_mutex>
 #include <string>
 
-namespace serialcom {
-    class SerialManager {
+namespace serialcom
+{
+    class SerialManager
+    {
       public:
         SerialManager();
         ~SerialManager();
@@ -18,7 +20,8 @@ namespace serialcom {
 
         void changeConsoleLockTo(bool newState);
 
-        bool getConsoleLockState() const {
+        bool getConsoleLockState() const
+        {
             return this->consoleLocked;
         }
 

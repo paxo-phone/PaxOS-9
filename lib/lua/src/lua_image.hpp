@@ -3,7 +3,8 @@
 
 #include "lua_widget.hpp"
 
-class LuaImage : public LuaWidget {
+class LuaImage : public LuaWidget
+{
   public:
     LuaImage(
         LuaWidget* parent, storage::Path path, int x, int y, int width, int height,

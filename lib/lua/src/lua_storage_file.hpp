@@ -5,7 +5,8 @@
 #include <filestream.hpp>
 #include <path.hpp>
 
-class LuaStorageFile {
+class LuaStorageFile
+{
   public:
     LuaStorageFile(storage::Path filename, uint8_t mode = 0);
     ~LuaStorageFile() {}

@@ -14,7 +14,8 @@
 #include <variant>
 #include <vector>
 
-namespace libsystem {
+namespace libsystem
+{
     /**
      * @brief Class to store user preferences in a binary format.
      *
@@ -26,7 +27,8 @@ namespace libsystem {
      *
      * @todo Add lists support.
      */
-    class FileConfig {
+    class FileConfig
+    {
         // Need to match "FileConfig::Type" !
         /**
          * Available types for values.
@@ -60,7 +62,8 @@ namespace libsystem {
          * @param key The key of the value to get.
          * @return The value.
          */
-        template <typename T> [[nodiscard]] T get(const std::string& key) const {
+        template <typename T> [[nodiscard]] T get(const std::string& key) const
+        {
             return std::get<T>(getRaw(key));
         }
 
@@ -71,7 +74,8 @@ namespace libsystem {
          * @param key The key of the value to set.
          * @param value The value to set to.
          */
-        template <typename T> void set(const std::string& key, T value) const {
+        template <typename T> void set(const std::string& key, T value) const
+        {
             setRaw(key, static_cast<T>(value));
         }
 
@@ -82,9 +86,16 @@ namespace libsystem {
         [[nodiscard]] std::string toString() const;
 
       private:
-        enum OpCode { NULL_CODE, PROPERTY, BEGIN_NAMESPACE, END_NAMESPACE };
+        enum OpCode
+        {
+            NULL_CODE,
+            PROPERTY,
+            BEGIN_NAMESPACE,
+            END_NAMESPACE
+        };
 
-        enum Type {
+        enum Type
+        {
             NULL_TYPE,
             UINT8,
             UINT16,
@@ -98,9 +109,13 @@ namespace libsystem {
             LIST
         };
 
-        enum VersionFlag { EMPTY };
+        enum VersionFlag
+        {
+            EMPTY
+        };
 
-        class Node : public std::enable_shared_from_this<Node> {
+        class Node : public std::enable_shared_from_this<Node>
+        {
           public:
             virtual ~Node() = default;
 
@@ -112,7 +127,8 @@ namespace libsystem {
 
         class NamespaceNode;
 
-        class ValueNode final : public Node {
+        class ValueNode final : public Node
+        {
             friend class NamespaceNode;
 
           public:
@@ -135,7 +151,8 @@ namespace libsystem {
             file_config_types_t m_value;
         };
 
-        class NamespaceNode final : public Node {
+        class NamespaceNode final : public Node
+        {
             friend class ValueNode;
 
           public:

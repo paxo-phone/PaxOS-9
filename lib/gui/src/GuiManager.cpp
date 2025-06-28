@@ -7,24 +7,29 @@
 
 GuiManager::GuiManager() {}
 
-GuiManager& GuiManager::getInstance() {
+GuiManager& GuiManager::getInstance()
+{
     static GuiManager instance; // Instanciation unique
     return instance;
 }
 
-gui::elements::Window& GuiManager::getWindow() noexcept {
+gui::elements::Window& GuiManager::getWindow() noexcept
+{
     return win;
 }
 
-int GuiManager::showErrorMessage(const std::string& msg) {
+int GuiManager::showErrorMessage(const std::string& msg)
+{
     return showMessage(ERROR, msg);
 }
 
-int GuiManager::showWarningMessage(const std::string& msg) {
+int GuiManager::showWarningMessage(const std::string& msg)
+{
     return showMessage(WARNING, msg);
 }
 
-int GuiManager::showInfoMessage(const std::string& msg) {
+int GuiManager::showInfoMessage(const std::string& msg)
+{
     return showMessage(INFO, msg);
 }
 
@@ -34,7 +39,8 @@ int GuiManager::showInfoMessage(const std::string& msg) {
  * Méthode interne de création d'une popup de message de type WINDOW_TYPE
  *
  */
-int GuiManager::showMessage(WINDOW_TYPE type, const std::string& msg) {
+int GuiManager::showMessage(WINDOW_TYPE type, const std::string& msg)
+{
     gui::elements::Window popup;
 
     uint16_t color_fond;
@@ -42,7 +48,8 @@ int GuiManager::showMessage(WINDOW_TYPE type, const std::string& msg) {
     uint16_t color_text;
     std::string strTitle;
 
-    switch (type) {
+    switch (type)
+    {
     case INFO:
         color_fond = COLOR_WHITE;
         color_border = COLOR_BLACK;
@@ -87,7 +94,8 @@ int GuiManager::showMessage(WINDOW_TYPE type, const std::string& msg) {
     popup.addChild(msgWindow);
     popup.updateAll();
 
-    while (!hardware::getHomeButton()) {
+    while (!hardware::getHomeButton())
+    {
         popup.updateAll();
         if (btnOK->isTouched()) return 1;
     }

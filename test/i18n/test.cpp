@@ -4,7 +4,8 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-TEST(I18NTest, Translations1) {
+TEST(I18NTest, Translations1)
+{
     i18n::setLang(i18n::FR);
     i18n::setTextDomain("resources/translations_1/base");
 
@@ -34,7 +35,8 @@ TEST(I18NTest, Translations1) {
     EXPECT_EQ(i18n::getLang(), i18n::EN);
 }
 
-TEST(I18NTest, Translations2) {
+TEST(I18NTest, Translations2)
+{
     i18n::setLang(i18n::FR);
     i18n::setTextDomain("resources/translations_2/base");
 

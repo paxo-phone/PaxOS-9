@@ -10,7 +10,8 @@
 #define BUTTON_BLACK 0
 #define BUTTON_WHITE 1
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @brief Clickable widget containing a label or/and an image.
      *
@@ -19,7 +20,8 @@ namespace gui::elements {
      *
      * @todo Move source code to .cpp.
      */
-    class Button final : public ElementBase {
+    class Button final : public ElementBase
+    {
       public:
         Button(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~Button() override;
@@ -32,34 +34,40 @@ namespace gui::elements {
         void onClick();
         void onNotClicked();
 
-        void setBorderColor(color_t color) {
+        void setBorderColor(color_t color)
+        {
             if (m_label == nullptr) return;
 
             m_label->setBorderColor(color);
         }
-        void setFontSize(uint16_t r) {
+        void setFontSize(uint16_t r)
+        {
             if (m_label == nullptr) return;
 
             m_label->setFontSize(r);
         }
 
-        void setBackgroundColor(color_t color) {
+        void setBackgroundColor(color_t color)
+        {
             if (m_label == nullptr) return;
 
             m_label->setBackgroundColor(color);
         }
 
-        void setVerticalAlignment(Label::Alignement alignment) {
+        void setVerticalAlignment(Label::Alignement alignment)
+        {
             if (m_label == nullptr) return;
 
             m_label->setVerticalAlignment(alignment);
         }
-        void setHorizontalAlignment(Label::Alignement alignment) {
+        void setHorizontalAlignment(Label::Alignement alignment)
+        {
             if (m_label == nullptr) return;
 
             m_label->setHorizontalAlignment(alignment);
         }
-        void setTextColor(color_t color) {
+        void setTextColor(color_t color)
+        {
             if (m_label == nullptr) return;
 
             m_label->setTextColor(color);

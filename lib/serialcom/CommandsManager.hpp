@@ -4,8 +4,10 @@
 
 #include <memory>
 
-namespace serialcom {
-    class CommandsManager {
+namespace serialcom
+{
+    class CommandsManager
+    {
       public:
         CommandsManager() = default;
 

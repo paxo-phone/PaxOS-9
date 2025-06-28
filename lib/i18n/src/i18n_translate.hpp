@@ -3,7 +3,8 @@
 
 #include <string>
 
-namespace i18n {
+namespace i18n
+{
 
     void setTextDomain(const std::string& domain);
     std::string getText(const std::string& key);

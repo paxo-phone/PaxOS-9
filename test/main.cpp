@@ -15,10 +15,13 @@
 
 #if ESP_PLATFORM
 
-void setup() {
+void setup()
+{
     ::testing::InitGoogleTest();
 
-    if (RUN_ALL_TESTS()) {}
+    if (RUN_ALL_TESTS())
+    {
+    }
 
     return;
 }
@@ -27,10 +30,13 @@ void loop() {}
 
 #else
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     ::testing::InitGoogleTest(&argc, argv);
 
-    if (RUN_ALL_TESTS()) {}
+    if (RUN_ALL_TESTS())
+    {
+    }
 
     return 0;
 }

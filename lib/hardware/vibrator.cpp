@@ -1,29 +1,37 @@
 #include <gsm2.hpp>
 #include <vibrator.hpp>
 
-namespace hardware {
-    namespace vibrator {
+namespace hardware
+{
+    namespace vibrator
+    {
         std::vector<bool> pattern;
 
-        void play(std::vector<bool> pattern) {
+        void play(std::vector<bool> pattern)
+        {
             vibrator::pattern = pattern;
         }
 
-        bool isPlaying() {
+        bool isPlaying()
+        {
             return pattern.size() > 0;
         }
 
-        void thread(void* data) {
+        void thread(void* data)
+        {
 #ifdef ESP_PLATFORM
-            while (true) {
-                if (Gsm::getCallState() == Gsm::CallState::RINGING) {
+            while (true)
+            {
+                if (Gsm::getCallState() == Gsm::CallState::RINGING)
+                {
                     delay(200);
                     hardware::setVibrator(true);
                     delay(100);
                     hardware::setVibrator(false);
                 }
 
-                if (pattern.size() > 0) {
+                if (pattern.size() > 0)
+                {
                     hardware::setVibrator(pattern[0]);
                     delay(100);
                     pattern.erase(pattern.begin());

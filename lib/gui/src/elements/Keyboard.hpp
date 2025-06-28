@@ -14,8 +14,10 @@
 
 #define OUTPUT_VOCAB_SIZE 27
 
-namespace gui::elements {
-    class Keyboard final : public ElementBase {
+namespace gui::elements
+{
+    class Keyboard final : public ElementBase
+    {
       public:
         explicit Keyboard(const std::string& defaultText = "");
 
@@ -34,7 +36,8 @@ namespace gui::elements {
         /**
          * @deprecated Please use "hasExitKeyBeenPressed()"
          */
-        [[nodiscard]] bool quitting() const {
+        [[nodiscard]] bool quitting() const
+        {
             return m_exit;
         }
 

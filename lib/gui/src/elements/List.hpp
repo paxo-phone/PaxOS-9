@@ -3,12 +3,14 @@
 
 #include "../ElementBase.hpp"
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @brief Can contain a list of elements and is scrollable and is memory
      *efficient
      **/
-    class VerticalList final : public ElementBase {
+    class VerticalList final : public ElementBase
+    {
       public:
         VerticalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~VerticalList() override;
@@ -23,7 +25,12 @@ namespace gui::elements {
         void onScroll(int16_t x, int16_t y);
         void onNotClicked();
 
-        enum SelectionFocus { UP, CENTER, DOWN };
+        enum SelectionFocus
+        {
+            UP,
+            CENTER,
+            DOWN
+        };
 
         void setSelectionFocus(SelectionFocus focus);
         int getFocusedElement();
@@ -45,7 +52,8 @@ namespace gui::elements {
         bool isSelected = false;
     };
 
-    class HorizontalList final : public ElementBase {
+    class HorizontalList final : public ElementBase
+    {
       public:
         HorizontalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~HorizontalList() override;
@@ -60,7 +68,11 @@ namespace gui::elements {
         void onScroll(int16_t x, int16_t y);
         void onNotClicked();
 
-        enum SelectionFocus { LEFT, CENTER };
+        enum SelectionFocus
+        {
+            LEFT,
+            CENTER
+        };
 
         void setSelectionFocus(SelectionFocus focus);
         int getFocusedElement();

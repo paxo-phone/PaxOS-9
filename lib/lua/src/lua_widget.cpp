@@ -3,58 +3,70 @@
 
 LuaWidget* LuaWidget::rootOfDelete = nullptr;
 
-void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent) {
+void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
+{
     widget = obj;
     parent->addChild(this);
 }
 
-LuaWidget::~LuaWidget() {
+LuaWidget::~LuaWidget()
+{
     if (rootOfDelete == nullptr) rootOfDelete = this;
 
     for (LuaWidget* child : children) delete child;
 
-    if (rootOfDelete == this && this->parent != nullptr) {
+    if (rootOfDelete == this && this->parent != nullptr)
+    {
         LuaWidget* widget = this;
         gui::ElementBase* reWidget = widget->widget;
 
         LuaWidget* parent = this->parent;
         gui::ElementBase* reParent = parent->widget;
 
-        for (uint16_t i = 0; i < parent->children.size(); i++) {
-            if (parent->children[i] == widget) {
+        for (uint16_t i = 0; i < parent->children.size(); i++)
+        {
+            if (parent->children[i] == widget)
+            {
                 parent->children.erase(parent->children.begin() + i);
                 break;
             }
         }
 
-        for (uint16_t i = 0; i < reParent->m_children.size(); i++) {
-            if (reParent->m_children[i] == reWidget) {
+        for (uint16_t i = 0; i < reParent->m_children.size(); i++)
+        {
+            if (reParent->m_children[i] == reWidget)
+            {
                 reParent->m_children.erase(reParent->m_children.begin() + i);
                 break;
             }
         }
     }
 
-    for (uint16_t i = 0; i < gui->widgets.size(); i++) {
-        if (gui->widgets[i] == this) {
+    for (uint16_t i = 0; i < gui->widgets.size(); i++)
+    {
+        if (gui->widgets[i] == this)
+        {
             gui->widgets.erase(gui->widgets.begin() + i);
             break;
         }
     }
 
-    if (rootOfDelete == this) {
+    if (rootOfDelete == this)
+    {
         delete this->widget;
         rootOfDelete = nullptr;
     }
     this->widget = nullptr;
 }
 
-void LuaWidget::update() {
+void LuaWidget::update()
+{
     if (this->widget->getParent() == nullptr) this->widget->updateAll();
 
     specificUpdate();
 
-    if (onClickFunc && this->widget->isTouched()) {
+    if (onClickFunc && this->widget->isTouched())
+    {
         std::cout << "[Lua] User Interacted" << std::endl;
 
         /*#ifdef ESP_PLATFORM
@@ -107,7 +119,8 @@ void LuaWidget::update() {
         sol::protected_function_result result = onClickFunc();
 
         // Check for errors
-        if (!result.valid()) {
+        if (!result.valid())
+        {
             sol::error err = result;
             std::cerr << "Lua Error: " << err.what() << std::endl;
         }
@@ -140,12 +153,14 @@ void LuaWidget::update() {
     for (int i = 0; i < this->children.size(); i++) children[i]->update();
 }
 
-void LuaWidget::clear() {
+void LuaWidget::clear()
+{
 
     while (!this->children.empty()) delete this->children[0];
 }
 
-void LuaWidget::addChild(LuaWidget* child) {
+void LuaWidget::addChild(LuaWidget* child)
+{
     this->children.push_back(child);
     child->parent = this;
     this->widget->addChild(child->widget);

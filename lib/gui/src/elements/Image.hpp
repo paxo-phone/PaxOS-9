@@ -5,12 +5,14 @@
 
 #include <path.hpp>
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @brief Widget image: can load an image from a path with a background or not.
      *Support png, jpeg and bmp
      **/
-    class Image final : public ElementBase {
+    class Image final : public ElementBase
+    {
       public:
         Image(
             storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height,

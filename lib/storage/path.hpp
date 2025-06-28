@@ -4,10 +4,12 @@
 #include <string>
 #include <vector>
 
-namespace storage {
+namespace storage
+{
     bool init();
 
-    class Path {
+    class Path
+    {
       public:
         Path(void);
         Path(const std::string& raw);

@@ -3,7 +3,8 @@
 #include <gtest/gtest.h>
 
 // Test pour ajouter des contacts
-TEST(ContactsTest, AddContacts) {
+TEST(ContactsTest, AddContacts)
+{
     Contacts::contact contact1 = {"hello", "12345"};
     Contacts::contact contact2 = {"world", "67890"};
 
@@ -21,7 +22,8 @@ TEST(ContactsTest, AddContacts) {
 }
 
 // Test pour récupérer les contacts
-TEST(ContactsTest, GetContact) {
+TEST(ContactsTest, GetContact)
+{
     Contacts::contact contact = Contacts::getContact("hello");
     ASSERT_EQ(contact.name, "hello");
     ASSERT_EQ(contact.phone, "12345");

@@ -17,7 +17,8 @@
 //*/
 
 /// 独自の設定を行うクラスを、LGFX_Deviceから派生して作成します。
-class LGFX : public lgfx::LGFX_Device {
+class LGFX : public lgfx::LGFX_Device
+{
     /*
      クラス名は"LGFX"から別の名前に変更しても構いません。
      AUTODETECTと併用する場合は"LGFX"は使用されているため、LGFX以外の名前に変更してください。
@@ -79,7 +80,8 @@ class LGFX : public lgfx::LGFX_Device {
   public:
     // コンストラクタを作成し、ここで各種設定を行います。
     // クラス名を変更した場合はコンストラクタも同じ名前を指定してください。
-    LGFX(void) {
+    LGFX(void)
+    {
         {                                      // バス制御の設定を行います。
             auto cfg = _bus_instance.config(); // バス設定用の構造体を取得します。
 

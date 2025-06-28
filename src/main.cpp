@@ -37,7 +37,8 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 
 using namespace gui::elements;
 
-void mainLoop(void* data) {
+void mainLoop(void* data)
+{
     libsystem::log("[STARTUP]: run mainLoop");
 #ifdef ESP_PLATFORM
     if (!backtrace_saver::isBacktraceEmpty()) backtrace_saver::backtraceMessageGUI();
@@ -53,15 +54,19 @@ void mainLoop(void* data) {
     // TODO: Load launcher before OOBE app, to make the experience smoother.
 
     // Check if OOBE app need to be launched
-    if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
+    if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe"))
+    {
         // Launch OOBE app
-        try {
+        try
+        {
             const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
 
             if (oobeApp == nullptr) throw std::runtime_error("OOBE app not found.");
 
             oobeApp->run();
-        } catch (std::runtime_error& e) {
+        }
+        catch (std::runtime_error& e)
+        {
             // std::cerr << "Lua error: " << e.what() << std::endl;
             // guiManager.showErrorMessage(e.what());
             // AppManager::appList[i].kill();
@@ -91,8 +96,10 @@ void mainLoop(void* data) {
             {
                 applications::launcher::init();
                 launcher = true;
-            } else // si launcher -> l'update et peut être lancer une app
-                if (applications::launcher::iconTouched()) {
+            }
+            else // si launcher -> l'update et peut être lancer une app
+                if (applications::launcher::iconTouched())
+                {
                     // run the app
                     const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
 
@@ -101,9 +108,12 @@ void mainLoop(void* data) {
                     launcher = false;
 
                     // Launch the app
-                    try {
+                    try
+                    {
                         app->run();
-                    } catch (std::runtime_error& e) {
+                    }
+                    catch (std::runtime_error& e)
+                    {
                         std::cerr << "Erreur: " << e.what() << std::endl;
                         // Affichage du msg d'erreur
                         guiManager.showErrorMessage(e.what());
@@ -115,25 +125,33 @@ void mainLoop(void* data) {
         {
             while (hardware::getHomeButton());
 
-            if (libsystem::getDeviceMode() == libsystem::SLEEP) {
+            if (libsystem::getDeviceMode() == libsystem::SLEEP)
+            {
                 setDeviceMode(libsystem::NORMAL);
                 StandbyMode::disable();
 
 #ifndef ESP_PLATFORM
                 applications::launcher::draw();
 #endif
-            } else if (launcher && !AppManager::didRequestAuth) {
+            }
+            else if (launcher && !AppManager::didRequestAuth)
+            {
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
                 continue;
-            } else if (AppManager::isAnyVisibleApp()) {
+            }
+            else if (AppManager::isAnyVisibleApp())
+            {
                 AppManager::quitApp();
-            } else if (AppManager::didRequestAuth) {
+            }
+            else if (AppManager::didRequestAuth)
+            {
                 AppManager::didRequestAuth = false;
             }
         }
 
-        if (libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp()) {
+        if (libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
+        {
             setDeviceMode(libsystem::NORMAL);
             StandbyMode::disable();
         }
@@ -167,7 +185,8 @@ void mainLoop(void* data) {
     }
 }
 
-void init(void* data) {
+void init(void* data)
+{
 /**
  * Initialisation du hardware, de l'écran, lecture des applications stcokées
  * dans storage
@@ -181,7 +200,8 @@ void init(void* data) {
 
     // Init graphics and check for errors
     if (const graphics::GraphicsInitCode graphicsInitCode = graphics::init();
-        graphicsInitCode != graphics::SUCCESS) {
+        graphicsInitCode != graphics::SUCCESS)
+    {
         libsystem::registerBootError("Graphics initialization error.");
 
         if (graphicsInitCode == graphics::ERROR_NO_TOUCHSCREEN)
@@ -211,10 +231,13 @@ void init(void* data) {
     }*/
 
     // Init storage and check for errors
-    if (!storage::init()) {
+    if (!storage::init())
+    {
         libsystem::registerBootError("Storage initialization error.");
         libsystem::registerBootError("Please check the SD Card.");
-    } else {
+    }
+    else
+    {
         libsystem::log("[STARTUP]: Storage initialized");
     }
 
@@ -237,12 +260,14 @@ void init(void* data) {
 
     libsystem::log("[STARTUP]: Config loaded");
 
-    if (!systemConfig.has("settings.brightness")) {
+    if (!systemConfig.has("settings.brightness"))
+    {
         systemConfig.set<uint8_t>("settings.brightness", 69);
         systemConfig.write();
     }
 
-    if (!systemConfig.has("settings.sleeptime")) {
+    if (!systemConfig.has("settings.sleeptime"))
+    {
         systemConfig.set<uint64_t>("settings.sleeptime", 30000);
         systemConfig.write();
     }
@@ -264,7 +289,8 @@ void init(void* data) {
     // When everything is initialized
     // Check if errors occurred
     // If so, restart
-    if (libsystem::hasBootErrors()) {
+    if (libsystem::hasBootErrors())
+    {
         libsystem::displayBootErrors();
         libsystem::restart(true, 10000);
     }
@@ -274,22 +300,30 @@ void init(void* data) {
      */
 
     // gestion des appels entrants
-    Gsm::ExternalEvents::onIncommingCall = []() {
+    Gsm::ExternalEvents::onIncommingCall = []()
+    {
         eventHandlerApp.setTimeout(
-            new Callback<>([]() {
-                AppManager::get(".receivecall")->run();
-            }),
+            new Callback<>(
+                []()
+                {
+                    AppManager::get(".receivecall")->run();
+                }
+            ),
             0
         );
     };
 
     // Gestion de la réception d'un message
-    Gsm::ExternalEvents::onNewMessage = []() {
+    Gsm::ExternalEvents::onNewMessage = []()
+    {
 #ifdef ESP_PLATFORM
         eventHandlerBack.setTimeout(
-            new Callback<>([]() {
-                hardware::vibrator::play({1, 0, 1});
-            }),
+            new Callback<>(
+                []()
+                {
+                    hardware::vibrator::play({1, 0, 1});
+                }
+            ),
             0
         );
 #endif
@@ -297,7 +331,8 @@ void init(void* data) {
         AppManager::event_onmessage();
     };
 
-    Gsm::ExternalEvents::onNewMessageError = []() {
+    Gsm::ExternalEvents::onNewMessageError = []()
+    {
         AppManager::event_onmessageerror();
     };
 
@@ -314,9 +349,12 @@ void init(void* data) {
     // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
     eventHandlerApp.setTimeout(
-        new Callback<>([]() {
-            Contacts::load();
-        }),
+        new Callback<>(
+            []()
+            {
+                Contacts::load();
+            }
+        ),
         0
     );
 
@@ -327,7 +365,8 @@ void init(void* data) {
     mainLoop(NULL);
 }
 
-void setup() {
+void setup()
+{
 #ifdef ESP_PLATFORM
     esp_task_wdt_init(5000, true);
 #endif
@@ -340,7 +379,8 @@ void loop() {}
 #ifndef ESP_PLATFORM
 
 // Native main
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     graphics::SDLInit(setup);
 }
 

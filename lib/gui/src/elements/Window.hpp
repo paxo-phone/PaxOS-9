@@ -7,8 +7,10 @@
 
 #include "../ElementBase.hpp"
 
-namespace gui::elements {
-    class Window final : public ElementBase {
+namespace gui::elements
+{
+    class Window final : public ElementBase
+    {
       private:
       public:
         Window();

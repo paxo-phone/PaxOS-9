@@ -23,7 +23,8 @@
 
 #define TICKS_MS 2
 
-namespace StandbyMode {
+namespace StandbyMode
+{
     std::mutex buisy_io;
     uint64_t lastTrigger = os_millis();
     uint64_t lastPowerTrigger = os_millis();
@@ -31,65 +32,79 @@ namespace StandbyMode {
     bool enabled = false;
     bool powerMode = true; // false is low, true is high
 
-    void trigger() {
+    void trigger()
+    {
         if (enabled == true) return;
         lastTrigger = os_millis();
 
         graphics::setBrightness(graphics::getBrightness());
     }
 
-    void triggerPower() {
+    void triggerPower()
+    {
         lastPowerTrigger = os_millis();
 
         if (powerMode == false /* && enabled == false*/) restorePower();
     }
 
-    bool expired() {
+    bool expired()
+    {
         return os_millis() - lastTrigger > sleepTime;
     }
 
-    void reset() {
+    void reset()
+    {
         lastTrigger = os_millis();
     }
 
-    void update() {
-        if (Gsm::CallState() != Gsm::CallState::IDLE) {
+    void update()
+    {
+        if (Gsm::CallState() != Gsm::CallState::IDLE)
+        {
             trigger();
             lastTrigger = os_millis();
             return;
         }
 
-        if (!enabled && os_millis() - lastTrigger > sleepTime - 10000) {
+        if (!enabled && os_millis() - lastTrigger > sleepTime - 10000)
+        {
             // Dim screen
             graphics::setBrightness(graphics::getBrightness() / 3 + 3, true);
         }
 
-        if (os_millis() - lastPowerTrigger > 5000) {
-            if (powerMode == true) {
+        if (os_millis() - lastPowerTrigger > 5000)
+        {
+            if (powerMode == true)
+            {
                 // savePower();
             }
         }
     }
 
-    void setSleepTime(uint64_t sleepTime) {
+    void setSleepTime(uint64_t sleepTime)
+    {
         StandbyMode::sleepTime = sleepTime;
     }
 
-    bool state() {
+    bool state()
+    {
         return enabled;
     }
 
-    void enable() {
+    void enable()
+    {
         enabled = true;
         lastTrigger = os_millis();
     }
 
-    void disable() {
+    void disable()
+    {
         enabled = false;
         lastTrigger = os_millis();
     }
 
-    void savePower() {
+    void savePower()
+    {
         /*printf("Save Power --------------------------------------------\n");
         //buisy_io.lock();
         //portDISABLE_INTERRUPTS(); // Disable interrupts
@@ -103,7 +118,8 @@ namespace StandbyMode {
         //buisy_io.unlock();*/
     }
 
-    void restorePower() {
+    void restorePower()
+    {
         /*printf("Restore Power --------------------------------------------\n");
         //buisy_io.lock();
         //portDISABLE_INTERRUPTS(); // Disable interrupts
@@ -117,7 +133,8 @@ namespace StandbyMode {
         //buisy_io.unlock();*/
     }
 
-    void lightSleepMillis(unsigned long t) {
+    void lightSleepMillis(unsigned long t)
+    {
 #ifdef ESP_PLATFORM
 
         graphics::getLCD()->waitDMA();
@@ -177,7 +194,8 @@ namespace StandbyMode {
 
         // Optional: Check the wake-up cause
         esp_sleep_wakeup_cause_t wakeup_cause = esp_sleep_get_wakeup_cause();
-        switch (wakeup_cause) {
+        switch (wakeup_cause)
+        {
         case ESP_SLEEP_WAKEUP_TIMER:
             // printf("Wakeup cause: Timer\n");
             break;
@@ -228,28 +246,35 @@ namespace StandbyMode {
 #endif
     }
 
-    void sleepCycle() {
+    void sleepCycle()
+    {
 #ifdef ESP_PLATFORM
 
-        if (hardware::vibrator::isPlaying()) {
+        if (hardware::vibrator::isPlaying())
+        {
             PaxOS_Delay(50);
             return;
         }
 
         std::cout << "Sleep cycle" << std::endl;
-        while (!buisy_io.try_lock()) {
+        while (!buisy_io.try_lock())
+        {
             PaxOS_Delay(1);
-            if (hardware::getHomeButton()) {
+            if (hardware::getHomeButton())
+            {
                 libsystem::setDeviceMode(libsystem::NORMAL);
                 return;
             }
         }
 
-        if (hardware::vibrator::isPlaying()) {
+        if (hardware::vibrator::isPlaying())
+        {
             buisy_io.unlock();
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 100; i++)
+            {
                 PaxOS_Delay(1);
-                if (hardware::getHomeButton()) {
+                if (hardware::getHomeButton())
+                {
                     libsystem::setDeviceMode(libsystem::NORMAL);
                     return;
                 }
@@ -263,7 +288,8 @@ namespace StandbyMode {
 #endif
     }
 
-    void wait() {
+    void wait()
+    {
         // printf("wait begin\n");
         update();
 
@@ -271,7 +297,8 @@ namespace StandbyMode {
 
         uint64_t dt = os_millis() - timer;
 
-        if (dt < TICKS_MS) {
+        if (dt < TICKS_MS)
+        {
             uint64_t tw = TICKS_MS - dt;
 
 #ifdef ESP_PLATFORM
@@ -279,7 +306,8 @@ namespace StandbyMode {
 #else
             SDL_Delay(tw);
 #endif
-        } else
+        }
+        else
 #ifdef ESP_PLATFORM
             vTaskDelay(pdMS_TO_TICKS(1));
 #else

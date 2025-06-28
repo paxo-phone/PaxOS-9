@@ -3,11 +3,13 @@
 
 #include "../ElementBase.hpp"
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @brief Slider widget
      **/
-    class Slider final : public ElementBase {
+    class Slider final : public ElementBase
+    {
       public:
         /**
          * @brief Construct a new Slider object
@@ -117,7 +119,8 @@ namespace gui::elements {
 
         void slide();
         void widgetUpdate();
-        bool hasChanged() {
+        bool hasChanged()
+        {
             return m_hasChanged;
             m_hasChanged = false;
         }

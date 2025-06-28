@@ -8,11 +8,18 @@
 #include <SD.h>
 #endif
 
-namespace storage {
+namespace storage
+{
 
-    enum Mode { READ, WRITE, APPEND };
+    enum Mode
+    {
+        READ,
+        WRITE,
+        APPEND
+    };
 
-    class FileStream {
+    class FileStream
+    {
 
       public:
         FileStream();

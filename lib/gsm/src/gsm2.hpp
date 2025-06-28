@@ -16,7 +16,8 @@ extern const char* daysOfMonth[12];
 #define f_Date(annee, mois) (((mois) <= 2) ? ((annee) - 1) : (annee))
 #define g_Date(mois) (((mois) <= 2) ? ((mois) + 13) : ((mois) + 1))
 
-struct Date {
+struct Date
+{
     int jour;
     int mois;
     long int annee;
@@ -27,16 +28,19 @@ struct Date {
 
 inline long long getCurrentTimestamp();
 
-namespace Gsm {
+namespace Gsm
+{
     // --- Request Structure (Internal Use) ---
-    struct Request {
+    struct Request
+    {
         std::string command;
         std::function<bool(const std::string& response)> callback;
         std::shared_ptr<Request> next = nullptr;
     };
 
     // --- Public Enums ---
-    enum class CallState {
+    enum class CallState
+    {
         IDLE,
         DIALING,
         RINGING,
@@ -44,14 +48,16 @@ namespace Gsm {
         UNKNOWN // Initial or error state
     };
 
-    namespace ExternalEvents {
+    namespace ExternalEvents
+    {
         extern std::function<void(void)> onIncommingCall;
         extern std::function<void(void)> onNewMessage;
         extern std::function<void(void)> onNewMessageError;
     } // namespace ExternalEvents
 
     // --- HTTP Request Structure ---
-    enum class HttpResult {
+    enum class HttpResult
+    {
         OK,
         TIMEOUT,
         BUSY,
@@ -64,13 +70,15 @@ namespace Gsm {
         READ_ERROR
     };
 
-    struct HttpGetCallbacks {
+    struct HttpGetCallbacks
+    {
         std::function<void(HttpResult result)> on_init;
         std::function<void(const std::string_view& data)> on_data;
         std::function<void(void)> on_complete;
     };
 
-    enum class HttpState {
+    enum class HttpState
+    {
         IDLE,
         INITIALIZING,
         ACTION_IN_PROGRESS,
@@ -182,7 +190,8 @@ namespace Gsm {
     // Call state is primarily updated via URCs and call actions
 
     // --- Time Sub-Namespace ---
-    namespace Time {
+    namespace Time
+    {
         // Request network time synchronization
         // Note: Timezone handling is basic; it stores the modem's reported time and
         // offset.

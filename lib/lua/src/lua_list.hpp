@@ -6,7 +6,8 @@
 /**
  * Liste Verticale
  */
-class LuaVerticalList : public LuaWidget {
+class LuaVerticalList : public LuaWidget
+{
   public:
     LuaVerticalList(LuaWidget* parent, int x, int y, int width, int height);
 
@@ -30,7 +31,8 @@ class LuaVerticalList : public LuaWidget {
 /**
  * Liste Horizontale
  */
-class LuaHorizontalList : public LuaWidget {
+class LuaHorizontalList : public LuaWidget
+{
   public:
     LuaHorizontalList(LuaWidget* parent, int x, int y, int width, int height);
 

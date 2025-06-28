@@ -6,12 +6,14 @@
 
 #include <libsystem.hpp>
 
-bool paxolua::system::config::getBool(const std::string& key) {
+bool paxolua::system::config::getBool(const std::string& key)
+{
     libsystem::log("getBool: " + key);
     return libsystem::getSystemConfig().get<bool>(key);
 }
 
-int paxolua::system::config::getInt(const std::string& key) { // convert any number to int
+int paxolua::system::config::getInt(const std::string& key)
+{ // convert any number to int
     libsystem::log("getInt: " + key);
 
     // Get the raw variant type
@@ -19,24 +21,35 @@ int paxolua::system::config::getInt(const std::string& key) { // convert any num
 
     // Use a visitor to return the value as int
     return std::visit(
-        [](auto&& arg) -> int {
+        [](auto&& arg) -> int
+        {
             using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, std::nullptr_t>) {
+            if constexpr (std::is_same_v<T, std::nullptr_t>)
+            {
                 return 0; // Or any default value for nullptr
-            } else if constexpr (std::is_same_v<T, std::string>) {
+            }
+            else if constexpr (std::is_same_v<T, std::string>)
+            {
                 // Attempt string to int conversion, handle errors as needed
-                try {
+                try
+                {
                     return std::stoi(arg);
-                } catch (const std::exception& e) {
+                }
+                catch (const std::exception& e)
+                {
                     libsystem::log("Error converting string to int: " + std::string(e.what()));
                     return 0; // Or any default value on error
                 }
-            } else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
+            }
+            else if constexpr (std::is_same_v<T, std::vector<std::string>>)
+            {
                 // Handle vector of strings (e.g., return size, first element as
                 // int, etc.) For this example, let's return the size of the
                 // vector
                 return arg.size();
-            } else {
+            }
+            else
+            {
                 return static_cast<int>(arg);
             }
         },
@@ -44,37 +57,44 @@ int paxolua::system::config::getInt(const std::string& key) { // convert any num
     );
 }
 
-float paxolua::system::config::getFloat(const std::string& key) {
+float paxolua::system::config::getFloat(const std::string& key)
+{
     libsystem::log("getFloat: " + key);
     return libsystem::getSystemConfig().get<float>(key);
 }
 
-std::string paxolua::system::config::getString(const std::string& key) {
+std::string paxolua::system::config::getString(const std::string& key)
+{
     libsystem::log("getString: " + key);
     return libsystem::getSystemConfig().get<std::string>(key);
 }
 
-void paxolua::system::config::setBool(const std::string& key, const bool value) {
+void paxolua::system::config::setBool(const std::string& key, const bool value)
+{
     libsystem::log("setBool: " + key + ", " + std::to_string(value));
     libsystem::getSystemConfig().set<bool>(key, value);
 }
 
-void paxolua::system::config::setInt(const std::string& key, const int value) {
+void paxolua::system::config::setInt(const std::string& key, const int value)
+{
     libsystem::log("setInt: " + key + ", " + std::to_string(value));
     libsystem::getSystemConfig().set<int>(key, value);
 }
 
-void paxolua::system::config::setFloat(const std::string& key, const float value) {
+void paxolua::system::config::setFloat(const std::string& key, const float value)
+{
     libsystem::log("setFloat: " + key + ", " + std::to_string(value));
     libsystem::getSystemConfig().set<float>(key, value);
 }
 
-void paxolua::system::config::setString(const std::string& key, const std::string& value) {
+void paxolua::system::config::setString(const std::string& key, const std::string& value)
+{
     libsystem::log("setString: " + key + ", " + value);
     libsystem::getSystemConfig().set<std::string>(key, value);
 }
 
-void paxolua::system::config::write() {
+void paxolua::system::config::write()
+{
     libsystem::log("write");
     libsystem::getSystemConfig().write();
 }

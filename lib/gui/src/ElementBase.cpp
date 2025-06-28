@@ -19,7 +19,8 @@ bool gui::ElementBase::wasPressed = false; // if the screen was pressed in the l
 gui::ElementBase::PressedState gui::ElementBase::globalPressedState =
     gui::ElementBase::PressedState::NOT_PRESSED;
 
-void gui::ElementBase::resetStates() {
+void gui::ElementBase::resetStates()
+{
     gui::ElementBase::widgetPressed = nullptr;
     gui::ElementBase::mainWindow = nullptr;
     gui::ElementBase::touchX = -1;
@@ -39,11 +40,13 @@ gui::ElementBase::ElementBase() :
     m_borderColor(COLOR_WHITE), m_borderSize(0), m_borderRadius(0), m_parent(nullptr),
     m_verticalScrollEnabled(false), m_horizontalScrollEnabled(false), m_verticalScroll(0),
     m_horizontalScroll(0), m_isEnabled(true), m_isRendered(false), m_isDrawn(false),
-    m_pressedState(NOT_PRESSED), m_hasEvents(false) {
+    m_pressedState(NOT_PRESSED), m_hasEvents(false)
+{
     // Initialiser d'autres membres si nécessaire dans le constructeur
 }
 
-gui::ElementBase::~ElementBase() {
+gui::ElementBase::~ElementBase()
+{
 
     // force le rafraichisseent sur un delete d'un enfant
     if (m_parent != nullptr) m_parent->localGraphicalUpdate();
@@ -52,18 +55,21 @@ gui::ElementBase::~ElementBase() {
     for (int i = 0; i < m_children.size(); i++)
         if (m_children[i] != nullptr) delete m_children[i];
 
-    if (widgetPressed == this) {
+    if (widgetPressed == this)
+    {
         widgetPressed = nullptr;
         globalPressedState = PressedState::NOT_PRESSED;
     }
 }
 
-void gui::ElementBase::renderAll(bool onScreen) {
+void gui::ElementBase::renderAll(bool onScreen)
+{
     if (!isInside()) return;
 
     if (!m_isEnabled) return;
 
-    if (!m_isRendered) {
+    if (!m_isRendered)
+    {
         StandbyMode::triggerPower();
 
         // Use it to initialize data
@@ -71,11 +77,13 @@ void gui::ElementBase::renderAll(bool onScreen) {
 
         // initialiser le buffer ou le clear
         if (m_surface != nullptr && (m_surface->getWidth() != this->getWidth() ||
-                                     m_surface->getHeight() != this->getHeight())) {
+                                     m_surface->getHeight() != this->getHeight()))
+        {
             m_surface = nullptr;
         }
 
-        if (m_surface == nullptr) {
+        if (m_surface == nullptr)
+        {
             freeRamFor(m_width * m_height, this->getMaster());
             m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
         }
@@ -91,16 +99,19 @@ void gui::ElementBase::renderAll(bool onScreen) {
         postRender();
     }
 
-    if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false)) {
+    if (!m_isDrawn || (m_parent != nullptr && m_parent->m_isRendered == false))
+    {
         StandbyMode::triggerPower();
 
         if (!onScreen) // le parent demande le rendu
         {
             m_parent->m_surface->pushSurface(m_surface.get(), getX(), getY());
-        } else // le parent ne demande pas de rendu ou le parent n'existe pas
+        }
+        else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
 
-            if (m_parent != nullptr) {
+            if (m_parent != nullptr)
+            {
                 graphics::getLCD()->setClipRect(
                     std::max(m_parent->getAbsoluteX(), getAbsoluteX()),
                     std::max(m_parent->getAbsoluteY(), getAbsoluteY()),
@@ -113,7 +124,9 @@ void gui::ElementBase::renderAll(bool onScreen) {
                         getAbsoluteY() + getHeight()
                     ) - std::max(m_parent->getAbsoluteY(), getAbsoluteY())
                 );
-            } else {
+            }
+            else
+            {
                 graphics::getLCD()
                     ->setClipRect(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
             }
@@ -121,7 +134,8 @@ void gui::ElementBase::renderAll(bool onScreen) {
 #if defined(ESP_PLATFORM) && defined(USE_DOUBLE_BUFFERING)
             // swap buffers for double buffering
 
-            if (do_use_double_buffering && false) {
+            if (do_use_double_buffering && false)
+            {
                 if (m_surface.get() == nullptr) return;
 
                 graphics::getLCD()->waitDMA();
@@ -135,8 +149,9 @@ void gui::ElementBase::renderAll(bool onScreen) {
                     lgfx::color_depth_t::rgb565_2Byte,
                     m_surface_for_dma.get()->m_sprite.getPalette()
                 );
-
-            } else {
+            }
+            else
+            {
                 // push the surface to the screen
                 graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
             }
@@ -150,17 +165,21 @@ void gui::ElementBase::renderAll(bool onScreen) {
     }
 }
 
-bool gui::ElementBase::updateAll() {
+bool gui::ElementBase::updateAll()
+{
     if (!m_isEnabled) return false;
 
-    if (!isInside()) {
+    if (!isInside())
+    {
         if (m_surface != nullptr) free();
         return false;
     }
 
-    if (m_parent == nullptr) {
+    if (m_parent == nullptr)
+    {
         // StandbyMode::wait();
-        if (mainWindow != this) {
+        if (mainWindow != this)
+        {
             mainWindow = this;
             this->m_isDrawn = false;
         }
@@ -172,10 +191,12 @@ bool gui::ElementBase::updateAll() {
 
     bool returnV = false;
 
-    for (auto child : m_children) {
+    for (auto child : m_children)
+    {
         if (!child->isEnabled()) continue;
 
-        if (child->updateAll()) {
+        if (child->updateAll())
+        {
             returnV = true; // if child had an event, ignore local events
             break;
         }
@@ -188,7 +209,8 @@ bool gui::ElementBase::updateAll() {
     return returnV;
 }
 
-gui::ElementBase* gui::ElementBase::getHigestXScrollableParent() {
+gui::ElementBase* gui::ElementBase::getHigestXScrollableParent()
+{
     if (m_horizontalScrollEnabled)
         return this;
     else if (m_parent != nullptr)
@@ -197,7 +219,8 @@ gui::ElementBase* gui::ElementBase::getHigestXScrollableParent() {
         return nullptr;
 }
 
-gui::ElementBase* gui::ElementBase::getHigestYScrollableParent() {
+gui::ElementBase* gui::ElementBase::getHigestYScrollableParent()
+{
     if (m_verticalScrollEnabled)
         return this;
     else if (m_parent != nullptr)
@@ -206,7 +229,8 @@ gui::ElementBase* gui::ElementBase::getHigestYScrollableParent() {
         return nullptr;
 }
 
-bool gui::ElementBase::update() {
+bool gui::ElementBase::update()
+{
     // algorithme de mise a jour des interactions tactiles
 
     if (!this->m_isEnabled) return false;
@@ -233,8 +257,10 @@ bool gui::ElementBase::update() {
     // std::cout << "widgetPressed: " << int(widgetPressed != nullptr) <<
     // std::endl;
 
-    if (isScreenTouched) {
-        if (isWidgetTouched && globalPressedState == NOT_PRESSED) {
+    if (isScreenTouched)
+    {
+        if (isWidgetTouched && globalPressedState == NOT_PRESSED)
+        {
             globalPressedState = PRESSED;
             widgetPressed = this;
 
@@ -247,27 +273,37 @@ bool gui::ElementBase::update() {
             onClick();
 
             returnValue = true;
-        } else if (widgetPressed == this) {
+        }
+        else if (widgetPressed == this)
+        {
             bool isScrollingX = abs(m_lastTouchX - touchX) > SCROLL_STEP;
             bool isScrollingY = abs(m_lastTouchY - touchY) > SCROLL_STEP;
             bool isScrolling = isScrollingX || isScrollingY;
 
-            if (isScrollingX) {
+            if (isScrollingX)
+            {
                 gui::ElementBase* nearScrollableObject = getHigestXScrollableParent();
                 globalPressedState = SCROLLX;
 
-                if (nearScrollableObject == this) {
-                    while (m_lastTouchX + SCROLL_STEP < touchX) {
+                if (nearScrollableObject == this)
+                {
+                    while (m_lastTouchX + SCROLL_STEP < touchX)
+                    {
                         onScrollRight();
                         m_lastTouchY += SCROLL_STEP;
                     }
-                    while (m_lastTouchX - SCROLL_STEP > touchX) {
+                    while (m_lastTouchX - SCROLL_STEP > touchX)
+                    {
                         onScrollLeft();
                         m_lastTouchY -= SCROLL_STEP;
                     }
-                } else if (nearScrollableObject == nullptr) {
+                }
+                else if (nearScrollableObject == nullptr)
+                {
                     globalPressedState = LOCKED;
-                } else {
+                }
+                else
+                {
                     widgetPressed = nearScrollableObject;
                 }
 
@@ -277,25 +313,33 @@ bool gui::ElementBase::update() {
                 returnValue = true;
             }
 
-            if (isScrollingY) {
+            if (isScrollingY)
+            {
                 gui::ElementBase* nearScrollableObject = getHigestYScrollableParent();
                 globalPressedState = SCROLLY;
 
-                if (nearScrollableObject == this) {
+                if (nearScrollableObject == this)
+                {
                     onScroll(touchX - m_lastTouchX, touchY - m_lastTouchY);
 
-                    while (m_lastTouchY + SCROLL_STEP < touchY) {
+                    while (m_lastTouchY + SCROLL_STEP < touchY)
+                    {
                         onScrollUp();
                         m_lastTouchY += SCROLL_STEP;
                     }
-                    while (m_lastTouchY - SCROLL_STEP > touchY) {
+                    while (m_lastTouchY - SCROLL_STEP > touchY)
+                    {
                         onScrollDown();
                         m_lastTouchY -= SCROLL_STEP;
                     }
-                } else if (nearScrollableObject == nullptr) {
+                }
+                else if (nearScrollableObject == nullptr)
+                {
                     globalPressedState = LOCKED;
                     this->onNotClicked();
-                } else {
+                }
+                else
+                {
                     widgetPressed = getHigestYScrollableParent();
                     this->onNotClicked();
                 }
@@ -306,10 +350,13 @@ bool gui::ElementBase::update() {
                 returnValue = true;
             }
         }
-    } else {
+    }
+    else
+    {
         onNotClicked();
 
-        if (globalPressedState == PRESSED) {
+        if (globalPressedState == PRESSED)
+        {
             this->m_pressedState = RELEASED;
             lastEventTouchX = originTouchX;
             lastEventTouchY = originTouchY;
@@ -327,100 +374,122 @@ bool gui::ElementBase::update() {
     return returnValue;
 }
 
-void gui::ElementBase::setX(uint16_t x) {
+void gui::ElementBase::setX(uint16_t x)
+{
     m_x = x;
     globalGraphicalUpdate();
 }
 
-void gui::ElementBase::setY(uint16_t y) {
+void gui::ElementBase::setY(uint16_t y)
+{
     m_y = y;
     globalGraphicalUpdate();
 }
 
-void gui::ElementBase::setWidth(uint16_t width) {
+void gui::ElementBase::setWidth(uint16_t width)
+{
     m_width = width;
     globalGraphicalUpdate();
 }
 
-void gui::ElementBase::setHeight(uint16_t height) {
+void gui::ElementBase::setHeight(uint16_t height)
+{
     m_height = height;
     globalGraphicalUpdate();
 }
 
-int16_t gui::ElementBase::getAbsoluteX() const {
+int16_t gui::ElementBase::getAbsoluteX() const
+{
     if (m_parent == nullptr) return getX();
 
     return m_parent->getAbsoluteX() + getX();
 }
 
-int16_t gui::ElementBase::getAbsoluteY() const {
+int16_t gui::ElementBase::getAbsoluteY() const
+{
     if (m_parent == nullptr) return getY();
 
     return m_parent->getAbsoluteY() + getY();
 }
 
-int16_t gui::ElementBase::getX() const {
+int16_t gui::ElementBase::getX() const
+{
     return (int) m_x /* + (m_parent!=nullptr)?(m_parent->m_horizontalScroll):(0)*/;
 }
 
-int16_t gui::ElementBase::getY() const {
+int16_t gui::ElementBase::getY() const
+{
     if (m_parent != nullptr) return m_y - m_parent->m_verticalScroll;
     return m_y;
 }
 
-uint16_t gui::ElementBase::getWidth() const {
+uint16_t gui::ElementBase::getWidth() const
+{
     return m_width;
 }
 
-uint16_t gui::ElementBase::getHeight() const {
+uint16_t gui::ElementBase::getHeight() const
+{
     return m_height;
 }
 
-void gui::ElementBase::setBackgroundColor(const color_t color) {
+void gui::ElementBase::setBackgroundColor(const color_t color)
+{
     m_backgroundColor = color;
     localGraphicalUpdate();
 }
 
-void gui::ElementBase::setBorderColor(const color_t color) {
+void gui::ElementBase::setBorderColor(const color_t color)
+{
     m_borderColor = color;
     localGraphicalUpdate();
 }
 
-void gui::ElementBase::setRadius(uint16_t r) {
+void gui::ElementBase::setRadius(uint16_t r)
+{
     this->m_borderRadius = r;
 }
 
-uint16_t gui::ElementBase::getRadius() const {
+uint16_t gui::ElementBase::getRadius() const
+{
     return m_borderRadius;
 }
 
-void gui::ElementBase::setBorderSize(uint16_t size) {
+void gui::ElementBase::setBorderSize(uint16_t size)
+{
     this->m_borderSize = size;
 }
 
-uint16_t gui::ElementBase::getBorderSize() const {
+uint16_t gui::ElementBase::getBorderSize() const
+{
     return m_borderSize;
 }
 
-color_t gui::ElementBase::getBackgroundColor() const {
+color_t gui::ElementBase::getBackgroundColor() const
+{
     return m_backgroundColor;
 }
 
-color_t gui::ElementBase::getBorderColor() const {
+color_t gui::ElementBase::getBorderColor() const
+{
     return m_borderColor;
 }
 
-bool gui::ElementBase::isTouched() {
+bool gui::ElementBase::isTouched()
+{
     m_hasEvents = true;
-    if (m_pressedState == PressedState::RELEASED) {
+    if (m_pressedState == PressedState::RELEASED)
+    {
         m_pressedState = PressedState::NOT_PRESSED;
         return true;
     }
     return false;
 }
 
-bool gui::ElementBase::isFocused(bool forced) {
-    if (forced) {
+bool gui::ElementBase::isFocused(bool forced)
+{
+    if (forced)
+    {
         return (
             touchX != -1 && touchY != -1 && getAbsoluteX() - 10 < touchX &&
             touchX < getAbsoluteX() + getWidth() + 10 && // l'objet est touché
@@ -431,16 +500,20 @@ bool gui::ElementBase::isFocused(bool forced) {
     return m_pressedState == PressedState::PRESSED;
 }
 
-void gui::ElementBase::enable() {
+void gui::ElementBase::enable()
+{
     setEnabled(true);
 }
 
-void gui::ElementBase::disable() {
+void gui::ElementBase::disable()
+{
     setEnabled(false);
 }
 
-void gui::ElementBase::setEnabled(const bool enabled) {
-    if (isEnabled() == enabled) {
+void gui::ElementBase::setEnabled(const bool enabled)
+{
+    if (isEnabled() == enabled)
+    {
         // Do nothing when already in this state.
         return;
     }
@@ -449,11 +522,13 @@ void gui::ElementBase::setEnabled(const bool enabled) {
     globalGraphicalUpdate();
 }
 
-bool gui::ElementBase::isEnabled() const {
+bool gui::ElementBase::isEnabled() const
+{
     return m_isEnabled;
 }
 
-gui::ElementBase* gui::ElementBase::getMaster() {
+gui::ElementBase* gui::ElementBase::getMaster()
+{
     // We shoud probably remove this function.
     // Because the "Master" widget (and rename it to "main" please)
     // Is for almost every cases the "Screen" widget.
@@ -466,51 +541,59 @@ gui::ElementBase* gui::ElementBase::getMaster() {
     return master;
 }
 
-gui::ElementBase* gui::ElementBase::getParent() const {
+gui::ElementBase* gui::ElementBase::getParent() const
+{
     return m_parent;
 }
 
-void gui::ElementBase::addChild(gui::ElementBase* child) {
+void gui::ElementBase::addChild(gui::ElementBase* child)
+{
     if (child == nullptr) throw libsystem::exceptions::RuntimeError("Child can't be null.");
 
     m_children.push_back(child);
     child->m_parent = this;
 }
 
-std::shared_ptr<graphics::Surface> gui::ElementBase::getAndSetSurface() {
+std::shared_ptr<graphics::Surface> gui::ElementBase::getAndSetSurface()
+{
     if (this->m_surface == nullptr)
         this->m_surface = std::make_shared<graphics::Surface>(this->m_width, this->m_height);
     return this->m_surface;
 }
 
-void gui::ElementBase::localGraphicalUpdate() {
+void gui::ElementBase::localGraphicalUpdate()
+{
     this->m_isDrawn = false;
     this->m_isRendered = false;
 
     if (m_parent != nullptr) setParentNotRendered();
 }
 
-void gui::ElementBase::globalGraphicalUpdate() {
+void gui::ElementBase::globalGraphicalUpdate()
+{
     this->m_isDrawn = false;
     this->m_isRendered = false;
 
     if (this->m_parent != nullptr) setParentNotDrawn();
 }
 
-void gui::ElementBase::setParentNotRendered() {
+void gui::ElementBase::setParentNotRendered()
+{
     if (m_parent != nullptr) m_parent->setParentNotRendered();
 
     this->m_isRendered = false;
 }
 
-void gui::ElementBase::setParentNotDrawn() {
+void gui::ElementBase::setParentNotDrawn()
+{
     if (m_parent != nullptr) m_parent->setParentNotDrawn();
 
     this->m_isDrawn = false;
     this->m_isRendered = false;
 }
 
-void gui::ElementBase::setChildrenDrawn() {
+void gui::ElementBase::setChildrenDrawn()
+{
     m_isDrawn = true;
 
     for (int i = 0; i < m_children.size();
@@ -518,7 +601,8 @@ void gui::ElementBase::setChildrenDrawn() {
         if (m_children[i] != nullptr) m_children[i]->setChildrenDrawn();
 }
 
-void gui::ElementBase::setChildrenNotDrawn() {
+void gui::ElementBase::setChildrenNotDrawn()
+{
     m_isDrawn = false;
 
     for (int i = 0; i < m_children.size();
@@ -533,7 +617,8 @@ void gui::ElementBase::setChildrenNotDrawn() {
  * @see gui::ElementBase::getLastTouchPosRel
  * @see {gui}
  */
-void gui::ElementBase::getLastTouchPosAbs(int16_t* x, int16_t* y) const {
+void gui::ElementBase::getLastTouchPosAbs(int16_t* x, int16_t* y) const
+{
     *x = m_lastTouchX;
     *y = m_lastTouchY;
 }
@@ -545,12 +630,14 @@ void gui::ElementBase::getLastTouchPosAbs(int16_t* x, int16_t* y) const {
  * @see gui::ElementBase::getLastTouchPos
  * @see {gui}
  */
-void gui::ElementBase::getLastTouchPosRel(int16_t* x, int16_t* y) const {
+void gui::ElementBase::getLastTouchPosRel(int16_t* x, int16_t* y) const
+{
     *x = lastEventTouchX - getAbsoluteX();
     *y = lastEventTouchY - getAbsoluteY();
 }
 
-void gui::ElementBase::free() {
+void gui::ElementBase::free()
+{
     if (m_surface != nullptr) m_surface.reset();
 
     setParentNotRendered();
@@ -558,7 +645,8 @@ void gui::ElementBase::free() {
     for (auto child : m_children) child->free();
 }
 
-bool gui::ElementBase::isInside() {
+bool gui::ElementBase::isInside()
+{
     if (m_parent == nullptr) return true;
 
     if (getX() + getWidth() < 0) return false;
@@ -569,15 +657,18 @@ bool gui::ElementBase::isInside() {
     return true;
 }
 
-std::shared_ptr<graphics::Surface> gui::ElementBase::getSurface() {
+std::shared_ptr<graphics::Surface> gui::ElementBase::getSurface()
+{
     return getAndSetSurface();
 }
 
-void gui::ElementBase::forceUpdate() {
+void gui::ElementBase::forceUpdate()
+{
     localGraphicalUpdate();
 }
 
-gui::ElementBase* gui::ElementBase::getElementAt(int index) {
+gui::ElementBase* gui::ElementBase::getElementAt(int index)
+{
 
     if (index >= 0 && index < m_children.size()) return m_children[index];
     return nullptr;
@@ -585,11 +676,13 @@ gui::ElementBase* gui::ElementBase::getElementAt(int index) {
 
 #include "elements/Window.hpp"
 
-void gui::ElementBase::freeRamFor(uint32_t size, ElementBase* window) {
+void gui::ElementBase::freeRamFor(uint32_t size, ElementBase* window)
+{
 #ifdef ESP_PLATFORM
     size_t free = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
 
-    if (free < size + 1000000) {
+    if (free < size + 1000000)
+    {
         std::cout << "Not enough RAM, free : " << free << " need : " << size
                   << "\n     -> will free other windows" << std::endl;
         for (auto i : gui::elements::Window::windows)

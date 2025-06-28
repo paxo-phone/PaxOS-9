@@ -6,7 +6,8 @@
 
 using namespace serialcom;
 
-TEST(Commands, SHELL_MODE_COMMAND) {
+TEST(Commands, SHELL_MODE_COMMAND)
+{
     CommandsManager::defaultInstance->shellMode = true;
 
     testCommand("sm disable", true, Command::CommandType::sm, NON_SHELL_MODE_NO_ERROR_CODE);

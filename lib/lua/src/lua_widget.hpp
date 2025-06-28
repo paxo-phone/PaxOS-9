@@ -8,78 +8,102 @@
 
 class LuaGui;
 
-class LuaWidget {
+class LuaWidget
+{
   public:
     void init(gui::ElementBase* obj, LuaWidget* parent);
-    void init(gui::ElementBase* obj) {
+    void init(gui::ElementBase* obj)
+    {
         widget = obj;
     }
     ~LuaWidget();
 
-    void setX(int x) {
+    void setX(int x)
+    {
         this->widget->setX(x);
     }
-    void setY(int y) {
+    void setY(int y)
+    {
         this->widget->setY(y);
     }
-    void setWidth(int width) {
+    void setWidth(int width)
+    {
         this->widget->setWidth(width);
     }
-    void setHeight(int height) {
+    void setHeight(int height)
+    {
         this->widget->setHeight(height);
     }
-    int getX() {
+    int getX()
+    {
         return this->widget->getX();
     }
-    int getY() {
+    int getY()
+    {
         return this->widget->getY();
     }
-    int getWidth() {
+    int getWidth()
+    {
         return this->widget->getWidth();
     }
-    int getHeight() {
+    int getHeight()
+    {
         return this->widget->getHeight();
     }
-    void setBackgroundColor(color_t color) {
+    void setBackgroundColor(color_t color)
+    {
         this->widget->setBackgroundColor(color);
     }
-    void setBorderColor(color_t color) {
+    void setBorderColor(color_t color)
+    {
         this->widget->setBorderColor(color);
     }
-    void setBorderSize(uint16_t size) {
+    void setBorderSize(uint16_t size)
+    {
         this->widget->setBorderSize(size);
     }
-    void setRadius(uint16_t r) {
+    void setRadius(uint16_t r)
+    {
         this->widget->setRadius(r);
     }
-    void enable() {
+    void enable()
+    {
         this->widget->enable();
     }
-    void disable() {
+    void disable()
+    {
         this->widget->disable();
     }
-    bool isEnabled() {
+    bool isEnabled()
+    {
         return this->widget->isEnabled();
     }
-    bool isTouched() {
+    bool isTouched()
+    {
         return this->widget->isFocused();
     }
-    void onClick(sol::protected_function func) {
+    void onClick(sol::protected_function func)
+    {
         onClickFunc = func;
     }
-    void onScrollUp(sol::protected_function func) {
+    void onScrollUp(sol::protected_function func)
+    {
         onScrollUpFunc = func;
     }
-    void onScrollDown(sol::protected_function func) {
+    void onScrollDown(sol::protected_function func)
+    {
         onScrollDownFunc = func;
     }
-    void onScrollRight(sol::protected_function func) {
+    void onScrollRight(sol::protected_function func)
+    {
         onScrollRightFunc = func;
     }
-    void onScrollLeft(sol::protected_function func) {
+    void onScrollLeft(sol::protected_function func)
+    {
         onScrollLeftFunc = func;
     }
-    LuaWidget* getChildAtIndex(int index) {
+    LuaWidget* getChildAtIndex(int index)
+    {
         return children[index];
     }
     void clear();

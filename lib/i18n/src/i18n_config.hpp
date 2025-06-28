@@ -4,9 +4,11 @@
 #include <cstdint>
 #include <string>
 
-namespace i18n {
+namespace i18n
+{
 
-    enum lang_t : uint8_t {
+    enum lang_t : uint8_t
+    {
         EN, // 0
         FR,
         ES,

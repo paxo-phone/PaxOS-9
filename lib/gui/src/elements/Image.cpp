@@ -5,8 +5,10 @@
 #include <iostream>
 #include <path.hpp>
 
-namespace gui::ImagesList {
-    struct ImageLoaded {
+namespace gui::ImagesList
+{
+    struct ImageLoaded
+    {
         storage::Path path;
         uint16_t width;
         uint16_t height;
@@ -18,11 +20,14 @@ namespace gui::ImagesList {
 
     std::shared_ptr<graphics::Surface> loadImage(
         storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF
-    ) {
+    )
+    {
         // printf("IMG--1\n");
         //  ReSharper disable once CppUseStructuredBinding
-        for (const auto& image : images) {
-            if (image.path.str() == path.str() && image.width == width && image.height == height) {
+        for (const auto& image : images)
+        {
+            if (image.path.str() == path.str() && image.width == width && image.height == height)
+            {
                 // printf("IMG--2\n");
                 return image.surface;
             }
@@ -47,24 +52,31 @@ namespace gui::ImagesList {
         return img.surface;
     }
 
-    void updateImageList() {
-        for (auto img = images.begin(); img != images.end();) {
+    void updateImageList()
+    {
+        for (auto img = images.begin(); img != images.end();)
+        {
             // TODO: Refactor this logic
-            if (img->surface.unique()) {
+            if (img->surface.unique())
+            {
                 img = images.erase(img);
                 // std::cout << "[Image] image deleted" << std::endl;
-            } else {
+            }
+            else
+            {
                 ++img;
             }
         }
     }
 } // namespace gui::ImagesList
 
-namespace gui::elements {
+namespace gui::elements
+{
     Image::Image(
         storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
         color_t backgroundColor
-    ) {
+    )
+    {
         this->m_path = path;
         this->m_x = x;
         this->m_y = y;
@@ -74,16 +86,20 @@ namespace gui::elements {
         this->m_backgroundColor = backgroundColor;
     }
 
-    Image::~Image() {
+    Image::~Image()
+    {
         ImagesList::updateImageList();
     }
 
-    void Image::render() {
+    void Image::render()
+    {
         if (m_isRendered == false) load(m_backgroundColor);
     }
 
-    void Image::setTransparentColor(color_t color) {
-        if (!m_surface) {
+    void Image::setTransparentColor(color_t color)
+    {
+        if (!m_surface)
+        {
             // std::cout << "[Image] m_surface is null";
             load(color);
         }
@@ -91,7 +107,8 @@ namespace gui::elements {
         m_surface->setTransparency(true);
     }
 
-    void Image::load(color_t background) {
+    void Image::load(color_t background)
+    {
         m_surface =
             gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
         localGraphicalUpdate();

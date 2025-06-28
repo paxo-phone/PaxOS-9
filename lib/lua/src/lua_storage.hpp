@@ -8,7 +8,8 @@
 
 class LuaFile;
 
-class LuaStorage {
+class LuaStorage
+{
   public:
     LuaStorage(LuaFile* lua);
 

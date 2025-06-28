@@ -6,7 +6,8 @@
 
 using namespace serialcom;
 
-TEST(Commands, INFO_COMMAND) {
+TEST(Commands, INFO_COMMAND)
+{
     testCommand(
         "info",
         true,

@@ -3,8 +3,10 @@
 
 #include "../ElementBase.hpp"
 
-namespace gui::elements {
-    class Switch final : public ElementBase {
+namespace gui::elements
+{
+    class Switch final : public ElementBase
+    {
       public:
         Switch(uint16_t x, uint16_t y);
         ~Switch() override;

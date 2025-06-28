@@ -15,7 +15,8 @@
  * récupére l'heure du device (ou la locale)
  * et la renvoie au format "DDDD DD MMMM"
  */
-std::string getFormatedDate() {
+std::string getFormatedDate()
+{
     int16_t day_ = Gsm::Time::getDay();
     int16_t day = Gsm::Time::getDay();
     int16_t month = Gsm::Time::getMonth();
@@ -35,7 +36,8 @@ std::string getFormatedDate() {
     return dayName + " " + std::to_string(Gsm::Time::getDay()) + " " + monthName;
 }
 
-std::string getBatteryIconFilename() {
+std::string getBatteryIconFilename()
+{
     const bool isCharging = hardware::isCharging();
     const double batteryLevel =
         Gsm::getBatteryLevel(); // TODO: Replace with actual battery level calculation
@@ -51,7 +53,8 @@ std::string getBatteryIconFilename() {
     return "battery_full";
 }
 
-namespace applications::launcher {
+namespace applications::launcher
+{
     std::shared_ptr<Window> launcherWindow = nullptr;
     std::map<gui::ElementBase*, std::shared_ptr<AppManager::App>> applicationsIconsMap;
     std::shared_ptr<AppManager::App> targetApp = nullptr;
@@ -78,18 +81,21 @@ namespace applications::launcher {
     uint64_t chargingStartTime = 0;
 } // namespace applications::launcher
 
-void applications::launcher::init() {
+void applications::launcher::init()
+{
     launcherWindow = std::make_shared<Window>();
     targetApp = nullptr;
 
     draw();
 }
 
-void applications::launcher::update() {
+void applications::launcher::update()
+{
     {
         static int min;
 
-        if (min != Gsm::Time::getMinute()) {
+        if (min != Gsm::Time::getMinute())
+        {
             clockLabel->setText(
                 std::to_string(Gsm::Time::getHour()) + ":" +
                 (Gsm::Time::getMinute() <= 9 ? "0" : "") + std::to_string(Gsm::Time::getMinute())
@@ -104,7 +110,8 @@ void applications::launcher::update() {
 
     {
         static double lastBattery = Gsm::getBatteryLevel();
-        if (lastBattery != Gsm::getBatteryLevel()) {
+        if (lastBattery != Gsm::getBatteryLevel())
+        {
             batteryLabel->setText(
                 std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%"
             );
@@ -114,12 +121,14 @@ void applications::launcher::update() {
     }
 
     {
-        if (clockLabel->isTouched()) {
+        if (clockLabel->isTouched())
+        {
             flightModeBox->enable();
             clockLabel->disable();
             dateLabel->disable();
         }
-        if (flightModeButton->isTouched()) {
+        if (flightModeButton->isTouched())
+        {
             flightModeBox->disable();
             clockLabel->enable();
             dateLabel->enable();
@@ -130,24 +139,31 @@ void applications::launcher::update() {
 
     // std::cout << "launcher::update 3" << std::endl;
 
-    if (hardware::isCharging()) {
+    if (hardware::isCharging())
+    {
         if (chargingStartTime == 0) chargingStartTime = os_millis();
 
         if (chargingStartTime + 2000 > os_millis())
             chargingPopupBox->enable();
         else
             chargingPopupBox->disable();
-    } else {
+    }
+    else
+    {
         chargingStartTime = 0;
         chargingPopupBox->disable();
     }
 
     {
         static int lastNetwork = Gsm::getNetworkQuality().first;
-        if (lastNetwork != Gsm::getNetworkQuality().first) {
-            if (Gsm::getNetworkQuality().first == 99) {
+        if (lastNetwork != Gsm::getNetworkQuality().first)
+        {
+            if (Gsm::getNetworkQuality().first == 99)
+            {
                 networkLabel->setText("X");
-            } else {
+            }
+            else
+            {
                 networkLabel->setText(
                     std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) + "%"
                 );
@@ -166,7 +182,8 @@ void applications::launcher::update() {
 
     // Check touch events
 
-    if (brightnessSliderBox->isFocused(true)) {
+    if (brightnessSliderBox->isFocused(true))
+    {
         libsystem::log("Brightness: " + graphics::getBrightness());
 
         const int16_t newBrightness = static_cast<int16_t>(
@@ -178,8 +195,10 @@ void applications::launcher::update() {
 
     // printf("after - 2\n");
 
-    for (const auto& [icon, app] : applicationsIconsMap) {
-        if (icon->isTouched()) {
+    for (const auto& [icon, app] : applicationsIconsMap)
+    {
+        if (icon->isTouched())
+        {
             targetApp = nullptr;
             std::cout << "launcher::update - touched: " << app->name << std::endl;
             targetApp = app;
@@ -187,10 +206,12 @@ void applications::launcher::update() {
     }
 }
 
-void applications::launcher::draw() {
+void applications::launcher::draw()
+{
     libsystem::log("applications::launcher::draw");
 
-    if (!launcherWindow) {
+    if (!launcherWindow)
+    {
         std::cout << "launcherWindow not present, aborting draw()" << std::endl;
         return;
     }
@@ -243,9 +264,12 @@ void applications::launcher::draw() {
 
     { // Network
         networkLabel = new Label(2, 2, 30, 18);
-        if (Gsm::getNetworkQuality().first == 99) {
+        if (Gsm::getNetworkQuality().first == 99)
+        {
             networkLabel->setText("X");
-        } else {
+        }
+        else
+        {
             networkLabel->setText(
                 std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) + "%"
             );
@@ -298,8 +322,10 @@ void applications::launcher::draw() {
     // Placement des app dans l'écran
     int placementIndex = 0;
 
-    for (const auto& app : AppManager::appList) {
-        if (!app->visible) {
+    for (const auto& app : AppManager::appList)
+    {
+        if (!app->visible)
+        {
             // If an app is not visible (AKA. Background app)
             // Skip it
 
@@ -365,18 +391,22 @@ void applications::launcher::draw() {
     libsystem::log("end applications::launcher::draw");
 }
 
-bool applications::launcher::iconTouched() {
+bool applications::launcher::iconTouched()
+{
     return targetApp != nullptr;
 }
 
-std::shared_ptr<AppManager::App> applications::launcher::getApp() {
+std::shared_ptr<AppManager::App> applications::launcher::getApp()
+{
     return targetApp;
 }
 
-void applications::launcher::free() {
+void applications::launcher::free()
+{
     if (!allocated) return;
 
-    if (launcherWindow != nullptr) {
+    if (launcherWindow != nullptr)
+    {
         launcherWindow->free();
         launcherWindow.reset();
         launcherWindow = nullptr;

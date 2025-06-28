@@ -4,7 +4,8 @@
 #include <mutex>
 #include <stdint.h>
 
-namespace StandbyMode {
+namespace StandbyMode
+{
     void trigger();
     void triggerPower(); // when a process needs power
     void update();

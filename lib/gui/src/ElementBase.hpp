@@ -15,8 +15,10 @@ typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib grap
 #define SCROLL_STEP 20
 #endif
 
-namespace gui {
-    class ElementBase {
+namespace gui
+{
+    class ElementBase
+    {
       public:
         ElementBase();
         virtual ~ElementBase();
@@ -139,7 +141,16 @@ namespace gui {
         static ElementBase* mainWindow;
 
         // variables sur les events
-        enum PressedState { NOT_PRESSED, PRESSED, SLIDED, RELEASED, SCROLLX, SCROLLY, LOCKED };
+        enum PressedState
+        {
+            NOT_PRESSED,
+            PRESSED,
+            SLIDED,
+            RELEASED,
+            SCROLLX,
+            SCROLLY,
+            LOCKED
+        };
 
         PressedState m_pressedState;
 

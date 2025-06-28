@@ -6,12 +6,15 @@
 #include <iostream>
 #include <path.hpp>
 
-namespace Conversations {
-    void loadConversation(const storage::Path& filePath, Conversation& conv) {
+namespace Conversations
+{
+    void loadConversation(const storage::Path& filePath, Conversation& conv)
+    {
         // std::cout << "Loading conversation from: " << filePath.str() <<
         // std::endl;
 
-        if (!filePath.exists()) {
+        if (!filePath.exists())
+        {
             std::cerr << "File does not exist: " << filePath.str() << std::endl;
             saveConversation(filePath, conv);
             return;
@@ -19,7 +22,8 @@ namespace Conversations {
 
         storage::FileStream file;
         file.open(filePath.str(), storage::Mode::READ);
-        if (!file.isopen()) {
+        if (!file.isopen())
+        {
             std::cerr << "Failed to open file: " << filePath.str() << " Error: " << strerror(errno)
                       << std::endl;
             return;
@@ -29,17 +33,20 @@ namespace Conversations {
         file.close();
         // std::cout << "File content: " << fileContent << std::endl;
 
-        if (fileContent.empty()) {
+        if (fileContent.empty())
+        {
             // std::cerr << "File is empty: " << filePath.str() << std::endl;
             return;
         }
 
-        try {
+        try
+        {
             auto json = nlohmann::json::parse(fileContent);
 
             conv.number = json.at("number").get<std::string>();
             conv.messages.clear();
-            for (const auto& messageItem : json.at("messages")) {
+            for (const auto& messageItem : json.at("messages"))
+            {
                 Message msg;
                 msg.message = messageItem.at("message").get<std::string>();
                 msg.who = messageItem.at("who").get<bool>();
@@ -49,12 +56,15 @@ namespace Conversations {
 
             if (conv.messages.size() > 20)
                 conv.messages.erase(conv.messages.begin(), conv.messages.end() - 20);
-        } catch (const nlohmann::json::exception& e) {
+        }
+        catch (const nlohmann::json::exception& e)
+        {
             std::cerr << "Error parsing JSON: " << e.what() << std::endl;
         }
     }
 
-    void saveConversation(const storage::Path& filePath, const Conversation& conv) {
+    void saveConversation(const storage::Path& filePath, const Conversation& conv)
+    {
         // std::cout << "Saving conversation to: " << filePath.str() << std::endl;
 
         storage::Path parentPath = filePath / "../";
@@ -68,7 +78,8 @@ namespace Conversations {
                  ((conv.messages.size() < MAX_MESSAGES) ? (0)
                                                         : (conv.messages.size() - MAX_MESSAGES));
              i < conv.messages.size();
-             i++) {
+             i++)
+        {
             auto& msg = conv.messages[i];
 
             json["messages"].push_back(
@@ -79,7 +90,8 @@ namespace Conversations {
         storage::Path path(filePath);
         storage::FileStream file;
         file.open(path.str(), storage::Mode::WRITE);
-        if (!file.isopen()) {
+        if (!file.isopen())
+        {
             std::cerr << "Failed to open file for writing: " << filePath.str()
                       << " Error: " << strerror(errno) << std::endl;
             return;

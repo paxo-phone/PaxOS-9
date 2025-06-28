@@ -3,17 +3,21 @@
 
 #include "lua_widget.hpp"
 
-class LuaSwitch : public LuaWidget {
+class LuaSwitch : public LuaWidget
+{
   public:
     LuaSwitch(LuaWidget* parent, int x, int y, LuaGui* gui);
 
-    void setState(bool state) {
+    void setState(bool state)
+    {
         widget->setState(state);
     }
-    bool getState() {
+    bool getState()
+    {
         return widget->getState();
     }
-    void onChange(sol::protected_function func) {
+    void onChange(sol::protected_function func)
+    {
         onChangeFunc = func;
     }
 

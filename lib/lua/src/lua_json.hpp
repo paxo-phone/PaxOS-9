@@ -4,7 +4,8 @@
 #include <json.hpp>
 #include <string>
 
-class LuaJson {
+class LuaJson
+{
   public:
     LuaJson(std::string data);
     LuaJson(nlohmann::json& other);

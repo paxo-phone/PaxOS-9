@@ -14,10 +14,12 @@
 #include <cstdint>
 #include <optional>
 
-namespace graphics {
+namespace graphics
+{
     class SImage;
 
-    class Surface {
+    class Surface
+    {
         friend void showSurface(const Surface* surface);
 
       public:
@@ -93,7 +95,12 @@ namespace graphics {
         [[nodiscard]] void* getBuffer() const;
         void setBuffer(void* buffer, int32_t w = -1, int32_t h = -1);
 
-        enum Filter { BLUR, LIGHTEN, DARKEN };
+        enum Filter
+        {
+            BLUR,
+            LIGHTEN,
+            DARKEN
+        };
 
         void applyFilter(Filter filter, int32_t intensity);
 

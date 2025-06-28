@@ -965,7 +965,8 @@ const float biases2[27] = {0.2258254438638687f,   -0.27154192328453064f, 0.54410
 #define SEQUENCE_LENGTH 3
 #define HIDDEN_LAYER_SIZE 32
 
-static inline int map_input_char_to_index(char c) {
+static inline int map_input_char_to_index(char c)
+{
     char lower_c = std::tolower(c);
     // a-z -> 0-25
     if (lower_c >= 'a' && lower_c <= 'z') return lower_c - 'a';
@@ -987,11 +988,13 @@ static const char output_index_to_char[OUTPUT_VOCAB_SIZE] = {'a', 'b', 'c', 'd',
 // probabilities_out[0] is for 'a', [1] for 'b', ..., [25] for 'z', [26] for ' '
 void predict_next_char_probs(
     char prev1, char prev2, char prev3, float probabilities_out[OUTPUT_VOCAB_SIZE]
-) {
+)
+{
     float input_vector[SEQUENCE_LENGTH * INPUT_VOCAB_SIZE] = {0.0f};
     char sequence[SEQUENCE_LENGTH] = {prev3, prev2, prev1};
     // Create one-hot input vector
-    for (int i = 0; i < SEQUENCE_LENGTH; ++i) {
+    for (int i = 0; i < SEQUENCE_LENGTH; ++i)
+    {
         int index = map_input_char_to_index(sequence[i]);
         if (index >= 0 && index < INPUT_VOCAB_SIZE)
             input_vector[i * INPUT_VOCAB_SIZE + index] = 1.0f;
@@ -999,7 +1002,8 @@ void predict_next_char_probs(
 
     // Hidden layer forward pass (Input -> Hidden) + ReLU
     float hidden_output[HIDDEN_LAYER_SIZE];
-    for (int j = 0; j < HIDDEN_LAYER_SIZE; ++j) {
+    for (int j = 0; j < HIDDEN_LAYER_SIZE; ++j)
+    {
         float sum = biases1[j];
         for (int i = 0; i < SEQUENCE_LENGTH * INPUT_VOCAB_SIZE; ++i)
             sum += input_vector[i] * weights1[i][j];
@@ -1008,7 +1012,8 @@ void predict_next_char_probs(
 
     // Output layer forward pass (Hidden -> Output) - gives logits
     float output_logits[OUTPUT_VOCAB_SIZE];
-    for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k) {
+    for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k)
+    {
         float sum = biases2[k];
         for (int j = 0; j < HIDDEN_LAYER_SIZE; ++j) sum += hidden_output[j] * weights2[j][k];
         output_logits[k] = sum;
@@ -1020,16 +1025,20 @@ void predict_next_char_probs(
         if (output_logits[k] > max_logit) max_logit = output_logits[k];
 
     float exp_sum = 0.0f;
-    for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k) {
+    for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k)
+    {
         probabilities_out[k] = std::exp2f(output_logits[k] - max_logit);
         exp_sum += probabilities_out[k];
     }
 
     // Normalize to get probabilities
-    if (exp_sum > 0.0f) {
+    if (exp_sum > 0.0f)
+    {
         for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k) probabilities_out[k] /= exp_sum;
-    } else { // Handle potential issue, e.g., all logits are -infinity (very
-             // unlikely)
+    }
+    else
+    { // Handle potential issue, e.g., all logits are -infinity (very
+      // unlikely)
         // Could set uniform probability or 0, setting 0 for safety
         for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k) probabilities_out[k] = 0.0f;
     }

@@ -52,7 +52,8 @@ UTF-8, a transformation format of ISO 10646
 uint8_t decoderState = 0; // UTF-8 decoder state
 uint16_t decoderBuffer;   // Unicode code-point buffer
 
-void resetUTF8decoder(void) {
+void resetUTF8decoder(void)
+{
     decoderState = 0;
 }
 
@@ -61,28 +62,38 @@ void resetUTF8decoder(void) {
 //
 // This is just a serial decoder, it does not check to see if the code point is
 // actually assigned to a character in Unicode.
-uint16_t decodeUTF8(uint8_t c) {
+uint16_t decodeUTF8(uint8_t c)
+{
 
-    if ((c & 0x80) == 0x00) { // 7 bit Unicode Code Point
+    if ((c & 0x80) == 0x00)
+    { // 7 bit Unicode Code Point
         decoderState = 0;
         return (uint16_t) c;
     }
 
-    if (decoderState == 0) {
+    if (decoderState == 0)
+    {
 
-        if ((c & 0xE0) == 0xC0) {              // 11 bit Unicode Code Point
+        if ((c & 0xE0) == 0xC0)
+        {                                      // 11 bit Unicode Code Point
             decoderBuffer = ((c & 0x1F) << 6); // Save first 5 bits
             decoderState = 1;
-        } else if ((c & 0xF0) == 0xE0) {        // 16 bit Unicode Code Point      {
+        }
+        else if ((c & 0xF0) == 0xE0)
+        {                                       // 16 bit Unicode Code Point      {
             decoderBuffer = ((c & 0x0F) << 12); // Save first 4 bits
             decoderState = 2;
         }
-
-    } else {
+    }
+    else
+    {
         decoderState--;
-        if (decoderState == 1) {
+        if (decoderState == 1)
+        {
             decoderBuffer |= ((c & 0x3F) << 6); // Add next 6 bits of 16 bit code point
-        } else if (decoderState == 0) {
+        }
+        else if (decoderState == 0)
+        {
             decoderBuffer |= (c & 0x3F); // Add last 6 bits of code point (UTF8-tail)
             return decoderBuffer;
         }
@@ -90,7 +101,8 @@ uint16_t decodeUTF8(uint8_t c) {
     return 0xFFFF;
 }
 
-std::string decodeString(std::string& code) {
+std::string decodeString(std::string& code)
+{
     resetUTF8decoder();
     std::string code_8;
     std::vector<uint16_t> code_16;
@@ -99,12 +111,15 @@ std::string decodeString(std::string& code) {
     for (int i = 0; i < code.size(); i++) code_16.push_back(decodeUTF8(code[i]));
 
     // Process each character
-    for (int i = 0; i < code.size(); i++) {
+    for (int i = 0; i < code.size(); i++)
+    {
         bool result = false;
 
         // Check if character exists in FRCharset table
-        for (int j = 0; j < FRCharcount; j++) {
-            if (code_16[i] == FRCharset[j].UTF) {
+        for (int j = 0; j < FRCharcount; j++)
+        {
+            if (code_16[i] == FRCharset[j].UTF)
+            {
                 result = true;
                 code_8.push_back(FRCharset[j].latin);
                 break;

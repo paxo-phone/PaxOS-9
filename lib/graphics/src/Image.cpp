@@ -13,14 +13,16 @@
 
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
-uint64_t getFileSize(storage::Path& path) {
+uint64_t getFileSize(storage::Path& path)
+{
     return 0;
 }
 #include <iostream>
 
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
-std::shared_ptr<uint8_t[]> getFileData(storage::Path& path) {
+std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
+{
     auto data = std::shared_ptr<uint8_t[]>(new uint8_t[2000]); // just for headers
 
     storage::FileStream stream(path.str(), storage::Mode::READ);
@@ -35,11 +37,14 @@ std::shared_ptr<uint8_t[]> getFileData(storage::Path& path) {
     return data;
 }
 
-namespace graphics {
-    SImage::SImage(storage::Path& path) {
+namespace graphics
+{
+    SImage::SImage(storage::Path& path)
+    {
         this->m_path = path;
 
-        if (!path.exists() || !path.isfile()) {
+        if (!path.exists() || !path.isfile())
+        {
             std::cerr << "Path does not exist : " << path.str() << std::endl;
             // throw libsystem::exceptions::InvalidArgument("Path does not exist : "
             // + path.str() +
@@ -53,7 +58,8 @@ namespace graphics {
 
         const imgdec::IMGData imageData = imgdec::decodeHeader(m_data.get());
 
-        switch (imageData.type) {
+        switch (imageData.type)
+        {
         case imgdec::ERROR:
             throw libsystem::exceptions::InvalidArgument("Invalid image data.");
             // m_width = 0;
@@ -76,27 +82,33 @@ namespace graphics {
 
     SImage::~SImage() = default;
 
-    ImageType SImage::getType() const {
+    ImageType SImage::getType() const
+    {
         return m_type;
     }
 
-    uint16_t SImage::getWidth() const {
+    uint16_t SImage::getWidth() const
+    {
         return m_width;
     }
 
-    uint16_t SImage::getHeight() const {
+    uint16_t SImage::getHeight() const
+    {
         return m_height;
     }
 
-    uint32_t SImage::getSize() const {
+    uint32_t SImage::getSize() const
+    {
         return m_size;
     }
 
-    uint8_t* SImage::getData() const {
+    uint8_t* SImage::getData() const
+    {
         return m_data.get();
     }
 
-    storage::Path SImage::getPath() const {
+    storage::Path SImage::getPath() const
+    {
         return this->m_path;
     }
 

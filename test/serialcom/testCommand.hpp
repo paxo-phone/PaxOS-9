@@ -8,7 +8,8 @@
 
 using namespace serialcom;
 
-void executeCommand(std::string commandText, bool shellMode) {
+void executeCommand(std::string commandText, bool shellMode)
+{
     char info_input[INPUT_MAX_SIZE] = {'\0'};
     strcpy(info_input, commandText.c_str());
     Command command = Command(info_input);
@@ -21,7 +22,8 @@ void executeCommand(std::string commandText, bool shellMode) {
 void testCommand(
     std::string commandText, bool shellMode, Command::CommandType expectedCommandType,
     std::string expectedOutput
-) {
+)
+{
     char info_input[INPUT_MAX_SIZE] = {'\0'};
     strcpy(info_input, commandText.c_str());
     Command command = Command(info_input);
@@ -43,11 +45,14 @@ void testCommand(
     // Use the string value of buffer to compare against expected output
     std::string text = buffer.str();
 
-    if (CommandsManager::defaultInstance->shellMode) {
+    if (CommandsManager::defaultInstance->shellMode)
+    {
         text.pop_back(); // remove the last '\n' and '\r' characters printed if
                          // the shellMode is enabled
         text.pop_back();
-    } else if (text.size() >= 12) {
+    }
+    else if (text.size() >= 12)
+    {
         // 4 begin bytes
         ASSERT_TRUE(text[0] == 0xff && text[1] == 0xfe && text[2] == 0xfd && text[3] == 0xfc);
 
@@ -85,7 +90,8 @@ void testCommand(
     // Restore original buffer before exiting
     SerialManager::sharedInstance->changeDefaultCoutBuffer(prevcoutbuf);
 
-    if (result != 0) {
+    if (result != 0)
+    {
         std::cout << "Got shell output: " << text << " expected " << expectedOutput << std::endl;
         std::cout << "shell output size " << text.size() << " expected size "
                   << expectedOutput.size() << std::endl;
@@ -93,20 +99,26 @@ void testCommand(
         size_t textSize = text.size();
         size_t expectedOutputSize = expectedOutput.size();
 
-        for (size_t i = 0; i < std::max(textSize, expectedOutputSize); i++) {
-            if (i < textSize && i < expectedOutputSize) {
+        for (size_t i = 0; i < std::max(textSize, expectedOutputSize); i++)
+        {
+            if (i < textSize && i < expectedOutputSize)
+            {
                 std::cout << "Binary shell output: " << std::bitset<8>(text.c_str()[i]) << "/"
                           << std::bitset<8>(expectedOutput.c_str()[i]) << std::endl;
                 std::cout << "char shell output: " << text.c_str()[i] << "/"
                           << expectedOutput.c_str()[i] << std::endl;
                 if (std::bitset<8>(text.c_str()[i]) != std::bitset<8>(expectedOutput.c_str()[i]))
                     std::cout << "Not the same!" << std::endl;
-            } else if (textSize < expectedOutputSize) {
+            }
+            else if (textSize < expectedOutputSize)
+            {
                 std::cout << "expected output size is bigger than actual "
                              "output size, char "
                           << std::to_string(i) << " is " << expectedOutput.c_str()[i] << "/"
                           << std::bitset<8>(expectedOutput.c_str()[i]) << std::endl;
-            } else {
+            }
+            else
+            {
                 std::cout << "actual output size is bigger than expected "
                              "output size, char "
                           << std::to_string(i) << " is " << text.c_str()[i] << "/"

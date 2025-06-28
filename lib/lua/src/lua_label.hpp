@@ -3,32 +3,40 @@
 
 #include "lua_widget.hpp"
 
-class LuaLabel : public LuaWidget {
+class LuaLabel : public LuaWidget
+{
   public:
     LuaLabel(LuaWidget* parent, int x, int y, int width, int height);
 
-    void setText(const std::string& text) {
+    void setText(const std::string& text)
+    {
         widget->setText(text);
     }
-    std::string getText() {
+    std::string getText()
+    {
         return widget->getText();
     }
 
-    void setFontSize(int fontSize) {
+    void setFontSize(int fontSize)
+    {
         widget->setFontSize(fontSize);
     }
 
-    int getTextWidth() {
+    int getTextWidth()
+    {
         return widget->getTextWidth();
     }
-    int getTextHeight() {
+    int getTextHeight()
+    {
         return widget->getTextHeight();
     }
 
-    void setVerticalAlignment(Label::Alignement alignment) {
+    void setVerticalAlignment(Label::Alignement alignment)
+    {
         widget->setVerticalAlignment(alignment);
     }
-    void setHorizontalAlignment(Label::Alignement alignment) {
+    void setHorizontalAlignment(Label::Alignement alignment)
+    {
         widget->setHorizontalAlignment(alignment);
     }
 

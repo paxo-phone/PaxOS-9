@@ -10,10 +10,17 @@
 #include <path.hpp>
 #include <string>
 
-namespace graphics {
-    enum ImageType { BMP, PNG, JPG };
+namespace graphics
+{
+    enum ImageType
+    {
+        BMP,
+        PNG,
+        JPG
+    };
 
-    class SImage {
+    class SImage
+    {
       private:
         ImageType m_type;
         storage::Path m_path;

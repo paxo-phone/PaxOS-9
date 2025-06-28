@@ -20,9 +20,11 @@ https://github.com/tobiaslocker/base64/blob/master/include/base64.hpp
 #include <bit> // For std::bit_cast.
 #endif
 
-namespace base64 {
+namespace base64
+{
 
-    namespace detail {
+    namespace detail
+    {
 
 #if defined(__cpp_lib_bit_cast)
         using std::bit_cast;
@@ -32,7 +34,8 @@ namespace base64 {
             sizeof(To) == sizeof(From) && std::is_trivially_copyable_v<From> &&
                 std::is_trivially_copyable_v<To>,
             To>
-            bit_cast(const From& src) noexcept {
+            bit_cast(const From& src) noexcept
+        {
             static_assert(
                 std::is_trivially_constructible_v<To>,
                 "This implementation additionally requires "
@@ -452,7 +455,8 @@ namespace base64 {
     } // namespace detail
 
     template <class OutputBuffer, class InputIterator>
-    inline OutputBuffer encode_into(InputIterator begin, InputIterator end) {
+    inline OutputBuffer encode_into(InputIterator begin, InputIterator end)
+    {
         typedef std::decay_t<decltype(*begin)> input_value_type;
         static_assert(std::is_same_v<input_value_type, char> || std::is_same_v<input_value_type, signed char> || std::is_same_v<input_value_type, unsigned char> || std::is_same_v<input_value_type, std::byte>);
         typedef typename OutputBuffer::value_type output_value_type;
@@ -464,7 +468,8 @@ namespace base64 {
         const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&*begin);
         char* currEncoding = reinterpret_cast<char*>(&encoded[0]);
 
-        for (size_t i = binarytextsize / 3; i; --i) {
+        for (size_t i = binarytextsize / 3; i; --i)
+        {
             const uint8_t t1 = *bytes++;
             const uint8_t t2 = *bytes++;
             const uint8_t t3 = *bytes++;
@@ -474,11 +479,14 @@ namespace base64 {
             *currEncoding++ = detail::encode_table_1[t3];
         }
 
-        switch (binarytextsize % 3) {
-        case 0: {
+        switch (binarytextsize % 3)
+        {
+        case 0:
+        {
             break;
         }
-        case 1: {
+        case 1:
+        {
             const uint8_t t1 = bytes[0];
             *currEncoding++ = detail::encode_table_0[t1];
             *currEncoding++ = detail::encode_table_1[(t1 & 0x03) << 4];
@@ -486,7 +494,8 @@ namespace base64 {
             // *currEncoding++ = detail::padding_char;
             break;
         }
-        case 2: {
+        case 2:
+        {
             const uint8_t t1 = bytes[0];
             const uint8_t t2 = bytes[1];
             *currEncoding++ = detail::encode_table_0[t1];
@@ -495,7 +504,8 @@ namespace base64 {
             // *currEncoding++ = detail::padding_char;
             break;
         }
-        default: {
+        default:
+        {
             throw std::runtime_error{"Invalid base64 encoded data"};
         }
         }
@@ -503,15 +513,18 @@ namespace base64 {
         return encoded;
     }
 
-    template <class OutputBuffer> inline OutputBuffer encode_into(std::string_view data) {
+    template <class OutputBuffer> inline OutputBuffer encode_into(std::string_view data)
+    {
         return encode_into<OutputBuffer>(std::begin(data), std::end(data));
     }
 
-    inline std::string to_base64(std::string_view data) {
+    inline std::string to_base64(std::string_view data)
+    {
         return encode_into<std::string>(std::begin(data), std::end(data));
     }
 
-    template <class OutputBuffer> inline OutputBuffer decode_into(std::string_view base64Text) {
+    template <class OutputBuffer> inline OutputBuffer decode_into(std::string_view base64Text)
+    {
         typedef typename OutputBuffer::value_type output_value_type;
         static_assert(std::is_same_v<output_value_type, char> || std::is_same_v<output_value_type, signed char> || std::is_same_v<output_value_type, unsigned char> || std::is_same_v<output_value_type, std::byte>);
         if (base64Text.empty()) return OutputBuffer();
@@ -520,7 +533,8 @@ namespace base64 {
             throw std::runtime_error{"Invalid base64 encoded data - Size not divisible by 4"};
 
         const size_t numPadding = std::count(base64Text.rbegin(), base64Text.rbegin() + 4, '=');
-        if (numPadding > 2) {
+        if (numPadding > 2)
+        {
             throw std::runtime_error{"Invalid base64 encoded data - Found more than 2 padding signs"
             };
         }
@@ -531,7 +545,8 @@ namespace base64 {
         const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&base64Text[0]);
         char* currDecoding = reinterpret_cast<char*>(&decoded[0]);
 
-        for (size_t i = (base64Text.size() >> 2) - (numPadding != 0); i; --i) {
+        for (size_t i = (base64Text.size() >> 2) - (numPadding != 0); i; --i)
+        {
             const uint8_t t1 = *bytes++;
             const uint8_t t2 = *bytes++;
             const uint8_t t3 = *bytes++;
@@ -558,11 +573,14 @@ namespace base64 {
             *currDecoding++ = tempBytes[detail::decidx2];
         }
 
-        switch (numPadding) {
-        case 0: {
+        switch (numPadding)
+        {
+        case 0:
+        {
             break;
         }
-        case 1: {
+        case 1:
+        {
             const uint8_t t1 = *bytes++;
             const uint8_t t2 = *bytes++;
             const uint8_t t3 = *bytes++;
@@ -585,7 +603,8 @@ namespace base64 {
             *currDecoding++ = tempBytes[detail::decidx1];
             break;
         }
-        case 2: {
+        case 2:
+        {
             const uint8_t t1 = *bytes++;
             const uint8_t t2 = *bytes++;
 
@@ -602,7 +621,8 @@ namespace base64 {
             *currDecoding++ = tempBytes[detail::decidx0];
             break;
         }
-        default: {
+        default:
+        {
             throw std::runtime_error{"Invalid base64 encoded data - Invalid padding number"};
         }
         }
@@ -611,14 +631,16 @@ namespace base64 {
     }
 
     template <class OutputBuffer, class InputIterator>
-    inline OutputBuffer decode_into(InputIterator begin, InputIterator end) {
+    inline OutputBuffer decode_into(InputIterator begin, InputIterator end)
+    {
         typedef std::decay_t<decltype(*begin)> input_value_type;
         static_assert(std::is_same_v<input_value_type, char> || std::is_same_v<input_value_type, signed char> || std::is_same_v<input_value_type, unsigned char> || std::is_same_v<input_value_type, std::byte>);
         std::string_view data(reinterpret_cast<const char*>(&*begin), end - begin);
         return decode_into<OutputBuffer>(data);
     }
 
-    inline std::string from_base64(std::string_view data) {
+    inline std::string from_base64(std::string_view data)
+    {
         return decode_into<std::string>(data);
     }
 

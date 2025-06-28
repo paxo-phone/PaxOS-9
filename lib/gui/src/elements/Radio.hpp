@@ -4,8 +4,10 @@
 #include "../ElementBase.hpp"
 #include "Image.hpp"
 
-namespace gui::elements {
-    class Radio final : public ElementBase {
+namespace gui::elements
+{
+    class Radio final : public ElementBase
+    {
       public:
         Radio(uint16_t x, uint16_t y);
         ~Radio() override;

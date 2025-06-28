@@ -3,8 +3,10 @@
 #include <fstream>
 #include <json.hpp>
 
-namespace Message {
-    void loadMessages(const std::string& filePath, std::vector<Message>& messages) {
+namespace Message
+{
+    void loadMessages(const std::string& filePath, std::vector<Message>& messages)
+    {
         std::ifstream file(filePath);
         if (!file.is_open()) return;
 
@@ -16,7 +18,8 @@ namespace Message {
 
         nlohmann::json json = nlohmann::json::parse(content);
 
-        for (const auto& item : json) {
+        for (const auto& item : json)
+        {
             Message message;
             message.number = item["number"].get<std::string>();
             message.message = item["message"].get<std::string>();
@@ -25,9 +28,11 @@ namespace Message {
         }
     }
 
-    void saveMessages(const std::string& filePath, const std::vector<Message>& messages) {
+    void saveMessages(const std::string& filePath, const std::vector<Message>& messages)
+    {
         nlohmann::json json;
-        for (const auto& message : messages) {
+        for (const auto& message : messages)
+        {
             json.push_back(
                 {{"number", message.number}, {"message", message.message}, {"date", message.date}}
             );

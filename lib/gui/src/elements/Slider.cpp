@@ -13,11 +13,13 @@
 #include <graphics.hpp>
 #include <iostream>
 
-namespace gui::elements {
+namespace gui::elements
+{
     Slider::Slider(
         uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t minValue,
         uint16_t maxValue, uint16_t defaultValue
-    ) {
+    )
+    {
         m_x = x;
         m_y = y;
         m_width = width;
@@ -44,23 +46,28 @@ namespace gui::elements {
 
     Slider::~Slider() = default;
 
-    void Slider::setValueColor(color_t color) {
+    void Slider::setValueColor(color_t color)
+    {
         m_valueColor = color;
     }
 
-    uint16_t Slider::getValue() {
+    uint16_t Slider::getValue()
+    {
         return m_Value;
     }
 
-    uint16_t Slider::getMinValue() {
+    uint16_t Slider::getMinValue()
+    {
         return m_maxValue;
     }
 
-    uint16_t Slider::getMaxValue() {
+    uint16_t Slider::getMaxValue()
+    {
         return m_maxValue;
     }
 
-    void Slider::setValue(uint16_t value) {
+    void Slider::setValue(uint16_t value)
+    {
         if (value > m_maxValue)
             m_Value = m_maxValue;
         else if (value < m_minValue)
@@ -70,50 +77,60 @@ namespace gui::elements {
         localGraphicalUpdate();
     }
 
-    void Slider::setMinValue(uint16_t minValue) {
+    void Slider::setMinValue(uint16_t minValue)
+    {
         m_minValue = minValue;
     }
 
-    void Slider::setMaxValue(uint16_t maxValue) {
+    void Slider::setMaxValue(uint16_t maxValue)
+    {
         m_maxValue = maxValue;
     }
 
-    void Slider::displayValue(bool display) {
+    void Slider::displayValue(bool display)
+    {
         m_displayValue = display;
     }
 
-    void Slider::setTextColor(color_t innertextColor, color_t outerTextColor) {
+    void Slider::setTextColor(color_t innertextColor, color_t outerTextColor)
+    {
         m_innerTextColor = innertextColor;
         m_outerTextColor = outerTextColor;
     }
 
-    void Slider::setFormatPercentage(bool isPercent) {
+    void Slider::setFormatPercentage(bool isPercent)
+    {
         m_isPercentage = isPercent;
     }
 
-    void Slider::slide() {
+    void Slider::slide()
+    {
         // m_positionValue = (touchX - getAbsoluteX());
         // m_Value = (m_positionValue * (m_maxValue - m_minValue)) / m_width +
         // m_minValue;
         float value = (touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width + m_minValue;
         value = value < m_minValue ? m_minValue : value > m_maxValue ? m_maxValue : value;
 
-        if (m_Value != value) {
+        if (m_Value != value)
+        {
             setValue(value);
             m_hasChanged = true;
         }
     }
 
-    void Slider::widgetUpdate() {
+    void Slider::widgetUpdate()
+    {
         if (widgetPressed == this &&
             (globalPressedState == PressedState::PRESSED ||
              globalPressedState == PressedState::SCROLLX) &&
-            touchX >= 0 && touchY >= 0) {
+            touchX >= 0 && touchY >= 0)
+        {
             slide();
         }
     }
 
-    void Slider::render() {
+    void Slider::render()
+    {
 
         this->getAndSetSurface()->clear(
             m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor()
@@ -146,13 +163,15 @@ namespace gui::elements {
             m_borderColor
         );
 
-        if (m_displayValue) {
+        if (m_displayValue)
+        {
             int x = 0;
             std::string str = std::to_string(m_Value);
             if (m_isPercentage) str = str + "%";
             const uint16_t textWidth = this->getAndSetSurface()->m_sprite.textWidth(str.c_str());
             const uint16_t textHeight = this->getAndSetSurface()->getTextHeight();
-            if (textWidth <= valueSize - 10) {
+            if (textWidth <= valueSize - 10)
+            {
                 // this->getAndSetSurface()->setTextColor(m_innerTextColor);
                 this->getAndSetSurface()->drawText(
                     str,
@@ -160,7 +179,9 @@ namespace gui::elements {
                     floor((m_height - textHeight) / 2),
                     m_innerTextColor
                 );
-            } else {
+            }
+            else
+            {
                 //                this->getAndSetSurface()->setTextColor(COLOR_GREEN);
                 this->getAndSetSurface()->drawText(
                     str,

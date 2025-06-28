@@ -4,11 +4,13 @@
 #include "../ElementBase.hpp"
 #include "Image.hpp"
 
-namespace gui::elements {
+namespace gui::elements
+{
     /**
      * @brief Simply a checkbox widget
      **/
-    class Checkbox final : public ElementBase {
+    class Checkbox final : public ElementBase
+    {
       public:
         Checkbox(uint16_t x, uint16_t y);
         ~Checkbox() override;

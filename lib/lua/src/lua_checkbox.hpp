@@ -3,14 +3,17 @@
 
 #include "lua_widget.hpp"
 
-class LuaCheckbox : public LuaWidget {
+class LuaCheckbox : public LuaWidget
+{
   public:
     LuaCheckbox(LuaWidget* parent, int x, int y);
 
-    void setState(bool state) {
+    void setState(bool state)
+    {
         widget->setState(state);
     }
-    bool getState() {
+    bool getState()
+    {
         return widget->getState();
     }
 

@@ -3,9 +3,15 @@
 
 #include "elements/Window.hpp"
 
-enum WINDOW_TYPE { INFO, WARNING, ERROR };
+enum WINDOW_TYPE
+{
+    INFO,
+    WARNING,
+    ERROR
+};
 
-class GuiManager final {
+class GuiManager final
+{
   private:
     gui::elements::Window win;
     GuiManager();

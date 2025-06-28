@@ -6,7 +6,8 @@
 #include <gtest/gtest.h>
 #include <path.hpp>
 
-TEST(StorageTest, PathTest) {
+TEST(StorageTest, PathTest)
+{
     storage::init();
 
     EXPECT_FALSE(storage::Path("/dir1").exists());
@@ -29,7 +30,8 @@ TEST(StorageTest, PathTest) {
     EXPECT_FALSE(storage::Path("/dir1").exists());
 }
 
-TEST(StorageTest, StreamTest) {
+TEST(StorageTest, StreamTest)
+{
     storage::init();
 
     const auto file = storage::Path("test.txt");

@@ -24,12 +24,14 @@ EventHandler eventHandlerApp;
 
 #endif
 
-void ThreadManager::init() {
+void ThreadManager::init()
+{
     new_thread(CORE_BACK, &ThreadManager::simcom_thread, 16 * 1024);
     new_thread(CORE_BACK, &ThreadManager::background_thread, 8 * 1024);
 }
 
-void ThreadManager::new_thread(bool core, void (*func)(void*), int stackSize) {
+void ThreadManager::new_thread(bool core, void (*func)(void*), int stackSize)
+{
 #ifdef ESP_PLATFORM
     xTaskCreatePinnedToCore(func, "thread", stackSize, NULL, 5, NULL, core);
 #else
@@ -38,14 +40,17 @@ void ThreadManager::new_thread(bool core, void (*func)(void*), int stackSize) {
 #endif
 }
 
-void ThreadManager::background_thread(void* arg) {
-    while (true) {
+void ThreadManager::background_thread(void* arg)
+{
+    while (true)
+    {
         eventHandlerBack.update();
         PaxOS_Delay(10);
     }
 }
 
-void ThreadManager::simcom_thread(void* arg) {
+void ThreadManager::simcom_thread(void* arg)
+{
     // GSM::run();
     Gsm::init();
     printf("[GSM] GSM initialized\n");

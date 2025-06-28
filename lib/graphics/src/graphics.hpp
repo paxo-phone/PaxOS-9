@@ -19,12 +19,22 @@
 
 class FT6236G;
 
-namespace graphics {
+namespace graphics
+{
     class Surface;
 
-    enum EScreenOrientation { PORTRAIT, LANDSCAPE };
+    enum EScreenOrientation
+    {
+        PORTRAIT,
+        LANDSCAPE
+    };
 
-    enum GraphicsInitCode { SUCCESS, ERROR_NO_TOUCHSCREEN, ERROR_FAULTY_TOUCHSCREEN };
+    enum GraphicsInitCode
+    {
+        SUCCESS,
+        ERROR_NO_TOUCHSCREEN,
+        ERROR_FAULTY_TOUCHSCREEN
+    };
 
     /**
      * Initialize the graphics library and returns 0 if initialized with success.

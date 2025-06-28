@@ -13,7 +13,8 @@
  */
 typedef uint16_t color_t;
 
-namespace graphics {
+namespace graphics
+{
     /**
      * Create a RGB565 value from 3 8-bit RGB components.
      * @param r The red component.
@@ -41,7 +42,8 @@ namespace graphics {
      * @param b The blue component.
      * @return A RGB565 color.
      */
-    constexpr color_t constPackRGB565(const uint8_t r, const uint8_t g, const uint8_t b) {
+    constexpr color_t constPackRGB565(const uint8_t r, const uint8_t g, const uint8_t b)
+    {
         uint16_t rgb = 0;
 
         rgb |= (r >> 3) << 11;

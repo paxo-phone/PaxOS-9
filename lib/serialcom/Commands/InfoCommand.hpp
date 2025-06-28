@@ -20,66 +20,89 @@
 #define INFO_COMMAND_NOT_RECOGNIZED_MAC(ARGUMENT)                                                  \
     "Argument " + std::string(ARGUMENT) + " not recognized (available: wifi, bluetooth)."
 
-namespace serialcom {
-    void CommandsManager::processInfoCommandHostname(const Command& command) const {
-        if (this->shellMode) {
+namespace serialcom
+{
+    void CommandsManager::processInfoCommandHostname(const Command& command) const
+    {
+        if (this->shellMode)
+        {
             SerialManager::sharedInstance->commandLog(HOSTNAME_MESSAGE);
-        } else {
+        }
+        else
+        {
             SerialManager::sharedInstance->commandLog(HOSTNAME);
             // output the null terminator
             SerialManager::sharedInstance->commandLog("\0");
         }
     }
 
-    void CommandsManager::printWiFiMac() const {
+    void CommandsManager::printWiFiMac() const
+    {
         if (this->shellMode)
             SerialManager::sharedInstance->commandLog(WIFI_MAC_MESSAGE); // format it in a fancy way
         else
             SerialManager::sharedInstance->commandLog(MAC_WIFI);
     }
 
-    void CommandsManager::printBluetoothMac() const {
-        if (this->shellMode) {
+    void CommandsManager::printBluetoothMac() const
+    {
+        if (this->shellMode)
+        {
             SerialManager::sharedInstance->commandLog(BLUETOOTH_MAC_MESSAGE
             ); // format it in a fancy way
-        } else {
+        }
+        else
+        {
             SerialManager::sharedInstance->commandLog(MAC_BLUETOOTH);
         }
     }
 
-    void CommandsManager::processInfoCommandMac(const Command& command) const {
+    void CommandsManager::processInfoCommandMac(const Command& command) const
+    {
         std::string potentialSecondParameter = command.arguments[1];
-        if (potentialSecondParameter.empty()) {
+        if (potentialSecondParameter.empty())
+        {
             printBluetoothMac();
             printWiFiMac();
-        } else if (potentialSecondParameter == "wifi") {
+        }
+        else if (potentialSecondParameter == "wifi")
+        {
             printWiFiMac();
-        } else if (potentialSecondParameter == "bluetooth") {
+        }
+        else if (potentialSecondParameter == "bluetooth")
+        {
             printBluetoothMac();
-        } else if (this->shellMode) {
+        }
+        else if (this->shellMode)
+        {
             SerialManager::sharedInstance->commandLog(
                 INFO_COMMAND_NOT_RECOGNIZED_MAC(potentialSecondParameter)
             );
-        } else {
+        }
+        else
+        {
             SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
         }
     }
 
-    void CommandsManager::processInfoCommandVersion(const Command& command) const {
+    void CommandsManager::processInfoCommandVersion(const Command& command) const
+    {
         if (this->shellMode)
             SerialManager::sharedInstance->commandLog(VERSION_MESSAGE);
         else
             SerialManager::sharedInstance->commandLog(CURRENT_VERSION);
     }
 
-    void CommandsManager::processInfoCommandHardware(const Command& command) const {
+    void CommandsManager::processInfoCommandHardware(const Command& command) const
+    {
         if (this->shellMode)
             SerialManager::sharedInstance->commandLog(HARDWARE_MESSAGE);
         else
             SerialManager::sharedInstance->commandLog(HARDWARE_DESCRIPTION);
     }
 
-    void CommandsManager::processInfoCommand(const Command& command) const {
+    void CommandsManager::processInfoCommand(const Command& command) const
+    {
         /*
             Version du firmware (2 octets)
             Indicateur du hardware utilisé (8 octets, réservé)
@@ -99,19 +122,26 @@ namespace serialcom {
 
         std::string firstArgument = command.arguments[0];
 
-        if (firstArgument.empty()) {
+        if (firstArgument.empty())
+        {
             processInfoCommandVersion(command);
             processInfoCommandHardware(command);
             processInfoCommandHostname(command);
             printBluetoothMac();
             printWiFiMac();
             return;
-        } else if (commandsMap.find(firstArgument) != commandsMap.end()) {
+        }
+        else if (commandsMap.find(firstArgument) != commandsMap.end())
+        {
             commandsMap[firstArgument](this, command);
             return;
-        } else if (this->shellMode) {
+        }
+        else if (this->shellMode)
+        {
             SerialManager::sharedInstance->commandLog(INFO_COMMAND_NOT_RECOGNIZED(firstArgument));
-        } else {
+        }
+        else
+        {
             SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
         }
     }

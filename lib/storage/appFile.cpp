@@ -5,9 +5,11 @@
 #include <json.hpp>
 #include <path.hpp>
 
-namespace appFile {
+namespace appFile
+{
     // Liste d'objets
-    std::string load(std::string filename) {
+    std::string load(std::string filename)
+    {
         // check sur le filename
 
         // vérifie que le filename est bien uniquement dans le répertoire de l'app
@@ -19,23 +21,31 @@ namespace appFile {
         return file;
     }
 
-    json parse(std::string str) {
+    json parse(std::string str)
+    {
 
         nlohmann::json json;
-        if (nlohmann::json::accept(str)) {
-            try {
+        if (nlohmann::json::accept(str))
+        {
+            try
+            {
                 json = nlohmann::json::parse(str);
                 return json;
-            } catch (const nlohmann::json::exception& e) {
+            }
+            catch (const nlohmann::json::exception& e)
+            {
                 std::cerr << "Error parsing generic Obj: " << e.what() << std::endl;
             }
-        } else {
+        }
+        else
+        {
             std::cerr << "Parsing file " << str << " failed" << std::endl;
         }
         return NULL;
     }
 
-    void save(std::string filename, json jsonObj) {
+    void save(std::string filename, json jsonObj)
+    {
 
         std::string file = jsonObj.dump();
 

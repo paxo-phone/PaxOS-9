@@ -19,7 +19,8 @@ FT6236G ct;
 
 #endif
 
-namespace {
+namespace
+{
     bool running;
 
     std::shared_ptr<LGFX> lcd;
@@ -37,15 +38,18 @@ namespace {
     uint16_t brightness = 0xFF / 3;
 } // namespace
 
-void graphics::touchIsRead() {
+void graphics::touchIsRead()
+{
     isTouchRead = true;
 }
 
-uint16_t graphics::getBrightness() {
+uint16_t graphics::getBrightness()
+{
     return brightness;
 }
 
-void graphics::setBrightness(uint16_t value, const bool temp) {
+void graphics::setBrightness(uint16_t value, const bool temp)
+{
     static bool running = false;
     if (running) return;
     running = true;
@@ -55,20 +59,23 @@ void graphics::setBrightness(uint16_t value, const bool temp) {
 #ifdef ESP_PLATFORM
     static uint16_t oldValue = 0;
 
-    if (oldValue == value) {
+    if (oldValue == value)
+    {
         running = false;
         return;
     }
 
     libsystem::log("Brightness: " + std::to_string(value));
 
-    while (value < oldValue) {
+    while (value < oldValue)
+    {
         oldValue--;
         lcd->setBrightness(oldValue);
         delay(1);
     }
 
-    while (value > oldValue) {
+    while (value > oldValue)
+    {
         oldValue++;
         lcd->setBrightness(oldValue);
         delay(1);
@@ -84,7 +91,8 @@ void graphics::setBrightness(uint16_t value, const bool temp) {
     running = false;
 }
 
-graphics::GraphicsInitCode graphics::init() {
+graphics::GraphicsInitCode graphics::init()
+{
 #ifdef ESP_PLATFORM
 
     running = true; // It doesn't feel right to set this here...
@@ -145,8 +153,10 @@ graphics::GraphicsInitCode graphics::init() {
     return SUCCESS;
 }
 
-uint16_t graphics::getScreenWidth() {
-    switch (screenOrientation) {
+uint16_t graphics::getScreenWidth()
+{
+    switch (screenOrientation)
+    {
     case graphics::PORTRAIT:
         return 320;
     case graphics::LANDSCAPE:
@@ -156,8 +166,10 @@ uint16_t graphics::getScreenWidth() {
     return -1;
 }
 
-uint16_t graphics::getScreenHeight() {
-    switch (screenOrientation) {
+uint16_t graphics::getScreenHeight()
+{
+    switch (screenOrientation)
+    {
     case graphics::PORTRAIT:
         return 480;
     case graphics::LANDSCAPE:
@@ -167,17 +179,20 @@ uint16_t graphics::getScreenHeight() {
     return -1;
 }
 
-bool graphics::isRunning() {
+bool graphics::isRunning()
+{
     return running;
 }
 
 #ifndef ESP_PLATFORM
 
-struct SDLUpdateData {
+struct SDLUpdateData
+{
     void (*appMain)();
 };
 
-static int SDLUpdate(void* data) {
+static int SDLUpdate(void* data)
+{
     const auto* updateData = static_cast<SDLUpdateData*>(data);
 
     updateData->appMain();
@@ -185,7 +200,8 @@ static int SDLUpdate(void* data) {
     return 0;
 }
 
-void graphics::SDLInit(void (*appMain)()) {
+void graphics::SDLInit(void (*appMain)())
+{
     lgfx::Panel_sdl::setup();
     // lgfx::Panel_sdl::loop(); // Ensure to create the window before creating a
     // new thread
@@ -196,12 +212,15 @@ void graphics::SDLInit(void (*appMain)()) {
 
     // Multithreading can be an issue, be careful
     SDL_Thread* thread = SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
-    if (thread == nullptr) {
+    if (thread == nullptr)
+    {
         printf("Unable to create thread : %s\n", SDL_GetError());
         exit(1);
     }
 
-    while (lgfx::Panel_sdl::loop() == 0) {};
+    while (lgfx::Panel_sdl::loop() == 0)
+    {
+    };
 
     running = false;
 
@@ -214,7 +233,8 @@ void graphics::SDLInit(void (*appMain)()) {
 
 // You should only use this function with a "Canvas" (Surface that is the size
 // of the screen)
-void graphics::showSurface(const Surface* surface, int x, int y) {
+void graphics::showSurface(const Surface* surface, int x, int y)
+{
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
 #ifdef ESP_PLATFORM
@@ -228,14 +248,17 @@ void graphics::showSurface(const Surface* surface, int x, int y) {
     // sprite.getPalette()); lcd.get()->waitDMA();
 
 #else
-    if (screenOrientation == LANDSCAPE) {
+    if (screenOrientation == LANDSCAPE)
+    {
         landscapeBuffer->pushSurface(
             const_cast<Surface*>(surface),
             static_cast<int16_t>(x),
             static_cast<int16_t>(y)
         );
         landscapeBuffer->m_sprite.pushSprite(lcd.get(), 0, 0);
-    } else {
+    }
+    else
+    {
         sprite.pushSprite(lcd.get(), x, y);
     }
 #endif
@@ -243,28 +266,34 @@ void graphics::showSurface(const Surface* surface, int x, int y) {
 
 void graphics::setWindow(
     const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height
-) {
+)
+{
     lcd->setWindow(x, y, x + width, y + height);
 }
 
-void graphics::setWindow() {
+void graphics::setWindow()
+{
     lcd->setWindow(0, 0, getScreenWidth(), getScreenHeight());
 }
 
-void graphics::flip() {
+void graphics::flip()
+{
     // lcd->display();
 }
 
-void graphics::getTouchPos(int16_t* x, int16_t* y) {
+void graphics::getTouchPos(int16_t* x, int16_t* y)
+{
     *x = touchX;
     *y = touchY;
 }
 
 #ifdef ESP_PLATFORM
-int getTouch(uint16_t* pPoints) {
+int getTouch(uint16_t* pPoints)
+{
     TOUCHINFO ti;
     if (ct.getSamples(&ti) != FT_SUCCESS) return 0; // something went wrong
-    if (pPoints) {
+    if (pPoints)
+    {
         // swap X/Y since the display is used 90 degrees rotated
         pPoints[0] = ti.x[0];
         pPoints[1] = ti.y[0];
@@ -275,7 +304,8 @@ int getTouch(uint16_t* pPoints) {
 }
 #endif
 
-void graphics::touchUpdate() {
+void graphics::touchUpdate()
+{
     if (StandbyMode::state() == true) return;
 
     int16_t currentLiveTouchX = 0, currentLiveTouchY = 0;
@@ -284,21 +314,28 @@ void graphics::touchUpdate() {
 #ifdef ESP_PLATFORM
     uint16_t points[4];
     int i = getTouch(points);
-    if (i == 1) {
-        if (screenOrientation == PORTRAIT) {
+    if (i == 1)
+    {
+        if (screenOrientation == PORTRAIT)
+        {
             currentLiveTouchX = (points[0] - 16) * 320 / 303;
             currentLiveTouchY = (points[1] - 23) * 480 / 442;
-        } else {
+        }
+        else
+        {
             currentLiveTouchX = (points[1] - 23) * 480 / 442;
             currentLiveTouchY = 320 - (points[0] - 16) * 320 / 303 - 10;
         }
-    } else {
+    }
+    else
+    {
         currentLiveTouchX = -1;
         currentLiveTouchY = -1;
     }
 #else // Simulator path
     bool rawTouchActive = lcd->getTouch(&currentLiveTouchX, &currentLiveTouchY);
-    if (!rawTouchActive) {
+    if (!rawTouchActive)
+    {
         currentLiveTouchX = -1;
         currentLiveTouchY = -1;
     }
@@ -308,7 +345,8 @@ void graphics::touchUpdate() {
     // invalid)
     if (currentLiveTouchX <= 0 || currentLiveTouchY <= 0 ||
         currentLiveTouchX > graphics::getScreenWidth() ||
-        currentLiveTouchY > graphics::getScreenHeight()) {
+        currentLiveTouchY > graphics::getScreenHeight())
+    {
         currentLiveTouchX = -1;
         currentLiveTouchY = -1;
     }
@@ -317,7 +355,8 @@ void graphics::touchUpdate() {
     // application-acknowledged state.
     //    `touchX` and `touchY` (at this point) hold the values the application
     //    last processed.
-    if (currentLiveTouchX != touchX || currentLiveTouchY != touchY) {
+    if (currentLiveTouchX != touchX || currentLiveTouchY != touchY)
+    {
         if (!StandbyMode::state()) // only trigger if not already in standby
             StandbyMode::trigger();
     }
@@ -340,7 +379,8 @@ void graphics::touchUpdate() {
     // 5. If the application has processed the previous `touchX`/`touchY` values
     // (isTouchRead == true):
     //    Update `touchX`/`touchY` to the new state from the buffer.
-    if (isTouchRead) {
+    if (isTouchRead)
+    {
         touchX = newTouchX; // Update application-visible coordinates
         touchY = newTouchY;
 
@@ -353,21 +393,25 @@ void graphics::touchUpdate() {
     }
 }
 
-bool graphics::isTouched() {
+bool graphics::isTouched()
+{
     return touchX != -1 && touchY != -1;
 }
 
-graphics::EScreenOrientation graphics::getScreenOrientation() {
+graphics::EScreenOrientation graphics::getScreenOrientation()
+{
     return screenOrientation;
 }
 
-void graphics::setScreenOrientation(const EScreenOrientation screenOrientation) {
+void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
+{
     // Update the screen orientation (and the screen size)
     // Maybe use another name for the parameter ?
     // Or store it in another place ?
     ::screenOrientation = screenOrientation;
 
-    switch (screenOrientation) {
+    switch (screenOrientation)
+    {
     case PORTRAIT:
         lcd->setRotation(0);
         break;
@@ -377,13 +421,15 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation) 
     }
 }
 
-LGFX* graphics::getLCD() {
+LGFX* graphics::getLCD()
+{
     return lcd.get();
 }
 
 #ifdef ESP_PLATFORM
 
-FT6236G* graphics::getTouchController() {
+FT6236G* graphics::getTouchController()
+{
     return &ct;
 }
 

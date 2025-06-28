@@ -16,11 +16,13 @@
 #include <queue>
 #include <threads.hpp>
 
-namespace AppManager {
+namespace AppManager
+{
     class App;
 }
 
-struct Permissions {
+struct Permissions
+{
     bool acces_gui = true;
     bool acces_files = true;
     bool acces_files_root = true;
@@ -32,7 +34,8 @@ struct Permissions {
     bool acces_password_manager = true;
 };
 
-class LuaFile {
+class LuaFile
+{
   public:
     LuaFile(storage::Path filename, storage::Path manifest);
     ~LuaFile();
@@ -51,34 +54,47 @@ class LuaFile {
     sol::protected_function onmessage;
     sol::protected_function onmessageerror;
 
-    void event_oncall() {
+    void event_oncall()
+    {
         if (oncall.valid()) oncall();
     }
-    void event_onlowbattery() {
+    void event_onlowbattery()
+    {
         if (onlowbattery.valid()) onlowbattery();
     }
-    void event_oncharging() {
+    void event_oncharging()
+    {
         if (oncharging.valid()) oncharging();
     }
-    void event_onmessage() {
-        if (onmessage.valid()) {
+    void event_onmessage()
+    {
+        if (onmessage.valid())
+        {
             sol::protected_function_result result = onmessage();
-            if (!result.valid()) {
+            if (!result.valid())
+            {
                 sol::error err = result;
                 std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
-            } else {
+            }
+            else
+            {
                 std::cout << "onmessage event activated" << std::endl;
             }
         }
     }
 
-    void event_onmessageerror() {
-        if (onmessageerror.valid()) {
+    void event_onmessageerror()
+    {
+        if (onmessageerror.valid())
+        {
             sol::protected_function_result result = onmessageerror();
-            if (!result.valid()) {
+            if (!result.valid())
+            {
                 sol::error err = result;
                 std::cout << "[LuaFile] onmessageerror event error: " << err.what() << std::endl;
-            } else {
+            }
+            else
+            {
                 std::cout << "onmessageerror event activated" << std::endl;
             }
         }
@@ -103,7 +119,10 @@ class LuaFile {
                           // call the deleter
 
   private:
-    enum Command { QUIT };
+    enum Command
+    {
+        QUIT
+    };
 
     std::queue<Command> m_commandQueue;
 };

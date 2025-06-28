@@ -29,7 +29,8 @@
  *
  * libsystem contains useful functions and classes to manage the system.
  */
-namespace libsystem {
+namespace libsystem
+{
     void init();
 
     /**
@@ -104,7 +105,11 @@ namespace libsystem {
     /**
      * @brief Different device state, unique.
      */
-    enum DeviceMode { NORMAL, SLEEP };
+    enum DeviceMode
+    {
+        NORMAL,
+        SLEEP
+    };
 
     /**
      * @brief Set the device mode.
@@ -137,13 +142,15 @@ namespace libsystem {
      *
      * Please use these exception instead of standard ones.
      */
-    namespace exceptions {
+    namespace exceptions
+    {
         /**
          * @brief Wrapper for std::runtime_error.
          *
          * Standard exception, but calls an OS panic.
          */
-        class RuntimeError final : public std::runtime_error {
+        class RuntimeError final : public std::runtime_error
+        {
           public:
             /**
              * @brief Throw a new std::runtime_error.
@@ -165,7 +172,8 @@ namespace libsystem {
          *
          * Standard exception, but calls an OS panic.
          */
-        class OutOfRange final : public std::out_of_range {
+        class OutOfRange final : public std::out_of_range
+        {
           public:
             /**
              * @brief Throw a new std::out_of_range.
@@ -187,7 +195,8 @@ namespace libsystem {
          *
          * Standard exception, but calls an OS panic.
          */
-        class InvalidArgument final : public std::invalid_argument {
+        class InvalidArgument final : public std::invalid_argument
+        {
           public:
             /**
              * @brief Throw a new std::invalid_argument.
@@ -209,7 +218,8 @@ namespace libsystem {
      * @brief inner class to managa ethe setting of the paxo
      *
      */
-    namespace paxoConfig {
+    namespace paxoConfig
+    {
         /**
          * @brief Get the Brightness from config file
          *  if settings from config file is not found, returns 0

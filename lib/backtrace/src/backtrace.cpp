@@ -11,22 +11,26 @@
 #include <string>
 #include <threads.hpp>
 
-namespace backtrace_saver {
+namespace backtrace_saver
+{
     uint32_t backtraceEventId = -1;
 
     backtrace_saver::re_restart_debug_t currentData = backtrace_saver::debugGet();
 
     bool backtraceSaved = false;
 
-    bool shouldSaveBacktrace() {
+    bool shouldSaveBacktrace()
+    {
         return !backtraceSaved && !isBacktraceEmpty();
     }
 
-    bool isBacktraceEmpty() {
+    bool isBacktraceEmpty()
+    {
         return currentData.backtrace[0].first == 0;
     }
 
-    std::string getBacktraceMessage() {
+    std::string getBacktraceMessage()
+    {
         std::stringstream backtraceMessageStream;
         backtraceMessageStream << "Crash report:\n";
         backtraceMessageStream << "heap_total: " << std::to_string(currentData.heap_total) << "\n";
@@ -38,7 +42,8 @@ namespace backtrace_saver {
 
 #if CONFIG_RESTART_DEBUG_STACK_DEPTH > 0
         backtraceMessageStream << "backtrace: ";
-        for (int i = 0; i < CONFIG_RESTART_DEBUG_STACK_DEPTH; i++) {
+        for (int i = 0; i < CONFIG_RESTART_DEBUG_STACK_DEPTH; i++)
+        {
             if (currentData.backtrace[i].first == 0) break;
             backtraceMessageStream << "0x" << std::hex << currentData.backtrace[i].first << ":0x"
                                    << std::hex << currentData.backtrace[i].second << " ";
@@ -51,7 +56,8 @@ namespace backtrace_saver {
         return backtraceMessageStream.str();
     }
 
-    re_restart_debug_t getCurrentBacktrace() {
+    re_restart_debug_t getCurrentBacktrace()
+    {
         re_restart_debug_t oldData = _debug_info;
         debugUpdate();
 
@@ -62,16 +68,19 @@ namespace backtrace_saver {
         return returnData;
     }
 
-    bool saveBacktrace() {
+    bool saveBacktrace()
+    {
         if (!shouldSaveBacktrace()) return false;
-        if (!storage::Path("logs").exists() && !storage::Path("logs").newdir()) {
+        if (!storage::Path("logs").exists() && !storage::Path("logs").newdir())
+        {
             std::cout << "Couldn't create logs/ directory to save backtrace" << std::endl;
             return false;
         }
 
         storage::Path path = storage::Path("logs/backtrace.txt");
 
-        if (!path.exists() && !path.newfile()) {
+        if (!path.exists() && !path.newfile())
+        {
             std::cout << "Couldn't create backtrace file" << std::endl;
             return false;
         }
@@ -89,7 +98,8 @@ namespace backtrace_saver {
         return true;
     }
 
-    void backtraceMessageGUI() {
+    void backtraceMessageGUI()
+    {
         Window win;
 
         const auto label = new Label(0, 0, 320, 400);
