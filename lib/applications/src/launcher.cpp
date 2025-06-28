@@ -30,19 +30,20 @@ std::string getFormatedDate() {
     if (year == -1)
         year = 1970;
 
-    std::string dayName =
-        daysOfWeek[(day += month < 3 ? year-- : year - 2,
-                    23 * month / 9 + day + 4 + year / 4 - year / 100 + year / 400) %
-                   7];
+    std::string dayName = daysOfWeek
+        [(day += month < 3 ? year-- : year - 2,
+          23 * month / 9 + day + 4 + year / 4 - year / 100 + year / 400) %
+         7];
     std::string monthName = daysOfMonth[month == 0 ? 1 : (month - 1)];
 
-    return dayName + " " + std::to_string(Gsm::Time::getDay()) + " " + monthName;
+    return dayName + " " + std::to_string(Gsm::Time::getDay()) + " " +
+           monthName;
 }
 
 std::string getBatteryIconFilename() {
     const bool isCharging = hardware::isCharging();
-    const double batteryLevel =
-        Gsm::getBatteryLevel(); // TODO: Replace with actual battery level calculation
+    const double batteryLevel = Gsm::getBatteryLevel(
+    ); // TODO: Replace with actual battery level calculation
 
     if (batteryLevel < 0.2) {
         return isCharging ? "battery_charging_full" : "battery_0_bar";
@@ -71,7 +72,8 @@ std::string getBatteryIconFilename() {
 
 namespace applications::launcher {
 std::shared_ptr<Window> launcherWindow = nullptr;
-std::map<gui::ElementBase*, std::shared_ptr<AppManager::App>> applicationsIconsMap;
+std::map<gui::ElementBase*, std::shared_ptr<AppManager::App>>
+    applicationsIconsMap;
 std::shared_ptr<AppManager::App> targetApp = nullptr;
 
 bool allocated = false;
@@ -108,9 +110,11 @@ void applications::launcher::update() {
         static int min;
 
         if (min != Gsm::Time::getMinute()) {
-            clockLabel->setText(std::to_string(Gsm::Time::getHour()) + ":" +
-                                (Gsm::Time::getMinute() <= 9 ? "0" : "") +
-                                std::to_string(Gsm::Time::getMinute()));
+            clockLabel->setText(
+                std::to_string(Gsm::Time::getHour()) + ":" +
+                (Gsm::Time::getMinute() <= 9 ? "0" : "") +
+                std::to_string(Gsm::Time::getMinute())
+            );
             dateLabel->setText(getFormatedDate());
 
             min = Gsm::Time::getMinute();
@@ -122,8 +126,10 @@ void applications::launcher::update() {
     {
         static double lastBattery = Gsm::getBatteryLevel();
         if (lastBattery != Gsm::getBatteryLevel()) {
-            batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) +
-                                  "%");
+            batteryLabel->setText(
+                std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) +
+                "%"
+            );
 
             lastBattery = Gsm::getBatteryLevel();
         }
@@ -170,7 +176,11 @@ void applications::launcher::update() {
                 networkLabel->setText("X");
             else
                 networkLabel->setText(
-                    std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) + "%");
+                    std::to_string(
+                        (int) Gsm::getNetworkQuality().first * 100 / 31
+                    ) +
+                    "%"
+                );
 
             lastNetwork = Gsm::getNetworkQuality().first;
         }
@@ -190,8 +200,11 @@ void applications::launcher::update() {
     if (brightnessSliderBox->isFocused(true)) {
         libsystem::log("Brightness: " + graphics::getBrightness());
 
-        const int16_t newBrightness = static_cast<int16_t>(
-            std::clamp((325 - (gui::ElementBase::touchY - 77)) * 255 / 325, 3, 255));
+        const int16_t newBrightness = static_cast<int16_t>(std::clamp(
+            (325 - (gui::ElementBase::touchY - 77)) * 255 / 325,
+            3,
+            255
+        ));
 
         graphics::setBrightness(newBrightness);
     }
@@ -201,7 +214,8 @@ void applications::launcher::update() {
     for (const auto& [icon, app] : applicationsIconsMap) {
         if (icon->isTouched()) {
             targetApp = nullptr;
-            std::cout << "launcher::update - touched: " << app->name << std::endl;
+            std::cout << "launcher::update - touched: " << app->name
+                      << std::endl;
             targetApp = app;
         }
     }
@@ -221,9 +235,11 @@ void applications::launcher::draw() {
 
     // Clock
     clockLabel = new Label(86, 42, 148, 41);
-    clockLabel->setText(std::to_string(Gsm::Time::getHour()) + ":" +
-                        (Gsm::Time::getMinute() <= 9 ? "0" : "") +
-                        std::to_string(Gsm::Time::getMinute())); // hour
+    clockLabel->setText(
+        std::to_string(Gsm::Time::getHour()) + ":" +
+        (Gsm::Time::getMinute() <= 9 ? "0" : "") +
+        std::to_string(Gsm::Time::getMinute())
+    ); // hour
     clockLabel->setVerticalAlignment(Label::Alignement::CENTER);
     clockLabel->setHorizontalAlignment(Label::Alignement::CENTER);
     clockLabel->setFontSize(36);
@@ -242,8 +258,9 @@ void applications::launcher::draw() {
     //    std::cout << "launcher::update 1.3" << std::endl;
 
     // Battery icon
-    const auto batteryIconDarkPath =
-        storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
+    const auto batteryIconDarkPath = storage::Path(
+        "system/icons/dark/" + getBatteryIconFilename() + "_64px.png"
+    );
     batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32);
     batteryIcon->load();
     launcherWindow->addChild(batteryIcon);
@@ -252,7 +269,9 @@ void applications::launcher::draw() {
 
     // Battery label
     batteryLabel = new Label(255, 10, 40, 18);
-    batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
+    batteryLabel->setText(
+        std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%"
+    );
     batteryLabel->setVerticalAlignment(Label::Alignement::CENTER);
     batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
     batteryLabel->setFontSize(18);
@@ -265,8 +284,12 @@ void applications::launcher::draw() {
         if (Gsm::getNetworkQuality().first == 99)
             networkLabel->setText("X");
         else
-            networkLabel->setText(std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) +
-                                  "%");
+            networkLabel->setText(
+                std::to_string(
+                    (int) Gsm::getNetworkQuality().first * 100 / 31
+                ) +
+                "%"
+            );
         networkLabel->setVerticalAlignment(Label::Alignement::CENTER);
         networkLabel->setHorizontalAlignment(Label::Alignement::CENTER);
         networkLabel->setFontSize(18);
@@ -325,7 +348,12 @@ void applications::launcher::draw() {
 
         //        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 *
         //        int(placementIndex/2), 80, 80);
-        auto* box = new Box(119 * (placementIndex % 2), 95 * (placementIndex / 2), 80, 80);
+        auto* box = new Box(
+            119 * (placementIndex % 2),
+            95 * (placementIndex / 2),
+            80,
+            80
+        );
 
         auto* img = new Image(app->path / "../icon.png", 20, 6, 40, 40);
         img->load();
@@ -338,8 +366,9 @@ void applications::launcher::draw() {
         text->setFontSize(16);
         box->addChild(text);
 
-        /*if(storage::Path notifs = (app->path / ".." / "unread.txt"); notifs.exists()) {
-            storage::FileStream file(notifs.str(), storage::READ);
+        /*if(storage::Path notifs = (app->path / ".." / "unread.txt");
+        notifs.exists()) { storage::FileStream file(notifs.str(),
+        storage::READ);
 
             if(file.size() > 0) {
                 auto* notifBox = new Box(66, 0, 14, 14);
@@ -363,9 +392,11 @@ void applications::launcher::draw() {
     chargingPopupBox->setRadius(7);
     chargingPopupBox->setBackgroundColor(TFT_BLACK);
 
-    const auto batteryIconLightPath =
-        storage::Path("system/icons/light/" + getBatteryIconFilename() + "_64px.png");
-    const auto chargingIconImage = new Image(batteryIconLightPath, 16, 16, 64, 64, TFT_BLACK);
+    const auto batteryIconLightPath = storage::Path(
+        "system/icons/light/" + getBatteryIconFilename() + "_64px.png"
+    );
+    const auto chargingIconImage =
+        new Image(batteryIconLightPath, 16, 16, 64, 64, TFT_BLACK);
     chargingIconImage->load(TFT_BLACK);
     chargingPopupBox->addChild(chargingIconImage);
 

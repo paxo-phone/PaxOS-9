@@ -47,7 +47,10 @@ void save() {
     std::string file = json.dump();
 
     storage::Path path(CONTACTS_LOCATION);
-    storage::FileStream stream((path / "list.json").str(), storage::Mode::WRITE);
+    storage::FileStream stream(
+        (path / "list.json").str(),
+        storage::Mode::WRITE
+    );
     stream.write(file);
     stream.close();
 }
@@ -61,9 +64,16 @@ void addContact(contact c) {
 }
 
 void deleteContact(std::string name) {
-    contactList.erase(std::remove_if(contactList.begin(), contactList.end(),
-                                     [name](const contact& c) { return c.name == name; }),
-                      contactList.end());
+    contactList.erase(
+        std::remove_if(
+            contactList.begin(),
+            contactList.end(),
+            [name](const contact& c) {
+                return c.name == name;
+            }
+        ),
+        contactList.end()
+    );
 }
 
 void editContact(std::string name, contact c) {

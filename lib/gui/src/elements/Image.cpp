@@ -16,12 +16,15 @@ struct ImageLoaded {
 
 std::vector<ImageLoaded> images;
 
-std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width, uint16_t height,
-                                             const color_t backgroundColor = 0xFFFF) {
+std::shared_ptr<graphics::Surface> loadImage(
+    storage::Path path, uint16_t width, uint16_t height,
+    const color_t backgroundColor = 0xFFFF
+) {
     // printf("IMG--1\n");
     //  ReSharper disable once CppUseStructuredBinding
     for (const auto& image : images) {
-        if (image.path.str() == path.str() && image.width == width && image.height == height) {
+        if (image.path.str() == path.str() && image.width == width &&
+            image.height == height) {
             // printf("IMG--2\n");
             return image.surface;
         }
@@ -29,8 +32,12 @@ std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width,
 
     const auto i = graphics::SImage(path);
 
-    ImageLoaded img = {path, i.getWidth(), i.getHeight(),
-                       std::make_shared<graphics::Surface>(width, height)};
+    ImageLoaded img = {
+        path,
+        i.getWidth(),
+        i.getHeight(),
+        std::make_shared<graphics::Surface>(width, height)
+    };
 
     // Clear the background if it's a transparent image ?
     // I guess so ?
@@ -62,8 +69,10 @@ void updateImageList() {
 } // namespace gui::ImagesList
 
 namespace gui::elements {
-Image::Image(storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
-             color_t backgroundColor) {
+Image::Image(
+    storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+    color_t backgroundColor
+) {
     this->m_path = path;
     this->m_x = x;
     this->m_y = y;
@@ -92,7 +101,12 @@ void Image::setTransparentColor(color_t color) {
 }
 
 void Image::load(color_t background) {
-    m_surface = gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
+    m_surface = gui::ImagesList::loadImage(
+        this->m_path,
+        this->m_width,
+        this->m_height,
+        background
+    );
     localGraphicalUpdate();
 }
 } // namespace gui::elements

@@ -21,7 +21,10 @@ Window::Window() {
 }
 
 Window::~Window() {
-    windows.erase(std::remove(windows.begin(), windows.end(), this), windows.end());
+    windows.erase(
+        std::remove(windows.begin(), windows.end(), this),
+        windows.end()
+    );
 }
 
 void Window::render() {

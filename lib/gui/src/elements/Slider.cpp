@@ -14,8 +14,10 @@
 #include <iostream>
 
 namespace gui::elements {
-Slider::Slider(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t minValue,
-               uint16_t maxValue, uint16_t defaultValue) {
+Slider::Slider(
+    uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t minValue,
+    uint16_t maxValue, uint16_t defaultValue
+) {
     m_x = x;
     m_y = y;
     m_width = width;
@@ -34,7 +36,8 @@ Slider::Slider(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t
     m_valueColor = COLOR_BLACK;
     m_positionValue = 0;
     m_displayValue = false;
-    m_innerTextColor = graphics::constPackRGB565(250, 250, 250); // COLOR_LIGHT_GREY;
+    m_innerTextColor =
+        graphics::constPackRGB565(250, 250, 250); // COLOR_LIGHT_GREY;
     m_outerTextColor = COLOR_BLACK;
     m_isPercentage = false;
     m_hasEvents = true;
@@ -91,9 +94,14 @@ void Slider::setFormatPercentage(bool isPercent) {
 
 void Slider::slide() {
     // m_positionValue = (touchX - getAbsoluteX());
-    // m_Value = (m_positionValue * (m_maxValue - m_minValue)) / m_width + m_minValue;
-    float value = (touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width + m_minValue;
-    value = value < m_minValue ? m_minValue : value > m_maxValue ? m_maxValue : value;
+    // m_Value = (m_positionValue * (m_maxValue - m_minValue)) / m_width +
+    // m_minValue;
+    float value =
+        (touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width +
+        m_minValue;
+    value = value < m_minValue   ? m_minValue
+            : value > m_maxValue ? m_maxValue
+                                 : value;
 
     if (m_Value != value) {
         setValue(value);
@@ -112,36 +120,62 @@ void Slider::widgetUpdate() {
 
 void Slider::render() {
 
-    this->getAndSetSurface()->clear(m_parent == nullptr ? COLOR_WHITE
-                                                        : m_parent->getBackgroundColor());
+    this->getAndSetSurface()->clear(
+        m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor()
+    );
 
     // render the of the widget
-    int valueSize = ((m_Value - m_minValue) * m_width) / (m_maxValue - m_minValue);
+    int valueSize =
+        ((m_Value - m_minValue) * m_width) / (m_maxValue - m_minValue);
     m_positionValue = valueSize + m_x;
 
     this->getAndSetSurface()->fillRoundRectWithBorder(
-        0, 0, m_width, m_height, m_borderRadius, m_borderSize, m_backgroundColor, m_borderColor);
+        0,
+        0,
+        m_width,
+        m_height,
+        m_borderRadius,
+        m_borderSize,
+        m_backgroundColor,
+        m_borderColor
+    );
 
     // render the "0 -> value" part
-    this->getAndSetSurface()->fillRoundRectWithBorder(0, 0, valueSize, m_height, m_borderRadius,
-                                                      m_borderSize, m_valueColor, m_borderColor);
+    this->getAndSetSurface()->fillRoundRectWithBorder(
+        0,
+        0,
+        valueSize,
+        m_height,
+        m_borderRadius,
+        m_borderSize,
+        m_valueColor,
+        m_borderColor
+    );
 
     if (m_displayValue) {
         int x = 0;
         std::string str = std::to_string(m_Value);
         if (m_isPercentage)
             str = str + "%";
-        const uint16_t textWidth = this->getAndSetSurface()->m_sprite.textWidth(str.c_str());
+        const uint16_t textWidth =
+            this->getAndSetSurface()->m_sprite.textWidth(str.c_str());
         const uint16_t textHeight = this->getAndSetSurface()->getTextHeight();
         if (textWidth <= valueSize - 10) {
             // this->getAndSetSurface()->setTextColor(m_innerTextColor);
-            this->getAndSetSurface()->drawText(str, valueSize - textWidth - 5,
-                                               floor((m_height - textHeight) / 2),
-                                               m_innerTextColor);
+            this->getAndSetSurface()->drawText(
+                str,
+                valueSize - textWidth - 5,
+                floor((m_height - textHeight) / 2),
+                m_innerTextColor
+            );
         } else {
             //                this->getAndSetSurface()->setTextColor(COLOR_GREEN);
             this->getAndSetSurface()->drawText(
-                str, valueSize + 5, floor((m_height - textHeight) / 2), m_outerTextColor);
+                str,
+                valueSize + 5,
+                floor((m_height - textHeight) / 2),
+                m_outerTextColor
+            );
         }
     }
 }

@@ -1,12 +1,14 @@
 #include "Filter.hpp"
-
 #include "graphics.hpp"
 
 #include <iostream>
 #include <standby.hpp>
 
 namespace gui::elements {
-Filter::Filter(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height) {
+Filter::Filter(
+    const uint16_t x, const uint16_t y, const uint16_t width,
+    const uint16_t height
+) {
     this->m_x = x;
     this->m_y = y;
     this->m_width = width;
@@ -30,8 +32,13 @@ void Filter::apply() const {
     LGFX* lcd = graphics::getLCD();
 
     // Copy screen zone to buffer
-    lcd->readRect(m_x, m_y, m_width, m_height,
-                  static_cast<uint16_t*>(m_screenSurface->getBuffer()));
+    lcd->readRect(
+        m_x,
+        m_y,
+        m_width,
+        m_height,
+        static_cast<uint16_t*>(m_screenSurface->getBuffer())
+    );
 
     // Apply filter
     m_screenSurface->applyFilter(graphics::Surface::LIGHTEN, 100);

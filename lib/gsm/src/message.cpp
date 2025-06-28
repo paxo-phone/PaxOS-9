@@ -9,7 +9,10 @@ void loadMessages(const std::string& filePath, std::vector<Message>& messages) {
     if (!file.is_open())
         return;
 
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::string content(
+        (std::istreambuf_iterator<char>(file)),
+        std::istreambuf_iterator<char>()
+    );
     file.close();
 
     nlohmann::json json = nlohmann::json::parse(content);
@@ -23,11 +26,16 @@ void loadMessages(const std::string& filePath, std::vector<Message>& messages) {
     }
 }
 
-void saveMessages(const std::string& filePath, const std::vector<Message>& messages) {
+void saveMessages(
+    const std::string& filePath, const std::vector<Message>& messages
+) {
     nlohmann::json json;
     for (const auto& message : messages) {
         json.push_back(
-            {{"number", message.number}, {"message", message.message}, {"date", message.date}});
+            {{"number", message.number},
+             {"message", message.message},
+             {"date", message.date}}
+        );
     }
 
     std::ofstream file(filePath);

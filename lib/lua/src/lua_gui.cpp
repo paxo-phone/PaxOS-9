@@ -1,8 +1,7 @@
-#include "lua_gui.hpp"
-
 #include "app.hpp"
 #include "libsystem.hpp"
 #include "lua_file.hpp"
+#include "lua_gui.hpp"
 
 #include <graphics.hpp>
 #include <threads.hpp>
@@ -35,15 +34,18 @@ LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height) {
     return w;
 }
 
-LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height) {
+LuaCanvas*
+    LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height) {
     LuaCanvas* w = new LuaCanvas(parent, x, y, width, height, this->lua);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaImage* LuaGui::image(LuaWidget* parent, std::string path, int x, int y, int width, int height,
-                        color_t background) {
+LuaImage* LuaGui::image(
+    LuaWidget* parent, std::string path, int x, int y, int width, int height,
+    color_t background
+) {
     storage::Path path_(path);
 
     if (!this->lua->perms.acces_files)
@@ -62,7 +64,8 @@ LuaImage* LuaGui::image(LuaWidget* parent, std::string path, int x, int y, int w
     return w;
 }
 
-LuaLabel* LuaGui::label(LuaWidget* parent, int x, int y, int width, int height) {
+LuaLabel*
+    LuaGui::label(LuaWidget* parent, int x, int y, int width, int height) {
     LuaLabel* w = new LuaLabel(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
@@ -76,21 +79,26 @@ LuaInput* LuaGui::input(LuaWidget* parent, int x, int y) {
     return w;
 }
 
-LuaButton* LuaGui::button(LuaWidget* parent, int x, int y, int width, int height) {
+LuaButton*
+    LuaGui::button(LuaWidget* parent, int x, int y, int width, int height) {
     LuaButton* w = new LuaButton(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaVerticalList* LuaGui::verticalList(LuaWidget* parent, int x, int y, int width, int height) {
+LuaVerticalList* LuaGui::verticalList(
+    LuaWidget* parent, int x, int y, int width, int height
+) {
     LuaVerticalList* w = new LuaVerticalList(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaHorizontalList* LuaGui::horizontalList(LuaWidget* parent, int x, int y, int width, int height) {
+LuaHorizontalList* LuaGui::horizontalList(
+    LuaWidget* parent, int x, int y, int width, int height
+) {
     LuaHorizontalList* w = new LuaHorizontalList(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
@@ -118,10 +126,20 @@ LuaCheckbox* LuaGui::checkbox(LuaWidget* parent, int x, int y) {
     return w;
 }
 
-LuaSlider* LuaGui::slider(LuaWidget* parent, int x, int y, int width, int height, int minValue,
-                          int maxValue, int defaultValue) {
-    LuaSlider* slider =
-        new LuaSlider(parent, x, y, width, height, minValue, maxValue, defaultValue);
+LuaSlider* LuaGui::slider(
+    LuaWidget* parent, int x, int y, int width, int height, int minValue,
+    int maxValue, int defaultValue
+) {
+    LuaSlider* slider = new LuaSlider(
+        parent,
+        x,
+        y,
+        width,
+        height,
+        minValue,
+        maxValue,
+        defaultValue
+    );
     widgets.push_back(slider);
     slider->gui = this;
     return slider;
@@ -144,15 +162,20 @@ void LuaGui::del(LuaWidget* widget) {
     } else // auto enable async if not already done by lua
     {
         lua->eventHandler.setTimeout(
-            new Callback<>(std::bind(std::function<void(LuaWidget*, LuaWidget*)>(
-                                         [](LuaWidget* widget, LuaWidget* mainWindow) {
-                                             delete widget;
-                                             if (mainWindow == widget)
-                                                 mainWindow = nullptr;
-                                             widget = nullptr;
-                                         }),
-                                     widget, mainWindow)),
-            0);
+            new Callback<>(std::bind(
+                std::function<void(LuaWidget*, LuaWidget*)>(
+                    [](LuaWidget* widget, LuaWidget* mainWindow) {
+                        delete widget;
+                        if (mainWindow == widget)
+                            mainWindow = nullptr;
+                        widget = nullptr;
+                    }
+                ),
+                widget,
+                mainWindow
+            )),
+            0
+        );
     }
 }
 
@@ -162,8 +185,12 @@ void LuaGui::update() {
     }
 }
 
-std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText) {
-    libsystem::log("[WARNING]: Keyboard is deprecated. Use keyboard_async instead.");
+std::string LuaGui::keyboard(
+    const std::string& placeholder, const std::string& defaultText
+) {
+    libsystem::log(
+        "[WARNING]: Keyboard is deprecated. Use keyboard_async instead."
+    );
     graphics::setScreenOrientation(graphics::LANDSCAPE);
 
     auto key = new Keyboard(defaultText);
@@ -182,15 +209,21 @@ std::string LuaGui::keyboard(const std::string& placeholder, const std::string& 
     return o;
 }
 
-void LuaGui::keyboard_async(const std::string& placeholder, const std::string& defaultText,
-                            sol::function callback) {
+void LuaGui::keyboard_async(
+    const std::string& placeholder, const std::string& defaultText,
+    sol::function callback
+) {
     printf("Calling keyboard_async\n");
     // Store a REFERENCE to the callback, NOT a copy of the sol::function.
     callback_memory.push_back(std::make_unique<KeyboardCallbackData>(
-        lua->lua.lua_state(), sol::reference(lua->lua.lua_state(), callback)));
+        lua->lua.lua_state(),
+        sol::reference(lua->lua.lua_state(), callback)
+    ));
 
     AppManager::Keyboard_manager::open(
-        this->lua->app, placeholder, defaultText,
+        this->lua->app,
+        placeholder,
+        defaultText,
         [this, index = callback_memory.size() - 1](std::string t) {
             // Get the callback reference from storage
             KeyboardCallbackData* data = callback_memory[index].get();
@@ -204,7 +237,8 @@ void LuaGui::keyboard_async(const std::string& placeholder, const std::string& d
 
                     // Show error (same as your pushError function)
                     std::string error_message =
-                        "The callback for keyboard_async encountered an error: ";
+                        "The callback for keyboard_async encountered an "
+                        "error: ";
                     error_message += err.what();
                     showErrorMessage(error_message);
                 }
@@ -213,7 +247,8 @@ void LuaGui::keyboard_async(const std::string& placeholder, const std::string& d
                 // callback_memory[index].reset();
                 // callback_memory.erase(callback_memory.begin() + index);
             }
-        });
+        }
+    );
     // printf("end keyboard_async");
 }
 

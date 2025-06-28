@@ -3,7 +3,6 @@
 //
 
 #include "Image.hpp"
-
 #include "imgdec.hpp"
 
 #include <filestream.hpp>
@@ -22,7 +21,8 @@ uint64_t getFileSize(storage::Path& path) {
 // TODO: Replace this with "storage"
 // TODO : Use "Path"
 std::shared_ptr<uint8_t[]> getFileData(storage::Path& path) {
-    auto data = std::shared_ptr<uint8_t[]>(new uint8_t[2000]); // just for headers
+    auto data =
+        std::shared_ptr<uint8_t[]>(new uint8_t[2000]); // just for headers
 
     storage::FileStream stream(path.str(), storage::Mode::READ);
 
@@ -46,7 +46,8 @@ SImage::SImage(storage::Path& path) {
 
     if (!path.exists() || !path.isfile()) {
         std::cerr << "Path does not exist : " << path.str() << std::endl;
-        // throw libsystem::exceptions::InvalidArgument("Path does not exist : " + path.str() +
+        // throw libsystem::exceptions::InvalidArgument("Path does not exist : "
+        // + path.str() +
         // ".");    // trop radical
         m_width = 0;
         m_height = 0;

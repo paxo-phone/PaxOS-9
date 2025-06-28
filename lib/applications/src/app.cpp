@@ -5,10 +5,12 @@
 #include <standby.hpp>
 
 namespace AppManager {
-App::App(const std::string& name, const storage::Path& path, const storage::Path& manifest,
-         const bool auth)
-    : name(name), fullName(name), path(path), manifest(manifest), auth(auth), luaInstance(nullptr),
-      app_state(NOT_RUNNING), background(false) {}
+App::App(
+    const std::string& name, const storage::Path& path,
+    const storage::Path& manifest, const bool auth
+) :
+    name(name), fullName(name), path(path), manifest(manifest), auth(auth),
+    luaInstance(nullptr), app_state(NOT_RUNNING), background(false) {}
 
 void App::run(const std::vector<std::string>& parameters) {
     if (!auth) {
@@ -90,8 +92,10 @@ void App::requestAuth() {
     std::string data = stream.read();
     stream.close();
 
-    label->setText("Voulez-vous autoriser l'application " + fullName +
-                   " à accéder aux permissions suivantes:\n" + data);
+    label->setText(
+        "Voulez-vous autoriser l'application " + fullName +
+        " à accéder aux permissions suivantes:\n" + data
+    );
     win.addChild(label);
 
     auto* btn = new Button(35, 420, 250, 38);
@@ -116,8 +120,9 @@ void App::requestAuth() {
 }
 
 std::string App::toString() const {
-    return "{name = " + name + ", fullName = " + fullName + ", path = " + path.str() +
-           ", manifest = " + manifest.str() + ", auth = " + std::to_string(auth) +
+    return "{name = " + name + ", fullName = " + fullName +
+           ", path = " + path.str() + ", manifest = " + manifest.str() +
+           ", auth = " + std::to_string(auth) +
            ", state = " + std::to_string(app_state) + "}";
 }
 
@@ -126,14 +131,17 @@ std::mutex threadsync;
 std::vector<std::shared_ptr<App>> appList;
 
 /**
- * The stack is used only for foreground applications THAT HAVE a Window created.
+ * The stack is used only for foreground applications THAT HAVE a Window
+ * created.
  */
 std::vector<App*> appStack;
 
 // ReSharper disable once CppParameterMayBeConstPtrOrRef
 // ReSharper disable once CppDFAConstantFunctionResult
-int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception,
-              const sol::string_view description) {
+int pushError(
+    lua_State* L, sol::optional<const std::exception&> maybe_exception,
+    const sol::string_view description
+) {
     std::shared_ptr<App> erroredApp;
 
     for (auto& app : appList) {
@@ -157,14 +165,18 @@ int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception
 
     // Show error GUI
 
-    std::cerr << "The App " << erroredApp->name << " encountered an error:" << std::endl;
+    std::cerr << "The App " << erroredApp->name
+              << " encountered an error:" << std::endl;
     std::cerr << erroredApp->errors << std::endl;
 
     Window win;
 
     const auto label = new Label(0, 0, 320, 400);
 
-    label->setText("The App " + erroredApp->name + " encountered an error:\n" + erroredApp->errors);
+    label->setText(
+        "The App " + erroredApp->name + " encountered an error:\n" +
+        erroredApp->errors
+    );
     win.addChild(label);
 
     auto* btn = new Button(35, 420, 250, 38);
@@ -186,7 +198,10 @@ int pushError(lua_State* L, sol::optional<const std::exception&> maybe_exception
 void addPermission(App* app) {
     app->auth = true;
 
-    storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::APPEND);
+    storage::FileStream stream(
+        (storage::Path(PERMS_DIR) / "auth.list").str(),
+        storage::APPEND
+    );
     stream.write(app->path.str() + "\n");
     stream.close();
 
@@ -194,16 +209,23 @@ void addPermission(App* app) {
     std::string manifest = oman.read();
     oman.close();
 
-    storage::FileStream nman((storage::Path(PERMS_DIR) / (app->fullName + ".json")).str(),
-                             storage::WRITE);
+    storage::FileStream nman(
+        (storage::Path(PERMS_DIR) / (app->fullName + ".json")).str(),
+        storage::WRITE
+    );
     nman.write(manifest);
     nman.close();
 }
 
-void loadDir(const storage::Path& directory, bool root = false, std::string prefix = "") {
+void loadDir(
+    const storage::Path& directory, bool root = false, std::string prefix = ""
+) {
     std::vector<std::string> dirs = storage::Path(directory).listdir();
 
-    storage::FileStream stream((storage::Path(PERMS_DIR) / "auth.list").str(), storage::READ);
+    storage::FileStream stream(
+        (storage::Path(PERMS_DIR) / "auth.list").str(),
+        storage::READ
+    );
     std::string allowedFiles = stream.read();
     stream.close();
 
@@ -220,7 +242,8 @@ void loadDir(const storage::Path& directory, bool root = false, std::string pref
         manifestStream.close();
 
         if (!nlohmann::json::accept(manifestContent)) {
-            std::cerr << "Error: invalid manifest at \"" << manifestPath.str() << "\"" << std::endl;
+            std::cerr << "Error: invalid manifest at \"" << manifestPath.str()
+                      << "\"" << std::endl;
             continue;
         }
 
@@ -234,14 +257,27 @@ void loadDir(const storage::Path& directory, bool root = false, std::string pref
         std::cout << "path: " << appPath.str() << std::endl;
 
         if (root) {
-            app = std::make_shared<App>(dir, directory / dir / "app.lua",
-                                        directory / dir / "manifest.json", true);
-        } else if (allowedFiles.find((appPath / "app.lua").str() + "\n") != std::string::npos) {
-            app = std::make_shared<App>(dir, storage::Path(directory) / dir / "app.lua",
-                                        storage::Path(PERMS_DIR) / (fullname + ".json"), true);
+            app = std::make_shared<App>(
+                dir,
+                directory / dir / "app.lua",
+                directory / dir / "manifest.json",
+                true
+            );
+        } else if (allowedFiles.find((appPath / "app.lua").str() + "\n") !=
+                   std::string::npos) {
+            app = std::make_shared<App>(
+                dir,
+                storage::Path(directory) / dir / "app.lua",
+                storage::Path(PERMS_DIR) / (fullname + ".json"),
+                true
+            );
         } else {
-            app = std::make_shared<App>(dir, storage::Path(directory) / dir / "app.lua",
-                                        storage::Path(directory) / dir / "manifest.json", false);
+            app = std::make_shared<App>(
+                dir,
+                storage::Path(directory) / dir / "app.lua",
+                storage::Path(directory) / dir / "manifest.json",
+                false
+            );
         }
 
         app->fullName = fullname;
@@ -263,11 +299,16 @@ void loadDir(const storage::Path& directory, bool root = false, std::string pref
         if (manifest["subdir"].is_string()) // todo, restrict only for subdirs
         {
             if ((app.get()->path / "../" / manifest["subdir"]).exists())
-                loadDir(app.get()->path / "../" / manifest["subdir"], root, app->fullName);
+                loadDir(
+                    app.get()->path / "../" / manifest["subdir"],
+                    root,
+                    app->fullName
+                );
             else
-                std::cerr << "Error: subdir \""
-                          << (app.get()->path / "../" / manifest["subdir"]).str()
-                          << "\" does not exist" << std::endl;
+                std::cerr
+                    << "Error: subdir \""
+                    << (app.get()->path / "../" / manifest["subdir"]).str()
+                    << "\" does not exist" << std::endl;
         }
 
         appList.push_back(app);
@@ -346,7 +387,9 @@ void updateBackground() {
 
 void quitApp() {
     if (appStack.empty()) {
-        throw libsystem::exceptions::RuntimeError("Cannot quit an app if no app is running.");
+        throw libsystem::exceptions::RuntimeError(
+            "Cannot quit an app if no app is running."
+        );
     }
 
     // Get the currently running app
@@ -381,7 +424,8 @@ std::shared_ptr<App> get(const uint8_t index) {
 
 std::shared_ptr<App> get(const lua_State* L) {
     for (const auto& app : appList) {
-        if (app->luaInstance != nullptr && app->luaInstance->lua.lua_state() == L) {
+        if (app->luaInstance != nullptr &&
+            app->luaInstance->lua.lua_state() == L) {
             return app;
         }
     }
@@ -390,9 +434,13 @@ std::shared_ptr<App> get(const lua_State* L) {
 }
 
 std::shared_ptr<App> get(sol::state* L) {
-    const auto it =
-        std::find_if(appList.begin(), appList.end(),
-                     [L](const std::shared_ptr<App>& app) { return &app->luaInstance->lua == L; });
+    const auto it = std::find_if(
+        appList.begin(),
+        appList.end(),
+        [L](const std::shared_ptr<App>& app) {
+            return &app->luaInstance->lua == L;
+        }
+    );
 
     if (it != appList.end()) {
         return *it;
@@ -407,9 +455,13 @@ App* get(const LuaFile* luaInstance) {
 }
 
 std::shared_ptr<App> get(storage::Path path) {
-    const auto it =
-        std::find_if(appList.begin(), appList.end(),
-                     [&path](const std::shared_ptr<App>& app) { return app->path == path; });
+    const auto it = std::find_if(
+        appList.begin(),
+        appList.end(),
+        [&path](const std::shared_ptr<App>& app) {
+            return app->path == path;
+        }
+    );
 
     if (it != appList.end()) {
         return *it;
@@ -469,8 +521,10 @@ App* app = nullptr;
 std::function<void(std::string)> callback;
 std::unique_ptr<Keyboard> keyboard;
 
-void open(App* app, const std::string& placeholder, const std::string& defaultText,
-          std::function<void(std::string)> callback) {
+void open(
+    App* app, const std::string& placeholder, const std::string& defaultText,
+    std::function<void(std::string)> callback
+) {
     // printf("---- 1\n");
     graphics::setScreenOrientation(graphics::LANDSCAPE);
     // printf("---- 2\n");

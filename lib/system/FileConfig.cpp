@@ -70,8 +70,10 @@ bool FileConfig::has(const std::string& key) const {
     return namespaceNode->hasValue(keySplit[0]);
 }
 
-FileConfig::file_config_types_t FileConfig::getRaw(const std::string& key) const {
-    const std::shared_ptr<NamespaceNode> namespaceNode = getNamespaceNodeFromNamespaceKey(key);
+FileConfig::file_config_types_t FileConfig::getRaw(const std::string& key
+) const {
+    const std::shared_ptr<NamespaceNode> namespaceNode =
+        getNamespaceNodeFromNamespaceKey(key);
 
     // Get only the last part of the key
     const std::string keySuffix = key.substr(key.find_last_of('.') + 1);
@@ -81,7 +83,9 @@ FileConfig::file_config_types_t FileConfig::getRaw(const std::string& key) const
     return value->getValue();
 }
 
-void FileConfig::setRaw(const std::string& key, const file_config_types_t& value) const {
+void FileConfig::setRaw(
+    const std::string& key, const file_config_types_t& value
+) const {
     const std::shared_ptr<NamespaceNode> namespaceNode =
         getNamespaceNodeFromNamespaceKey(key, true);
 
@@ -89,7 +93,8 @@ void FileConfig::setRaw(const std::string& key, const file_config_types_t& value
     if (const std::string keySuffix = key.substr(key.find_last_of('.') + 1);
         namespaceNode->hasValue(keySuffix)) {
         // Update value
-        const std::shared_ptr<ValueNode> valueNode = namespaceNode->getValue(keySuffix);
+        const std::shared_ptr<ValueNode> valueNode =
+            namespaceNode->getValue(keySuffix);
 
         valueNode->setValue(value);
     } else {
@@ -101,7 +106,8 @@ void FileConfig::setRaw(const std::string& key, const file_config_types_t& value
 }
 
 std::string FileConfig::toString() const {
-    return "FileConfig{path=" + m_path.str() + ", version=" + std::to_string(m_version) + "}";
+    return "FileConfig{path=" + m_path.str() +
+           ", version=" + std::to_string(m_version) + "}";
 }
 
 bool FileConfig::checkFormat() {
@@ -189,7 +195,8 @@ void FileConfig::pushNamespace() {
     if (m_currentNode->hasNamespace(name)) {
         // If namespace already exists
         // Get existing namespace
-        const std::shared_ptr<NamespaceNode> namespaceNode = m_currentNode->getNamespace(name);
+        const std::shared_ptr<NamespaceNode> namespaceNode =
+            m_currentNode->getNamespace(name);
         m_currentNode = namespaceNode;
         return;
     }
@@ -214,7 +221,8 @@ std::string FileConfig::getNamespacedKey(const std::string& key) const {
 }
 
 // ReSharper disable once CppDFAUnreachableFunctionCall
-std::vector<std::string> FileConfig::getSplicedNamespacedKey(const std::string& namespacedKey) {
+std::vector<std::string>
+    FileConfig::getSplicedNamespacedKey(const std::string& namespacedKey) {
     std::vector<std::string> output;
 
     // Code from :
@@ -234,8 +242,9 @@ std::vector<std::string> FileConfig::getSplicedNamespacedKey(const std::string& 
 
 // ReSharper disable once CppDFAUnreachableFunctionCall
 std::shared_ptr<FileConfig::NamespaceNode>
-FileConfig::getNamespaceNodeFromNamespaceKey(const std::string& namespacedKey,
-                                             const bool createNewNamespaces) const {
+    FileConfig::getNamespaceNodeFromNamespaceKey(
+        const std::string& namespacedKey, const bool createNewNamespaces
+    ) const {
 
     std::vector<std::string> keySplit = getSplicedNamespacedKey(namespacedKey);
 
@@ -246,11 +255,14 @@ FileConfig::getNamespaceNodeFromNamespaceKey(const std::string& namespacedKey,
             namespaceNode = namespaceNode->getNamespace(namespaceName);
         } else {
             if (createNewNamespaces) {
-                auto newNamespace = std::make_shared<NamespaceNode>(namespaceName);
+                auto newNamespace =
+                    std::make_shared<NamespaceNode>(namespaceName);
                 namespaceNode->addNamespaceNode(newNamespace);
                 namespaceNode = newNamespace;
             } else {
-                throw exceptions::InvalidArgument("Unknown key: " + namespacedKey + ".");
+                throw exceptions::InvalidArgument(
+                    "Unknown key: " + namespacedKey + "."
+                );
             }
         }
 
@@ -301,10 +313,14 @@ uint64_t FileConfig::readUint64() {
     // #pragma GCC diagnostic push
     // #pragma GCC diagnostic ignored "-Wshift-count-overflow"
 
-    const uint64_t r = static_cast<uint64_t>(read()) << 56 | static_cast<uint64_t>(read()) << 48 |
-                       static_cast<uint64_t>(read()) << 40 | static_cast<uint64_t>(read()) << 32 |
-                       static_cast<uint64_t>(read()) << 24 | static_cast<uint64_t>(read()) << 16 |
-                       static_cast<uint64_t>(read()) << 8 | static_cast<uint64_t>(read());
+    const uint64_t r = static_cast<uint64_t>(read()) << 56 |
+                       static_cast<uint64_t>(read()) << 48 |
+                       static_cast<uint64_t>(read()) << 40 |
+                       static_cast<uint64_t>(read()) << 32 |
+                       static_cast<uint64_t>(read()) << 24 |
+                       static_cast<uint64_t>(read()) << 16 |
+                       static_cast<uint64_t>(read()) << 8 |
+                       static_cast<uint64_t>(read());
 
     return r;
 
@@ -362,12 +378,15 @@ FileConfig::Type FileConfig::readType() {
     return static_cast<Type>(read());
 }
 
-FileConfig::ValueNode::ValueNode(const std::string& key, const file_config_types_t& value) {
+FileConfig::ValueNode::ValueNode(
+    const std::string& key, const file_config_types_t& value
+) {
     m_key = key;
     m_value = value;
 }
 
-std::shared_ptr<FileConfig::NamespaceNode> FileConfig::ValueNode::getParent() const {
+std::shared_ptr<FileConfig::NamespaceNode>
+    FileConfig::ValueNode::getParent() const {
     return std::static_pointer_cast<NamespaceNode>(m_parent);
 }
 
@@ -395,7 +414,9 @@ std::string FileConfig::ValueNode::getPath() {
     return getParent()->getPath() + "." + m_key;
 }
 
-void FileConfig::ValueNode::write(const std::shared_ptr<storage::FileStream>& fileStream) const {
+void FileConfig::ValueNode::write(
+    const std::shared_ptr<storage::FileStream>& fileStream
+) const {
     fileStream->write(PROPERTY);
     fileStream->write(getType());
 
@@ -494,7 +515,8 @@ void FileConfig::ValueNode::write(const std::shared_ptr<storage::FileStream>& fi
         break;
     }
     case LIST: {
-        const std::vector<std::string> v = std::get<std::vector<std::string>>(m_value);
+        const std::vector<std::string> v =
+            std::get<std::vector<std::string>>(m_value);
         fileStream->write("[");
         for (const std::string str : v) {
             for (const char c : str) {
@@ -516,7 +538,8 @@ FileConfig::NamespaceNode::NamespaceNode(const std::string& name) {
     m_name = name;
 }
 
-std::shared_ptr<FileConfig::NamespaceNode> FileConfig::NamespaceNode::getParent() const {
+std::shared_ptr<FileConfig::NamespaceNode>
+    FileConfig::NamespaceNode::getParent() const {
     return std::static_pointer_cast<NamespaceNode>(m_parent);
 }
 
@@ -529,7 +552,8 @@ bool FileConfig::NamespaceNode::hasValue(const std::string& key) {
     return it != m_values.end();
 }
 
-std::shared_ptr<FileConfig::ValueNode> FileConfig::NamespaceNode::getValue(const std::string& key) {
+std::shared_ptr<FileConfig::ValueNode>
+    FileConfig::NamespaceNode::getValue(const std::string& key) {
     const auto it = m_values.find(key);
 
     if (it == m_values.end()) {
@@ -545,7 +569,7 @@ bool FileConfig::NamespaceNode::hasNamespace(const std::string& name) {
 }
 
 std::shared_ptr<FileConfig::NamespaceNode>
-FileConfig::NamespaceNode::getNamespace(const std::string& name) {
+    FileConfig::NamespaceNode::getNamespace(const std::string& name) {
     const auto it = m_namespaces.find(name);
 
     if (it == m_namespaces.end()) {
@@ -555,12 +579,16 @@ FileConfig::NamespaceNode::getNamespace(const std::string& name) {
     return it->second;
 }
 
-void FileConfig::NamespaceNode::addValueNode(const std::shared_ptr<ValueNode>& node) {
+void FileConfig::NamespaceNode::addValueNode(
+    const std::shared_ptr<ValueNode>& node
+) {
     node->m_parent = shared_from_this();
     m_values.insert({node->getKey(), node});
 }
 
-void FileConfig::NamespaceNode::addNamespaceNode(const std::shared_ptr<NamespaceNode>& node) {
+void FileConfig::NamespaceNode::addNamespaceNode(
+    const std::shared_ptr<NamespaceNode>& node
+) {
     node->m_parent = shared_from_this();
     m_namespaces.insert({node->getName(), node});
 }
@@ -578,7 +606,8 @@ std::string FileConfig::NamespaceNode::getPath() {
 }
 
 void FileConfig::NamespaceNode::write(
-    const std::shared_ptr<storage::FileStream>& fileStream) const { // NOLINT(*-no-recursion)
+    const std::shared_ptr<storage::FileStream>& fileStream
+) const { // NOLINT(*-no-recursion)
     // Write begin namespace OpCode, if not top-level namespace
     if (getParent() != nullptr) {
         fileStream->write(BEGIN_NAMESPACE);

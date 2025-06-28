@@ -21,7 +21,10 @@ struct IMGData {
 
 IMGData decodeHeader(const uint8_t* rawData);
 
-void encodeJpg(const uint8_t* rawData, uint32_t width, uint32_t heigth, storage::Path filename);
+void encodeJpg(
+    const uint8_t* rawData, uint32_t width, uint32_t heigth,
+    storage::Path filename
+);
 } // namespace imgdec
 
 #endif // IMGDEC_HPP

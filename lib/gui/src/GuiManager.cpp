@@ -1,5 +1,4 @@
 #include "GuiManager.hpp"
-
 #include "elements/Button.hpp"
 #include "elements/Canvas.hpp"
 #include "elements/Label.hpp"
@@ -64,7 +63,8 @@ int GuiManager::showMessage(WINDOW_TYPE type, const std::string& msg) {
         break;
     }
 
-    gui::elements::Canvas* msgWindow = new gui::elements::Canvas(20, 120, 280, 200);
+    gui::elements::Canvas* msgWindow =
+        new gui::elements::Canvas(20, 120, 280, 200);
     msgWindow->fillRect(0, 0, 280, 200, color_fond);
     msgWindow->drawRoundRect(5, 5, 270, 190, 15, color_border);
     msgWindow->drawLine(5, 30, 274, 30, color_border);

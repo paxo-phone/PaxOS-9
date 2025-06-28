@@ -1,6 +1,5 @@
-#include "i18n_translate.hpp"
-
 #include "i18n_config.hpp"
+#include "i18n_translate.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -14,14 +13,22 @@ namespace i18n {
 std::unordered_map<std::string, std::string> gTranslations = {};
 
 inline void ltrim(std::string& str) {
-    str.erase(str.begin(),
-              std::find_if(str.begin(), str.end(), [](char c) { return !std::isspace(c); }));
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](char c) {
+                  return !std::isspace(c);
+              }));
 }
 
 inline void rtrim(std::string& str) {
     str.erase(
-        std::find_if(str.rbegin(), str.rend(), [](char c) { return !std::isspace(c); }).base(),
-        str.end());
+        std::find_if(
+            str.rbegin(),
+            str.rend(),
+            [](char c) {
+                return !std::isspace(c);
+            }
+        ).base(),
+        str.end()
+    );
 }
 
 inline void trim(std::string& str) {

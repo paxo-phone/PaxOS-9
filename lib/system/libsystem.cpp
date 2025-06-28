@@ -33,7 +33,9 @@ class Restart final : public std::exception {
 };
 
 void libsystem::init() {
-    systemConfig = std::make_shared<libsystem::FileConfig>(storage::Path("system/config.bfc"));
+    systemConfig = std::make_shared<libsystem::FileConfig>(
+        storage::Path("system/config.bfc")
+    );
 }
 
 void libsystem::delay(uint64_t ms) {
@@ -86,11 +88,12 @@ void libsystem::panic(const std::string& message, const bool restart) {
     lcd->setTextColor(graphics::packRGB565(255, 255, 255));
 
     // Show instructions
-    lcd->printf(
-        "This is not an expected behavior, please report this to the Paxo / PaxOS team.\n\n");
+    lcd->printf("This is not an expected behavior, please report this to the "
+                "Paxo / PaxOS team.\n\n");
     lcd->printf("Contact us :\n- https://paxo.fr/\n\n");
     lcd->printf("What you should do:\n");
-    lcd->printf("- Report this issue with every possible detail (what you done, installed "
+    lcd->printf("- Report this issue with every possible detail (what you "
+                "done, installed "
                 "applications...).\n");
     lcd->printf("- Check and clean the SD Card.\n");
     lcd->printf("- Re-flash this device.\n\n");
@@ -99,7 +102,8 @@ void libsystem::panic(const std::string& message, const bool restart) {
 
     // Backtrace
 
-    // backtrace_saver::re_restart_debug_t backtraceData = backtrace_saver::getCurrentBacktrace();
+    // backtrace_saver::re_restart_debug_t backtraceData =
+    // backtrace_saver::getCurrentBacktrace();
     std::string fullBacktraceData;
 
     std::cerr << "Backtrace:" << std::endl;
@@ -110,7 +114,8 @@ void libsystem::panic(const std::string& message, const bool restart) {
 
     do {
         const std::string frameString =
-            "0x" + hexToString(esp_cpu_process_stack_pc(frame.pc)) + ":0x" + hexToString(frame.sp);
+            "0x" + hexToString(esp_cpu_process_stack_pc(frame.pc)) + ":0x" +
+            hexToString(frame.sp);
 
         fullBacktraceData += frameString + ";";
 
@@ -135,7 +140,8 @@ void libsystem::panic(const std::string& message, const bool restart) {
 
 #ifdef ESP_PLATFORM
     // Show QR code
-    const std::string qrCodeData = "https://paxo.fr/panic/" + base64::to_base64(fullBacktraceData);
+    const std::string qrCodeData =
+        "https://paxo.fr/panic/" + base64::to_base64(fullBacktraceData);
 
     std::cerr << "QR Code Link: " << qrCodeData << std::endl;
 
@@ -152,8 +158,12 @@ void libsystem::panic(const std::string& message, const bool restart) {
         touchController->getSamples(&touchInfo);
 
         if (!isQRShown && touchInfo.count > 0) {
-            lcd->qrcode(qrCodeData.c_str(), screenWidth - qrCodeWidth - 30,
-                        screenHeight - qrCodeWidth - 30, qrCodeWidth);
+            lcd->qrcode(
+                qrCodeData.c_str(),
+                screenWidth - qrCodeWidth - 30,
+                screenHeight - qrCodeWidth - 30,
+                qrCodeWidth
+            );
 
             isQRShown = true;
         }
@@ -202,14 +212,21 @@ void libsystem::displayBootErrors() {
 
         lcd->setCursor(
             static_cast<int32_t>(
-                0.5 * static_cast<double>(screenWidth - lcd->textWidth(message.c_str()))),
-            screenHeight - static_cast<int32_t>(bootErrors.size() - i + 1) * fontHeight);
+                0.5 * static_cast<double>(
+                          screenWidth - lcd->textWidth(message.c_str())
+                      )
+            ),
+            screenHeight -
+                static_cast<int32_t>(bootErrors.size() - i + 1) * fontHeight
+        );
 
         lcd->print(message.c_str());
     }
 }
 
-void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBacktrace) {
+void libsystem::restart(
+    bool silent, const uint64_t timeout, const bool saveBacktrace
+) {
     if (timeout > 0) {
         delay(timeout);
     }
@@ -250,30 +267,34 @@ libsystem::FileConfig libsystem::getSystemConfig() {
     return *systemConfig;
 }
 
-libsystem::exceptions::RuntimeError::RuntimeError(const std::string& message)
-    : runtime_error(message) {
+libsystem::exceptions::RuntimeError::RuntimeError(const std::string& message) :
+    runtime_error(message) {
     panic(message, false);
 }
 
-libsystem::exceptions::RuntimeError::RuntimeError(const char* message) : runtime_error(message) {
+libsystem::exceptions::RuntimeError::RuntimeError(const char* message) :
+    runtime_error(message) {
     panic(message, false);
 }
 
-libsystem::exceptions::OutOfRange::OutOfRange(const std::string& message) : out_of_range(message) {
+libsystem::exceptions::OutOfRange::OutOfRange(const std::string& message) :
+    out_of_range(message) {
     panic(message, false);
 }
 
-libsystem::exceptions::OutOfRange::OutOfRange(const char* message) : out_of_range(message) {
+libsystem::exceptions::OutOfRange::OutOfRange(const char* message) :
+    out_of_range(message) {
     panic(message, false);
 }
 
-libsystem::exceptions::InvalidArgument::InvalidArgument(const std::string& message)
-    : invalid_argument(message) {
+libsystem::exceptions::InvalidArgument::InvalidArgument(
+    const std::string& message
+) : invalid_argument(message) {
     panic(message, false);
 }
 
-libsystem::exceptions::InvalidArgument::InvalidArgument(const char* message)
-    : invalid_argument(message) {
+libsystem::exceptions::InvalidArgument::InvalidArgument(const char* message) :
+    invalid_argument(message) {
     panic(message, false);
 }
 
@@ -333,21 +354,27 @@ bool libsystem::paxoConfig::connectWifi(std::string SSID, std::string passwd) {
 
 color_t libsystem::paxoConfig::getBackgroundColor() {
     if (systemConfig.get()->has("settings.color.background"))
-        return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.background"));
+        return static_cast<color_t>(
+            systemConfig.get()->get<uint16_t>("settings.color.background")
+        );
     else
         return COLOR_WHITE;
 }
 
 color_t libsystem::paxoConfig::getTextColor() {
     if (systemConfig.get()->has("settings.color.text"))
-        return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.text"));
+        return static_cast<color_t>(
+            systemConfig.get()->get<uint16_t>("settings.color.text")
+        );
     else
         return COLOR_BLACK;
 }
 
 color_t libsystem::paxoConfig::getBorderColor() {
     if (systemConfig.get()->has("settings.color.border"))
-        return static_cast<color_t>(systemConfig.get()->get<uint16_t>("settings.color.border"));
+        return static_cast<color_t>(
+            systemConfig.get()->get<uint16_t>("settings.color.border")
+        );
     else
         return COLOR_BLACK;
 }
@@ -356,8 +383,10 @@ void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save) {
     COLOR_WHITE = color;
     std::cout << COLOR_WHITE << std::endl;
     if (save) {
-        systemConfig.get()->set<uint16_t>("settings.color.background",
-                                          static_cast<uint16_t>(color));
+        systemConfig.get()->set<uint16_t>(
+            "settings.color.background",
+            static_cast<uint16_t>(color)
+        );
         systemConfig.get()->write();
     }
 }
@@ -369,7 +398,10 @@ void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save) {
  */
 void libsystem::paxoConfig::setTextColor(color_t color, bool save) {
     if (save) {
-        systemConfig.get()->set<uint16_t>("settings.color.text", static_cast<uint16_t>(color));
+        systemConfig.get()->set<uint16_t>(
+            "settings.color.text",
+            static_cast<uint16_t>(color)
+        );
         systemConfig.get()->write();
     }
 }
@@ -381,7 +413,10 @@ void libsystem::paxoConfig::setTextColor(color_t color, bool save) {
  */
 void libsystem::paxoConfig::setBorderColor(color_t color, bool save) {
     if (save) {
-        systemConfig.get()->set<uint16_t>("settings.color.border", static_cast<uint16_t>(color));
+        systemConfig.get()->set<uint16_t>(
+            "settings.color.border",
+            static_cast<uint16_t>(color)
+        );
         systemConfig.get()->write();
     }
 }

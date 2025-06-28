@@ -13,7 +13,9 @@ struct Message {
 };
 
 void loadMessages(const std::string& filePath, std::vector<Message>& messages);
-void saveMessages(const std::string& filePath, const std::vector<Message>& messages);
+void saveMessages(
+    const std::string& filePath, const std::vector<Message>& messages
+);
 } // namespace Message
 
 #endif

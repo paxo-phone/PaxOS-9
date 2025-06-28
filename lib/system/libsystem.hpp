@@ -20,9 +20,9 @@
 #define OS_VERSION_BUILD "0"
 #define OS_VERSION_CODENAME "Red Panic"
 
-#define OS_VERSION                                                                                 \
-    OS_VERSION_MAJOR "." OS_VERSION_MINOR "." OS_VERSION_PATCH "-" OS_VERSION_BUILD                \
-                     " (" OS_VERSION_CODENAME ")"
+#define OS_VERSION                                                             \
+    OS_VERSION_MAJOR "." OS_VERSION_MINOR "." OS_VERSION_PATCH                 \
+                     "-" OS_VERSION_BUILD " (" OS_VERSION_CODENAME ")"
 
 /**
  * @brief System interactions.
@@ -99,7 +99,9 @@ bool hasBootErrors();
  * @param timeout Delay the restart, in milliseconds.
  * @param saveBacktrace If true, a backtrace will be created.
  */
-void restart(bool silent = false, uint64_t timeout = 0, bool saveBacktrace = false);
+void restart(
+    bool silent = false, uint64_t timeout = 0, bool saveBacktrace = false
+);
 
 /**
  * @brief Different device state, unique.

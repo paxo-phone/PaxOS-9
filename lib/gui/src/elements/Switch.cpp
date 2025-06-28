@@ -16,7 +16,9 @@ Switch::Switch(const uint16_t x, const uint16_t y) {
 Switch::~Switch() = default;
 
 void Switch::render() {
-    m_surface->clear(m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor());
+    m_surface->clear(
+        m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor()
+    );
     if (!m_state) {
         m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_GREY);
         m_surface->fillRoundRect(4, 3, 14, 14, 7, COLOR_WHITE);

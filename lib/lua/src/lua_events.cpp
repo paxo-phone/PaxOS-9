@@ -1,6 +1,5 @@
-#include "lua_events.hpp"
-
 #include "SOL2/sol.hpp"
+#include "lua_events.hpp"
 #include "lua_file.hpp"
 
 #include <gsm2.hpp>
@@ -43,8 +42,14 @@ sol::table LuaTime::get(std::string format) {
 
     std::vector<std::string> identifiers = {"s", "mi", "h", "d", "mo", "y"};
 
-    std::vector<int> date = {Gsm::Time::getSecond(), Gsm::Time::getMinute(), Gsm::Time::getHour(),
-                             Gsm::Time::getDay(),    Gsm::Time::getMonth(),  Gsm::Time::getYear()};
+    std::vector<int> date = {
+        Gsm::Time::getSecond(),
+        Gsm::Time::getMinute(),
+        Gsm::Time::getHour(),
+        Gsm::Time::getDay(),
+        Gsm::Time::getMonth(),
+        Gsm::Time::getYear()
+    };
 
     // ajouter les valeurs aux index des identifiers
 
@@ -63,16 +68,22 @@ sol::table LuaTime::get(std::string format) {
     return array;
 }
 
-LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::protected_function func, uint32_t interval) {
+LuaTimeInterval::LuaTimeInterval(
+    LuaFile* lua, sol::protected_function func, uint32_t interval
+) {
     this->lua = lua;
     this->func = func;
     this->interval = interval;
     this->id = lua->eventHandler.setInterval(
-        std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)), interval);
+        std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)),
+        interval
+    );
 }
 
-uint32_t LuaTimeEvent::addEventListener(LuaFile* lua, sol::protected_function condition,
-                                        sol::protected_function callback) {
+uint32_t LuaTimeEvent::addEventListener(
+    LuaFile* lua, sol::protected_function condition,
+    sol::protected_function callback
+) {
     //    this->lua = lua;
     this->condition = condition;
     this->callback = callback;
@@ -80,7 +91,8 @@ uint32_t LuaTimeEvent::addEventListener(LuaFile* lua, sol::protected_function co
     // this->id =
     // eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call,
     // this)),);
-    return 0; // eventHandlerApp.addEventListener( (Function *) condition, (Function *) callback);
+    return 0; // eventHandlerApp.addEventListener( (Function *) condition,
+              // (Function *) callback);
 }
 
 int LuaTimeInterval::getId() {
@@ -107,12 +119,18 @@ LuaTimeInterval::~LuaTimeInterval() {
     lua->eventHandler.removeInterval(id);
 }
 
-LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint32_t timeout) {
+LuaTimeTimeout::LuaTimeTimeout(
+    LuaFile* lua, sol::protected_function func, uint32_t timeout
+) {
     this->lua = lua;
     this->func = func;
     this->timeout = timeout;
     this->id = lua->eventHandler.setTimeout(
-        new Callback<>(std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))), timeout);
+        new Callback<>(
+            std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))
+        ),
+        timeout
+    );
 }
 
 int LuaTimeTimeout::getId() {

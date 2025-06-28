@@ -1,5 +1,4 @@
 #include "CommandsManager.hpp"
-
 #include "SerialManager.hpp"
 #include "config.h"
 
@@ -69,8 +68,9 @@ void CommandsManager::processCommand(const Command& command) {
         if (this->shellMode) {
             SerialManager::sharedInstance->commandLog("Unknown command type");
         } else {
-            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE +
-                                                      std::string("Unknown command type"));
+            SerialManager::sharedInstance->commandLog(
+                NON_SHELL_MODE_ERROR_CODE + std::string("Unknown command type")
+            );
         }
     }
 }

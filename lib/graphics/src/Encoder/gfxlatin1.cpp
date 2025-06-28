@@ -1,10 +1,10 @@
-#include "gfxlatin1.h"
-
 #include "decodeutf8.h"
+#include "gfxlatin1.h"
 
 #include <cstring>
 
-// In place conversion of a UTF8 string to extended ASCII string (ASCII is shorter!)
+// In place conversion of a UTF8 string to extended ASCII string (ASCII is
+// shorter!)
 void latin1tocp(char* s) {
     int k = 0;
     uint16_t ucs2;

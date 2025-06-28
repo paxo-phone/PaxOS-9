@@ -2,13 +2,11 @@
 // Created by Charles on 28/01/2024.
 //
 
-#include <path.hpp>
 #include <filestream.hpp>
-
 #include <gtest/gtest.h>
+#include <path.hpp>
 
-TEST(StorageTest, PathTest)
-{
+TEST(StorageTest, PathTest) {
     storage::init();
 
     EXPECT_FALSE(storage::Path("/dir1").exists());
@@ -22,7 +20,9 @@ TEST(StorageTest, PathTest)
     EXPECT_TRUE(storage::Path("/dir1/test.txt").isfile());
     EXPECT_FALSE(storage::Path("/dir1/test.txt").isdir());
 
-    EXPECT_TRUE(storage::Path("/dir1/test.txt").rename(storage::Path("/dir1/test2.txt")));
+    EXPECT_TRUE(
+        storage::Path("/dir1/test.txt").rename(storage::Path("/dir1/test2.txt"))
+    );
     EXPECT_TRUE(storage::Path("/dir1/test2.txt").exists());
     EXPECT_TRUE(storage::Path("/dir1/test2.txt").remove());
     EXPECT_FALSE(storage::Path("/dir1/test2.txt").exists());
@@ -31,8 +31,7 @@ TEST(StorageTest, PathTest)
     EXPECT_FALSE(storage::Path("/dir1").exists());
 }
 
-TEST(StorageTest, StreamTest)
-{
+TEST(StorageTest, StreamTest) {
     storage::init();
 
     const auto file = storage::Path("test.txt");

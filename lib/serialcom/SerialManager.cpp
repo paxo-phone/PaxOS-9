@@ -1,6 +1,5 @@
-#include "SerialManager.hpp"
-
 #include "CommandsManager.hpp"
+#include "SerialManager.hpp"
 
 #include <array>
 #include <cstddef>
@@ -46,8 +45,8 @@ void SerialManager::startCommandLog() {
     this->commandLogBufferHash = 0;
 }
 
-void SerialManager::commandLog(
-    const std::string& message) // should only be called in the serialLoop thread
+void SerialManager::commandLog(const std::string& message
+) // should only be called in the serialLoop thread
 {
     // put in the commandLogBuffer
 
@@ -64,50 +63,82 @@ void SerialManager::commandLog(
     this->commandLogBufferHash = pseudoHash;
 }
 
-void SerialManager::singleCommandLog(const std::string& message,
-                                     const char command_id[COMMAND_ID_SIZE]) {
+void SerialManager::singleCommandLog(
+    const std::string& message, const char command_id[COMMAND_ID_SIZE]
+) {
     bool consoleState = this->getConsoleLockState();
     this->changeConsoleLockTo(true);
     SerialManager::sharedInstance->startCommandLog();
     SerialManager::sharedInstance->commandLog(message);
-    SerialManager::sharedInstance->finishCommandLog(CommandsManager::defaultInstance->shellMode,
-                                                    command_id);
+    SerialManager::sharedInstance->finishCommandLog(
+        CommandsManager::defaultInstance->shellMode,
+        command_id
+    );
     this->changeConsoleLockTo(consoleState);
 }
 
-void SerialManager::finishCommandLog(bool shellMode, const char command_id[COMMAND_ID_SIZE]) {
+void SerialManager::finishCommandLog(
+    bool shellMode, const char command_id[COMMAND_ID_SIZE]
+) {
     if (shellMode) {
         this->coutBuffer.directLog(
-            std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex), true);
+            std::string(
+                this->commandLogBuffer.data(),
+                this->commandLogBufferIndex
+            ),
+            true
+        );
     } else {
-        constexpr char startBytes[3] = {static_cast<char>(0xff), static_cast<char>(0xfe),
-                                        static_cast<char>(0xfd)};
-        std::string startBytesString(reinterpret_cast<const char*>(startBytes), 3);
+        constexpr char startBytes[3] = {
+            static_cast<char>(0xff),
+            static_cast<char>(0xfe),
+            static_cast<char>(0xfd)
+        };
+        std::string startBytesString(
+            reinterpret_cast<const char*>(startBytes),
+            3
+        );
 
         this->coutBuffer.directLog(startBytesString, false);
 
-        std::string command_id_string(reinterpret_cast<const char*>(command_id), COMMAND_ID_SIZE);
+        std::string command_id_string(
+            reinterpret_cast<const char*>(command_id),
+            COMMAND_ID_SIZE
+        );
 
         this->coutBuffer.directLog(command_id_string, false);
 
-        std::string bufferIndex(reinterpret_cast<const char*>(&this->commandLogBufferIndex),
-                                sizeof(this->commandLogBufferIndex));
+        std::string bufferIndex(
+            reinterpret_cast<const char*>(&this->commandLogBufferIndex),
+            sizeof(this->commandLogBufferIndex)
+        );
 
         this->coutBuffer.directLog(bufferIndex, false);
 
         uint16_t options = 0b0000000000000000;
-        std::string optionsString(reinterpret_cast<const char*>(&options), sizeof(options));
+        std::string optionsString(
+            reinterpret_cast<const char*>(&options),
+            sizeof(options)
+        );
 
         this->coutBuffer.directLog(optionsString, false);
 
         uint32_t hash = this->commandLogBufferHash;
 
-        std::string bufferHash(reinterpret_cast<const char*>(&hash), sizeof(hash));
+        std::string bufferHash(
+            reinterpret_cast<const char*>(&hash),
+            sizeof(hash)
+        );
 
         this->coutBuffer.directLog(bufferHash, false);
 
         this->coutBuffer.directLog(
-            std::string(this->commandLogBuffer.data(), this->commandLogBufferIndex), false);
+            std::string(
+                this->commandLogBuffer.data(),
+                this->commandLogBufferIndex
+            ),
+            false
+        );
     }
 
     this->startCommandLog();
@@ -144,8 +175,10 @@ void SerialManager::serialLoop() {
             Command newCommand = Command(serialManager->current_input);
             serialManager->startCommandLog();
             CommandsManager::defaultInstance->processCommand(newCommand);
-            serialManager->finishCommandLog(CommandsManager::defaultInstance->shellMode,
-                                            newCommand.command_id);
+            serialManager->finishCommandLog(
+                CommandsManager::defaultInstance->shellMode,
+                newCommand.command_id
+            );
             serialManager->newData = false;
         }
 

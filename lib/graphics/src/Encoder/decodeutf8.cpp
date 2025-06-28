@@ -1,12 +1,12 @@
-#include "decodeutf8.hpp"
-
 #include "../fonts/Arial-charset.h"
 #include "decodeutf8.h"
+#include "decodeutf8.hpp"
 
 #include <stdint.h>
 #include <vector>
 
-// source: https://github.com/Bodmer/Adafruit-GFX-Library/blob/master/Adafruit_GFX.cpp
+// source:
+// https://github.com/Bodmer/Adafruit-GFX-Library/blob/master/Adafruit_GFX.cpp
 // fork of Adafruit-GFX-Library by Bodmer
 // line 1135 of Adafruit_GFX.cpp
 
@@ -73,7 +73,7 @@ uint16_t decodeUTF8(uint8_t c) {
         if ((c & 0xE0) == 0xC0) {              // 11 bit Unicode Code Point
             decoderBuffer = ((c & 0x1F) << 6); // Save first 5 bits
             decoderState = 1;
-        } else if ((c & 0xF0) == 0xE0) {        // 16 bit Unicode Code Point      {
+        } else if ((c & 0xF0) == 0xE0) { // 16 bit Unicode Code Point      {
             decoderBuffer = ((c & 0x0F) << 12); // Save first 4 bits
             decoderState = 2;
         }
@@ -81,9 +81,11 @@ uint16_t decodeUTF8(uint8_t c) {
     } else {
         decoderState--;
         if (decoderState == 1)
-            decoderBuffer |= ((c & 0x3F) << 6); // Add next 6 bits of 16 bit code point
+            decoderBuffer |=
+                ((c & 0x3F) << 6); // Add next 6 bits of 16 bit code point
         else if (decoderState == 0) {
-            decoderBuffer |= (c & 0x3F); // Add last 6 bits of code point (UTF8-tail)
+            decoderBuffer |=
+                (c & 0x3F); // Add last 6 bits of code point (UTF8-tail)
             return decoderBuffer;
         }
     }

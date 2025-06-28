@@ -5,7 +5,8 @@
 
 namespace gui::elements {
 /**
- * @brief Can contain a list of elements and is scrollable and is memory efficient
+ * @brief Can contain a list of elements and is scrollable and is memory
+ *efficient
  **/
 class VerticalList final : public ElementBase {
   public:

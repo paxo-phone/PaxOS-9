@@ -18,8 +18,8 @@ template <typename... ArgsCo> class Condition : public Function {
     std::function<bool(ArgsCo...)> condition;
     std::tuple<ArgsCo...> argsCo;
 
-    Condition(std::function<bool(ArgsCo...)> condition, ArgsCo... args)
-        : condition(condition), argsCo(std::make_tuple(args...)) {}
+    Condition(std::function<bool(ArgsCo...)> condition, ArgsCo... args) :
+        condition(condition), argsCo(std::make_tuple(args...)) {}
 
     ~Condition() {}
 
@@ -33,8 +33,8 @@ template <typename... ArgsCa> class Callback : public Function {
     std::function<void(ArgsCa...)> callback;
     std::tuple<ArgsCa...> argsCa;
 
-    Callback(std::function<void(ArgsCa...)> callback, ArgsCa... args)
-        : callback(callback), argsCa(std::make_tuple(args...)) {}
+    Callback(std::function<void(ArgsCa...)> callback, ArgsCa... args) :
+        callback(callback), argsCa(std::make_tuple(args...)) {}
 
     ~Callback() {}
 
@@ -104,7 +104,9 @@ class EventHandler {
 
     ~EventHandler();
 
-    void update(std::function<bool()> forced_exit = []() -> bool { return false; });
+    void update(std::function<bool()> forced_exit = []() -> bool {
+        return false;
+    });
 
     uint32_t addEventListener(Function* condition, Function* callback);
     void removeEventListener(uint32_t id);

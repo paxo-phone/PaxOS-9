@@ -41,7 +41,8 @@ void unpackRGB565(color_t rgb, uint8_t* r, uint8_t* g, uint8_t* b);
  * @param b The blue component.
  * @return A RGB565 color.
  */
-constexpr color_t constPackRGB565(const uint8_t r, const uint8_t g, const uint8_t b) {
+constexpr color_t
+    constPackRGB565(const uint8_t r, const uint8_t g, const uint8_t b) {
     uint16_t rgb = 0;
 
     rgb |= (r >> 3) << 11;

@@ -68,7 +68,8 @@ class LuaFile {
             sol::protected_function_result result = onmessage();
             if (!result.valid()) {
                 sol::error err = result;
-                std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
+                std::cout << "[LuaFile] onmessage event error: " << err.what()
+                          << std::endl;
             } else {
                 std::cout << "onmessage event activated" << std::endl;
             }
@@ -80,7 +81,8 @@ class LuaFile {
             sol::protected_function_result result = onmessageerror();
             if (!result.valid()) {
                 sol::error err = result;
-                std::cout << "[LuaFile] onmessageerror event error: " << err.what() << std::endl;
+                std::cout << "[LuaFile] onmessageerror event error: "
+                          << err.what() << std::endl;
             } else {
                 std::cout << "onmessageerror event activated" << std::endl;
             }
@@ -102,7 +104,8 @@ class LuaFile {
     LuaTime lua_time;
     // LuaNetwork lua_network;
 
-    AppManager::App* app; // using raw pointer, because this class will NEVER call the deleter
+    AppManager::App* app; // using raw pointer, because this class will NEVER
+                          // call the deleter
 
   private:
     enum Command { QUIT };

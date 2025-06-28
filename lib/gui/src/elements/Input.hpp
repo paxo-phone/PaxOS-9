@@ -10,7 +10,8 @@
 
 namespace gui::elements {
 /**
- * @brief Input is a label where you can write text by clicking on it (open a keyboard)
+ * @brief Input is a label where you can write text by clicking on it (open a
+ *keyboard)
  **/
 class Input final : public ElementBase {
   public:

@@ -10,9 +10,12 @@
 #include <iostream>
 
 namespace gui::elements {
-Label::Label(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
-    : ElementBase(), m_text(""), m_fontSize(18), m_textColor(COLOR_DARK),
-      m_textVerticalAlignment(UP), m_textHorizontalAlignment(LEFT) {
+Label::Label(
+    const uint16_t x, const uint16_t y, const uint16_t width,
+    const uint16_t height
+) :
+    ElementBase(), m_text(""), m_fontSize(18), m_textColor(COLOR_DARK),
+    m_textVerticalAlignment(UP), m_textHorizontalAlignment(LEFT) {
     m_x = x;
     m_y = y;
     m_width = width;
@@ -25,11 +28,23 @@ Label::Label(const uint16_t x, const uint16_t y, const uint16_t width, const uin
 Label::~Label() = default;
 
 void Label::render() {
-    m_surface->clear(m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor());
-    m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, m_borderRadius, m_borderSize,
-                                       m_backgroundColor, m_borderColor);
+    m_surface->clear(
+        m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor()
+    );
+    m_surface->fillRoundRectWithBorder(
+        0,
+        0,
+        m_width,
+        m_height,
+        m_borderRadius,
+        m_borderSize,
+        m_backgroundColor,
+        m_borderColor
+    );
 
-    m_surface->setTextColor((this->m_textColor == 0) ? (1) : (this->m_textColor));
+    m_surface->setTextColor(
+        (this->m_textColor == 0) ? (1) : (this->m_textColor)
+    );
     m_surface->setColor(this->m_backgroundColor);
     m_surface->setFontSize(this->m_fontSize);
 
@@ -54,11 +69,13 @@ void Label::render() {
         int y;
         switch (int(m_textVerticalAlignment)) {
         case Alignement::UP:
-            y = getRadius() / 2 + getBorderSize() + (m_surface->getTextHeight() + LINE_SPACING) * i;
+            y = getRadius() / 2 + getBorderSize() +
+                (m_surface->getTextHeight() + LINE_SPACING) * i;
             break;
         case Alignement::CENTER:
             y = getRadius() / 2 + getBorderSize() + getUsableHeight() / 2 -
-                ((m_surface->getTextHeight() + LINE_SPACING) * lines.size()) / 2 +
+                ((m_surface->getTextHeight() + LINE_SPACING) * lines.size()) /
+                    2 +
                 (m_surface->getTextHeight() + LINE_SPACING) * i;
             break;
         case Alignement::DOWN:
@@ -102,7 +119,8 @@ Label::ParseDataOutput Label::parse(void) {
         // Save cursor pos
         if (m_hasCursor) {
             if (m_cursorIndex == charIndex) {
-                // std::cout << "CURSOR POSITION MATCH ! " << charIndex << ", " << lineCharIndex <<
+                // std::cout << "CURSOR POSITION MATCH ! " << charIndex << ", "
+                // << lineCharIndex <<
                 // ", " << lineIndex << std::endl;
 
                 // TODO : Better implementation
@@ -119,7 +137,8 @@ Label::ParseDataOutput Label::parse(void) {
 
             lineIndex++;
             lineCharIndex = 0;
-        } else if (m_surface->getTextWidth(currentLine + c) <= getUsableWidth()) {
+        } else if (m_surface->getTextWidth(currentLine + c) <=
+                   getUsableWidth()) {
             currentLine += c;
 
             lineCharIndex++;
@@ -154,7 +173,8 @@ Label::ParseDataOutput Label::parse(void) {
                     currentLine += c;
 
                     lineIndex++;
-                    lineCharIndex = lastSpace + 1; // TODO: Check if this is correct
+                    lineCharIndex =
+                        lastSpace + 1; // TODO: Check if this is correct
                 }
             }
         }

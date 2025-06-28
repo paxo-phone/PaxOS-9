@@ -41,7 +41,8 @@
     uint32_t total_heap = 270000;
 
     // Get largest free block
-    uint32_t largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
+    uint32_t largest_free_block =
+heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
 
     // Get PSRAM info (if available)
     uint32_t psram_free = 0;
@@ -51,7 +52,8 @@
     if (esp_spiram_is_initialized()) {
         psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
         psram_size = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
-        psram_largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+        psram_largest_free_block =
+heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
     }
 
     // Print memory info
@@ -72,16 +74,18 @@
 }*/
 
 namespace graphics {
-Surface::Surface(const uint16_t width, const uint16_t height, const uint8_t color_depth)
-    : m_color(0xFFFF), m_transparent(false), m_transparent_color(0xFFFF), m_font(ARIAL),
-      m_fontSize(PT_12), m_color_depth(color_depth) {
+Surface::Surface(
+    const uint16_t width, const uint16_t height, const uint8_t color_depth
+) :
+    m_color(0xFFFF), m_transparent(false), m_transparent_color(0xFFFF),
+    m_font(ARIAL), m_fontSize(PT_12), m_color_depth(color_depth) {
     m_sprite.setColorDepth(m_color_depth);
     m_sprite.setPsram(true);
 
     m_sprite.createSprite(width, height);
     if (m_sprite.getBuffer() == nullptr) {
-        std::cerr << "[Error] Unable to allocate a new surface: " << width * height * 2 << " bytes"
-                  << std::endl;
+        std::cerr << "[Error] Unable to allocate a new surface: "
+                  << width * height * 2 << " bytes" << std::endl;
     } else {
         const double size = width * height * 2;
         const double k = 1024;
@@ -89,15 +93,18 @@ Surface::Surface(const uint16_t width, const uint16_t height, const uint8_t colo
 
         // if(size < k)
         // {
-        //     std::cout << "[Debug] New surface: " << size << " bytes" << std::endl;
+        //     std::cout << "[Debug] New surface: " << size << " bytes" <<
+        //     std::endl;
         // }
         // else if(size < m)
         // {
-        //     std::cout << "[Debug] New surface: " << size / k << " Ko" << std::endl;
+        //     std::cout << "[Debug] New surface: " << size / k << " Ko" <<
+        //     std::endl;
         // }
         // else
         // {
-        //     std::cout << "[Debug] New surface: " << size / m << " Mo" << std::endl;
+        //     std::cout << "[Debug] New surface: " << size / m << " Mo" <<
+        //     std::endl;
         // }
     }
 }
@@ -118,7 +125,9 @@ uint16_t Surface::getPixel(const uint16_t x, const uint16_t y) {
     return m_sprite.readPixel(x, y);
 }
 
-void Surface::setPixel(const uint16_t x, const uint16_t y, const color_t value) {
+void Surface::setPixel(
+    const uint16_t x, const uint16_t y, const color_t value
+) {
     m_sprite.writePixel(x, y, value);
 }
 
@@ -127,14 +136,16 @@ void Surface::pushSurface(Surface* surface, const int16_t x, const int16_t y) {
         return;
 
     if (surface->m_transparent) {
-        surface->m_sprite.pushSprite(&m_sprite, x, y, surface->m_transparent_color);
+        surface->m_sprite
+            .pushSprite(&m_sprite, x, y, surface->m_transparent_color);
     } else {
         surface->m_sprite.pushSprite(&m_sprite, x, y);
     }
 }
 
-void Surface::pushSurfaceWithScale(Surface* surface, const int16_t x, const int16_t y,
-                                   const float scale) {
+void Surface::pushSurfaceWithScale(
+    Surface* surface, const int16_t x, const int16_t y, const float scale
+) {
     // LovyanGFX is very weird...
     // When pushing with "pushRotateZoomWithAA",
     // the x and y are the coordinates of the CENTER of the sprite
@@ -144,15 +155,26 @@ void Surface::pushSurfaceWithScale(Surface* surface, const int16_t x, const int1
     if (surface->m_transparent) {
         surface->m_sprite.pushRotateZoomWithAA(
             &m_sprite,
-            static_cast<float>(x) + static_cast<float>(surface->getWidth()) * scale * 0.5f,
-            static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f, 0,
-            scale, scale, surface->m_transparent_color);
+            static_cast<float>(x) +
+                static_cast<float>(surface->getWidth()) * scale * 0.5f,
+            static_cast<float>(y) +
+                static_cast<float>(surface->getHeight()) * scale * 0.5f,
+            0,
+            scale,
+            scale,
+            surface->m_transparent_color
+        );
     } else {
         surface->m_sprite.pushRotateZoomWithAA(
             &m_sprite,
-            static_cast<float>(x) + static_cast<float>(surface->getWidth()) * scale * 0.5f,
-            static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f, 0,
-            scale, scale);
+            static_cast<float>(x) +
+                static_cast<float>(surface->getWidth()) * scale * 0.5f,
+            static_cast<float>(y) +
+                static_cast<float>(surface->getHeight()) * scale * 0.5f,
+            0,
+            scale,
+            scale
+        );
     }
 }
 
@@ -176,13 +198,17 @@ void Surface::setTransparentColor(const color_t color) {
     m_transparent_color = color;
 }
 
-void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
-                       const color_t color) {
+void Surface::drawRect(
+    const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
+    const color_t color
+) {
     m_sprite.drawRect(x, y, w, h, color);
 }
 
-void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
-                       const color_t color) {
+void Surface::fillRect(
+    const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
+    const color_t color
+) {
     m_sprite.fillRect(x, y, w, h, color);
 }
 
@@ -194,36 +220,54 @@ void Surface::fillCircle(int16_t x, int16_t y, uint16_t r, color_t color) {
     this->m_sprite.fillCircle(x, y, r, color);
 }
 
-void Surface::fillRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
-                            const uint16_t r, const color_t color) {
+void Surface::fillRoundRect(
+    const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
+    const uint16_t r, const color_t color
+) {
     m_sprite.fillSmoothRoundRect(x, y, w, h, r, color);
 }
 
-void Surface::fillRoundRectWithBorder(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r,
-                                      int16_t bs, uint16_t Backcolor, uint16_t Bordercolor) {
+void Surface::fillRoundRectWithBorder(
+    int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs,
+    uint16_t Backcolor, uint16_t Bordercolor
+) {
     m_sprite.fillSmoothRoundRect(x, y, w, h, r, Bordercolor);
-    m_sprite.fillSmoothRoundRect(x + bs, y + bs, w - 2 * bs, h - 2 * bs, r, Backcolor);
+    m_sprite.fillSmoothRoundRect(
+        x + bs,
+        y + bs,
+        w - 2 * bs,
+        h - 2 * bs,
+        r,
+        Backcolor
+    );
 }
 
-void Surface::drawRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
-                            const uint16_t r, const color_t color) {
+void Surface::drawRoundRect(
+    const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
+    const uint16_t r, const color_t color
+) {
     m_sprite.drawRoundRect(x, y, w, h, r, color);
 }
 
-void Surface::drawLine(const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2,
-                       const color_t color) {
+void Surface::drawLine(
+    const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2,
+    const color_t color
+) {
     m_sprite.drawLine(x1, y1, x2, y2, color);
 }
 
-void Surface::drawImage(const SImage& image, const int16_t x, const int16_t y, const uint16_t w,
-                        const uint16_t h) {
+void Surface::drawImage(
+    const SImage& image, const int16_t x, const int16_t y, const uint16_t w,
+    const uint16_t h
+) {
     // printf("IMG--3-drawImage-1\n");
     float scaleX = static_cast<float>(w) / static_cast<float>(image.getWidth());
-    float scaleY = static_cast<float>(h) / static_cast<float>(image.getHeight());
+    float scaleY =
+        static_cast<float>(h) / static_cast<float>(image.getHeight());
 
     if (m_sprite.getBuffer() == nullptr) {
-        std::cerr << "[Error] Unable to write on an invalid sprite: " << w * h * 2 << " bytes"
-                  << std::endl;
+        std::cerr << "[Error] Unable to write on an invalid sprite: "
+                  << w * h * 2 << " bytes" << std::endl;
         return;
     }
 
@@ -242,7 +286,8 @@ void Surface::drawImage(const SImage& image, const int16_t x, const int16_t y, c
         stream.close();
         std::cout << "End Reading PNG...: " << size << std::endl;
 
-        m_sprite.drawPng((uint8_t*) buffer, size, x, y, 0, 0, 0, 0, scaleX, scaleY);
+        m_sprite
+            .drawPng((uint8_t*) buffer, size, x, y, 0, 0, 0, 0, scaleX, scaleY);
         m_sprite.releasePngMemory();
         // here is the place to code the decompression
 
@@ -254,15 +299,45 @@ void Surface::drawImage(const SImage& image, const int16_t x, const int16_t y, c
     switch (image.getType()) // image size with right format
     {
     case BMP:
-        m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+        m_sprite.drawBmpFile(
+            image.getPath().str().c_str(),
+            x,
+            y,
+            0,
+            0,
+            0,
+            0,
+            scaleX,
+            scaleY
+        );
         break;
     case PNG:
         // printf("IMG--3-drawImage-2\n");
-        m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+        m_sprite.drawPngFile(
+            image.getPath().str().c_str(),
+            x,
+            y,
+            0,
+            0,
+            0,
+            0,
+            scaleX,
+            scaleY
+        );
         // printf("IMG--3-drawImage-3\n");
         break;
     case JPG:
-        m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+        m_sprite.drawJpgFile(
+            image.getPath().str().c_str(),
+            x,
+            y,
+            0,
+            0,
+            0,
+            0,
+            scaleX,
+            scaleY
+        );
         break;
     };
 
@@ -271,16 +346,46 @@ void Surface::drawImage(const SImage& image, const int16_t x, const int16_t y, c
 
     switch (image.getType()) {
     case BMP:
-        m_sprite.drawBmpFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX,
-                             scaleY);
+        m_sprite.drawBmpFile(
+            &file,
+            image.getPath().str().c_str(),
+            x,
+            y,
+            0,
+            0,
+            0,
+            0,
+            scaleX,
+            scaleY
+        );
         break;
     case PNG:
-        m_sprite.drawPngFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX,
-                             scaleY);
+        m_sprite.drawPngFile(
+            &file,
+            image.getPath().str().c_str(),
+            x,
+            y,
+            0,
+            0,
+            0,
+            0,
+            scaleX,
+            scaleY
+        );
         break;
     case JPG:
-        m_sprite.drawJpgFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX,
-                             scaleY);
+        m_sprite.drawJpgFile(
+            &file,
+            image.getPath().str().c_str(),
+            x,
+            y,
+            0,
+            0,
+            0,
+            0,
+            scaleX,
+            scaleY
+        );
         break;
     };
 #endif
@@ -311,11 +416,9 @@ bool Surface::saveAsJpg(const storage::Path filename) {
     JPEGENCODE jpe;
 
     // Start the JPEG encoding process
-    int rc = jpg.encodeBegin(&jpe, width, height, JPEG_PIXEL_RGB565, JPEG_SUBSAMPLE_444, quality);
-    if (rc != 0) {
-        Serial.println("Failed to start JPEG encoding");
-        outFile.close();
-        return false;
+    int rc = jpg.encodeBegin(&jpe, width, height, JPEG_PIXEL_RGB565,
+    JPEG_SUBSAMPLE_444, quality); if (rc != 0) { Serial.println("Failed to start
+    JPEG encoding"); outFile.close(); return false;
     }
 
     // Calculate MCU dimensions
@@ -417,7 +520,8 @@ uint16_t Surface::getTextWidth(std::string text) {
         fontSize = PT_24;
 
     const float scale =
-        m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
+        m_fontSize /
+        static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
     this->m_sprite.setFont(getFont(m_font, fontSize));
 
@@ -437,12 +541,15 @@ uint16_t Surface::getTextHeight() const {
         fontSize = PT_24;
 
     const float scale =
-        m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
+        m_fontSize /
+        static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
     return (float) scale * m_sprite.fontHeight(getFont(m_font, fontSize));
 }
 
-void Surface::drawText(std::string& otext, int16_t x, int16_t y, std::optional<color_t> color) {
+void Surface::drawText(
+    std::string& otext, int16_t x, int16_t y, std::optional<color_t> color
+) {
     std::string text = decodeString(otext);
     // Get the correct font size
     EFontSize fontSize;
@@ -458,10 +565,12 @@ void Surface::drawText(std::string& otext, int16_t x, int16_t y, std::optional<c
 
     // Get the correct scale
     const float scale =
-        m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
+        m_fontSize /
+        static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
     // Get buffer size
-    const uint16_t bufferHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
+    const uint16_t bufferHeight =
+        m_sprite.fontHeight(getFont(m_font, fontSize));
     const uint16_t bufferWidth = bufferHeight;
 
     // Create buffer
@@ -498,36 +607,46 @@ void Surface::drawText(std::string& otext, int16_t x, int16_t y, std::optional<c
         buffer->m_sprite.drawString(str, 0, 0);
 
         // Push the buffer
-        pushSurfaceWithScale(buffer, static_cast<int16_t>(static_cast<float>(x) + ox), y, scale);
+        pushSurfaceWithScale(
+            buffer,
+            static_cast<int16_t>(static_cast<float>(x) + ox),
+            y,
+            scale
+        );
 
         // Update the offset
-        const uint16_t charWidth = m_sprite.textWidth(str, getFont(m_font, fontSize));
+        const uint16_t charWidth =
+            m_sprite.textWidth(str, getFont(m_font, fontSize));
         ox += static_cast<float>(charWidth) * scale;
     }
 
     delete buffer;
 }
 
-void Surface::drawTextCentered(std::string& text, const int16_t x, const int16_t y,
-                               const uint16_t w, const uint16_t h, const bool horizontallyCentered,
-                               const bool verticallyCentered, const std::optional<color_t> color) {
+void Surface::drawTextCentered(
+    std::string& text, const int16_t x, const int16_t y, const uint16_t w,
+    const uint16_t h, const bool horizontallyCentered,
+    const bool verticallyCentered, const std::optional<color_t> color
+) {
     const uint16_t textWidth = m_sprite.textWidth(text.c_str());
     int16_t textPositionX;
     if (horizontallyCentered) {
         if (w == (uint16_t) -1)
-            textPositionX = x + (double) this->getWidth() * 0.5 - (double) textWidth * 0.5;
+            textPositionX =
+                x + (double) this->getWidth() * 0.5 - (double) textWidth * 0.5;
         else
             textPositionX = x + (double) w * 0.5 - (double) textWidth * 0.5;
     } else {
         textPositionX = x;
     }
 
-    const uint16_t textHeight =
-        this->getTextHeight(); // maybe it should take in account the bounding box height
+    const uint16_t textHeight = this->getTextHeight(
+    ); // maybe it should take in account the bounding box height
     int16_t textPositionY;
     if (verticallyCentered) {
         if (h == (uint16_t) -1)
-            textPositionY = y + (double) this->getHeight() * 0.5 - (double) textHeight * 0.5;
+            textPositionY = y + (double) this->getHeight() * 0.5 -
+                            (double) textHeight * 0.5;
         else
             textPositionY = y + (double) h * 0.5 - (double) textHeight * 0.5;
     } else {
@@ -540,7 +659,8 @@ void Surface::drawTextCentered(std::string& text, const int16_t x, const int16_t
 Surface Surface::clone() const {
     auto output = Surface(getWidth(), getHeight());
 
-    output.m_sprite.setBuffer(m_sprite.getBuffer(), m_sprite.width(), m_sprite.height());
+    output.m_sprite
+        .setBuffer(m_sprite.getBuffer(), m_sprite.width(), m_sprite.height());
 
     return output;
 }

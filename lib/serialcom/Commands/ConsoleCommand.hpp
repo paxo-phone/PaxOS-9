@@ -8,8 +8,9 @@
 
 #define CONSOLE_LOCKED "Console locked."
 #define CONSOLE_UNLOCKED "Console unlocked."
-#define CONSOLE_LOCK_OPTION_NOT_RECOGNIZED(ARGUMENT)                                               \
-    "Argument " + std::string(ARGUMENT) + " not recognized (available: lock, unlock)."
+#define CONSOLE_LOCK_OPTION_NOT_RECOGNIZED(ARGUMENT)                           \
+    "Argument " + std::string(ARGUMENT) +                                      \
+        " not recognized (available: lock, unlock)."
 
 namespace serialcom {
 void CommandsManager::processConsoleCommand(const Command& command) const {
@@ -21,7 +22,9 @@ void CommandsManager::processConsoleCommand(const Command& command) const {
         if (this->shellMode) {
             SerialManager::sharedInstance->commandLog(CONSOLE_LOCKED);
         } else {
-            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+            SerialManager::sharedInstance->commandLog(
+                NON_SHELL_MODE_NO_ERROR_CODE
+            );
         }
     } else if (firstArgument == "unlock") {
         SerialManager::sharedInstance->changeConsoleLockTo(false);
@@ -29,14 +32,18 @@ void CommandsManager::processConsoleCommand(const Command& command) const {
         if (this->shellMode) {
             SerialManager::sharedInstance->commandLog(CONSOLE_UNLOCKED);
         } else {
-            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
+            SerialManager::sharedInstance->commandLog(
+                NON_SHELL_MODE_NO_ERROR_CODE
+            );
         }
     } else {
         if (this->shellMode) {
             SerialManager::sharedInstance->commandLog(
-                CONSOLE_LOCK_OPTION_NOT_RECOGNIZED(firstArgument));
+                CONSOLE_LOCK_OPTION_NOT_RECOGNIZED(firstArgument)
+            );
         } else {
-            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
+            SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE
+            );
         }
     }
 }

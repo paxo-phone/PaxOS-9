@@ -8,7 +8,8 @@
 
 namespace Conversations {
 void loadConversation(const storage::Path& filePath, Conversation& conv) {
-    // std::cout << "Loading conversation from: " << filePath.str() << std::endl;
+    // std::cout << "Loading conversation from: " << filePath.str() <<
+    // std::endl;
 
     if (!filePath.exists()) {
         std::cerr << "File does not exist: " << filePath.str() << std::endl;
@@ -19,8 +20,8 @@ void loadConversation(const storage::Path& filePath, Conversation& conv) {
     storage::FileStream file;
     file.open(filePath.str(), storage::Mode::READ);
     if (!file.isopen()) {
-        std::cerr << "Failed to open file: " << filePath.str() << " Error: " << strerror(errno)
-                  << std::endl;
+        std::cerr << "Failed to open file: " << filePath.str()
+                  << " Error: " << strerror(errno) << std::endl;
         return;
     }
 
@@ -47,7 +48,10 @@ void loadConversation(const storage::Path& filePath, Conversation& conv) {
         }
 
         if (conv.messages.size() > 20) {
-            conv.messages.erase(conv.messages.begin(), conv.messages.end() - 20);
+            conv.messages.erase(
+                conv.messages.begin(),
+                conv.messages.end() - 20
+            );
         }
     } catch (const nlohmann::json::exception& e) {
         std::cerr << "Error parsing JSON: " << e.what() << std::endl;
@@ -67,12 +71,16 @@ void saveConversation(const storage::Path& filePath, const Conversation& conv) {
     json["number"] = conv.number;
 
     for (int i =
-             ((conv.messages.size() < MAX_MESSAGES) ? (0) : (conv.messages.size() - MAX_MESSAGES));
-         i < conv.messages.size(); i++) {
+             ((conv.messages.size() < MAX_MESSAGES)
+                  ? (0)
+                  : (conv.messages.size() - MAX_MESSAGES));
+         i < conv.messages.size();
+         i++) {
         auto& msg = conv.messages[i];
 
         json["messages"].push_back(
-            {{"message", msg.message}, {"who", msg.who}, {"date", msg.date}});
+            {{"message", msg.message}, {"who", msg.who}, {"date", msg.date}}
+        );
     }
 
     storage::Path path(filePath);

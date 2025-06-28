@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
 #include <filesystem>
 #include <fstream>
 #else
@@ -47,8 +48,10 @@ bool storage::init() {
         }
 
         delay(500);
-        libsystem::log("SD card initialization failed, try " + std::to_string(i + 1) + " of " +
-                       std::to_string(sdBeginTryCount) + ".");
+        libsystem::log(
+            "SD card initialization failed, try " + std::to_string(i + 1) +
+            " of " + std::to_string(sdBeginTryCount) + "."
+        );
     }
 
     // esp_restart();
@@ -209,11 +212,14 @@ void Path::parse(const std::string& raw) {
 std::vector<std::string> Path::listdir(bool onlyDirs) const {
     std::vector<std::string> list;
 
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
     std::filesystem::path dirPath = this->str();
 
-    if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath)) {
-        std::cerr << "Error: The directory does not exist or is not a valid directory."
+    if (!std::filesystem::exists(dirPath) ||
+        !std::filesystem::is_directory(dirPath)) {
+        std::cerr << "Error: The directory does not exist or is not a valid "
+                     "directory."
                   << std::endl;
         return {};
     }
@@ -243,7 +249,8 @@ std::vector<std::string> Path::listdir(bool onlyDirs) const {
 }
 
 bool Path::exists(void) const {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
     return std::filesystem::exists(this->str());
 #endif
 
@@ -257,7 +264,8 @@ bool Path::exists(void) const {
 }
 
 bool Path::isfile(void) const {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
     return std::filesystem::is_regular_file(this->str());
 #endif
 
@@ -272,7 +280,8 @@ bool Path::isfile(void) const {
 }
 
 bool Path::isdir(void) const {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
     return std::filesystem::is_directory(this->str());
 #endif
 
@@ -289,7 +298,8 @@ bool Path::isdir(void) const {
 }
 
 bool Path::newdir(void) const {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
 
     if (!std::filesystem::exists(this->str()))
         return std::filesystem::create_directory(this->str());
@@ -303,7 +313,8 @@ bool Path::newdir(void) const {
 }
 
 bool Path::copyTo(const Path& destinationPath) const {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
 
     if (std::filesystem::exists(this->str())) {
         /*
@@ -312,16 +323,23 @@ bool Path::copyTo(const Path& destinationPath) const {
                 skip_existing = 1, overwrite_existing = 2, update_existing = 4,
                 recursive = 8,
                 copy_symlinks = 16, skip_symlinks = 32,
-                directories_only = 64, create_symlinks = 128, create_hard_links = 256
+                directories_only = 64, create_symlinks = 128, create_hard_links
+           = 256
             };
         */
         if (std::filesystem::is_directory(this->str()))
-            std::filesystem::copy(this->str(), destinationPath.str(),
-                                  std::filesystem::copy_options::recursive |
-                                      std::filesystem::copy_options::skip_existing);
+            std::filesystem::copy(
+                this->str(),
+                destinationPath.str(),
+                std::filesystem::copy_options::recursive |
+                    std::filesystem::copy_options::skip_existing
+            );
         else
-            std::filesystem::copy_file(this->str(), destinationPath.str(),
-                                       std::filesystem::copy_options::skip_existing);
+            std::filesystem::copy_file(
+                this->str(),
+                destinationPath.str(),
+                std::filesystem::copy_options::skip_existing
+            );
         return true;
     }
     return false;
@@ -345,7 +363,10 @@ bool Path::copyTo(const Path& destinationPath) const {
         destinationPath.newfile();
 
         storage::FileStream source(this->str(), storage::Mode::READ);
-        storage::FileStream destination(destinationPath.str(), storage::Mode::WRITE);
+        storage::FileStream destination(
+            destinationPath.str(),
+            storage::Mode::WRITE
+        );
 
         if (!source.isopen() || !destination.isopen()) {
             source.close();
@@ -370,7 +391,8 @@ bool Path::copyTo(const Path& destinationPath) const {
 }
 
 bool Path::newfile(void) const {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
 
     std::ofstream file(this->str());
     if (file.is_open()) {
@@ -397,7 +419,8 @@ bool Path::remove(void) const {
     std::cout << "Remove action" << std::endl;
     if (!this->exists())
         return false;
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
     return std::filesystem::remove(this->str());
 #endif
 
@@ -407,13 +430,15 @@ bool Path::remove(void) const {
         std::cout << "Remove dir" << std::endl;
         std::vector<std::string> children = this->listdir();
         if (!children.empty()) {
-            // serialcom::SerialManager::sharedInstance->commandLog("Remove children");
+            // serialcom::SerialManager::sharedInstance->commandLog("Remove
+            // children");
             std::cout << "Remove children" << std::endl;
             for (std::string child : children) {
                 Path childPath = *this / child;
                 if (!childPath.remove())
                     return false;
-                // serialcom::SerialManager::sharedInstance->commandLog("Removing child " + child);
+                // serialcom::SerialManager::sharedInstance->commandLog("Removing
+                // child " + child);
                 std::cout << "Removing child " << childPath.str() << std::endl;
             }
         }
@@ -424,7 +449,8 @@ bool Path::remove(void) const {
 }
 
 bool Path::rename(const Path& to) {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
     std::filesystem::rename(this->str(), to.str());
     this->assign(to);
     return true;
@@ -436,17 +462,24 @@ bool Path::rename(const Path& to) {
 }
 
 bool Path::copy(const Path& to) {
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
+    defined(__APPLE__)
     try {
         if (this->isfile()) {
             // Copy single file
-            std::filesystem::copy_file(this->str(), to.str(),
-                                       std::filesystem::copy_options::overwrite_existing);
+            std::filesystem::copy_file(
+                this->str(),
+                to.str(),
+                std::filesystem::copy_options::overwrite_existing
+            );
         } else if (this->isdir()) {
             // Copy directory and its contents recursively
-            std::filesystem::copy(this->str(), to.str(),
-                                  std::filesystem::copy_options::recursive |
-                                      std::filesystem::copy_options::overwrite_existing);
+            std::filesystem::copy(
+                this->str(),
+                to.str(),
+                std::filesystem::copy_options::recursive |
+                    std::filesystem::copy_options::overwrite_existing
+            );
         }
         return true;
     } catch (const std::filesystem::filesystem_error& e) {

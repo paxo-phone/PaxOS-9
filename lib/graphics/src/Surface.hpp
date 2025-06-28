@@ -43,7 +43,9 @@ class Surface {
     void setPixel(uint16_t x, uint16_t y, color_t value);
 
     void pushSurface(Surface* surface, int16_t x, int16_t y);
-    void pushSurfaceWithScale(Surface* surface, int16_t x, int16_t y, float scale);
+    void pushSurfaceWithScale(
+        Surface* surface, int16_t x, int16_t y, float scale
+    );
 
     void clear(color_t color);
     void clear();
@@ -59,30 +61,45 @@ class Surface {
     void drawCircle(int16_t x, int16_t y, uint16_t r, color_t color);
     void fillCircle(int16_t x, int16_t y, uint16_t r, color_t color);
 
-    void fillRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
-    void fillRoundRectWithBorder(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs,
-                                 uint16_t Backcolor, uint16_t Bordercolor);
-    void drawRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
+    void fillRoundRect(
+        int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color
+    );
+    void fillRoundRectWithBorder(
+        int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs,
+        uint16_t Backcolor, uint16_t Bordercolor
+    );
+    void drawRoundRect(
+        int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color
+    );
 
-    void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
+    void
+        drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
     bool saveAsJpg(const storage::Path filename);
-    void drawImage(const SImage& image, int16_t x, int16_t y, uint16_t w = 0, uint16_t h = 0);
+    void drawImage(
+        const SImage& image, int16_t x, int16_t y, uint16_t w = 0,
+        uint16_t h = 0
+    );
 
     void setFont(EFont font);
     void setFontSize(float fontSize);
     void setTextColor(const color_t textColor);
     uint16_t getTextWidth(std::string text);
     uint16_t getTextHeight() const;
-    void drawText(std::string& otext, int16_t x, int16_t y,
-                  std::optional<color_t> color = std::nullopt);
+    void drawText(
+        std::string& otext, int16_t x, int16_t y,
+        std::optional<color_t> color = std::nullopt
+    );
 
-    // w and h are the width and height of the bounding box where the text will be centered
-    void drawTextCentered(std::string& text, const int16_t x, const int16_t y,
-                          const uint16_t w = -1, const uint16_t h = -1,
-                          const bool horizontallyCentered = true,
-                          const bool verticallyCentered = true,
-                          const std::optional<color_t> color = std::nullopt);
+    // w and h are the width and height of the bounding box where the text will
+    // be centered
+    void drawTextCentered(
+        std::string& text, const int16_t x, const int16_t y,
+        const uint16_t w = -1, const uint16_t h = -1,
+        const bool horizontallyCentered = true,
+        const bool verticallyCentered = true,
+        const std::optional<color_t> color = std::nullopt
+    );
 
     [[nodiscard]] Surface clone() const;
 

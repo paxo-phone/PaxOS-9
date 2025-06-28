@@ -20,8 +20,11 @@ class Slider final : public ElementBase {
      * @param maxValue
      * @param defaultValue
      */
-    Slider(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t minValue = 0,
-           uint16_t maxValue = 100, uint16_t defaultValue = 0);
+    Slider(
+        uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+        uint16_t minValue = 0, uint16_t maxValue = 100,
+        uint16_t defaultValue = 0
+    );
 
     /**
      * @brief Destroy the Slider object

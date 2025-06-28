@@ -1,10 +1,11 @@
 #include "lua_canvas.hpp"
-
 #include "lua_file.hpp"
 
 #include <graphics.hpp>
 
-LuaCanvas::LuaCanvas(LuaWidget* parent, int x, int y, int width, int height, LuaFile* lua) {
+LuaCanvas::LuaCanvas(
+    LuaWidget* parent, int x, int y, int width, int height, LuaFile* lua
+) {
     widget = new Canvas(x, y, width, height);
     this->lua = lua;
     init(widget, parent);

@@ -2,20 +2,18 @@
 // Created by Charles on 20/01/2024.
 //
 
-#include <imgdec.hpp>
 #include <gtest/gtest.h>
+#include <imgdec.hpp>
 
-TEST(IMGDECTestPNG, GetFilesize)
-{
+TEST(IMGDECTestPNG, GetFilesize) {
     const size_t fileSize = getFileSize("resources/images/logo.png");
 
     EXPECT_NE(fileSize, -1); // Check if no error occurred
-    EXPECT_GT(fileSize, 0); // Check if the file is not empty
+    EXPECT_GT(fileSize, 0);  // Check if the file is not empty
 }
 
-TEST(IMGDECTestPNG, FileSignature)
-{
-    const uint8_t *fileData = getFileData("resources/images/logo.png");
+TEST(IMGDECTestPNG, FileSignature) {
+    const uint8_t* fileData = getFileData("resources/images/logo.png");
 
     EXPECT_EQ(fileData[0x01], 0x50); // P
     EXPECT_EQ(fileData[0x02], 0x4E); // N
@@ -24,9 +22,8 @@ TEST(IMGDECTestPNG, FileSignature)
     delete fileData;
 }
 
-TEST(IMGDECTestPNG, ImageType)
-{
-    const uint8_t *fileData = getFileData("resources/images/logo.png");
+TEST(IMGDECTestPNG, ImageType) {
+    const uint8_t* fileData = getFileData("resources/images/logo.png");
 
     const imgdec::IMGData imgData = imgdec::decodeHeader(fileData);
 
@@ -35,10 +32,8 @@ TEST(IMGDECTestPNG, ImageType)
     delete fileData;
 }
 
-
-TEST(IMGDECTestPNG, ImageWidthHeight)
-{
-    const uint8_t *fileData = getFileData("resources/images/logo.png");
+TEST(IMGDECTestPNG, ImageWidthHeight) {
+    const uint8_t* fileData = getFileData("resources/images/logo.png");
 
     const imgdec::IMGData imgData = imgdec::decodeHeader(fileData);
 

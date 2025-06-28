@@ -3,11 +3,15 @@
 /**
  * LuaVerticalList
  */
-LuaVerticalList::LuaVerticalList(LuaWidget* parent, int x, int y, int width, int height) {
+LuaVerticalList::LuaVerticalList(
+    LuaWidget* parent, int x, int y, int width, int height
+) {
     widget = new VerticalList(x, y, width, height);
     init(widget, parent);
     widget->setBackgroundColor(
-        widget->m_parent == nullptr ? COLOR_WHITE : widget->m_parent->getBackgroundColor());
+        widget->m_parent == nullptr ? COLOR_WHITE
+                                    : widget->m_parent->getBackgroundColor()
+    );
 }
 
 void LuaVerticalList::addChild(LuaWidget* widget) {
@@ -65,7 +69,9 @@ void LuaVerticalList::specificUpdate() {
  * LuaHorizontalList
  */
 
-LuaHorizontalList::LuaHorizontalList(LuaWidget* parent, int x, int y, int width, int height) {
+LuaHorizontalList::LuaHorizontalList(
+    LuaWidget* parent, int x, int y, int width, int height
+) {
     widget = new HorizontalList(x, y, width, height);
     init(widget, parent);
 }

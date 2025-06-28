@@ -48,8 +48,9 @@ class Label final : public ElementBase {
     };
 
     ParseDataOutput parse(void);
-    uint16_t getUsableWidth(void); // retourne la largeur réelle maximale utilisée par le texte
-                                   // (sans les bordure etc...)
+    uint16_t getUsableWidth(void
+    ); // retourne la largeur réelle maximale utilisée par le texte
+       // (sans les bordure etc...)
     uint16_t getUsableHeight(void);
 
     uint16_t m_fontSize;

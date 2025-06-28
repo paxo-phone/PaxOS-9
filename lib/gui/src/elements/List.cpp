@@ -5,7 +5,9 @@
 
 namespace gui::elements {
 // --- VERTICAL LIST IMPLEMENTATION (unchanged logic, cleaned) ---
-VerticalList::VerticalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
+VerticalList::VerticalList(
+    uint16_t x, uint16_t y, uint16_t width, uint16_t height
+) {
     m_x = x;
     m_y = y;
     m_width = width;
@@ -41,32 +43,39 @@ void VerticalList::postRender() {
 
     // Draw scrollbar for UP or DOWN focus
     if (!m_children.empty() && m_focusedIndex < m_children.size()) {
-        uint16_t maxHeight = m_children.back()->m_y + m_children.back()->getHeight();
+        uint16_t maxHeight =
+            m_children.back()->m_y + m_children.back()->getHeight();
         int16_t barLen = (float) getHeight() * getHeight() / maxHeight;
         int16_t barY = 0;
 
         if (m_selectionFocus == SelectionFocus::UP) {
             // Bar position based on focused element's top
-            barY = (float) m_children[m_focusedIndex]->m_y * getHeight() / maxHeight;
+            barY = (float) m_children[m_focusedIndex]->m_y * getHeight() /
+                   maxHeight;
         } else if (m_selectionFocus == SelectionFocus::DOWN) {
             // Bar position based on focused element's bottom minus view height
             barY = (float) (m_children[m_focusedIndex]->m_y +
-                            m_children[m_focusedIndex]->getHeight() - getHeight()) *
+                            m_children[m_focusedIndex]->getHeight() -
+                            getHeight()) *
                    getHeight() / maxHeight;
             if (barY < 0)
                 barY = 0;
             if (barY + barLen > getHeight())
                 barY = getHeight() - barLen;
         }
-        m_surface->fillRoundRect(getWidth() - 3, barY, 3, barLen, 1, COLOR_GREY);
+        m_surface
+            ->fillRoundRect(getWidth() - 3, barY, 3, barLen, 1, COLOR_GREY);
     }
 }
 
 void VerticalList::add(ElementBase* widget) {
     m_verticalScrollEnabled = true;
-    widget->setY((m_children.size() != 0)
-                     ? (m_children.back()->m_y + m_children.back()->getHeight() + m_lineSpace)
-                     : (0));
+    widget->setY(
+        (m_children.size() != 0)
+            ? (m_children.back()->m_y + m_children.back()->getHeight() +
+               m_lineSpace)
+            : (0)
+    );
     this->addChild(widget);
 }
 
@@ -117,32 +126,33 @@ void VerticalList::setAutoSelect(bool autoSelect) {
 }
 
 void VerticalList::updateFocusedIndex() {
-    eventHandlerApp.setTimeout(new Callback<>([&]() {
-                                   if (m_children.size() == 0) {
-                                       m_focusedIndex = 0;
-                                       return;
-                                   }
+    eventHandlerApp.setTimeout(
+        new Callback<>([&]() {
+            if (m_children.size() == 0) {
+                m_focusedIndex = 0;
+                return;
+            }
 
-                                   m_verticalScroll = m_children[m_focusedIndex]->m_y;
+            m_verticalScroll = m_children[m_focusedIndex]->m_y;
 
-                                   switch (m_selectionFocus) {
-                                   case SelectionFocus::UP:
-                                       m_verticalScroll = m_verticalScroll;
-                                       break;
-                                   case SelectionFocus::CENTER:
-                                       m_verticalScroll =
-                                           m_verticalScroll - getHeight() / 2 +
-                                           m_children[m_focusedIndex]->getHeight() / 2;
-                                       break;
-                                   case SelectionFocus::DOWN:
-                                       m_verticalScroll = m_verticalScroll - getHeight() +
-                                                          m_children[m_focusedIndex]->getHeight();
-                                       break;
-                                   }
+            switch (m_selectionFocus) {
+            case SelectionFocus::UP:
+                m_verticalScroll = m_verticalScroll;
+                break;
+            case SelectionFocus::CENTER:
+                m_verticalScroll = m_verticalScroll - getHeight() / 2 +
+                                   m_children[m_focusedIndex]->getHeight() / 2;
+                break;
+            case SelectionFocus::DOWN:
+                m_verticalScroll = m_verticalScroll - getHeight() +
+                                   m_children[m_focusedIndex]->getHeight();
+                break;
+            }
 
-                                   localGraphicalUpdate();
-                               }),
-                               0);
+            localGraphicalUpdate();
+        }),
+        0
+    );
 }
 
 void VerticalList::onScroll(int16_t x, int16_t y) {
@@ -160,7 +170,8 @@ void VerticalList::onScroll(int16_t x, int16_t y) {
             return;
         }
 
-        int16_t maxScroll = m_children.back()->m_y + m_children.back()->getHeight() - getHeight();
+        int16_t maxScroll = m_children.back()->m_y +
+                            m_children.back()->getHeight() - getHeight();
 
         if (m_verticalScroll - y < 0) {
             m_verticalScroll = 0;
@@ -171,12 +182,13 @@ void VerticalList::onScroll(int16_t x, int16_t y) {
         }
     } else {
         int16_t minScroll = 0;
-        int16_t maxScroll = m_children.back()->m_y + m_children.back()->getHeight() - getHeight();
+        int16_t maxScroll = m_children.back()->m_y +
+                            m_children.back()->getHeight() - getHeight();
 
         if (m_selectionFocus == SelectionFocus::CENTER) {
             minScroll = -m_children.front()->getHeight() / 2 - getHeight() / 2;
-            maxScroll =
-                m_children.back()->m_y + m_children.back()->getHeight() / 2 - getHeight() / 2;
+            maxScroll = m_children.back()->m_y +
+                        m_children.back()->getHeight() / 2 - getHeight() / 2;
             if (maxScroll < 0)
                 maxScroll = 0;
         }
@@ -194,11 +206,14 @@ void VerticalList::onScroll(int16_t x, int16_t y) {
     int focusedIndex = -1;
 
     for (int i = 0; i < m_children.size(); i++) {
-        if ((m_selectionFocus == SelectionFocus::UP && m_children[i]->getY() >= 0) ||
+        if ((m_selectionFocus == SelectionFocus::UP &&
+             m_children[i]->getY() >= 0) ||
             (m_selectionFocus == SelectionFocus::CENTER &&
-             m_children[i]->getY() + m_children[i]->getHeight() >= getHeight() / 2) ||
+             m_children[i]->getY() + m_children[i]->getHeight() >=
+                 getHeight() / 2) ||
             (m_selectionFocus == SelectionFocus::DOWN &&
-             m_children[i]->getY() + m_children[i]->getHeight() >= getHeight())) {
+             m_children[i]->getY() + m_children[i]->getHeight() >= getHeight()
+            )) {
             element = m_children[i];
             focusedIndex = i;
             break;
@@ -224,8 +239,8 @@ void VerticalList::onNotClicked() {
         if (m_selectionFocus == SelectionFocus::UP) {
             m_verticalScroll = m_focusedElement->m_y;
         } else if (m_selectionFocus == SelectionFocus::CENTER) {
-            m_verticalScroll =
-                m_focusedElement->m_y - getHeight() / 2 + m_focusedElement->getHeight() / 2;
+            m_verticalScroll = m_focusedElement->m_y - getHeight() / 2 +
+                               m_focusedElement->getHeight() / 2;
         }
 
         localGraphicalUpdate();
@@ -242,7 +257,9 @@ int VerticalList::getFocusedElement() {
 }
 
 // --- HORIZONTAL LIST REWRITTEN TO MATCH VERTICAL LIST MODEL ---
-HorizontalList::HorizontalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
+HorizontalList::HorizontalList(
+    uint16_t x, uint16_t y, uint16_t width, uint16_t height
+) {
     m_x = x;
     m_y = y;
     m_width = width;
@@ -262,24 +279,40 @@ void HorizontalList::render() {
 
 void HorizontalList::postRender() {
     if (m_selectionFocus == SelectionFocus::CENTER && m_children.size()) {
-        m_surface->fillRect(getWidth() / 2 - m_children[m_focusedIndex]->getWidth() / 2, 0,
-                            m_children[m_focusedIndex]->getWidth(), 1, COLOR_BLACK);
+        m_surface->fillRect(
+            getWidth() / 2 - m_children[m_focusedIndex]->getWidth() / 2,
+            0,
+            m_children[m_focusedIndex]->getWidth(),
+            1,
+            COLOR_BLACK
+        );
     } else {
         if (m_children.size() && m_children.size() > m_focusedIndex) {
-            uint16_t maxWidth = m_children.back()->m_x + m_children.back()->getWidth();
-            int16_t cursor_size = (float) this->getWidth() * this->getWidth() / maxWidth;
-            int16_t cursor_x =
-                (float) m_children[m_focusedIndex]->m_x * this->getWidth() / maxWidth;
+            uint16_t maxWidth =
+                m_children.back()->m_x + m_children.back()->getWidth();
+            int16_t cursor_size =
+                (float) this->getWidth() * this->getWidth() / maxWidth;
+            int16_t cursor_x = (float) m_children[m_focusedIndex]->m_x *
+                               this->getWidth() / maxWidth;
 
-            m_surface->fillRoundRect(cursor_x, getHeight() - 3, cursor_size, 3, 1, COLOR_GREY);
+            m_surface->fillRoundRect(
+                cursor_x,
+                getHeight() - 3,
+                cursor_size,
+                3,
+                1,
+                COLOR_GREY
+            );
         }
     }
 }
 
 void HorizontalList::add(ElementBase* widget) {
-    widget->setX((m_children.size() != 0)
-                     ? (m_children.back()->m_x + m_children.back()->getWidth() + m_lineSpace)
-                     : (0));
+    widget->setX(
+        (m_children.size() != 0) ? (m_children.back()->m_x +
+                                    m_children.back()->getWidth() + m_lineSpace)
+                                 : (0)
+    );
     this->addChild(widget);
 }
 
@@ -333,26 +366,28 @@ void HorizontalList::setAutoSelect(bool autoSelect) {
 }
 
 void HorizontalList::updateFocusedIndex() {
-    eventHandlerApp.setTimeout(new Callback<>([&]() {
-                                   if (m_children.size() == 0) {
-                                       m_focusedIndex = 0;
-                                       return;
-                                   }
+    eventHandlerApp.setTimeout(
+        new Callback<>([&]() {
+            if (m_children.size() == 0) {
+                m_focusedIndex = 0;
+                return;
+            }
 
-                                   m_horizontalScroll = m_children[m_focusedIndex]->m_x;
-                                   if (m_selectionFocus == SelectionFocus::CENTER)
-                                       m_horizontalScroll =
-                                           m_horizontalScroll - getWidth() / 2 +
-                                           m_children[m_focusedIndex]->getWidth() / 2;
+            m_horizontalScroll = m_children[m_focusedIndex]->m_x;
+            if (m_selectionFocus == SelectionFocus::CENTER)
+                m_horizontalScroll = m_horizontalScroll - getWidth() / 2 +
+                                     m_children[m_focusedIndex]->getWidth() / 2;
 
-                                   localGraphicalUpdate();
-                               }),
-                               0);
+            localGraphicalUpdate();
+        }),
+        0
+    );
 }
 
 void HorizontalList::onScroll(int16_t x, int16_t y) {
     if (!m_autoSelect) {
-        int16_t maxScroll = m_children.back()->m_x + m_children.back()->getWidth() - getWidth();
+        int16_t maxScroll =
+            m_children.back()->m_x + m_children.back()->getWidth() - getWidth();
 
         if (m_horizontalScroll - x < 0)
             m_horizontalScroll = 0;
@@ -362,11 +397,13 @@ void HorizontalList::onScroll(int16_t x, int16_t y) {
             m_horizontalScroll -= x;
     } else {
         int16_t minScroll = 0;
-        int16_t maxScroll = m_children.back()->m_x + m_children.back()->getWidth() - getWidth();
+        int16_t maxScroll =
+            m_children.back()->m_x + m_children.back()->getWidth() - getWidth();
 
         if (m_selectionFocus == SelectionFocus::CENTER) {
             minScroll = -m_children.front()->getWidth() / 2 - getWidth() / 2;
-            maxScroll = m_children.back()->m_x + m_children.back()->getWidth() / 2 - getWidth() / 2;
+            maxScroll = m_children.back()->m_x +
+                        m_children.back()->getWidth() / 2 - getWidth() / 2;
             if (maxScroll < 0)
                 maxScroll = 0;
         }
@@ -383,12 +420,14 @@ void HorizontalList::onScroll(int16_t x, int16_t y) {
     int focusedIndex = -1;
 
     for (int i = 0; i < m_children.size(); i++) {
-        if (m_selectionFocus == SelectionFocus::LEFT && m_children[i]->getX() >= 0) {
+        if (m_selectionFocus == SelectionFocus::LEFT &&
+            m_children[i]->getX() >= 0) {
             element = m_children[i];
             focusedIndex = i;
             break;
         } else if (m_selectionFocus == SelectionFocus::CENTER &&
-                   m_children[i]->getX() + m_children[i]->getWidth() >= getWidth() / 2) {
+                   m_children[i]->getX() + m_children[i]->getWidth() >=
+                       getWidth() / 2) {
             element = m_children[i];
             focusedIndex = i;
             break;
@@ -414,8 +453,8 @@ void HorizontalList::onNotClicked() {
         if (m_selectionFocus == SelectionFocus::LEFT) {
             m_horizontalScroll = m_focusedElement->m_x;
         } else if (m_selectionFocus == SelectionFocus::CENTER) {
-            m_horizontalScroll =
-                m_focusedElement->m_x - getWidth() / 2 + m_focusedElement->getWidth() / 2;
+            m_horizontalScroll = m_focusedElement->m_x - getWidth() / 2 +
+                                 m_focusedElement->getWidth() / 2;
         }
 
         localGraphicalUpdate();

@@ -58,7 +58,8 @@ void mainLoop(void* data) {
     if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
         // Launch OOBE app
         try {
-            const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+            const std::shared_ptr<AppManager::App> oobeApp =
+                AppManager::get(".oobe");
 
             if (oobeApp == nullptr) {
                 throw std::runtime_error("OOBE app not found.");
@@ -80,7 +81,8 @@ void mainLoop(void* data) {
         eventHandlerApp.update();
 
         if (AppManager::isAnyVisibleApp() &&
-            launcher) // free the launcher is an app is running and the launcher is active
+            launcher) // free the launcher is an app is running and the launcher
+                      // is active
         {
             applications::launcher::free();
             launcher = false;
@@ -90,7 +92,8 @@ void mainLoop(void* data) {
             applications::launcher::update();
 
         if (libsystem::getDeviceMode() == libsystem::NORMAL &&
-            !AppManager::isAnyVisibleApp()) // si mode normal et pas d'app en cours
+            !AppManager::isAnyVisibleApp(
+            )) // si mode normal et pas d'app en cours
         {
             if (!launcher) // si pas de launcher -> afficher un launcher
             {
@@ -100,7 +103,8 @@ void mainLoop(void* data) {
             {
                 if (applications::launcher::iconTouched()) {
                     // run the app
-                    const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
+                    const std::shared_ptr<AppManager::App> app =
+                        applications::launcher::getApp();
 
                     // Free the launcher resources
                     applications::launcher::free();
@@ -141,7 +145,8 @@ void mainLoop(void* data) {
             }
         }
 
-        if (libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp()) {
+        if (libsystem::getDeviceMode() == libsystem::SLEEP &&
+            AppManager::isAnyVisibleApp()) {
             setDeviceMode(libsystem::NORMAL);
             StandbyMode::disable();
         }
@@ -150,7 +155,8 @@ void mainLoop(void* data) {
             StandbyMode::expired()) // innactivity detected -> go to sleep mode
         {
             for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp();
-                 i++) // define a limit on how many apps can be stopped (prevent from a loop)
+                 i++) // define a limit on how many apps can be stopped (prevent
+                      // from a loop)
             {
                 AppManager::quitApp();
             }
@@ -164,17 +170,20 @@ void mainLoop(void* data) {
             StandbyMode::wait();
 
         /*std::cout << "states: "
-                  << "StandbyMode: " << (StandbyMode::state() ? "enabled" : "disabled")
-                  << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal"
-           : "sleep")
-                  << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ? "true" : "false")
+                  << "StandbyMode: " << (StandbyMode::state() ? "enabled" :
+           "disabled")
+                  << ", deviceMode: " << (libsystem::getDeviceMode() ==
+           libsystem::NORMAL ? "normal" : "sleep")
+                  << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ?
+           "true" : "false")
                   << std::endl;*/
     }
 }
 
 void init(void* data) {
 /**
- * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
+ * Initialisation du hardware, de l'écran, lecture des applications stcokées
+ * dans storage
  */
 #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
@@ -203,7 +212,8 @@ void init(void* data) {
     // But display error
     /*if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
         libsystem::registerBootError("Battery level is too low.");
-        libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100))
+        libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel()
+    * 100))
     + "% < 5%"); libsystem::registerBootError("Please charge your Paxo.");
         libsystem::registerBootError("Tip: Force boot by plugging a charger.");
 
@@ -223,10 +233,12 @@ void init(void* data) {
 
 #ifdef ESP_PLATFORM
     backtrace_saver::init();
-    std::cout << "backtrace: " << backtrace_saver::getBacktraceMessage() << std::endl;
-    backtrace_saver::backtraceEventId =
-        eventHandlerBack.addEventListener(new Condition<>(&backtrace_saver::shouldSaveBacktrace),
-                                          new Callback<>(&backtrace_saver::saveBacktrace));
+    std::cout << "backtrace: " << backtrace_saver::getBacktraceMessage()
+              << std::endl;
+    backtrace_saver::backtraceEventId = eventHandlerBack.addEventListener(
+        new Condition<>(&backtrace_saver::shouldSaveBacktrace),
+        new Callback<>(&backtrace_saver::saveBacktrace)
+    );
 #endif // ESP_PLATFORM
 
     // Init de la gestiuon des Threads
@@ -252,11 +264,15 @@ void init(void* data) {
     if (!systemConfig.has("settings.color.background")) {
         libsystem::paxoConfig::setBackgroundColor(0xFFFF, true);
     } else {
-        COLOR_WHITE = static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.background"));
+        COLOR_WHITE = static_cast<color_t>(
+            systemConfig.get<uint16_t>("settings.color.background")
+        );
     }
 
-    libsystem::log("settings.brightness: " +
-                   std::to_string(systemConfig.get<uint8_t>("settings.brightness")));
+    libsystem::log(
+        "settings.brightness: " +
+        std::to_string(systemConfig.get<uint8_t>("settings.brightness"))
+    );
 
     graphics::setBrightness(systemConfig.get<uint8_t>("settings.brightness"));
 
@@ -277,21 +293,31 @@ void init(void* data) {
 
     // gestion des appels entrants
     Gsm::ExternalEvents::onIncommingCall = []() {
-        eventHandlerApp.setTimeout(new Callback<>([]() { AppManager::get(".receivecall")->run(); }),
-                                   0);
+        eventHandlerApp.setTimeout(
+            new Callback<>([]() {
+                AppManager::get(".receivecall")->run();
+            }),
+            0
+        );
     };
 
     // Gestion de la réception d'un message
     Gsm::ExternalEvents::onNewMessage = []() {
 #ifdef ESP_PLATFORM
-        eventHandlerBack.setTimeout(new Callback<>([]() { hardware::vibrator::play({1, 0, 1}); }),
-                                    0);
+        eventHandlerBack.setTimeout(
+            new Callback<>([]() {
+                hardware::vibrator::play({1, 0, 1});
+            }),
+            0
+        );
 #endif
 
         AppManager::event_onmessage();
     };
 
-    Gsm::ExternalEvents::onNewMessageError = []() { AppManager::event_onmessageerror(); };
+    Gsm::ExternalEvents::onNewMessageError = []() {
+        AppManager::event_onmessageerror();
+    };
 
 #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &hardware::vibrator::thread, 2 * 1024);
@@ -305,7 +331,12 @@ void init(void* data) {
 
     // Chargement des contacts
     std::cout << "[Main] Loading Contacts" << std::endl;
-    eventHandlerApp.setTimeout(new Callback<>([]() { Contacts::load(); }), 0);
+    eventHandlerApp.setTimeout(
+        new Callback<>([]() {
+            Contacts::load();
+        }),
+        0
+    );
 
     AppManager::init();
 

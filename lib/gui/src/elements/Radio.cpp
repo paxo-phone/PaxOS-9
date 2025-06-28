@@ -1,6 +1,5 @@
-#include "Radio.hpp"
-
 #include "Image.hpp"
+#include "Radio.hpp"
 
 #include <Surface.hpp>
 #include <cstdio>
@@ -21,10 +20,20 @@ Radio::~Radio() = default;
 void Radio::render() {
     m_surface->clear(COLOR_WHITE);
 
-    m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, 10, 2, COLOR_WHITE, COLOR_DARK);
+    m_surface->fillRoundRectWithBorder(
+        0,
+        0,
+        m_width,
+        m_height,
+        10,
+        2,
+        COLOR_WHITE,
+        COLOR_DARK
+    );
 
     if (m_state)
-        m_surface->fillRoundRect(4, 4, m_width - 8, m_height - 8, 10, COLOR_DARK);
+        m_surface
+            ->fillRoundRect(4, 4, m_width - 8, m_height - 8, 10, COLOR_DARK);
 }
 
 void Radio::onReleased() {

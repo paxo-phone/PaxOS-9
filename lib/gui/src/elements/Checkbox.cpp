@@ -1,5 +1,4 @@
 #include "Checkbox.hpp"
-
 #include "Image.hpp"
 
 #include <Surface.hpp>
@@ -32,7 +31,16 @@ void Checkbox::render() {
         m_surface->fillRoundRect(0, 0, m_width, m_height, 4, COLOR_DARK);
         m_tickIcon->enable();
     } else {
-        m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, 4, 2, COLOR_WHITE, COLOR_DARK);
+        m_surface->fillRoundRectWithBorder(
+            0,
+            0,
+            m_width,
+            m_height,
+            4,
+            2,
+            COLOR_WHITE,
+            COLOR_DARK
+        );
         m_tickIcon->disable();
     }
 }

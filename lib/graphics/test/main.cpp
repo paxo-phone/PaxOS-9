@@ -16,7 +16,12 @@ int main(int argc, char** argv) {
         graphics::clear();
 
         graphics::setColor(255, 0, 0);
-        graphics::fillRect(static_cast<uint16_t>(64 + sin(i) * 128), 16, 32, 32);
+        graphics::fillRect(
+            static_cast<uint16_t>(64 + sin(i) * 128),
+            16,
+            32,
+            32
+        );
 
         i++;
     }

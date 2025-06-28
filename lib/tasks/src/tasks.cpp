@@ -46,7 +46,8 @@ void EventHandler::update(std::function<bool()> forced_exit) {
         for (int i = 0; i < intervals.size(); i++) {
             if (intervals.size() > i) {
                 if (intervals[i].callback) {
-                    if (now >= intervals[i].lastTrigger + intervals[i].interval) {
+                    if (now >=
+                        intervals[i].lastTrigger + intervals[i].interval) {
                         intervals[i].callback();
                         intervals[i].lastTrigger = now;
                     }
@@ -64,16 +65,24 @@ void EventHandler::update(std::function<bool()> forced_exit) {
     }
 }
 
-uint32_t EventHandler::addEventListener(Function* condition, Function* callback) {
+uint32_t
+    EventHandler::addEventListener(Function* condition, Function* callback) {
     uint32_t id = findAvailableId();
     events.push_back(new Event(condition, callback, id));
     return id;
 }
 
 void EventHandler::removeEventListener(uint32_t id) {
-    events.erase(std::remove_if(events.begin(), events.end(),
-                                [id](Event* event) { return event->id == id; }),
-                 events.end());
+    events.erase(
+        std::remove_if(
+            events.begin(),
+            events.end(),
+            [id](Event* event) {
+                return event->id == id;
+            }
+        ),
+        events.end()
+    );
 }
 
 uint32_t EventHandler::setTimeout(Function* callback, uint64_t timeout) {
@@ -83,21 +92,37 @@ uint32_t EventHandler::setTimeout(Function* callback, uint64_t timeout) {
 }
 
 void EventHandler::removeTimeout(uint32_t id) {
-    timeouts.erase(std::remove_if(timeouts.begin(), timeouts.end(),
-                                  [id](Timeout* timeout) { return timeout->id == id; }),
-                   timeouts.end());
+    timeouts.erase(
+        std::remove_if(
+            timeouts.begin(),
+            timeouts.end(),
+            [id](Timeout* timeout) {
+                return timeout->id == id;
+            }
+        ),
+        timeouts.end()
+    );
 }
 
-uint32_t EventHandler::setInterval(std::function<void()> callback, uint64_t interval) {
+uint32_t EventHandler::setInterval(
+    std::function<void()> callback, uint64_t interval
+) {
     uint32_t id = findAvailableId();
     intervals.push_back(Interval(callback, interval, id));
     return id;
 }
 
 void EventHandler::removeInterval(uint32_t id) {
-    intervals.erase(std::remove_if(intervals.begin(), intervals.end(),
-                                   [id](Interval& interval) { return interval.id == id; }),
-                    intervals.end());
+    intervals.erase(
+        std::remove_if(
+            intervals.begin(),
+            intervals.end(),
+            [id](Interval& interval) {
+                return interval.id == id;
+            }
+        ),
+        intervals.end()
+    );
 }
 
 uint32_t EventHandler::findAvailableId() {

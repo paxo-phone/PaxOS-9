@@ -21,7 +21,8 @@ struct KeyboardCallbackData {
     sol::reference callbackRef; // Store a reference, NOT a sol::function
     lua_State* L;               // Keep the lua_State alive.
 
-    KeyboardCallbackData(lua_State* L, sol::reference&& ref) : L(L), callbackRef(std::move(ref)) {}
+    KeyboardCallbackData(lua_State* L, sol::reference&& ref) :
+        L(L), callbackRef(std::move(ref)) {}
 };
 extern std::vector<std::unique_ptr<KeyboardCallbackData>> callback_memory;
 
@@ -31,23 +32,33 @@ class LuaGui {
     ~LuaGui();
     LuaBox* box(LuaWidget* parent, int x, int y, int width, int height);
     LuaCanvas* canvas(LuaWidget* parent, int x, int y, int width, int height);
-    LuaImage* image(LuaWidget* parent, std::string path, int x, int y, int width, int height,
-                    color_t background = COLOR_WHITE);
+    LuaImage* image(
+        LuaWidget* parent, std::string path, int x, int y, int width,
+        int height, color_t background = COLOR_WHITE
+    );
     LuaLabel* label(LuaWidget* parent, int x, int y, int width, int height);
     LuaInput* input(LuaWidget* parent, int x, int y);
     LuaButton* button(LuaWidget* parent, int x, int y, int width, int height);
-    LuaVerticalList* verticalList(LuaWidget* parent, int x, int y, int width, int height);
-    LuaHorizontalList* horizontalList(LuaWidget* parent, int x, int y, int width, int height);
+    LuaVerticalList*
+        verticalList(LuaWidget* parent, int x, int y, int width, int height);
+    LuaHorizontalList*
+        horizontalList(LuaWidget* parent, int x, int y, int width, int height);
     LuaCheckbox* checkbox(LuaWidget* parent, int x, int y);
     LuaSwitch* switchb(LuaWidget* parent, int x, int y);
     LuaRadio* radio(LuaWidget* parent, int x, int y);
     LuaWindow* window();
-    LuaSlider* slider(LuaWidget* parent, int x, int y, int width, int height, int minValue,
-                      int maxValue, int defaultValue);
-    std::string keyboard(const std::string& placeholder,
-                         const std::string& defaultText); // deprecated
-    void keyboard_async(const std::string& placeholder, const std::string& defaultText,
-                        sol::function callback);
+    LuaSlider* slider(
+        LuaWidget* parent, int x, int y, int width, int height, int minValue,
+        int maxValue, int defaultValue
+    );
+    std::string keyboard(
+        const std::string& placeholder,
+        const std::string& defaultText
+    ); // deprecated
+    void keyboard_async(
+        const std::string& placeholder, const std::string& defaultText,
+        sol::function callback
+    );
 
     void del(LuaWidget* widget);
 

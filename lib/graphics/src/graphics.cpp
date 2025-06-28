@@ -4,7 +4,6 @@
 //
 
 #include "graphics.hpp"
-
 #include "standby.hpp"
 
 #include <Surface.hpp>
@@ -104,7 +103,8 @@ graphics::GraphicsInitCode graphics::init() {
     // We need to create a "landscape buffer" used as a screen.
     // Because LovyanGFX as a weird color glitch when using "setRotation()".
     // But, by using a temporary buffer, the glitch doesn't appear.
-    landscapeBuffer = std::make_shared<Surface>(getScreenHeight(), getScreenWidth());
+    landscapeBuffer =
+        std::make_shared<Surface>(getScreenHeight(), getScreenWidth());
 
 #endif
 
@@ -119,8 +119,14 @@ graphics::GraphicsInitCode graphics::init() {
     lcd->setTextColor(packRGB565(58, 186, 153));
     lcd->setCursor(
         static_cast<int32_t>(
-            0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))),
-        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())));
+            0.5 * static_cast<double>(
+                      getScreenWidth() - lcd->textWidth(initText.c_str())
+                  )
+        ),
+        static_cast<int32_t>(
+            0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())
+        )
+    );
     lcd->printf("%s", initText.c_str());
 
 #ifdef ESP_PLATFORM
@@ -191,14 +197,16 @@ static int SDLUpdate(void* data) {
 
 void graphics::SDLInit(void (*appMain)()) {
     lgfx::Panel_sdl::setup();
-    // lgfx::Panel_sdl::loop(); // Ensure to create the window before creating a new thread
+    // lgfx::Panel_sdl::loop(); // Ensure to create the window before creating a
+    // new thread
 
     SDLUpdateData updateData{appMain};
 
     running = true;
 
     // Multithreading can be an issue, be careful
-    SDL_Thread* thread = SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
+    SDL_Thread* thread =
+        SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
     if (thread == nullptr) {
         printf("Unable to create thread : %s\n", SDL_GetError());
         exit(1);
@@ -215,7 +223,8 @@ void graphics::SDLInit(void (*appMain)()) {
 
 #endif
 
-// You should only use this function with a "Canvas" (Surface that is the size of the screen)
+// You should only use this function with a "Canvas" (Surface that is the size
+// of the screen)
 void graphics::showSurface(const Surface* surface, int x, int y) {
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
@@ -225,14 +234,17 @@ void graphics::showSurface(const Surface* surface, int x, int y) {
     // while(lcd.get()->dmaBusy());
     // lcd.get()->initDMA();
     // lcd.get()->setWindow(x, y, sprite.width(), sprite.height());
-    // lcd.get()->pushImageDMA(x, y, sprite.width(), sprite.height(), sprite.getBuffer(),
-    // lgfx::color_depth_t::rgb565_2Byte, sprite.getPalette());
-    // lcd.get()->waitDMA();
+    // lcd.get()->pushImageDMA(x, y, sprite.width(), sprite.height(),
+    // sprite.getBuffer(), lgfx::color_depth_t::rgb565_2Byte,
+    // sprite.getPalette()); lcd.get()->waitDMA();
 
 #else
     if (screenOrientation == LANDSCAPE) {
-        landscapeBuffer->pushSurface(const_cast<Surface*>(surface), static_cast<int16_t>(x),
-                                     static_cast<int16_t>(y));
+        landscapeBuffer->pushSurface(
+            const_cast<Surface*>(surface),
+            static_cast<int16_t>(x),
+            static_cast<int16_t>(y)
+        );
         landscapeBuffer->m_sprite.pushSprite(lcd.get(), 0, 0);
     } else {
         sprite.pushSprite(lcd.get(), x, y);
@@ -240,8 +252,10 @@ void graphics::showSurface(const Surface* surface, int x, int y) {
 #endif
 }
 
-void graphics::setWindow(const uint16_t x, const uint16_t y, const uint16_t width,
-                         const uint16_t height) {
+void graphics::setWindow(
+    const uint16_t x, const uint16_t y, const uint16_t width,
+    const uint16_t height
+) {
     lcd->setWindow(x, y, x + width, y + height);
 }
 
@@ -304,7 +318,8 @@ void graphics::touchUpdate() {
     }
 #endif
 
-    // 2. Validate and normalize touch data (e.g., boundary checks, map to -1 if invalid)
+    // 2. Validate and normalize touch data (e.g., boundary checks, map to -1 if
+    // invalid)
     if (currentLiveTouchX <= 0 || currentLiveTouchY <= 0 ||
         currentLiveTouchX > graphics::getScreenWidth() ||
         currentLiveTouchY > graphics::getScreenHeight()) {
@@ -312,8 +327,10 @@ void graphics::touchUpdate() {
         currentLiveTouchY = -1;
     }
 
-    // 3. Trigger standby if the live state differs from the last application-acknowledged state.
-    //    `touchX` and `touchY` (at this point) hold the values the application last processed.
+    // 3. Trigger standby if the live state differs from the last
+    // application-acknowledged state.
+    //    `touchX` and `touchY` (at this point) hold the values the application
+    //    last processed.
     if (currentLiveTouchX != touchX || currentLiveTouchY != touchY) {
         if (!StandbyMode::state()) // only trigger if not already in standby
         {
@@ -323,26 +340,29 @@ void graphics::touchUpdate() {
     // else
     // {
     //     // Debugging: Touch state for standby trigger is unchanged
-    //     std::cout << "Touch state for standby unchanged: live(" << currentLiveTouchX << "," <<
-    //     currentLiveTouchY
-    //               << ") vs app_ack(" << touchX << "," << touchY << ")" << std::endl;
+    //     std::cout << "Touch state for standby unchanged: live(" <<
+    //     currentLiveTouchX << "," << currentLiveTouchY
+    //               << ") vs app_ack(" << touchX << "," << touchY << ")" <<
+    //               std::endl;
     // }
 
-    // 4. Update the intermediate buffer (newTouchX, newTouchY) with the current live state.
-    //    This ensures newTouchX/Y always reflect the latest hardware reading, including -1 for no
-    //    touch.
+    // 4. Update the intermediate buffer (newTouchX, newTouchY) with the current
+    // live state.
+    //    This ensures newTouchX/Y always reflect the latest hardware reading,
+    //    including -1 for no touch.
     newTouchX = currentLiveTouchX;
     newTouchY = currentLiveTouchY;
 
-    // 5. If the application has processed the previous `touchX`/`touchY` values (isTouchRead ==
-    // true):
+    // 5. If the application has processed the previous `touchX`/`touchY` values
+    // (isTouchRead == true):
     //    Update `touchX`/`touchY` to the new state from the buffer.
     if (isTouchRead) {
         touchX = newTouchX; // Update application-visible coordinates
         touchY = newTouchY;
 
         // Reset newTouchX/Y as per original logic after consumption.
-        // With step 4, newTouchX/Y will be correctly repopulated in the next call.
+        // With step 4, newTouchX/Y will be correctly repopulated in the next
+        // call.
         newTouchX = -1;
         newTouchY = -1;
         isTouchRead = false;
@@ -357,7 +377,8 @@ graphics::EScreenOrientation graphics::getScreenOrientation() {
     return screenOrientation;
 }
 
-void graphics::setScreenOrientation(const EScreenOrientation screenOrientation) {
+void graphics::setScreenOrientation(const EScreenOrientation screenOrientation
+) {
     // Update the screen orientation (and the screen size)
     // Maybe use another name for the parameter ?
     // Or store it in another place ?

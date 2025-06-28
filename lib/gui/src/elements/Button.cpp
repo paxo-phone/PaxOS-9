@@ -28,10 +28,19 @@ Button::Button(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
 Button::~Button() = default;
 
 void Button::render() {
-    m_surface->clear(m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor());
-    m_surface->fillRoundRectWithBorder(0, 0, this->m_width, this->m_height, this->m_borderRadius,
-                                       this->m_borderSize, this->m_backgroundColor,
-                                       this->m_borderColor);
+    m_surface->clear(
+        m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor()
+    );
+    m_surface->fillRoundRectWithBorder(
+        0,
+        0,
+        this->m_width,
+        this->m_height,
+        this->m_borderRadius,
+        this->m_borderSize,
+        this->m_backgroundColor,
+        this->m_borderColor
+    );
 }
 
 void Button::onClick() //
@@ -75,8 +84,11 @@ void Button::format() {
         m_image->setX(getWidth() / 2 - w / 2);
 
     if (m_label != nullptr) {
-        m_label->setX(space + ((m_image != nullptr) ? (m_image->getX() + m_image->getWidth())
-                                                    : getWidth() / 2 - w / 2));
+        m_label->setX(
+            space + ((m_image != nullptr)
+                         ? (m_image->getX() + m_image->getWidth())
+                         : getWidth() / 2 - w / 2)
+        );
         m_label->setY(10);
         m_label->setWidth(m_label->getTextWidth());
         m_label->setHeight(18);

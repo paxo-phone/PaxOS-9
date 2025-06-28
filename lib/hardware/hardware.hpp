@@ -22,7 +22,8 @@ enum I2CResponse {
 };
 
 uint8_t scanI2C(int sda = -1, int scl = -1, bool begin = true);
-I2CResponse checkI2C(uint8_t address, int sda = -1, int scl = -1, bool begin = true);
+I2CResponse
+    checkI2C(uint8_t address, int sda = -1, int scl = -1, bool begin = true);
 
 bool isCharging();
 

@@ -8,7 +8,8 @@
 #include <cstdint> // for uint16_t
 #include <vector>
 
-typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib graphique
+typedef uint16_t
+    color_t; // @Charles a remplacer quand tu auras mis la lib graphique
 #ifdef USE_DOUBLE_BUFFERING
 #define SCROLL_STEP 1
 #else
@@ -57,9 +58,11 @@ class ElementBase {
     color_t getBackgroundColor() const;
     color_t getBorderColor() const;
 
-    bool isTouched(); // retourne si le widget a été pressé puis relaché (nb, l'appel de la fonction
-                      // annule m'état précédent)
-    bool isFocused(bool forced = false); // retourne si le doigt est sur le widget
+    bool isTouched(); // retourne si le widget a été pressé puis relaché (nb,
+                      // l'appel de la fonction annule m'état précédent)
+    bool isFocused(
+        bool forced = false
+    ); // retourne si le doigt est sur le widget
 
     virtual void onClick() {}
     virtual void onLongClick() {}
@@ -70,17 +73,17 @@ class ElementBase {
     virtual void onReleased() {}
 
     /**
-     * \brief When the widget is no longer considered as touched even if the finger is still on the
-     * screen
+     * \brief When the widget is no longer considered as touched even if the
+     * finger is still on the screen
      */
-    virtual void
-    onNotClicked() {}
+    virtual void onNotClicked() {}
 
     void enable();
     void disable();
     bool getIsEnabled() const;
 
-    void free(); // free the buffers in the ram to allow more windows to work at the same time
+    void free(); // free the buffers in the ram to allow more windows to work at
+                 // the same time
 
     void setEnabled(bool enabled);
     [[nodiscard]] bool isEnabled() const;
@@ -119,7 +122,8 @@ class ElementBase {
     uint16_t m_borderSize;
     uint16_t m_borderRadius;
 
-    uint16_t hitboxFactor = 10; // factor to increase the hitbox of the widget in pixels
+    uint16_t hitboxFactor =
+        10; // factor to increase the hitbox of the widget in pixels
 
     // variables sur les mouvements
     bool m_verticalScrollEnabled;
@@ -139,12 +143,21 @@ class ElementBase {
     static ElementBase* mainWindow;
 
     // variables sur les events
-    enum PressedState { NOT_PRESSED, PRESSED, SLIDED, RELEASED, SCROLLX, SCROLLY, LOCKED };
+    enum PressedState {
+        NOT_PRESSED,
+        PRESSED,
+        SLIDED,
+        RELEASED,
+        SCROLLX,
+        SCROLLY,
+        LOCKED
+    };
 
     PressedState m_pressedState;
 
     static PressedState globalPressedState;
-    static ElementBase* widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
+    static ElementBase*
+        widgetPressed; // si un widget est préssé sur l'écran (sinon nullptr)
     static int16_t originTouchX, originTouchY;
 
     ElementBase* getHigestXScrollableParent();
@@ -163,12 +176,14 @@ class ElementBase {
     virtual void onScrollRight() {};
     virtual void onScroll(int16_t x, int16_t y) {};
 
-    std::shared_ptr<graphics::Surface> m_surface;         // Surface to render the widget
-    std::shared_ptr<graphics::Surface> m_surface_for_dma; // double buffer for DMA transfer
+    std::shared_ptr<graphics::Surface>
+        m_surface; // Surface to render the widget
+    std::shared_ptr<graphics::Surface>
+        m_surface_for_dma; // double buffer for DMA transfer
     bool do_use_double_buffering = false;
     std::shared_ptr<graphics::Surface>
-    getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is
-                        // nullptr
+        getAndSetSurface(); // Get the m_surface of the the ElementBase and
+                            // initialize it if it is nullptr
   protected:
     void localGraphicalUpdate();
     void globalGraphicalUpdate();

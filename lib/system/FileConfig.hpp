@@ -19,8 +19,8 @@ namespace libsystem {
  * @brief Class to store user preferences in a binary format.
  *
  * File config is a binary file format (.bfc).
- * It is used to store simple data like user preferences (E.g. screen brightness).
- * Should be faster than JSON.
+ * It is used to store simple data like user preferences (E.g. screen
+ * brightness). Should be faster than JSON.
  *
  * @todo Write better FileStream implementation.
  *
@@ -34,8 +34,9 @@ class FileConfig {
      */
 
   public:
-    typedef std::variant<std::nullptr_t, uint8_t, uint16_t, uint32_t, uint64_t, std::string, int,
-                         float, double, bool, std::vector<std::string>>
+    typedef std::variant<
+        std::nullptr_t, uint8_t, uint16_t, uint32_t, uint64_t, std::string, int,
+        float, double, bool, std::vector<std::string>>
         file_config_types_t;
 
     /**
@@ -83,7 +84,19 @@ class FileConfig {
   private:
     enum OpCode { NULL_CODE, PROPERTY, BEGIN_NAMESPACE, END_NAMESPACE };
 
-    enum Type { NULL_TYPE, UINT8, UINT16, UINT32, UINT64, STRING, INT, FLOAT, DOUBLE, BOOL, LIST };
+    enum Type {
+        NULL_TYPE,
+        UINT8,
+        UINT16,
+        UINT32,
+        UINT64,
+        STRING,
+        INT,
+        FLOAT,
+        DOUBLE,
+        BOOL,
+        LIST
+    };
 
     enum VersionFlag { EMPTY };
 
@@ -115,7 +128,8 @@ class FileConfig {
 
         std::string getPath() override;
 
-        void write(const std::shared_ptr<storage::FileStream>& fileStream) const;
+        void write(const std::shared_ptr<storage::FileStream>& fileStream
+        ) const;
 
       private:
         std::string m_key;
@@ -143,7 +157,8 @@ class FileConfig {
 
         std::string getPath() override;
 
-        void write(const std::shared_ptr<storage::FileStream>& fileStream) const;
+        void write(const std::shared_ptr<storage::FileStream>& fileStream
+        ) const;
 
       private:
         std::string m_name;
@@ -195,13 +210,16 @@ class FileConfig {
     /**
      * Split a namespaced key to a vector.
      * @param namespacedKey The key to split.
-     * @return A vector containing every namespace before the key (also included).
+     * @return A vector containing every namespace before the key (also
+     * included).
      */
-    static std::vector<std::string> getSplicedNamespacedKey(const std::string& namespacedKey);
+    static std::vector<std::string>
+        getSplicedNamespacedKey(const std::string& namespacedKey);
 
     [[nodiscard]] std::shared_ptr<NamespaceNode>
-    getNamespaceNodeFromNamespaceKey(const std::string& namespacedKey,
-                                     bool createNewNamespaces = false) const;
+        getNamespaceNodeFromNamespaceKey(
+            const std::string& namespacedKey, bool createNewNamespaces = false
+        ) const;
 
   public:
     [[nodiscard]] file_config_types_t getRaw(const std::string& key) const;

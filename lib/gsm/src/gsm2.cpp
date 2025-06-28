@@ -38,15 +38,28 @@
 #include <conversation.hpp>
 #include <filestream.hpp>
 
-const char* daysOfWeek[7] = {"Dimanche", "Lundi",    "Mardi", "Mercredi",
-                             "Jeudi",    "Vendredi", "Samedi"};
-const char* daysOfMonth[12] = {"Janvier",   "Fevrier", "Mars",     "Avril",
-                               "Mai",       "Juin",    "Juillet",  "Aout",
-                               "Septembre", "Octobre", "Novembre", "Decembre"};
+const char* daysOfWeek[7] = {
+    "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"
+};
+const char* daysOfMonth[12] = {
+    "Janvier",
+    "Fevrier",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Aout",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Decembre"
+};
 
 inline long long getCurrentTimestamp() {
     return std::chrono::duration_cast<std::chrono::seconds>(
-               std::chrono::system_clock::now().time_since_epoch())
+               std::chrono::system_clock::now().time_since_epoch()
+    )
         .count();
 }
 // --- END: User-Provided External Dependencies (Declarations) ---
@@ -134,23 +147,38 @@ static void updateTimeInternal() {
                 quote_end = response.find('"', quote_start + 1);
             }
 
-            if (quote_start != std::string::npos && quote_end != std::string::npos) {
-                std::string time_str =
-                    response.substr(quote_start + 1, quote_end - quote_start - 1);
-                int fields_read = sscanf(time_str.c_str(), "%d/%d/%d,%d:%d:%d%c%d", &l_yy, &l_MM,
-                                         &l_dd, &l_hh, &l_mm, &l_ss, &sign, &l_zz);
+            if (quote_start != std::string::npos &&
+                quote_end != std::string::npos) {
+                std::string time_str = response.substr(
+                    quote_start + 1,
+                    quote_end - quote_start - 1
+                );
+                int fields_read = sscanf(
+                    time_str.c_str(),
+                    "%d/%d/%d,%d:%d:%d%c%d",
+                    &l_yy,
+                    &l_MM,
+                    &l_dd,
+                    &l_hh,
+                    &l_mm,
+                    &l_ss,
+                    &sign,
+                    &l_zz
+                );
 
                 if (fields_read == 8) {
-                    if (l_yy >= 0 && l_yy <= 99 && l_MM >= 1 && l_MM <= 12 && l_dd >= 1 &&
-                        l_dd <= 31 && l_hh >= 0 && l_hh <= 23 && l_mm >= 0 && l_mm <= 59 &&
-                        l_ss >= 0 && l_ss <= 59 && (sign == '+' || sign == '-')) {
+                    if (l_yy >= 0 && l_yy <= 99 && l_MM >= 1 && l_MM <= 12 &&
+                        l_dd >= 1 && l_dd <= 31 && l_hh >= 0 && l_hh <= 23 &&
+                        l_mm >= 0 && l_mm <= 59 && l_ss >= 0 && l_ss <= 59 &&
+                        (sign == '+' || sign == '-')) {
                         year = 2000 + l_yy;
                         month = l_MM;
                         day = l_dd;
                         hour = l_hh;
                         minute = l_mm;
                         second = l_ss;
-                        timezoneOffsetQuarterHours = (sign == '+') ? l_zz : -l_zz;
+                        timezoneOffsetQuarterHours =
+                            (sign == '+') ? l_zz : -l_zz;
                         timeValid = true;
                         lastTimeUpdateTime = std::chrono::steady_clock::now();
                         parsed_ok = true;
@@ -236,7 +264,8 @@ static std::vector<unsigned char> hexStringToBytes(const std::string& hex) {
     return bytes;
 }
 
-static std::string decodeSemiOctets(const std::string& data_hex, int num_digits_to_read) {
+static std::string
+    decodeSemiOctets(const std::string& data_hex, int num_digits_to_read) {
     std::string result = "";
     for (int i = 0; i < num_digits_to_read; ++i) {
         int byte_idx = i / 2;
@@ -587,18 +616,21 @@ static char gsm7SeptetToChar(unsigned char septet) {
     case 0x20:
         return ' ';
     default:
-        if ((septet >= '0' && septet <= '9') || (septet >= 'A' && septet <= 'Z') ||
+        if ((septet >= '0' && septet <= '9') ||
+            (septet >= 'A' && septet <= 'Z') ||
             (septet >= 'a' && septet <= 'z') ||
-            std::string(" !\"#%&'()*+,-./:;<=>?").find(static_cast<char>(septet)) !=
-                std::string::npos) {
+            std::string(" !\"#%&'()*+,-./:;<=>?")
+                    .find(static_cast<char>(septet)) != std::string::npos) {
             return static_cast<char>(septet);
         }
         return '?';
     }
 }
 
-static std::string unpack7BitData(const std::vector<unsigned char>& packed_octets, int num_septets,
-                                  int udh_septet_length = 0) {
+static std::string unpack7BitData(
+    const std::vector<unsigned char>& packed_octets, int num_septets,
+    int udh_septet_length = 0
+) {
     std::string text = "";
     if (num_septets <= 0 || packed_octets.empty())
         return text;
@@ -616,9 +648,11 @@ static std::string unpack7BitData(const std::vector<unsigned char>& packed_octet
 
         if (bit_shift > 0) {
             if (current_octet_idx + 1 < packed_octets.size()) {
-                current_septet |= (packed_octets[current_octet_idx + 1] << (8 - bit_shift));
+                current_septet |=
+                    (packed_octets[current_octet_idx + 1] << (8 - bit_shift));
             } else if (i < num_septets - 1 ||
-                       ((i == num_septets - 1) && (bit_shift + (8 - bit_shift) < 7) &&
+                       ((i == num_septets - 1) &&
+                        (bit_shift + (8 - bit_shift) < 7) &&
                         packed_octets.size() * 8 / 7 < num_septets)) {
                 if (current_octet_idx == packed_octets.size() - 1) {}
             }
@@ -639,7 +673,8 @@ static std::string unpack7BitData(const std::vector<unsigned char>& packed_octet
     return text;
 }
 
-static std::string ucs2BytesToUtf8(const std::vector<unsigned char>& ucs2_bytes, int offset) {
+static std::string
+    ucs2BytesToUtf8(const std::vector<unsigned char>& ucs2_bytes, int offset) {
     std::string utf8_text;
     for (size_t i = offset; i < ucs2_bytes.size(); i += 2) {
         if (i + 1 >= ucs2_bytes.size()) {
@@ -647,8 +682,9 @@ static std::string ucs2BytesToUtf8(const std::vector<unsigned char>& ucs2_bytes,
             break;
         }
 
-        unsigned short ucs2_code_unit = (static_cast<unsigned short>(ucs2_bytes[i]) << 8) |
-                                        static_cast<unsigned short>(ucs2_bytes[i + 1]);
+        unsigned short ucs2_code_unit =
+            (static_cast<unsigned short>(ucs2_bytes[i]) << 8) |
+            static_cast<unsigned short>(ucs2_bytes[i + 1]);
 
         if (ucs2_code_unit <= 0x7F) {
             utf8_text += static_cast<char>(ucs2_code_unit);
@@ -659,18 +695,22 @@ static std::string ucs2BytesToUtf8(const std::vector<unsigned char>& ucs2_bytes,
             utf8_text += "?";
         } else {
             utf8_text += static_cast<char>(0xE0 | (ucs2_code_unit >> 12));
-            utf8_text += static_cast<char>(0x80 | ((ucs2_code_unit >> 6) & 0x3F));
+            utf8_text +=
+                static_cast<char>(0x80 | ((ucs2_code_unit >> 6) & 0x3F));
             utf8_text += static_cast<char>(0x80 | (ucs2_code_unit & 0x3F));
         }
     }
     return utf8_text;
 }
 
-static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& result) {
+static bool
+    decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& result) {
     try {
         int current_pos = 0;
-        int sca_len_octets =
-            hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
+        int sca_len_octets = hexPairToByte(
+            pdu_hex_string[current_pos],
+            pdu_hex_string[current_pos + 1]
+        );
         current_pos += 2;
         if (sca_len_octets > 0) {
             if (current_pos + sca_len_octets * 2 > pdu_hex_string.length()) {
@@ -682,8 +722,10 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
         if (current_pos + 2 > pdu_hex_string.length()) {
             return false;
         }
-        unsigned char tpdu_type_octet =
-            hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
+        unsigned char tpdu_type_octet = hexPairToByte(
+            pdu_hex_string[current_pos],
+            pdu_hex_string[current_pos + 1]
+        );
         current_pos += 2;
         int tp_mti = tpdu_type_octet & 0x03;
         result.hasUserDataHeader = (tpdu_type_octet & 0x40) != 0;
@@ -694,18 +736,22 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
             if (current_pos + 2 > pdu_hex_string.length()) {
                 return false;
             }
-            int oa_len_digits =
-                hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
+            int oa_len_digits = hexPairToByte(
+                pdu_hex_string[current_pos],
+                pdu_hex_string[current_pos + 1]
+            );
             current_pos += 2;
             if (current_pos + 2 > pdu_hex_string.length()) {
                 return false;
             }
             current_pos += 2;
             int oa_addr_len_octets = (oa_len_digits + 1) / 2;
-            if (current_pos + oa_addr_len_octets * 2 > pdu_hex_string.length()) {
+            if (current_pos + oa_addr_len_octets * 2 >
+                pdu_hex_string.length()) {
                 return false;
             }
-            std::string oa_hex = pdu_hex_string.substr(current_pos, oa_addr_len_octets * 2);
+            std::string oa_hex =
+                pdu_hex_string.substr(current_pos, oa_addr_len_octets * 2);
             result.senderNumber = decodeSemiOctets(oa_hex, oa_len_digits);
             current_pos += oa_addr_len_octets * 2;
 
@@ -717,8 +763,10 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
             if (current_pos + 2 > pdu_hex_string.length()) {
                 return false;
             }
-            unsigned char tp_dcs =
-                hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
+            unsigned char tp_dcs = hexPairToByte(
+                pdu_hex_string[current_pos],
+                pdu_hex_string[current_pos + 1]
+            );
             current_pos += 2;
 
             bool is_7bit_encoding = false;
@@ -767,21 +815,26 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
             if (current_pos + 2 > pdu_hex_string.length()) {
                 return false;
             }
-            unsigned char tp_udl =
-                hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
+            unsigned char tp_udl = hexPairToByte(
+                pdu_hex_string[current_pos],
+                pdu_hex_string[current_pos + 1]
+            );
             current_pos += 2;
 
             int ud_expected_octet_len = 0;
             if (is_7bit_encoding) {
-                ud_expected_octet_len = static_cast<int>(std::ceil(tp_udl * 7.0 / 8.0));
+                ud_expected_octet_len =
+                    static_cast<int>(std::ceil(tp_udl * 7.0 / 8.0));
             } else if (is_8bit_encoding || is_ucs2_encoding) {
                 ud_expected_octet_len = tp_udl;
             } else {
                 return false;
             }
 
-            if (current_pos + ud_expected_octet_len * 2 > pdu_hex_string.length()) {
-                ud_expected_octet_len = (pdu_hex_string.length() - current_pos) / 2;
+            if (current_pos + ud_expected_octet_len * 2 >
+                pdu_hex_string.length()) {
+                ud_expected_octet_len =
+                    (pdu_hex_string.length() - current_pos) / 2;
                 if (ud_expected_octet_len < 0)
                     ud_expected_octet_len = 0;
                 if (ud_expected_octet_len == 0) {
@@ -789,7 +842,8 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
                     return true;
                 }
             }
-            std::string ud_hex = pdu_hex_string.substr(current_pos, ud_expected_octet_len * 2);
+            std::string ud_hex =
+                pdu_hex_string.substr(current_pos, ud_expected_octet_len * 2);
             std::vector<unsigned char> ud_bytes = hexStringToBytes(ud_hex);
 
             int udh_octet_len = 0;
@@ -812,9 +866,11 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
 
                             if (iei == 0x05 && iedl == 0x04) {
                                 unsigned short dest_port =
-                                    (ud_bytes[ie_pos + 2] << 8) | ud_bytes[ie_pos + 3];
-                                if (dest_port == 2948 || dest_port == 9200 || dest_port == 9201 ||
-                                    dest_port == 9202 || dest_port == 9203) {
+                                    (ud_bytes[ie_pos + 2] << 8) |
+                                    ud_bytes[ie_pos + 3];
+                                if (dest_port == 2948 || dest_port == 9200 ||
+                                    dest_port == 9201 || dest_port == 9202 ||
+                                    dest_port == 9203) {
                                     result.type = SmsType::MMS_NOTIFICATION;
                                     break;
                                 }
@@ -824,14 +880,19 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
                     }
 
                     if (is_7bit_encoding) {
-                        udh_septet_len = static_cast<int>(std::ceil(udh_octet_len * 8.0 / 7.0));
+                        udh_septet_len = static_cast<int>(
+                            std::ceil(udh_octet_len * 8.0 / 7.0)
+                        );
                     }
                 }
             }
 
             if (is_7bit_encoding) {
-                result.messageContent =
-                    unpack7BitData(ud_bytes, tp_udl, result.hasUserDataHeader ? udh_septet_len : 0);
+                result.messageContent = unpack7BitData(
+                    ud_bytes,
+                    tp_udl,
+                    result.hasUserDataHeader ? udh_septet_len : 0
+                );
             } else if (is_8bit_encoding) {
                 std::string msg_data_8bit;
                 for (size_t k = udh_octet_len; k < ud_bytes.size(); ++k) {
@@ -840,7 +901,8 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
                 result.messageContent = msg_data_8bit;
             } else if (is_ucs2_encoding) {
                 if ((ud_bytes.size() - udh_octet_len) % 2 != 0) {}
-                result.messageContent = ucs2BytesToUtf8(ud_bytes, udh_octet_len);
+                result.messageContent =
+                    ucs2BytesToUtf8(ud_bytes, udh_octet_len);
             } else {
                 return false;
             }
@@ -848,11 +910,17 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
             if (result.type == SmsType::MMS_NOTIFICATION) {
                 size_t http_pos = result.messageContent.find("http");
                 if (http_pos != std::string::npos) {
-                    size_t url_end = result.messageContent.find_first_of(" \t\r\n\0", http_pos);
+                    size_t url_end = result.messageContent.find_first_of(
+                        " \t\r\n\0",
+                        http_pos
+                    );
                     if (url_end == std::string::npos) {
                         result.mmsUrl = result.messageContent.substr(http_pos);
                     } else {
-                        result.mmsUrl = result.messageContent.substr(http_pos, url_end - http_pos);
+                        result.mmsUrl = result.messageContent.substr(
+                            http_pos,
+                            url_end - http_pos
+                        );
                     }
                 }
             }
@@ -874,7 +942,8 @@ static bool decodePduDeliver(const std::string& pdu_hex_string, DecodedPdu& resu
     }
 }
 
-static void processAndStoreSms(const std::string& pdu_hex_string, int message_idx) {
+static void
+    processAndStoreSms(const std::string& pdu_hex_string, int message_idx) {
     DecodedPdu decoded_sms;
     if (decodePduDeliver(pdu_hex_string, decoded_sms)) {
 
@@ -883,11 +952,14 @@ static void processAndStoreSms(const std::string& pdu_hex_string, int message_id
             if (decoded_sms.type == SmsType::MMS_NOTIFICATION) {
                 if (!decoded_sms.mmsUrl.empty()) {}
             } else {
-                auto contact = Contacts::getByNumber("+" + decoded_sms.senderNumber);
+                auto contact =
+                    Contacts::getByNumber("+" + decoded_sms.senderNumber);
 
                 Conversations::Conversation conv;
-                storage::Path convPath(std::string(MESSAGES_LOCATION) + "/+" +
-                                       decoded_sms.senderNumber + ".json");
+                storage::Path convPath(
+                    std::string(MESSAGES_LOCATION) + "/+" +
+                    decoded_sms.senderNumber + ".json"
+                );
                 if (convPath.exists()) {
                     Conversations::loadConversation(convPath, conv);
                 } else {
@@ -895,17 +967,26 @@ static void processAndStoreSms(const std::string& pdu_hex_string, int message_id
                 }
 
                 conv.messages.push_back(
-                    {decoded_sms.messageContent, true, std::to_string(getCurrentTimestamp())});
+                    {decoded_sms.messageContent,
+                     true,
+                     std::to_string(getCurrentTimestamp())}
+                );
                 Conversations::saveConversation(convPath, conv);
 
-                storage::FileStream file(std::string(MESSAGES_NOTIF_LOCATION), storage::Mode::READ);
+                storage::FileStream file(
+                    std::string(MESSAGES_NOTIF_LOCATION),
+                    storage::Mode::READ
+                );
                 std::string content = file.read();
                 file.close();
 
-                if (content.find("+" + decoded_sms.senderNumber) == std::string::npos) {
+                if (content.find("+" + decoded_sms.senderNumber) ==
+                    std::string::npos) {
                     storage::FileStream file2(
-                        storage::Path(std::string(MESSAGES_NOTIF_LOCATION)).str(),
-                        storage::Mode::APPEND);
+                        storage::Path(std::string(MESSAGES_NOTIF_LOCATION))
+                            .str(),
+                        storage::Mode::APPEND
+                    );
                     file2.write("+" + decoded_sms.senderNumber + "\n");
                     file2.close();
                 }
@@ -917,7 +998,8 @@ static void processAndStoreSms(const std::string& pdu_hex_string, int message_id
 
         auto delete_req = std::make_shared<Request>();
         delete_req->command = "AT+CMGD=" + std::to_string(message_idx);
-        delete_req->callback = [message_idx](const std::string& response) -> bool {
+        delete_req->callback = [message_idx](const std::string& response
+                               ) -> bool {
             if (response.find("OK") != std::string::npos) {
             } else {
             }
@@ -955,8 +1037,9 @@ static void queueReadSms(const std::string& memory_store, int index) {
 
             if (line.rfind("+CMGR:", 0) == 0) {
                 cmgr_header_found = true;
-            } else if (cmgr_header_found && line != "OK" && line.rfind("ERROR", 0) != 0 &&
-                       !isEndIdentifier(line) && !isURC(line)) {
+            } else if (cmgr_header_found && line != "OK" &&
+                       line.rfind("ERROR", 0) != 0 && !isEndIdentifier(line) &&
+                       !isURC(line)) {
                 pdu_line = line;
                 found_pdu = true;
                 break;
@@ -1184,14 +1267,22 @@ static void updateVoltageInternal() {
                     second_comma = data_part.find(',', first_comma + 1);
                 }
                 std::string voltage_str_raw;
-                if (first_comma != std::string::npos && second_comma != std::string::npos) {
+                if (first_comma != std::string::npos &&
+                    second_comma != std::string::npos) {
                     voltage_str_raw = data_part.substr(second_comma + 1);
                 } else {
                     voltage_str_raw = data_part;
                 }
-                voltage_str_raw.erase(std::remove_if(voltage_str_raw.begin(), voltage_str_raw.end(),
-                                                     [](char c) { return !std::isdigit(c); }),
-                                      voltage_str_raw.end());
+                voltage_str_raw.erase(
+                    std::remove_if(
+                        voltage_str_raw.begin(),
+                        voltage_str_raw.end(),
+                        [](char c) {
+                            return !std::isdigit(c);
+                        }
+                    ),
+                    voltage_str_raw.end()
+                );
                 try {
                     if (!voltage_str_raw.empty()) {
                         voltage = std::stoi(voltage_str_raw);
@@ -1209,7 +1300,8 @@ static void updateVoltageInternal() {
             try {
                 battery_voltage_history.push_back(currentVoltage_mV);
                 if (battery_voltage_history.size() > 24)
-                    battery_voltage_history.erase(battery_voltage_history.begin());
+                    battery_voltage_history.erase(battery_voltage_history.begin(
+                    ));
                 if (battery_voltage_history.size() > 0) {
                     double sum = 0;
                     for (auto v : battery_voltage_history)
@@ -1239,7 +1331,8 @@ double getBatteryLevel() {
     }
     const double voltage_V = currentVoltage_mV / 1000.0;
     const double batteryLevel = 3.083368 * std::pow(voltage_V, 3) -
-                                37.21203 * std::pow(voltage_V, 2) + 150.5735 * voltage_V - 203.3347;
+                                37.21203 * std::pow(voltage_V, 2) +
+                                150.5735 * voltage_V - 203.3347;
     return std::clamp(batteryLevel, 0.0, 1.0);
 #else
     return 1;
@@ -1276,7 +1369,8 @@ static void updatePinStatusInternal() {
             if (parsed_status == "READY") {
                 needsPin = false;
                 status_determined = true;
-            } else if (parsed_status == "SIM PIN" || parsed_status == "SIM PUK") {
+            } else if (parsed_status == "SIM PIN" ||
+                       parsed_status == "SIM PUK") {
                 needsPin = true;
                 status_determined = true;
             } else if (parsed_status == "NOT INSERTED" ||
@@ -1288,7 +1382,8 @@ static void updatePinStatusInternal() {
                 needsPin = true;
                 status_determined = true;
             }
-        } else if (!cmd_success && response.find("ERROR") != std::string::npos) {
+        } else if (!cmd_success &&
+                   response.find("ERROR") != std::string::npos) {
             needsPin = true;
             status_determined = false;
         } else if (cmd_success && !found_cpin_line) {
@@ -1464,7 +1559,9 @@ void reboot() {
 void uploadSettings() {
     auto requestClip = std::make_shared<Request>();
     requestClip->command = "AT+CLIP=1";
-    requestClip->callback = [](const std::string& response) -> bool { return false; };
+    requestClip->callback = [](const std::string& response) -> bool {
+        return false;
+    };
     {
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(requestClip);
@@ -1472,7 +1569,9 @@ void uploadSettings() {
 
     auto requestClcc = std::make_shared<Request>();
     requestClcc->command = "AT+CLCC=1";
-    requestClcc->callback = [](const std::string& response) -> bool { return false; };
+    requestClcc->callback = [](const std::string& response) -> bool {
+        return false;
+    };
     {
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(requestClcc);
@@ -1480,7 +1579,9 @@ void uploadSettings() {
 
     auto requestCnmi = std::make_shared<Request>();
     requestCnmi->command = "AT+CNMI=2,1,0,0,0";
-    requestCnmi->callback = [](const std::string& response) -> bool { return false; };
+    requestCnmi->callback = [](const std::string& response) -> bool {
+        return false;
+    };
     {
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(requestCnmi);
@@ -1488,7 +1589,9 @@ void uploadSettings() {
 
     auto requestHourSync = std::make_shared<Request>();
     requestHourSync->command = "AT+CNTP=\"time.google.com\",8";
-    requestHourSync->callback = [](const std::string& response) -> bool { return false; };
+    requestHourSync->callback = [](const std::string& response) -> bool {
+        return false;
+    };
     {
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(requestHourSync);
@@ -1496,7 +1599,9 @@ void uploadSettings() {
 
     auto requestMinuteSync = std::make_shared<Request>();
     requestMinuteSync->command = "AT+CNTP";
-    requestMinuteSync->callback = [](const std::string& response) -> bool { return false; };
+    requestMinuteSync->callback = [](const std::string& response) -> bool {
+        return false;
+    };
     {
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(requestMinuteSync);
@@ -1504,7 +1609,9 @@ void uploadSettings() {
 
     auto requestCreg = std::make_shared<Request>();
     requestCreg->command = "AT+CREG=1";
-    requestCreg->callback = [](const std::string& response) -> bool { return false; };
+    requestCreg->callback = [](const std::string& response) -> bool {
+        return false;
+    };
     {
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(requestCreg);
@@ -1532,47 +1639,49 @@ void uploadSettings() {
 }
 
 bool isEndIdentifier(const std::string& data) {
-    if (data == "OK" || data == "ERROR" || data == "NO CARRIER" || data == "BUSY" ||
-        data == "NO ANSWER" || data == "NO DIALTONE")
+    if (data == "OK" || data == "ERROR" || data == "NO CARRIER" ||
+        data == "BUSY" || data == "NO ANSWER" || data == "NO DIALTONE")
         return true;
     if (data.rfind("+CME ERROR:", 0) == 0 || data.rfind("+CMS ERROR:", 0) == 0)
         return true;
     return false;
 }
 
-const std::vector<std::string> known_urc_prefixes = {"RING",
-                                                     "+CLIP:",
-                                                     "+CLCC:",
-                                                     "NO CARRIER",
-                                                     "BUSY",
-                                                     "NO ANSWER",
-                                                     "+CMTI:",
-                                                     "+CMT:",
-                                                     "+CBM:",
-                                                     "+CDS:",
-                                                     "+CREG:",
-                                                     "+CGREG:",
-                                                     "+CEREG:",
-                                                     "+PDP:",
-                                                     "+SAPBR:",
-                                                     "Call Ready",
-                                                     "SMS Ready",
-                                                     "NORMAL POWER DOWN",
-                                                     "UNDER-VOLTAGE WARNING",
-                                                     "UNDER-VOLTAGE POWER DOWN",
-                                                     "+SIMREADY",
-                                                     "+RECEIVE",
-                                                     "CLOSED",
-                                                     "REMOTE IP:",
-                                                     "+IP_INITIAL",
-                                                     "+IP_STATUS",
-                                                     "+PDP_DEACT",
-                                                     "+SAPBR_DEACT",
-                                                     "+LOCATION:",
-                                                     "+CIPGSMLOC:",
-                                                     "+HTTPACTION:",
-                                                     "+FTPGET:",
-                                                     "+CGEV:"};
+const std::vector<std::string> known_urc_prefixes = {
+    "RING",
+    "+CLIP:",
+    "+CLCC:",
+    "NO CARRIER",
+    "BUSY",
+    "NO ANSWER",
+    "+CMTI:",
+    "+CMT:",
+    "+CBM:",
+    "+CDS:",
+    "+CREG:",
+    "+CGREG:",
+    "+CEREG:",
+    "+PDP:",
+    "+SAPBR:",
+    "Call Ready",
+    "SMS Ready",
+    "NORMAL POWER DOWN",
+    "UNDER-VOLTAGE WARNING",
+    "UNDER-VOLTAGE POWER DOWN",
+    "+SIMREADY",
+    "+RECEIVE",
+    "CLOSED",
+    "REMOTE IP:",
+    "+IP_INITIAL",
+    "+IP_STATUS",
+    "+PDP_DEACT",
+    "+SAPBR_DEACT",
+    "+LOCATION:",
+    "+CIPGSMLOC:",
+    "+HTTPACTION:",
+    "+FTPGET:",
+    "+CGEV:"
+};
 
 bool isURC(const std::string& data) {
     if (data.empty())
@@ -1591,8 +1700,10 @@ void processURC(std::string data) {
     } else if (data.find("+CLIP:") == 0) {
         size_t firstQuote = data.find('"');
         size_t secondQuote = data.find('"', firstQuote + 1);
-        if (firstQuote != std::string::npos && secondQuote != std::string::npos) {
-            lastIncomingCallNumber = data.substr(firstQuote + 1, secondQuote - firstQuote - 1);
+        if (firstQuote != std::string::npos &&
+            secondQuote != std::string::npos) {
+            lastIncomingCallNumber =
+                data.substr(firstQuote + 1, secondQuote - firstQuote - 1);
             if (ExternalEvents::onIncommingCall)
                 ExternalEvents::onIncommingCall();
             if (currentCallState != CallState::RINGING) {
@@ -1677,9 +1788,11 @@ void processURC(std::string data) {
         size_t second_quote = data.find('"', first_quote + 1);
         size_t comma_after_quote = data.find(',', second_quote + 1);
 
-        if (first_quote != std::string::npos && second_quote != std::string::npos &&
+        if (first_quote != std::string::npos &&
+            second_quote != std::string::npos &&
             comma_after_quote != std::string::npos) {
-            std::string mem_store = data.substr(first_quote + 1, second_quote - first_quote - 1);
+            std::string mem_store =
+                data.substr(first_quote + 1, second_quote - first_quote - 1);
             std::string index_str = data.substr(comma_after_quote + 1);
             index_str.erase(0, index_str.find_first_not_of(" \t"));
             index_str.erase(index_str.find_last_not_of(" \t") + 1);
@@ -1711,7 +1824,8 @@ void processURC(std::string data) {
                 }
             } catch (...) {}
         }
-    } else if (data == "Call Ready" || data == "SMS Ready" || data == "+SIMREADY") {
+    } else if (data == "Call Ready" || data == "SMS Ready" ||
+               data == "+SIMREADY") {
         if (currentCallState == CallState::UNKNOWN) {
             currentCallState = CallState::IDLE;
         }
@@ -1774,10 +1888,13 @@ std::string getLastIncomingNumber() {
 }
 
 // --- Public Action Functions ---
-void setPin(const std::string& pin, std::function<void(bool success)> completionCallback) {
+void setPin(
+    const std::string& pin, std::function<void(bool success)> completionCallback
+) {
     auto request = std::make_shared<Request>();
     request->command = "AT+CPIN=" + pin;
-    request->callback = [completionCallback](const std::string& response) -> bool {
+    request->callback = [completionCallback](const std::string& response
+                        ) -> bool {
         bool success = (response.find("OK") != std::string::npos);
         if (success) {
             pinRequiresPin = false;
@@ -1794,11 +1911,14 @@ void setPin(const std::string& pin, std::function<void(bool success)> completion
     requests.push_back(request);
 }
 
-void setFlightMode(bool enableFlightMode, std::function<void(bool success)> completionCallback) {
+void setFlightMode(
+    bool enableFlightMode, std::function<void(bool success)> completionCallback
+) {
     auto request = std::make_shared<Request>();
     request->command = "AT+CFUN=" + std::string(enableFlightMode ? "4" : "1");
     request->callback = [completionCallback,
-                         enableFlightMode](const std::string& response) -> bool {
+                         enableFlightMode](const std::string& response
+                        ) -> bool {
         bool success = (response.find("OK") != std::string::npos);
         if (success) {
             flightModeState = enableFlightMode;
@@ -1814,10 +1934,13 @@ void setFlightMode(bool enableFlightMode, std::function<void(bool success)> comp
     requests.push_back(request);
 }
 
-void setPduMode(bool enablePdu, std::function<void(bool success)> completionCallback) {
+void setPduMode(
+    bool enablePdu, std::function<void(bool success)> completionCallback
+) {
     auto request = std::make_shared<Request>();
     request->command = "AT+CMGF=" + std::string(enablePdu ? "0" : "1");
-    request->callback = [completionCallback, enablePdu](const std::string& response) -> bool {
+    request->callback = [completionCallback,
+                         enablePdu](const std::string& response) -> bool {
         bool success = (response.find("OK") != std::string::npos);
         if (success) {
             pduModeEnabled = enablePdu;
@@ -1833,17 +1956,21 @@ void setPduMode(bool enablePdu, std::function<void(bool success)> completionCall
     requests.push_back(request);
 }
 
-void sendMessagePDU(const std::string& pdu, int length,
-                    std::function<void(bool success, int messageRef)> completionCallback) {
+void sendMessagePDU(
+    const std::string& pdu, int length,
+    std::function<void(bool success, int messageRef)> completionCallback
+) {
     auto request1 = std::make_shared<Request>();
     request1->command = "AT+CMGS=" + std::to_string(length);
     auto request2 = std::make_shared<Request>();
     request2->command = pdu + "\x1A";
 
-    request1->callback = [completionCallback](const std::string& response) -> bool {
+    request1->callback = [completionCallback](const std::string& response
+                         ) -> bool {
         std::string trimmed_response = response;
         size_t last_char_pos = trimmed_response.find_last_not_of(" \t\r\n");
-        if (last_char_pos != std::string::npos && trimmed_response[last_char_pos] == '>') {
+        if (last_char_pos != std::string::npos &&
+            trimmed_response[last_char_pos] == '>') {
             return true;
         } else {
             if (completionCallback)
@@ -1852,18 +1979,22 @@ void sendMessagePDU(const std::string& pdu, int length,
         }
     };
 
-    request2->callback = [completionCallback](const std::string& response) -> bool {
+    request2->callback = [completionCallback](const std::string& response
+                         ) -> bool {
         int messageRef = -1;
         bool success = false;
         auto pos = response.find("+CMGS:");
         if (pos != std::string::npos) {
             std::string mr_str = response.substr(pos + 6);
             size_t first_digit = mr_str.find_first_of("0123456789");
-            size_t last_digit = mr_str.find_first_not_of("0123456789", first_digit);
+            size_t last_digit =
+                mr_str.find_first_not_of("0123456789", first_digit);
             if (first_digit != std::string::npos) {
-                mr_str = mr_str.substr(first_digit, last_digit == std::string::npos
-                                                        ? std::string::npos
-                                                        : last_digit - first_digit);
+                mr_str = mr_str.substr(
+                    first_digit,
+                    last_digit == std::string::npos ? std::string::npos
+                                                    : last_digit - first_digit
+                );
                 try {
                     messageRef = std::stoi(mr_str);
                 } catch (...) { /* ignore */
@@ -1889,7 +2020,8 @@ void sendMessagePDU(const std::string& pdu, int length,
 
 static std::string byteToHex(unsigned char byte) {
     std::stringstream ss;
-    ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+    ss << std::hex << std::setw(2) << std::setfill('0')
+       << static_cast<int>(byte);
     return ss.str();
 }
 
@@ -2038,7 +2170,8 @@ static std::string pack7Bit(const std::string& message, int& septetCount) {
         septetCount++;
 
         currentOctet |= (septet << bitsInCurrentOctet);
-        int bits_from_septet_for_this_octet = std::min(7, 8 - bitsInCurrentOctet);
+        int bits_from_septet_for_this_octet =
+            std::min(7, 8 - bitsInCurrentOctet);
 
         bitsInCurrentOctet += 7;
 
@@ -2059,8 +2192,9 @@ static std::string pack7Bit(const std::string& message, int& septetCount) {
     return packedDataHex;
 }
 
-std::pair<std::string, int> encodePduSubmit(const std::string& recipientNumber,
-                                            const std::string& message) {
+std::pair<std::string, int> encodePduSubmit(
+    const std::string& recipientNumber, const std::string& message
+) {
     std::string pdu = "";
     int cmgsLength = 0;
     pdu += "00";
@@ -2075,9 +2209,16 @@ std::pair<std::string, int> encodePduSubmit(const std::string& recipientNumber,
         isInternational = true;
         cleanNumber = cleanNumber.substr(1);
     }
-    cleanNumber.erase(std::remove_if(cleanNumber.begin(), cleanNumber.end(),
-                                     [](char c) { return !std::isdigit(c); }),
-                      cleanNumber.end());
+    cleanNumber.erase(
+        std::remove_if(
+            cleanNumber.begin(),
+            cleanNumber.end(),
+            [](char c) {
+                return !std::isdigit(c);
+            }
+        ),
+        cleanNumber.end()
+    );
 
     if (cleanNumber.empty()) {
         return {"", -1};
@@ -2114,24 +2255,35 @@ void sendMySms(const std::string& recipient, const std::string& text) {
     std::string pduString = pduData.first;
     int cmgsLength = pduData.second;
 
-    Gsm::sendMessagePDU(pduString, cmgsLength, [recipient, text](bool success, int messageRef) {
-        if (success) {
-            Conversations::Conversation conv;
-            storage::Path convPath(std::string(MESSAGES_LOCATION) + "/" + recipient + ".json");
-            if (convPath.exists()) {
-                Conversations::loadConversation(convPath, conv);
-            } else {
-                conv.number = recipient;
-            }
-            conv.messages.push_back({text, false, std::to_string(getCurrentTimestamp())});
-            Conversations::saveConversation(convPath, conv);
+    Gsm::sendMessagePDU(
+        pduString,
+        cmgsLength,
+        [recipient, text](bool success, int messageRef) {
+            if (success) {
+                Conversations::Conversation conv;
+                storage::Path convPath(
+                    std::string(MESSAGES_LOCATION) + "/" + recipient + ".json"
+                );
+                if (convPath.exists()) {
+                    Conversations::loadConversation(convPath, conv);
+                } else {
+                    conv.number = recipient;
+                }
+                conv.messages.push_back(
+                    {text, false, std::to_string(getCurrentTimestamp())}
+                );
+                Conversations::saveConversation(convPath, conv);
 
-        } else {
+            } else {
+            }
         }
-    });
+    );
 }
 
-void call(const std::string& number, std::function<void(bool success)> completionCallback) {
+void call(
+    const std::string& number,
+    std::function<void(bool success)> completionCallback
+) {
     if (currentCallState != CallState::IDLE) {
         if (completionCallback)
             completionCallback(false);
@@ -2139,7 +2291,8 @@ void call(const std::string& number, std::function<void(bool success)> completio
     }
     auto request = std::make_shared<Request>();
     request->command = "ATD" + number + ";";
-    request->callback = [completionCallback, number](const std::string& response) -> bool {
+    request->callback = [completionCallback,
+                         number](const std::string& response) -> bool {
         bool success = (response.find("OK") != std::string::npos);
         if (success) {
             currentCallState = CallState::DIALING;
@@ -2161,7 +2314,8 @@ void acceptCall(std::function<void(bool success)> completionCallback) {
     }
     auto request = std::make_shared<Request>();
     request->command = "ATA";
-    request->callback = [completionCallback](const std::string& response) -> bool {
+    request->callback = [completionCallback](const std::string& response
+                        ) -> bool {
         bool success = (response.find("OK") != std::string::npos);
         if (success) {
             currentCallState = CallState::ACTIVE;
@@ -2176,14 +2330,16 @@ void acceptCall(std::function<void(bool success)> completionCallback) {
 }
 
 void rejectCall(std::function<void(bool success)> completionCallback) {
-    if (currentCallState == CallState::IDLE || currentCallState == CallState::UNKNOWN) {
+    if (currentCallState == CallState::IDLE ||
+        currentCallState == CallState::UNKNOWN) {
         if (completionCallback)
             completionCallback(false);
         return;
     }
     auto request = std::make_shared<Request>();
     request->command = "AT+CHUP";
-    request->callback = [completionCallback](const std::string& response) -> bool {
+    request->callback = [completionCallback](const std::string& response
+                        ) -> bool {
         bool success = (response.find("OK") != std::string::npos);
         if (success) {
             currentCallState = CallState::IDLE;
@@ -2283,7 +2439,10 @@ static bool onHttpReadBlock(const std::string& response) {
         }
 
         if (currentHttpCallbacks.on_data) {
-            std::string_view data_chunk(response.data() + data_start, chunk_len);
+            std::string_view data_chunk(
+                response.data() + data_start,
+                chunk_len
+            );
             currentHttpCallbacks.on_data(data_chunk);
         }
         httpBytesRead += chunk_len;
@@ -2414,7 +2573,8 @@ void run() {
         bool potentialURC = isURC(line);
         bool isFinalReply = isEndIdentifier(line);
 
-        if (potentialURC && (state == SerialRunState::NO_COMMAND || !isFinalReply)) {
+        if (potentialURC &&
+            (state == SerialRunState::NO_COMMAND || !isFinalReply)) {
             processURC(line);
             continue;
         }
@@ -2459,17 +2619,21 @@ void run() {
             }
         }
 
-        if (state == SerialRunState::COMMAND_RUNNING || state == SerialRunState::SENDING_PDU_DATA) {
+        if (state == SerialRunState::COMMAND_RUNNING ||
+            state == SerialRunState::SENDING_PDU_DATA) {
             currentResponseBlock += line + "\n";
-            bool isPduPrompt = (line == ">" && state == SerialRunState::COMMAND_RUNNING);
+            bool isPduPrompt =
+                (line == ">" && state == SerialRunState::COMMAND_RUNNING);
 
             if (isFinalReply || isPduPrompt) {
                 bool executeNext = false;
                 if (currentRequest && currentRequest->callback) {
-                    executeNext = currentRequest->callback(currentResponseBlock);
+                    executeNext =
+                        currentRequest->callback(currentResponseBlock);
                 }
 
-                if (isPduPrompt && executeNext && currentRequest && currentRequest->next) {
+                if (isPduPrompt && executeNext && currentRequest &&
+                    currentRequest->next) {
                     std::lock_guard<std::mutex> lock(requestMutex);
                     requests.insert(requests.begin(), currentRequest->next);
                 } else if (isFinalReply) {
@@ -2488,8 +2652,9 @@ void run() {
     }
 
     if (state != SerialRunState::NO_COMMAND) {
-        auto timeout = (state == SerialRunState::SENDING_PDU_DATA) ? pduTimeoutDuration
-                                                                   : commandTimeoutDuration;
+        auto timeout = (state == SerialRunState::SENDING_PDU_DATA)
+                           ? pduTimeoutDuration
+                           : commandTimeoutDuration;
         if ((std::chrono::steady_clock::now() - lastCommandTime) > timeout) {
             if (currentRequest && currentRequest->callback) {
                 currentRequest->callback("TIMEOUT_ERROR");
@@ -2508,23 +2673,31 @@ void downloadFile(const std::string& url) {
     size_t file_data_size = 0;
 
     my_callbacks.on_init = [](Gsm::HttpResult result) {
-        std::cout << "HTTP GET operation initialized: " << static_cast<int>(result) << std::endl;
+        std::cout << "HTTP GET operation initialized: "
+                  << static_cast<int>(result) << std::endl;
     };
 
     my_callbacks.on_data = [&](const std::string_view& data) {
-        std::cout << "Received data chunk of size: " << data.size() << " bytes." << std::endl;
+        std::cout << "Received data chunk of size: " << data.size() << " bytes."
+                  << std::endl;
         file_data_size += data.length();
     };
 
     my_callbacks.on_complete = [&]() {
-        std::cout << "Download complete! Total size: " << file_data_size << " bytes." << std::endl;
+        std::cout << "Download complete! Total size: " << file_data_size
+                  << " bytes." << std::endl;
     };
 
     Gsm::httpGet(url, my_callbacks);
 }
 
 void loop() {
-    eventHandlerGsm.setInterval([&]() { refreshNetworkQuality(); }, 5000);
+    eventHandlerGsm.setInterval(
+        [&]() {
+            refreshNetworkQuality();
+        },
+        5000
+    );
 
     eventHandlerGsm.setInterval(
         [&]() {
@@ -2532,12 +2705,18 @@ void loop() {
             refreshVoltage();
             refreshPinStatus();
         },
-        30000);
+        30000
+    );
 
-    eventHandlerGsm.setInterval([&]() { Time::syncNetworkTime(); }, 5000);
+    eventHandlerGsm.setInterval(
+        [&]() {
+            Time::syncNetworkTime();
+        },
+        5000
+    );
 
-    // eventHandlerGsm.setTimeout(new Callback<>([](){ downloadFile("https://www.google.com"); }),
-    // 10000);
+    // eventHandlerGsm.setTimeout(new Callback<>([](){
+    // downloadFile("https://www.google.com"); }), 10000);
 
     while (true) {
         StandbyMode::buisy_io.lock();
