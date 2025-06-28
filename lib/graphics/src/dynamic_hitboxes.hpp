@@ -1298,14 +1298,17 @@ const float biases2[27] = {
 static inline int map_input_char_to_index(char c) {
     char lower_c = std::tolower(c);
     // a-z -> 0-25
-    if (lower_c >= 'a' && lower_c <= 'z')
+    if (lower_c >= 'a' && lower_c <= 'z') {
         return lower_c - 'a';
+    }
     // space -> 26
-    if (c == ' ')
+    if (c == ' ') {
         return 26;
+    }
     // 0-9 -> 27
-    if (std::isdigit(c))
+    if (std::isdigit(c)) {
         return 27;
+    }
     // others -> 28
     return 28;
 }

@@ -16,10 +16,11 @@ LuaGui::~LuaGui() {
     std::vector<bool> hasParent;
 
     for (int i = 0; i < widgets.size(); i++) {
-        if (widgets[i]->widget->getParent() != nullptr)
+        if (widgets[i]->widget->getParent() != nullptr) {
             hasParent.push_back(true);
-        else
+        } else {
             hasParent.push_back(false);
+        }
     }
 
     while (widgets.size()) {
@@ -48,10 +49,12 @@ LuaImage* LuaGui::image(
 ) {
     storage::Path path_(path);
 
-    if (!this->lua->perms.acces_files)
+    if (!this->lua->perms.acces_files) {
         return nullptr;
-    if (path_.m_steps[0] == "/" && !this->lua->perms.acces_files_root)
+    }
+    if (path_.m_steps[0] == "/" && !this->lua->perms.acces_files_root) {
         return nullptr;
+    }
 
     if (path_.m_steps[0] != "/") {
         path_ = this->lua->directory / path_;
@@ -156,8 +159,9 @@ void LuaGui::del(LuaWidget* widget) {
     // prevent a widget to remove itself during its execution
     if (lua->lua_time.running) {
         delete widget;
-        if (mainWindow == widget)
+        if (mainWindow == widget) {
             mainWindow = nullptr;
+        }
         widget = nullptr;
     } else // auto enable async if not already done by lua
     {
@@ -166,8 +170,9 @@ void LuaGui::del(LuaWidget* widget) {
                 std::function<void(LuaWidget*, LuaWidget*)>(
                     [](LuaWidget* widget, LuaWidget* mainWindow) {
                         delete widget;
-                        if (mainWindow == widget)
+                        if (mainWindow == widget) {
                             mainWindow = nullptr;
+                        }
                         widget = nullptr;
                     }
                 ),

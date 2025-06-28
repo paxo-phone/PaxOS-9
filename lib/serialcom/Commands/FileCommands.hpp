@@ -389,31 +389,33 @@ void CommandsManager::processDownloadCommand(const Command& command) const {
     storage::Path downloadPath = storage::Path(firstArgument);
 
     if (!downloadPath.exists()) {
-        if (this->shellMode)
+        if (this->shellMode) {
             SerialManager::sharedInstance->commandLog(
                 PATH_DOES_NOT_EXIST(firstArgument)
             );
-        else
+        } else {
             SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE
             );
+        }
         return;
     }
 
     storage::FileStream fileStream(downloadPath.str(), storage::READ);
 
     if (!fileStream.isopen()) {
-        if (this->shellMode)
+        if (this->shellMode) {
             SerialManager::sharedInstance->commandLog(
                 FILE_CANNOT_BE_OPENED(firstArgument)
             );
-        else
+        } else {
             SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE
             );
+        }
         return;
     }
 #define BOOL_STR(b) (b ? "true" : "false")
 
-    if (this->shellMode)
+    if (this->shellMode) {
         // SerialManager::sharedInstance->commandLog("File size " +
         // std::to_string(fileStream.size()) + " : " +
         // std::to_string(fileStream.size() + 1) + " : "
@@ -421,7 +423,7 @@ void CommandsManager::processDownloadCommand(const Command& command) const {
         SerialManager::sharedInstance->commandLog(
             FILE_SIZE_MESSAGE(std::to_string(fileStream.size()))
         );
-    else {
+    } else {
         uint32_t fileSize = fileStream.size();
 
         std::string fileSizeString(
@@ -551,10 +553,11 @@ void CommandsManager::processUploadCommand(const Command& command) const {
                         rc = std::cin.get();
 #endif
 
-                        if (rc != endMarker)
+                        if (rc != endMarker) {
                             encodedChunk += rc;
-                        else
+                        } else {
                             newData = true;
+                        }
                     }
                 }
                 std::string chunk = base64::from_base64(encodedChunk).c_str();
@@ -745,24 +748,26 @@ void CommandsManager::processUploadCommand(const Command& command) const {
 
         fileStream.close();
 
-        if (this->shellMode)
+        if (this->shellMode) {
             SerialManager::sharedInstance->commandLog(
                 "File " + uploadPath.str() + " with size " +
                 std::to_string(fileSize) + " uploaded successfully."
             );
-        else
+        } else {
             SerialManager::sharedInstance->commandLog(
                 NON_SHELL_MODE_NO_ERROR_CODE
             );
+        }
     } catch (const std::exception& e) {
-        if (this->shellMode)
+        if (this->shellMode) {
             SerialManager::sharedInstance->commandLog(
                 "Error uploading file: " + std::string(e.what())
             );
-        else
+        } else {
             SerialManager::sharedInstance->commandLog(
                 NON_SHELL_MODE_ERROR_CODE + std::string(e.what())
             );
+        }
 
         uploadPath.remove();
         return;

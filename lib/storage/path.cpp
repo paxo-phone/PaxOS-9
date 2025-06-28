@@ -105,8 +105,9 @@ std::string Path::str(void) const {
 
     for (uint16_t i = 0; i < m_steps.size(); i++) {
         o += m_steps[i];
-        if (i != m_steps.size() - 1)
+        if (i != m_steps.size() - 1) {
             o += "/";
+        }
         // o += SYSTEM_PATH_SEPARATOR;
     }
 
@@ -116,11 +117,13 @@ std::string Path::str(void) const {
 Path Path::operator/(const Path& other) const {
     Path o;
 
-    for (uint16_t i = 0; i < m_steps.size(); i++)
+    for (uint16_t i = 0; i < m_steps.size(); i++) {
         o.m_steps.push_back(m_steps[i]);
+    }
 
-    for (uint16_t i = 0; i < other.m_steps.size(); i++)
+    for (uint16_t i = 0; i < other.m_steps.size(); i++) {
         o.m_steps.push_back(other.m_steps[i]);
+    }
 
     o.simplify();
 
@@ -203,8 +206,9 @@ void Path::parse(const std::string& raw) {
         pos++;
     }
 
-    if (!temp.empty())
+    if (!temp.empty()) {
         m_steps.push_back(temp);
+    }
 
     simplify();
 }
@@ -225,8 +229,9 @@ std::vector<std::string> Path::listdir(bool onlyDirs) const {
     }
 
     for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
-        if (onlyDirs && !entry.is_directory())
+        if (onlyDirs && !entry.is_directory()) {
             continue;
+        }
 
         list.push_back(entry.path().filename().string());
     }
@@ -256,8 +261,9 @@ bool Path::exists(void) const {
 
 #ifdef ESP_PLATFORM
     struct stat st;
-    if (stat(this->str().c_str(), &st) == 0)
+    if (stat(this->str().c_str(), &st) == 0) {
         return true;
+    }
 
     return false;
 #endif
@@ -301,8 +307,9 @@ bool Path::newdir(void) const {
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
     defined(__APPLE__)
 
-    if (!std::filesystem::exists(this->str()))
+    if (!std::filesystem::exists(this->str())) {
         return std::filesystem::create_directory(this->str());
+    }
     return false;
 
 #endif
@@ -327,19 +334,20 @@ bool Path::copyTo(const Path& destinationPath) const {
            = 256
             };
         */
-        if (std::filesystem::is_directory(this->str()))
+        if (std::filesystem::is_directory(this->str())) {
             std::filesystem::copy(
                 this->str(),
                 destinationPath.str(),
                 std::filesystem::copy_options::recursive |
                     std::filesystem::copy_options::skip_existing
             );
-        else
+        } else {
             std::filesystem::copy_file(
                 this->str(),
                 destinationPath.str(),
                 std::filesystem::copy_options::skip_existing
             );
+        }
         return true;
     }
     return false;
@@ -347,16 +355,18 @@ bool Path::copyTo(const Path& destinationPath) const {
 #endif
 
 #ifdef ESP_PLATFORM
-    if (destinationPath.exists())
+    if (destinationPath.exists()) {
         return false;
+    }
 
     if (this->isdir()) {
         for (const std::string& entry : this->listdir()) {
             Path newPath = destinationPath / entry;
             Path oldPath = *this / entry;
 
-            if (!oldPath.copyTo(newPath))
+            if (!oldPath.copyTo(newPath)) {
                 return false;
+            }
         }
         return true;
     } else {
@@ -417,8 +427,9 @@ bool Path::newfile(void) const {
 
 bool Path::remove(void) const {
     std::cout << "Remove action" << std::endl;
-    if (!this->exists())
+    if (!this->exists()) {
         return false;
+    }
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
     defined(__APPLE__)
     return std::filesystem::remove(this->str());
@@ -435,16 +446,18 @@ bool Path::remove(void) const {
             std::cout << "Remove children" << std::endl;
             for (std::string child : children) {
                 Path childPath = *this / child;
-                if (!childPath.remove())
+                if (!childPath.remove()) {
                     return false;
+                }
                 // serialcom::SerialManager::sharedInstance->commandLog("Removing
                 // child " + child);
                 std::cout << "Removing child " << childPath.str() << std::endl;
             }
         }
         return ::rmdir(this->str().c_str()) == 0;
-    } else
+    } else {
         return ::remove(this->str().c_str()) == 0;
+    }
 #endif
 }
 

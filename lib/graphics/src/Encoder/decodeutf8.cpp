@@ -80,10 +80,10 @@ uint16_t decodeUTF8(uint8_t c) {
 
     } else {
         decoderState--;
-        if (decoderState == 1)
+        if (decoderState == 1) {
             decoderBuffer |=
                 ((c & 0x3F) << 6); // Add next 6 bits of 16 bit code point
-        else if (decoderState == 0) {
+        } else if (decoderState == 0) {
             decoderBuffer |=
                 (c & 0x3F); // Add last 6 bits of code point (UTF8-tail)
             return decoderBuffer;
@@ -98,8 +98,9 @@ std::string decodeString(std::string& code) {
     std::vector<uint16_t> code_16;
 
     // First decode UTF8 characters
-    for (int i = 0; i < code.size(); i++)
+    for (int i = 0; i < code.size(); i++) {
         code_16.push_back(decodeUTF8(code[i]));
+    }
 
     // Process each character
     for (int i = 0; i < code.size(); i++) {

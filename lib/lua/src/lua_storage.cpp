@@ -40,20 +40,23 @@ std::vector<std::string> LuaStorage::listDir(std::string path) {
 }
 
 bool LuaStorage::legalPath(storage::Path path) {
-    if (!this->lua->perms.acces_files)
+    if (!this->lua->perms.acces_files) {
         return false;
-    if (path.m_steps[0] == "/" && !this->lua->perms.acces_files_root)
+    }
+    if (path.m_steps[0] == "/" && !this->lua->perms.acces_files_root) {
         return false;
+    }
 
     return true;
 }
 
 storage::Path LuaStorage::convertPath(std::string path) {
     // std::cout << "convertPath: " << path << std::endl;
-    if (!legalPath(path))
+    if (!legalPath(path)) {
         throw libsystem::exceptions::RuntimeError(
             "The app is not allowed to access this path: " + path
         );
+    }
 
     if (path[0] == '/') {
         // std::cout << "Returning path: " << path << std::endl;

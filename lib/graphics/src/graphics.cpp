@@ -47,8 +47,9 @@ uint16_t graphics::getBrightness() {
 
 void graphics::setBrightness(uint16_t value, const bool temp) {
     static bool running = false;
-    if (running)
+    if (running) {
         return;
+    }
     running = true;
 
     if (!temp) {
@@ -275,8 +276,9 @@ void graphics::getTouchPos(int16_t* x, int16_t* y) {
 #ifdef ESP_PLATFORM
 int getTouch(uint16_t* pPoints) {
     TOUCHINFO ti;
-    if (ct.getSamples(&ti) != FT_SUCCESS)
+    if (ct.getSamples(&ti) != FT_SUCCESS) {
         return 0; // something went wrong
+    }
     if (pPoints) {
         // swap X/Y since the display is used 90 degrees rotated
         pPoints[0] = ti.x[0];
@@ -289,8 +291,9 @@ int getTouch(uint16_t* pPoints) {
 #endif
 
 void graphics::touchUpdate() {
-    if (StandbyMode::state() == true)
+    if (StandbyMode::state() == true) {
         return;
+    }
 
     int16_t currentLiveTouchX = 0, currentLiveTouchY = 0;
 

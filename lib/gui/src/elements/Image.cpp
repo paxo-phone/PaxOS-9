@@ -87,8 +87,9 @@ Image::~Image() {
 }
 
 void Image::render() {
-    if (m_isRendered == false)
+    if (m_isRendered == false) {
         load(m_backgroundColor);
+    }
 }
 
 void Image::setTransparentColor(color_t color) {

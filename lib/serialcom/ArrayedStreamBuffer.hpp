@@ -26,8 +26,9 @@ struct ArrayedStreamBuffer : std::basic_streambuf<CharT> {
     }
 
     ~ArrayedStreamBuffer() {
-        if (this->stream && this->originalBuffer)
+        if (this->stream && this->originalBuffer) {
             this->stream->rdbuf(originalBuffer);
+        }
     }
 
     void installOnStream(std::ostream* stream) {
@@ -37,8 +38,9 @@ struct ArrayedStreamBuffer : std::basic_streambuf<CharT> {
     }
 
     void flushBuffer() {
-        if (!this->stream || !this->originalBuffer)
+        if (!this->stream || !this->originalBuffer) {
             return;
+        }
         this->stream->rdbuf(originalBuffer);
         this->stream->write(buffer.data(), this->pptr() - this->pbase());
         this->stream->flush(); // Ensure it's flushed to output
@@ -59,8 +61,9 @@ struct ArrayedStreamBuffer : std::basic_streambuf<CharT> {
             Serial.flush();
         }
 #else
-        if (!this->stream || !this->originalBuffer)
+        if (!this->stream || !this->originalBuffer) {
             return;
+        }
         this->stream->rdbuf(originalBuffer);
         std::cout.write(log.c_str(), log.size());
         this->stream->rdbuf(this);
@@ -80,8 +83,9 @@ struct ArrayedStreamBuffer : std::basic_streambuf<CharT> {
 
   private:
     int_type overflow(int_type ch) override {
-        if (!this->stream)
+        if (!this->stream) {
             return Base::overflow(ch);
+        }
 
         // TODO: find a way to force flush on overflow without compromising an
         // eventual command log.

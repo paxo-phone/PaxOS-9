@@ -218,8 +218,9 @@ void Label::setFontSize(uint16_t fontSize) {
 }
 
 uint16_t Label::getTextWidth() {
-    if (m_surface == nullptr)
+    if (m_surface == nullptr) {
         m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
+    }
     m_surface->setFontSize(this->m_fontSize);
     return m_surface->getTextWidth(m_text);
 }
@@ -237,8 +238,9 @@ uint16_t Label::getTextHeight() {
     uint16_t out = getRadius() + getBorderSize() * 2 +
                    (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
 
-    if (allocatedSprite)
+    if (allocatedSprite) {
         m_surface = nullptr;
+    }
 
     return out;
 }

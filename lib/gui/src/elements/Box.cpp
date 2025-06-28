@@ -28,7 +28,7 @@ void Box::render() {
         m_borderRadius = std::min(m_width / 2, m_height / 2);
     }
     m_surface->fillRect(0, 0, m_width, m_height, COLOR_WHITE);
-    if (m_borderSize || m_borderRadius || m_backgroundColor != COLOR_WHITE)
+    if (m_borderSize || m_borderRadius || m_backgroundColor != COLOR_WHITE) {
         m_surface->fillRoundRectWithBorder(
             0,
             0,
@@ -39,6 +39,7 @@ void Box::render() {
             m_backgroundColor,
             m_borderColor
         );
+    }
 }
 
 void Box::postRender() {

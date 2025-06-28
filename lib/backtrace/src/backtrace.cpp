@@ -41,8 +41,9 @@ std::string getBacktraceMessage() {
 #if CONFIG_RESTART_DEBUG_STACK_DEPTH > 0
     backtraceMessageStream << "backtrace: ";
     for (int i = 0; i < CONFIG_RESTART_DEBUG_STACK_DEPTH; i++) {
-        if (currentData.backtrace[i].first == 0)
+        if (currentData.backtrace[i].first == 0) {
             break;
+        }
         backtraceMessageStream
             << "0x" << std::hex << currentData.backtrace[i].first << ":0x"
             << std::hex << currentData.backtrace[i].second << " ";
@@ -67,8 +68,9 @@ re_restart_debug_t getCurrentBacktrace() {
 }
 
 bool saveBacktrace() {
-    if (!shouldSaveBacktrace())
+    if (!shouldSaveBacktrace()) {
         return false;
+    }
     if (!storage::Path("logs").exists() && !storage::Path("logs").newdir()) {
         std::cout << "Couldn't create logs/ directory to save backtrace"
                   << std::endl;
@@ -90,8 +92,9 @@ bool saveBacktrace() {
 
     std::cout << "Backtrace saved to " << path.str() << std::endl;
 
-    if (backtraceEventId != -1)
+    if (backtraceEventId != -1) {
         eventHandlerBack.removeEventListener(backtraceEventId);
+    }
 
     return true;
 }

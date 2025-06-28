@@ -241,12 +241,15 @@ struct DecodedPdu {
 static unsigned char hexPairToByte(char c1, char c2) {
     unsigned char byte = 0;
     auto charToVal = [](char c) -> unsigned char {
-        if (c >= '0' && c <= '9')
+        if (c >= '0' && c <= '9') {
             return c - '0';
-        if (c >= 'a' && c <= 'f')
+        }
+        if (c >= 'a' && c <= 'f') {
             return c - 'a' + 10;
-        if (c >= 'A' && c <= 'F')
+        }
+        if (c >= 'A' && c <= 'F') {
             return c - 'A' + 10;
+        }
         throw std::invalid_argument("Invalid hex char");
     };
     byte = (charToVal(c1) << 4) | charToVal(c2);
@@ -632,8 +635,9 @@ static std::string unpack7BitData(
     int udh_septet_length = 0
 ) {
     std::string text = "";
-    if (num_septets <= 0 || packed_octets.empty())
+    if (num_septets <= 0 || packed_octets.empty()) {
         return text;
+    }
 
     int current_octet_idx = 0;
     int bit_shift = 0;
@@ -777,12 +781,13 @@ static bool
 
             if (dcs_group == 0x00) {
                 if ((tp_dcs & 0x20) == 0x00) {
-                    if (dcs_char_set == 0x00)
+                    if (dcs_char_set == 0x00) {
                         is_7bit_encoding = true;
-                    else if (dcs_char_set == 0x01)
+                    } else if (dcs_char_set == 0x01) {
                         is_8bit_encoding = true;
-                    else if (dcs_char_set == 0x02)
+                    } else if (dcs_char_set == 0x02) {
                         is_ucs2_encoding = true;
+                    }
                 } else {
                     is_7bit_encoding = true;
                 }
@@ -792,12 +797,13 @@ static bool
                 return false;
             } else if (dcs_group == 0xC0) {
                 if ((tp_dcs & 0x20) == 0x00) {
-                    if (dcs_char_set == 0x00)
+                    if (dcs_char_set == 0x00) {
                         is_7bit_encoding = true;
-                    else if (dcs_char_set == 0x01)
+                    } else if (dcs_char_set == 0x01) {
                         is_8bit_encoding = true;
-                    else if (dcs_char_set == 0x02)
+                    } else if (dcs_char_set == 0x02) {
                         is_ucs2_encoding = true;
+                    }
                 } else {
                     return false;
                 }
@@ -835,8 +841,9 @@ static bool
                 pdu_hex_string.length()) {
                 ud_expected_octet_len =
                     (pdu_hex_string.length() - current_pos) / 2;
-                if (ud_expected_octet_len < 0)
+                if (ud_expected_octet_len < 0) {
                     ud_expected_octet_len = 0;
+                }
                 if (ud_expected_octet_len == 0) {
                     result.messageContent = "";
                     return true;
@@ -856,8 +863,9 @@ static bool
                 } else {
                     if (udh_octet_len >= 6) {
                         for (int ie_pos = 1; ie_pos < udh_octet_len;) {
-                            if (ie_pos + 1 >= udh_octet_len)
+                            if (ie_pos + 1 >= udh_octet_len) {
                                 break;
+                            }
                             unsigned char iei = ud_bytes[ie_pos];
                             unsigned char iedl = ud_bytes[ie_pos + 1];
                             if (ie_pos + 1 + iedl >= udh_octet_len) {
@@ -1028,12 +1036,14 @@ static void queueReadSms(const std::string& memory_store, int index) {
         bool cmgr_header_found = false;
 
         while (std::getline(ss_block, line, '\n')) {
-            if (!line.empty() && line.back() == '\r')
+            if (!line.empty() && line.back() == '\r') {
                 line.pop_back();
+            }
             line.erase(0, line.find_first_not_of(" \t"));
             line.erase(line.find_last_not_of(" \t") + 1);
-            if (line.empty())
+            if (line.empty()) {
                 continue;
+            }
 
             if (line.rfind("+CMGR:", 0) == 0) {
                 cmgr_header_found = true;
@@ -1071,12 +1081,14 @@ void checkForMessages() {
         bool expect_pdu_next = false;
 
         while (std::getline(ss_block, line, '\n')) {
-            if (!line.empty() && line.back() == '\r')
+            if (!line.empty() && line.back() == '\r') {
                 line.pop_back();
+            }
             line.erase(0, line.find_first_not_of(" \t"));
             line.erase(line.find_last_not_of(" \t") + 1);
-            if (line.empty())
+            if (line.empty()) {
                 continue;
+            }
 
             if (line.rfind("+CMGL:", 0) == 0) {
                 std::string data_part = line.substr(6);
@@ -1251,8 +1263,9 @@ static void updateVoltageInternal() {
         int voltage = -1;
 
         while (std::getline(ss_block, line, '\n')) {
-            if (!line.empty() && line.back() == '\r')
+            if (!line.empty() && line.back() == '\r') {
                 line.pop_back();
+            }
             line.erase(0, line.find_first_not_of(" \t"));
             line.erase(line.find_last_not_of(" \t") + 1);
 
@@ -1299,13 +1312,15 @@ static void updateVoltageInternal() {
             currentVoltage_mV = voltage;
             try {
                 battery_voltage_history.push_back(currentVoltage_mV);
-                if (battery_voltage_history.size() > 24)
+                if (battery_voltage_history.size() > 24) {
                     battery_voltage_history.erase(battery_voltage_history.begin(
                     ));
+                }
                 if (battery_voltage_history.size() > 0) {
                     double sum = 0;
-                    for (auto v : battery_voltage_history)
+                    for (auto v : battery_voltage_history) {
                         sum += v;
+                    }
                     currentVoltage_mV = sum / battery_voltage_history.size();
                 }
             } catch (std::exception) {}
@@ -1350,8 +1365,9 @@ static void updatePinStatusInternal() {
         bool cmd_success = (response.find("OK") != std::string::npos);
 
         while (std::getline(ss_block, line, '\n')) {
-            if (!line.empty() && line.back() == '\r')
+            if (!line.empty() && line.back() == '\r') {
                 line.pop_back();
+            }
             line.erase(0, line.find_first_not_of(" \t"));
             line.erase(line.find_last_not_of(" \t") + 1);
             if (line.rfind("+CPIN:", 0) == 0) {
@@ -1640,10 +1656,13 @@ void uploadSettings() {
 
 bool isEndIdentifier(const std::string& data) {
     if (data == "OK" || data == "ERROR" || data == "NO CARRIER" ||
-        data == "BUSY" || data == "NO ANSWER" || data == "NO DIALTONE")
+        data == "BUSY" || data == "NO ANSWER" || data == "NO DIALTONE") {
         return true;
-    if (data.rfind("+CME ERROR:", 0) == 0 || data.rfind("+CMS ERROR:", 0) == 0)
+    }
+    if (data.rfind("+CME ERROR:", 0) == 0 ||
+        data.rfind("+CMS ERROR:", 0) == 0) {
         return true;
+    }
     return false;
 }
 
@@ -1684,11 +1703,13 @@ const std::vector<std::string> known_urc_prefixes = {
 };
 
 bool isURC(const std::string& data) {
-    if (data.empty())
+    if (data.empty()) {
         return false;
+    }
     for (const std::string& prefix : known_urc_prefixes) {
-        if (data.find(prefix) == 0)
+        if (data.find(prefix) == 0) {
             return true;
+        }
     }
     return false;
 }
@@ -1704,15 +1725,17 @@ void processURC(std::string data) {
             secondQuote != std::string::npos) {
             lastIncomingCallNumber =
                 data.substr(firstQuote + 1, secondQuote - firstQuote - 1);
-            if (ExternalEvents::onIncommingCall)
+            if (ExternalEvents::onIncommingCall) {
                 ExternalEvents::onIncommingCall();
+            }
             if (currentCallState != CallState::RINGING) {
                 currentCallState = CallState::RINGING;
             }
         }
     } else if (data.rfind("+HTTPACTION:", 0) == 0) {
-        if (currentHttpState != HttpState::ACTION_IN_PROGRESS)
+        if (currentHttpState != HttpState::ACTION_IN_PROGRESS) {
             return;
+        }
 
         int statusCode = 0, dataLen = 0;
         sscanf(data.c_str(), "+HTTPACTION: %*d,%d,%d", &statusCode, &dataLen);
@@ -1973,8 +1996,9 @@ void sendMessagePDU(
             trimmed_response[last_char_pos] == '>') {
             return true;
         } else {
-            if (completionCallback)
+            if (completionCallback) {
                 completionCallback(false, -1);
+            }
             return false;
         }
     };
@@ -2049,57 +2073,57 @@ static std::string pack7Bit(const std::string& message, int& septetCount) {
 
     for (char c_char : message) {
         unsigned char septet;
-        if (c_char == '@')
+        if (c_char == '@') {
             septet = 0x00;
-        else if (c_char == '\xA3')
+        } else if (c_char == '\xA3') {
             septet = 0x01;
-        else if (c_char == '$')
+        } else if (c_char == '$') {
             septet = 0x02;
-        else if (c_char == '\xA5')
+        } else if (c_char == '\xA5') {
             septet = 0x03;
-        else if (c_char == '\xE8')
+        } else if (c_char == '\xE8') {
             septet = 0x04;
-        else if (c_char == '\xE9')
+        } else if (c_char == '\xE9') {
             septet = 0x05;
-        else if (c_char == '\xF9')
+        } else if (c_char == '\xF9') {
             septet = 0x06;
-        else if (c_char == '\xEC')
+        } else if (c_char == '\xEC') {
             septet = 0x07;
-        else if (c_char == '\xF2')
+        } else if (c_char == '\xF2') {
             septet = 0x08;
-        else if (c_char == '\xC7')
+        } else if (c_char == '\xC7') {
             septet = 0x09;
-        else if (c_char == '\n')
+        } else if (c_char == '\n') {
             septet = 0x0A;
-        else if (c_char == '\xD8')
+        } else if (c_char == '\xD8') {
             septet = 0x0B;
-        else if (c_char == '\xF8')
+        } else if (c_char == '\xF8') {
             septet = 0x0C;
-        else if (c_char == '\r')
+        } else if (c_char == '\r') {
             septet = 0x0D;
-        else if (c_char == '\xC5')
+        } else if (c_char == '\xC5') {
             septet = 0x0E;
-        else if (c_char == '\xE5')
+        } else if (c_char == '\xE5') {
             septet = 0x0F;
-        else if (c_char == '_')
+        } else if (c_char == '_') {
             septet = 0x11;
-        else if (c_char == '\xC6')
+        } else if (c_char == '\xC6') {
             septet = 0x1C;
-        else if (c_char == '\xE6')
+        } else if (c_char == '\xE6') {
             septet = 0x1D;
-        else if (c_char == '\xDF')
+        } else if (c_char == '\xDF') {
             septet = 0x1E;
-        else if (c_char == '\xC9')
+        } else if (c_char == '\xC9') {
             septet = 0x1F;
-        else if (c_char == ' ')
+        } else if (c_char == ' ') {
             septet = 0x20;
-        else if (c_char >= 'A' && c_char <= 'Z')
+        } else if (c_char >= 'A' && c_char <= 'Z') {
             septet = static_cast<unsigned char>(c_char);
-        else if (c_char >= 'a' && c_char <= 'z')
+        } else if (c_char >= 'a' && c_char <= 'z') {
             septet = static_cast<unsigned char>(c_char);
-        else if (c_char >= '0' && c_char <= '9')
+        } else if (c_char >= '0' && c_char <= '9') {
             septet = static_cast<unsigned char>(c_char);
-        else {
+        } else {
             switch (c_char) {
             case '!':
                 septet = 0x21;
@@ -2285,8 +2309,9 @@ void call(
     std::function<void(bool success)> completionCallback
 ) {
     if (currentCallState != CallState::IDLE) {
-        if (completionCallback)
+        if (completionCallback) {
             completionCallback(false);
+        }
         return;
     }
     auto request = std::make_shared<Request>();
@@ -2308,8 +2333,9 @@ void call(
 
 void acceptCall(std::function<void(bool success)> completionCallback) {
     if (currentCallState != CallState::RINGING) {
-        if (completionCallback)
+        if (completionCallback) {
             completionCallback(false);
+        }
         return;
     }
     auto request = std::make_shared<Request>();
@@ -2332,8 +2358,9 @@ void acceptCall(std::function<void(bool success)> completionCallback) {
 void rejectCall(std::function<void(bool success)> completionCallback) {
     if (currentCallState == CallState::IDLE ||
         currentCallState == CallState::UNKNOWN) {
-        if (completionCallback)
+        if (completionCallback) {
             completionCallback(false);
+        }
         return;
     }
     auto request = std::make_shared<Request>();
@@ -2557,13 +2584,15 @@ void run() {
         std::string line = lineBuffer.substr(0, lineEndPos);
         lineBuffer.erase(0, lineEndPos + 1);
 
-        if (!line.empty() && line.back() == '\r')
+        if (!line.empty() && line.back() == '\r') {
             line.pop_back();
+        }
         line.erase(0, line.find_first_not_of(" \t\r\n"));
         line.erase(line.find_last_not_of(" \t\r\n") + 1);
 
-        if (line.empty())
+        if (line.empty()) {
             continue;
+        }
 
         if ((state == SerialRunState::COMMAND_RUNNING) && currentRequest &&
             line == currentRequest->command) {
@@ -2604,8 +2633,9 @@ void run() {
 
                 if (data.size() == data.capacity()) {
                     std::string_view dataView(data.data(), data.size());
-                    if (currentHttpCallbacks.on_data)
+                    if (currentHttpCallbacks.on_data) {
                         currentHttpCallbacks.on_data(dataView);
+                    }
                     httpBytesRead += data.size();
 
                     if (httpBytesRead >= httpBytesTotal) {

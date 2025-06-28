@@ -16,14 +16,16 @@ void App::run(const std::vector<std::string>& parameters) {
     if (!auth) {
         requestAuth();
 
-        if (!auth)
+        if (!auth) {
             return;
+        }
     }
 
     app_state = background ? RUNNING_BACKGROUND : RUNNING;
 
-    if (!background)
+    if (!background) {
         appStack.push_back(this);
+    }
 
     luaInstance = std::make_shared<LuaFile>(path, manifest);
     luaInstance->app = this;
@@ -55,8 +57,9 @@ bool App::isLoaded() const {
 }
 
 bool App::isVisible() const {
-    if (!isLoaded())
+    if (!isLoaded()) {
         return false;
+    }
 
     return appStack.back() == this;
 }
@@ -298,17 +301,18 @@ void loadDir(
 
         if (manifest["subdir"].is_string()) // todo, restrict only for subdirs
         {
-            if ((app.get()->path / "../" / manifest["subdir"]).exists())
+            if ((app.get()->path / "../" / manifest["subdir"]).exists()) {
                 loadDir(
                     app.get()->path / "../" / manifest["subdir"],
                     root,
                     app->fullName
                 );
-            else
+            } else {
                 std::cerr
                     << "Error: subdir \""
                     << (app.get()->path / "../" / manifest["subdir"]).str()
                     << "\" does not exist" << std::endl;
+            }
         }
 
         appList.push_back(app);
@@ -352,10 +356,11 @@ void updateForeground() {
 
         if (app->luaInstance != nullptr) {
             // printf("-- 1\n");
-            if (app == Keyboard_manager::app)
+            if (app == Keyboard_manager::app) {
                 Keyboard_manager::update();
-            else
+            } else {
                 app->luaInstance->lua_gui.update();
+            }
             // printf("-- 2\n");
         }
 
@@ -474,8 +479,9 @@ std::shared_ptr<App> get(storage::Path path) {
 void event_oncall() {
     threadsync.lock();
     for (auto& app : appList) {
-        if (app->luaInstance != nullptr && app->isRunning())
+        if (app->luaInstance != nullptr && app->isRunning()) {
             app->luaInstance->event_oncall();
+        }
     }
     threadsync.unlock();
 }
@@ -483,8 +489,9 @@ void event_oncall() {
 void event_onlowbattery() {
     threadsync.lock();
     for (auto& app : appList) {
-        if (app->luaInstance != nullptr && app->isRunning())
+        if (app->luaInstance != nullptr && app->isRunning()) {
             app->luaInstance->event_onlowbattery();
+        }
     }
     threadsync.unlock();
 }
@@ -492,8 +499,9 @@ void event_onlowbattery() {
 void event_oncharging() {
     threadsync.lock();
     for (auto& app : appList) {
-        if (app->luaInstance != nullptr && app->isRunning())
+        if (app->luaInstance != nullptr && app->isRunning()) {
             app->luaInstance->event_oncharging();
+        }
     }
     threadsync.unlock();
 }
@@ -501,8 +509,9 @@ void event_oncharging() {
 void event_onmessage() {
     threadsync.lock();
     for (auto& app : appList) {
-        if (app->luaInstance != nullptr && app->isRunning())
+        if (app->luaInstance != nullptr && app->isRunning()) {
             app->luaInstance->event_onmessage();
+        }
     }
     threadsync.unlock();
 }
@@ -510,8 +519,9 @@ void event_onmessage() {
 void event_onmessageerror() {
     threadsync.lock();
     for (auto& app : appList) {
-        if (app->luaInstance != nullptr && app->isRunning())
+        if (app->luaInstance != nullptr && app->isRunning()) {
             app->luaInstance->event_onmessageerror();
+        }
     }
     threadsync.unlock();
 }

@@ -32,8 +32,9 @@ void Input::render() {
 }
 
 void Input::widgetUpdate() {
-    if (m_clear->isTouched())
+    if (m_clear->isTouched()) {
         setText("");
+    }
 }
 
 void Input::setText(const std::string& text) {
@@ -52,8 +53,9 @@ void Input::setText(const std::string& text) {
 
 void Input::setPlaceHolder(const std::string& text) {
     this->m_placeHolder = text;
-    if (m_text->getText().length() == 0)
+    if (m_text->getText().length() == 0) {
         m_text->setText(m_placeHolder);
+    }
 
     localGraphicalUpdate();
 }
@@ -65,10 +67,11 @@ void Input::setTitle(const std::string& text) {
 }
 
 std::string Input::getText() {
-    if (m_hasText)
+    if (m_hasText) {
         return m_text->getText();
-    else
+    } else {
         return "";
+    }
 }
 
 std::string Input::getPlaceHolder() {

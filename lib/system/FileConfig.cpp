@@ -347,8 +347,9 @@ std::string FileConfig::readString(const size_t length) {
 std::vector<std::string> FileConfig::readList() {
     std::vector<std::string> output;
 
-    if (m_fileStream->readchar() != '[')
+    if (m_fileStream->readchar() != '[') {
         throw std::invalid_argument("FileConfig List Error");
+    }
 
     std::string lst;
     std::string var;

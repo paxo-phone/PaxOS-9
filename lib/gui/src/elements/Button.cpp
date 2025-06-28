@@ -75,13 +75,16 @@ void Button::format() {
     uint16_t space = (m_image != nullptr && m_label != nullptr) ? 10 : 0;
     uint16_t w = space;
 
-    if (m_image != nullptr)
+    if (m_image != nullptr) {
         w += m_image->getWidth();
-    if (m_label != nullptr)
+    }
+    if (m_label != nullptr) {
         w += m_label->getTextWidth();
+    }
 
-    if (m_image != nullptr)
+    if (m_image != nullptr) {
         m_image->setX(getWidth() / 2 - w / 2);
+    }
 
     if (m_label != nullptr) {
         m_label->setX(
@@ -129,10 +132,11 @@ void Button::setIcon(storage::Path path) {
 }
 
 std::string Button::getText() {
-    if (m_label == nullptr)
+    if (m_label == nullptr) {
         return "";
-    else
+    } else {
         return m_label->getText();
+    }
 }
 
 void Button::setTheme(bool value) {

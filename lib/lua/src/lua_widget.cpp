@@ -9,8 +9,9 @@ void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent) {
 }
 
 LuaWidget::~LuaWidget() {
-    if (rootOfDelete == nullptr)
+    if (rootOfDelete == nullptr) {
         rootOfDelete = this;
+    }
 
     for (LuaWidget* child : children) {
         delete child;

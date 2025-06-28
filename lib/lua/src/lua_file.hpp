@@ -52,16 +52,19 @@ class LuaFile {
     sol::protected_function onmessageerror;
 
     void event_oncall() {
-        if (oncall.valid())
+        if (oncall.valid()) {
             oncall();
+        }
     }
     void event_onlowbattery() {
-        if (onlowbattery.valid())
+        if (onlowbattery.valid()) {
             onlowbattery();
+        }
     }
     void event_oncharging() {
-        if (oncharging.valid())
+        if (oncharging.valid()) {
             oncharging();
+        }
     }
     void event_onmessage() {
         if (onmessage.valid()) {

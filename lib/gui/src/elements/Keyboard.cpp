@@ -679,10 +679,12 @@ void Keyboard::trackpadUpdate() {
 }
 
 bool Keyboard::isPointInTrackpad(const int16_t x, const int16_t y) const {
-    if (x < 110 || x > 370)
+    if (x < 110 || x > 370) {
         return false;
-    if (y <= 260 || y > 300)
+    }
+    if (y <= 260 || y > 300) {
         return false;
+    }
 
     return true;
 }

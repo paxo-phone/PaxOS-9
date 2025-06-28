@@ -21,14 +21,18 @@ std::string getFormatedDate() {
     int16_t month = Gsm::Time::getMonth();
     int16_t year = Gsm::Time::getYear();
 
-    if (day_ == -1)
+    if (day_ == -1) {
         day_ = 1;
-    if (day == -1)
+    }
+    if (day == -1) {
         day = 1;
-    if (month == -1)
+    }
+    if (month == -1) {
         month = 1;
-    if (year == -1)
+    }
+    if (year == -1) {
         year = 1970;
+    }
 
     std::string dayName = daysOfWeek
         [(day += month < 3 ? year-- : year - 2,
@@ -172,15 +176,16 @@ void applications::launcher::update() {
     {
         static int lastNetwork = Gsm::getNetworkQuality().first;
         if (lastNetwork != Gsm::getNetworkQuality().first) {
-            if (Gsm::getNetworkQuality().first == 99)
+            if (Gsm::getNetworkQuality().first == 99) {
                 networkLabel->setText("X");
-            else
+            } else {
                 networkLabel->setText(
                     std::to_string(
                         (int) Gsm::getNetworkQuality().first * 100 / 31
                     ) +
                     "%"
                 );
+            }
 
             lastNetwork = Gsm::getNetworkQuality().first;
         }
@@ -281,15 +286,16 @@ void applications::launcher::draw() {
 
     { // Network
         networkLabel = new Label(2, 2, 30, 18);
-        if (Gsm::getNetworkQuality().first == 99)
+        if (Gsm::getNetworkQuality().first == 99) {
             networkLabel->setText("X");
-        else
+        } else {
             networkLabel->setText(
                 std::to_string(
                     (int) Gsm::getNetworkQuality().first * 100 / 31
                 ) +
                 "%"
             );
+        }
         networkLabel->setVerticalAlignment(Label::Alignement::CENTER);
         networkLabel->setHorizontalAlignment(Label::Alignement::CENTER);
         networkLabel->setFontSize(18);

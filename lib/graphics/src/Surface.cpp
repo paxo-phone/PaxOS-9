@@ -132,8 +132,9 @@ void Surface::setPixel(
 }
 
 void Surface::pushSurface(Surface* surface, const int16_t x, const int16_t y) {
-    if (surface == nullptr)
+    if (surface == nullptr) {
         return;
+    }
 
     if (surface->m_transparent) {
         surface->m_sprite
@@ -494,14 +495,18 @@ void Surface::setTextColor(color_t color) {
 
 const lgfx::GFXfont* getFont(const EFont font, const EFontSize fontSize) {
     if (font == ARIAL) {
-        if (fontSize == PT_8)
+        if (fontSize == PT_8) {
             return &ArialBold8ptFR;
-        if (fontSize == PT_12)
+        }
+        if (fontSize == PT_12) {
             return &ArialBold12ptFR;
-        if (fontSize == PT_16)
+        }
+        if (fontSize == PT_16) {
             return &Arial16ptFR;
-        if (fontSize == PT_24)
+        }
+        if (fontSize == PT_24) {
             return &Arial24ptFR;
+        }
     }
 
     return nullptr;
@@ -510,14 +515,15 @@ const lgfx::GFXfont* getFont(const EFont font, const EFontSize fontSize) {
 uint16_t Surface::getTextWidth(std::string text) {
     EFontSize fontSize;
 
-    if (m_fontSize < 18)
+    if (m_fontSize < 18) {
         fontSize = PT_8;
-    else if (m_fontSize < 27)
+    } else if (m_fontSize < 27) {
         fontSize = PT_12;
-    else if (m_fontSize < 35)
+    } else if (m_fontSize < 35) {
         fontSize = PT_16;
-    else
+    } else {
         fontSize = PT_24;
+    }
 
     const float scale =
         m_fontSize /
@@ -531,14 +537,15 @@ uint16_t Surface::getTextWidth(std::string text) {
 uint16_t Surface::getTextHeight() const {
     EFontSize fontSize;
 
-    if (m_fontSize < 18)
+    if (m_fontSize < 18) {
         fontSize = PT_8;
-    else if (m_fontSize < 27)
+    } else if (m_fontSize < 27) {
         fontSize = PT_12;
-    else if (m_fontSize < 35)
+    } else if (m_fontSize < 35) {
         fontSize = PT_16;
-    else
+    } else {
         fontSize = PT_24;
+    }
 
     const float scale =
         m_fontSize /
@@ -554,14 +561,15 @@ void Surface::drawText(
     // Get the correct font size
     EFontSize fontSize;
 
-    if (m_fontSize < 18)
+    if (m_fontSize < 18) {
         fontSize = PT_8;
-    else if (m_fontSize < 27)
+    } else if (m_fontSize < 27) {
         fontSize = PT_12;
-    else if (m_fontSize < 35)
+    } else if (m_fontSize < 35) {
         fontSize = PT_16;
-    else
+    } else {
         fontSize = PT_24;
+    }
 
     // Get the correct scale
     const float scale =
@@ -631,11 +639,12 @@ void Surface::drawTextCentered(
     const uint16_t textWidth = m_sprite.textWidth(text.c_str());
     int16_t textPositionX;
     if (horizontallyCentered) {
-        if (w == (uint16_t) -1)
+        if (w == (uint16_t) -1) {
             textPositionX =
                 x + (double) this->getWidth() * 0.5 - (double) textWidth * 0.5;
-        else
+        } else {
             textPositionX = x + (double) w * 0.5 - (double) textWidth * 0.5;
+        }
     } else {
         textPositionX = x;
     }
@@ -644,11 +653,12 @@ void Surface::drawTextCentered(
     ); // maybe it should take in account the bounding box height
     int16_t textPositionY;
     if (verticallyCentered) {
-        if (h == (uint16_t) -1)
+        if (h == (uint16_t) -1) {
             textPositionY = y + (double) this->getHeight() * 0.5 -
                             (double) textHeight * 0.5;
-        else
+        } else {
             textPositionY = y + (double) h * 0.5 - (double) textHeight * 0.5;
+        }
     } else {
         textPositionY = y;
     }

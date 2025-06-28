@@ -31,9 +31,10 @@ void Radio::render() {
         COLOR_DARK
     );
 
-    if (m_state)
+    if (m_state) {
         m_surface
             ->fillRoundRect(4, 4, m_width - 8, m_height - 8, 10, COLOR_DARK);
+    }
 }
 
 void Radio::onReleased() {

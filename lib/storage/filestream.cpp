@@ -19,12 +19,13 @@ FileStream::~FileStream() {
 }
 
 void FileStream::open(const std::string& path, Mode mode) {
-    if (mode == READ)
+    if (mode == READ) {
         m_stream.open(path, std::ios::in | std::ios::binary);
-    else if (mode == WRITE)
+    } else if (mode == WRITE) {
         m_stream.open(path, std::ios::out | std::ios::binary);
-    else if (mode == APPEND)
+    } else if (mode == APPEND) {
         m_stream.open(path, std::ios::app | std::ios::binary);
+    }
 }
 
 void FileStream::close(void) {

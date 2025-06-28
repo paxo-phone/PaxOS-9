@@ -88,8 +88,9 @@ void mainLoop(void* data) {
             launcher = false;
         }
 
-        if (launcher)
+        if (launcher) {
             applications::launcher::update();
+        }
 
         if (libsystem::getDeviceMode() == libsystem::NORMAL &&
             !AppManager::isAnyVisibleApp(
@@ -164,10 +165,11 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        if (libsystem::getDeviceMode() == libsystem::SLEEP)
+        if (libsystem::getDeviceMode() == libsystem::SLEEP) {
             StandbyMode::sleepCycle();
-        else
+        } else {
             StandbyMode::wait();
+        }
 
         /*std::cout << "states: "
                   << "StandbyMode: " << (StandbyMode::state() ? "enabled" :
@@ -228,8 +230,9 @@ void init(void* data) {
     if (!storage::init()) {
         libsystem::registerBootError("Storage initialization error.");
         libsystem::registerBootError("Please check the SD Card.");
-    } else
+    } else {
         libsystem::log("[STARTUP]: Storage initialized");
+    }
 
 #ifdef ESP_PLATFORM
     backtrace_saver::init();

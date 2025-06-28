@@ -32,8 +32,9 @@ bool enabled = false;
 bool powerMode = true; // false is low, true is high
 
 void trigger() {
-    if (enabled == true)
+    if (enabled == true) {
         return;
+    }
     lastTrigger = os_millis();
 
     graphics::setBrightness(graphics::getBrightness());

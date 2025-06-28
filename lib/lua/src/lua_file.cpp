@@ -1028,8 +1028,9 @@ void LuaFile::load() {
                              try {
                                  auto app = AppManager::get(name);
                                  if (app->luaInstance != nullptr &&
-                                     app->luaInstance.get() != this)
+                                     app->luaInstance.get() != this) {
                                      app->kill();
+                                 }
                              } catch (std::runtime_error& e) {
                                  std::cerr << "Erreur: " << e.what()
                                            << std::endl;
@@ -1206,8 +1207,9 @@ void LuaFile::runBackground(std::vector<std::string> arg) {
 
 void LuaFile::wakeup(std::vector<std::string> arg) {
     sol::protected_function func = lua["wakeup"];
-    if (!func.valid())
+    if (!func.valid()) {
         return;
+    }
 
     lua["wakeup"](arg);
 }
@@ -1216,8 +1218,9 @@ void LuaFile::stop(std::vector<std::string> arg) {
     const sol::protected_function func =
         lua.get<sol::protected_function>("quit");
 
-    if (!func.valid())
+    if (!func.valid()) {
         return;
+    }
 
     lua["quit"](arg);
 }

@@ -379,10 +379,11 @@ struct BitWriter {
             auto oneByte = uint8_t(buffer.data >> buffer.numBits);
             output(oneByte);
 
-            if (oneByte == 0xFF) // 0xFF has a special meaning for JPEGs (it's a
-                                 // block marker)
+            if (oneByte == 0xFF) { // 0xFF has a special meaning for JPEGs (it's
+                                   // a block marker)
                 output(0); // therefore pad a zero to indicate "nope, this one
                            // ain't a marker, it's just a coincidence"
+            }
 
             // note: I don't clear those written bits, therefore buffer.bits may
             // contain garbage in the high bits
@@ -415,8 +416,9 @@ struct BitWriter {
     // write an array of bytes
     template <typename T, int Size>
     BitWriter& operator<<(T (&manyBytes)[Size]) {
-        for (auto c : manyBytes)
+        for (auto c : manyBytes) {
             output(c);
+        }
         return *this;
     }
 
@@ -441,11 +443,13 @@ template <typename Number> Number minimum(Number value, Number maximum) {
 // restrict a value to the interval [minimum, maximum]
 template <typename Number, typename Limit>
 Number clamp(Number value, Limit minValue, Limit maxValue) {
-    if (value <= minValue)
+    if (value <= minValue) {
         return minValue; // never smaller than the minimum
-    if (value >= maxValue)
+    }
+    if (value >= maxValue) {
         return maxValue; // never bigger  than the maximum
-    return value;        // value was inside interval, keep it
+    }
+    return value; // value was inside interval, keep it
 }
 
 // convert from RGB to YCbCr, constants are similar to ITU-R, see
@@ -535,15 +539,18 @@ int16_t encodeBlock(
     auto block64 = (float*) block;
 
     // DCT: rows
-    for (auto offset = 0; offset < 8; offset++)
+    for (auto offset = 0; offset < 8; offset++) {
         DCT(block64 + offset * 8, 1);
+    }
     // DCT: columns
-    for (auto offset = 0; offset < 8; offset++)
+    for (auto offset = 0; offset < 8; offset++) {
         DCT(block64 + offset * 1, 8);
+    }
 
     // scale
-    for (auto i = 0; i < 8 * 8; i++)
+    for (auto i = 0; i < 8 * 8; i++) {
         block64[i] *= scaled[i];
+    }
 
     // encode DC (the first coefficient is the "average color" of the 8x8 block)
     auto DC =
@@ -563,15 +570,16 @@ int16_t encodeBlock(
             int(value + (value >= 0 ? +0.5f : -0.5f)
             ); // C++11's nearbyint() achieves a similar effect
         // remember offset of last non-zero coefficient
-        if (quantized[i] != 0)
+        if (quantized[i] != 0) {
             posNonZero = i;
+        }
     }
 
     // same "average color" as previous block ?
     auto diff = DC - lastDC;
-    if (diff == 0)
+    if (diff == 0) {
         writer << huffmanDC[0x00]; // yes, write a special short symbol
-    else {
+    } else {
         auto bits = codewords[diff]; // nope, encode the difference to previous
                                      // block's average color
         writer << huffmanDC[bits.numBits] << bits;
@@ -606,8 +614,9 @@ int16_t encodeBlock(
     }
 
     // send end-of-block code (0x00), only needed if there are trailing zeros
-    if (posNonZero < 8 * 8 - 1) // = 63
+    if (posNonZero < 8 * 8 - 1) { // = 63
         writer << huffmanAC[0x00];
+    }
 
     return DC;
 }
@@ -623,9 +632,10 @@ void generateHuffmanTable(
     for (auto numBits = 1; numBits <= 16; numBits++) {
         // ... and each code of these bitsizes
         for (auto i = 0; i < numCodes[numBits - 1];
-             i++) // note: numCodes array starts at zero, but smallest bitsize
-                  // is 1
+             i++) { // note: numCodes array starts at zero, but smallest bitsize
+                    // is 1
             result[*values++] = BitCode(huffmanCode++, numBits);
+        }
 
         // next Huffman code needs to be one bit wider
         huffmanCode <<= 1;
@@ -644,11 +654,13 @@ bool writeJpeg(
     const char* comment
 ) {
     // reject invalid pointers
-    if (output == nullptr || pixels_ == nullptr)
+    if (output == nullptr || pixels_ == nullptr) {
         return false;
+    }
     // check image format
-    if (width == 0 || height == 0)
+    if (width == 0 || height == 0) {
         return false;
+    }
 
     // number of components
     const auto numComponents = isRGB ? 3 : 1;
@@ -660,8 +672,9 @@ bool writeJpeg(
 
     // grayscale images can't be downsampled (because there are no Cb + Cr
     // channels)
-    if (!isRGB)
+    if (!isRGB) {
         downsample = false;
+    }
 
     // wrapper for all output operations
     BitWriter bitWriter(output);
@@ -699,8 +712,9 @@ bool writeJpeg(
     if (comment != nullptr) {
         // look for zero terminator
         auto length = 0; // = strlen(comment);
-        while (comment[length] != 0)
+        while (comment[length] != 0) {
             length++;
+        }
 
         // write COM marker
         bitWriter.addMarker(
@@ -709,8 +723,9 @@ bool writeJpeg(
         ); // block size is number of bytes (without zero terminator) + 2 bytes
            // for this length field
         // ... and write the comment itself
-        for (auto i = 0; i < length; i++)
+        for (auto i = 0; i < length; i++) {
             bitWriter << comment[i];
+        }
     }
 
     // ////////////////////////////////////////
@@ -742,9 +757,10 @@ bool writeJpeg(
        // each table has 64 entries and is preceded by an ID byte
 
     bitWriter << 0x00 << quantLuminance; // first  quantization table
-    if (isRGB)
+    if (isRGB) {
         bitWriter << 0x01 << quantChrominance; // second quantization table,
                                                // only relevant for color images
+    }
 
     // ////////////////////////////////////////
     // write image infos (SOF0 - start of frame)
@@ -763,7 +779,7 @@ bool writeJpeg(
     // sampling and quantization tables for each component
     bitWriter << numComponents; // 1 component (grayscale, Y only) or 3
                                 // components (Y,Cb,Cr)
-    for (auto id = 1; id <= numComponents; id++)
+    for (auto id = 1; id <= numComponents; id++) {
         bitWriter
             << id // component ID (Y=1, Cb=2, Cr=3)
             // bitmasks for sampling: highest 4 bits: horizontal, lowest 4 bits:
@@ -772,6 +788,7 @@ bool writeJpeg(
                ) // 0x11 is default YCbCr 4:4:4 and 0x22 stands for YCbCr 4:2:0
             << (id == 1 ? 0 : 1
                ); // use quantization table 0 for Y, table 1 for Cb and Cr
+    }
 
     // ////////////////////////////////////////
     // Huffman tables
@@ -843,12 +860,13 @@ bool writeJpeg(
 
     // assign Huffman tables to each component
     bitWriter << numComponents;
-    for (auto id = 1; id <= numComponents; id++)
+    for (auto id = 1; id <= numComponents; id++) {
         // highest 4 bits: DC Huffman table, lowest 4 bits: AC Huffman table
         bitWriter
             << id
             << (id == 1 ? 0x00 : 0x11
                ); // Y: tables 0 for DC and AC; Cb + Cr: tables 1 for DC and AC
+    }
 
     // constant values for our baseline JPEGs (which have a single sequential
     // scan)
@@ -941,15 +959,15 @@ bool writeJpeg(
     float Y[8][8], Cb[8][8], Cr[8][8];
 
     for (auto mcuY = 0; mcuY < height;
-         mcuY += mcuSize) // each step is either 8 or 16 (=mcuSize)
+         mcuY += mcuSize) { // each step is either 8 or 16 (=mcuSize)
         for (auto mcuX = 0; mcuX < width; mcuX += mcuSize) {
             // YCbCr 4:4:4 format: each MCU is a 8x8 block - the same applies to
             // grayscale images, too YCbCr 4:2:0 format: each MCU represents a
             // 16x16 block, stored as 4x 8x8 Y-blocks plus 1x 8x8 Cb and 1x 8x8
             // Cr block)
             for (auto blockY = 0; blockY < mcuSize;
-                 blockY +=
-                 8) // iterate once (YCbCr444 and grayscale) or twice (YCbCr420)
+                 blockY += 8) { // iterate once (YCbCr444 and grayscale) or
+                                // twice (YCbCr420)
                 for (auto blockX = 0; blockX < mcuSize; blockX += 8) {
                     // now we finally have an 8x8 block ...
                     for (auto deltaY = 0; deltaY < 8; deltaY++) {
@@ -966,8 +984,9 @@ bool writeJpeg(
                                 row * int(width) +
                                 column; // the cast ensures that we don't run
                                         // into multiplication overflows
-                            if (column < maxWidth)
+                            if (column < maxWidth) {
                                 column++;
+                            }
 
                             // grayscale images have solely a Y channel which
                             // can be easily derived from the input pixel by
@@ -1013,16 +1032,18 @@ bool writeJpeg(
                     );
                     // Cb and Cr are encoded about 50 lines below
                 }
+            }
 
             // grayscale images don't need any Cb and Cr information
-            if (!isRGB)
+            if (!isRGB) {
                 continue;
+            }
 
             // ////////////////////////////////////////
             // the following lines are only relevant for YCbCr420:
             // average/downsample chrominance of four pixels while respecting
             // the image borders
-            if (downsample)
+            if (downsample) {
                 for (short deltaY = 7; downsample && deltaY >= 0;
                      deltaY--) // iterating loop in reverse increases cache read
                                // efficiency
@@ -1087,6 +1108,7 @@ bool writeJpeg(
                         }
                     }
                 } // end of YCbCr420 code for Cb and Cr
+            }
 
             // encode Cb and Cr
             lastCbDC = encodeBlock(
@@ -1108,6 +1130,7 @@ bool writeJpeg(
                 codewords
             );
         }
+    }
 
     bitWriter.flush(); // now image is completely encoded, write any bits still
                        // left in the buffer

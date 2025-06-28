@@ -60,12 +60,15 @@ int hex_to_int(const std::string& s) {
 }
 
 int hexCharToInt(char c) {
-    if (c >= '0' && c <= '9')
+    if (c >= '0' && c <= '9') {
         return c - '0';
-    if (c >= 'a' && c <= 'f')
+    }
+    if (c >= 'a' && c <= 'f') {
         return c - 'a' + 10;
-    if (c >= 'A' && c <= 'F')
+    }
+    if (c >= 'A' && c <= 'F') {
         return c - 'A' + 10;
+    }
     throw std::invalid_argument("Invalid hex character");
 }
 
@@ -208,8 +211,9 @@ PDU decodePDU(std::string pdu) {
             // std::cout << "Message unicode: " << Message << std::endl;
 
             text = latin1HexToUtf8(Message);
-        } else
+        } else {
             text = decodeGSM7bit(Message);
+        }
     } else {
         Message = hex_to_text(Message);
 

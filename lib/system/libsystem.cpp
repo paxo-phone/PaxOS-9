@@ -307,8 +307,9 @@ void libsystem::paxoConfig::setBrightness(int16_t brightness, bool save) {
 }
 
 uint8_t libsystem::paxoConfig::getBrightness() {
-    if (systemConfig.get()->has("settings.brightness"))
+    if (systemConfig.get()->has("settings.brightness")) {
         return systemConfig.get()->get<uint8_t>("settings.brightness");
+    }
     return 0;
 }
 
@@ -321,8 +322,9 @@ void libsystem::paxoConfig::setStandBySleepTime(uint64_t os_millis, bool save) {
 }
 
 uint64_t libsystem::paxoConfig::getStandBySleepTime() {
-    if (systemConfig.get()->has("settings.sleeptime"))
+    if (systemConfig.get()->has("settings.sleeptime")) {
         return systemConfig.get()->get<uint64_t>("settings.sleeptime");
+    }
     return 0;
 
     //    return StandbyMode::getSleepTime();
@@ -353,30 +355,33 @@ bool libsystem::paxoConfig::connectWifi(std::string SSID, std::string passwd) {
 }
 
 color_t libsystem::paxoConfig::getBackgroundColor() {
-    if (systemConfig.get()->has("settings.color.background"))
+    if (systemConfig.get()->has("settings.color.background")) {
         return static_cast<color_t>(
             systemConfig.get()->get<uint16_t>("settings.color.background")
         );
-    else
+    } else {
         return COLOR_WHITE;
+    }
 }
 
 color_t libsystem::paxoConfig::getTextColor() {
-    if (systemConfig.get()->has("settings.color.text"))
+    if (systemConfig.get()->has("settings.color.text")) {
         return static_cast<color_t>(
             systemConfig.get()->get<uint16_t>("settings.color.text")
         );
-    else
+    } else {
         return COLOR_BLACK;
+    }
 }
 
 color_t libsystem::paxoConfig::getBorderColor() {
-    if (systemConfig.get()->has("settings.color.border"))
+    if (systemConfig.get()->has("settings.color.border")) {
         return static_cast<color_t>(
             systemConfig.get()->get<uint16_t>("settings.color.border")
         );
-    else
+    } else {
         return COLOR_BLACK;
+    }
 }
 
 void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save) {

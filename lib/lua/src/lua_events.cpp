@@ -58,10 +58,11 @@ sol::table LuaTime::get(std::string format) {
     // Remplir le tableau avec des nombres
     for (int i = 0; i < result.size(); i++) {
         int index = findIndex(identifiers, result[i]);
-        if (index != -1)
+        if (index != -1) {
             array[i + 1] = date[index];
-        else
+        } else {
             return lua->lua.create_table();
+        }
     }
 
     // Retourner le tableau Lua
@@ -101,8 +102,9 @@ int LuaTimeInterval::getId() {
 
 void LuaTimeInterval::call() {
     try {
-        if (func)
+        if (func) {
             func();
+        }
     } catch (const sol::error& e) {
         // Handle Solidity specific errors
         std::cerr << "Sol error: " << e.what() << std::endl;
@@ -152,8 +154,9 @@ void LuaTimeTimeout::call() {
 }
 
 LuaTimeTimeout::~LuaTimeTimeout() {
-    if (!done)
+    if (!done) {
         lua->eventHandler.removeTimeout(id);
+    }
 }
 
 void LuaTime::update() {
@@ -205,8 +208,10 @@ void LuaTime::removeTimeout(int id) {
 }
 
 LuaTime::~LuaTime() {
-    for (int i = 0; i < intervals.size(); i++)
+    for (int i = 0; i < intervals.size(); i++) {
         delete intervals[i];
-    for (int i = 0; i < timeouts.size(); i++)
+    }
+    for (int i = 0; i < timeouts.size(); i++) {
         delete timeouts[i];
+    }
 }

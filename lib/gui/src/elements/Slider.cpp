@@ -26,10 +26,11 @@ Slider::Slider(
     m_maxValue = maxValue;
     m_borderSize = 2;
     m_borderRadius = m_height / 2;
-    if (defaultValue >= minValue && defaultValue <= maxValue)
+    if (defaultValue >= minValue && defaultValue <= maxValue) {
         m_Value = defaultValue;
-    else
+    } else {
         m_Value = minValue;
+    }
     m_borderColor = graphics::constPackRGB565(217, 217, 217);
     ;
     m_backgroundColor = m_borderColor;
@@ -62,12 +63,13 @@ uint16_t Slider::getMaxValue() {
 }
 
 void Slider::setValue(uint16_t value) {
-    if (value > m_maxValue)
+    if (value > m_maxValue) {
         m_Value = m_maxValue;
-    else if (value < m_minValue)
+    } else if (value < m_minValue) {
         m_Value = m_minValue;
-    else
+    } else {
         m_Value = value;
+    }
     localGraphicalUpdate();
 }
 
@@ -155,8 +157,9 @@ void Slider::render() {
     if (m_displayValue) {
         int x = 0;
         std::string str = std::to_string(m_Value);
-        if (m_isPercentage)
+        if (m_isPercentage) {
             str = str + "%";
+        }
         const uint16_t textWidth =
             this->getAndSetSurface()->m_sprite.textWidth(str.c_str());
         const uint16_t textHeight = this->getAndSetSurface()->getTextHeight();
