@@ -48,8 +48,8 @@ find_source_files() {
         find_args+=(-name "$ext" -o)
     done
 
-    # Remove the last -o
-    unset find_args[-1]
+    # Remove the last -o from find_args
+    unset find_args[$((${#find_args[@]} - 1))]
 
     find . -type f \( "${find_args[@]}" \) | grep -v "/build/" | grep -v "/\.git/"
 }
