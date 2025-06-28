@@ -17,6 +17,7 @@ InsertNewlineAtEOF: true              # Ensure files end with newline (POSIX)
 # BRACES & BLOCKS
 BreakBeforeBraces: Attach             # { on same line as statement
 Cpp11BracedListStyle: true            # Modern C++ brace initialization style
+InsertBraces: true                    # Force braces on if/else/for/while single statements
 
 # Short constructs formatting
 AllowShortIfStatementsOnASingleLine: false     # Force if statements on multiple lines
