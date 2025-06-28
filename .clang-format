@@ -16,7 +16,7 @@ ColumnLimit: 100                        # Maximum line length
 InsertNewlineAtEOF: true              # Ensure files end with newline (POSIX)
 
 # BRACES & BLOCKS
-BreakBeforeBraces: Attach             # { on same line as statement
+BreakBeforeBraces: Allman
 Cpp11BracedListStyle: true            # Modern C++ brace initialization style
 InsertBraces: false
 RemoveBracesLLVM: true
