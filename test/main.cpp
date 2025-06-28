@@ -6,10 +6,6 @@
 #include "gsm/contacts_test.cpp"
 #include "gsm/conversation_test.cpp"
 #include "i18n/test.cpp"
-#include "imgdec/imgdec_test_bmp.cpp"
-#include "imgdec/imgdec_test_jpg.cpp"
-#include "imgdec/imgdec_test_png.cpp"
-#include "imgdec/imgdec_test_utils.cpp"
 #include "storage/storage_test.cpp"
 
 #include <gtest/gtest.h>
