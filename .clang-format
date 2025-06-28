@@ -37,13 +37,16 @@ InsertNewlineAtEOF: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: false
 BinPackArguments: false
-BinPackParameters: false
+BinPackParameters: true
 AllowShortLambdasOnASingleLine: Empty
 AllowShortBlocksOnASingleLine: Empty
 IndentWrappedFunctionNames: true
 ContinuationIndentWidth: 4
 BreakBeforeBinaryOperators: None
 AlignAfterOpenBracket: BlockIndent
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerIndentWidth: 4
+PackConstructorInitializers: BinPack
 
 # Pointers & References
 PointerAlignment: Left
