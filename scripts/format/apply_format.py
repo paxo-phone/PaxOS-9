@@ -14,7 +14,7 @@ def get_clang_format_path():
 
 
 def is_source_file(file):
-    return file.endswith('.c') or file.endswith('.cpp') or file.endswith('.h') or file.endswith('.hpp')
+    return file.endswith(".c") or file.endswith(".cpp") or file.endswith(".h") or file.endswith(".hpp")
 
 
 def get_files():
