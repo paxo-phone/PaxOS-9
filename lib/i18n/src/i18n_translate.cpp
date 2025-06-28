@@ -1,5 +1,6 @@
-#include "i18n_config.hpp"
 #include "i18n_translate.hpp"
+
+#include "i18n_config.hpp"
 
 #include <algorithm>
 #include <filesystem>

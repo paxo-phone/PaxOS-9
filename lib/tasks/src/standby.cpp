@@ -1,9 +1,10 @@
+#include "standby.hpp"
+
 #include "app.hpp"
 #include "gpio.hpp"
 #include "graphics.hpp"
 #include "gsm2.hpp"
 #include "hardware.hpp"
-#include "standby.hpp"
 
 #include <LovyanGFX.hpp>
 #include <clock.hpp>

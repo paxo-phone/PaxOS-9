@@ -1,5 +1,6 @@
-#include "gpio.hpp"
 #include "hardware.hpp"
+
+#include "gpio.hpp"
 
 #include <libsystem.hpp>
 

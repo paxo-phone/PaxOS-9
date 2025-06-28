@@ -1,7 +1,8 @@
+#include "lua_gui.hpp"
+
 #include "app.hpp"
 #include "libsystem.hpp"
 #include "lua_file.hpp"
-#include "lua_gui.hpp"
 
 #include <graphics.hpp>
 #include <threads.hpp>

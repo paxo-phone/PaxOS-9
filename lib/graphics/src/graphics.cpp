@@ -4,6 +4,7 @@
 //
 
 #include "graphics.hpp"
+
 #include "standby.hpp"
 
 #include <Surface.hpp>

@@ -1,5 +1,6 @@
-#include "CommandsManager.hpp"
 #include "SerialManager.hpp"
+
+#include "CommandsManager.hpp"
 
 #include <array>
 #include <cstddef>

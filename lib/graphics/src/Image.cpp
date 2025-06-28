@@ -3,6 +3,7 @@
 //
 
 #include "Image.hpp"
+
 #include "imgdec.hpp"
 
 #include <filestream.hpp>
