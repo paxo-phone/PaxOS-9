@@ -3,9 +3,8 @@
 
 #include "lua_widget.hpp"
 
-class LuaWindow : public LuaWidget
-{
-    public:
+class LuaWindow : public LuaWidget {
+  public:
     LuaWindow();
     static int delete_LuaWindow(LuaWindow* window);
 

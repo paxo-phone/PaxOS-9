@@ -1,12 +1,11 @@
 #ifndef LUA_JSON
 #define LUA_JSON
 
-#include <string>
 #include <json.hpp>
+#include <string>
 
-class LuaJson
-{
-public:
+class LuaJson {
+  public:
     LuaJson(std::string data);
     LuaJson(nlohmann::json& other);
 

@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-LuaWindow::LuaWindow()  
-{
+LuaWindow::LuaWindow() {
     widget = new gui::elements::Window();
     init(widget);
 }

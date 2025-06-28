@@ -110,9 +110,9 @@ void imgdec::encodeJpg(const uint8_t *rawData, uint32_t width, uint32_t height, 
     const auto quality = 90;       // compression quality: 0 = worst, 100 = best, 80 to 90 are most often used
     const bool downsample = false; // false = save as YCbCr444 JPEG (better quality), true = YCbCr420 (smaller file)
     const char *comment = "mms";   // arbitrary JPEG comment
-    
+
     std::cout << "ready to write: " << path << std::endl;
-    
+
     auto ok = TooJpeg::writeJpeg(myOutput, rawData, width, height, isRGB, quality, downsample, comment);
 
     myFile.close();

@@ -1,10 +1,10 @@
-#include <iostream>
-#include "graphics.hpp"
-#include "color.hpp"
 #include "Surface.hpp"
+#include "color.hpp"
+#include "graphics.hpp"
 
-int main(int argc, char **argv)
-{
+#include <iostream>
+
+int main(int argc, char** argv) {
     graphics::init();
 
     auto surface = graphics::Surface(480, 320);
@@ -12,8 +12,7 @@ int main(int argc, char **argv)
 
     int i = 0;
 
-    while (graphics::update())
-    {
+    while (graphics::update()) {
         graphics::clear();
 
         graphics::setColor(255, 0, 0);

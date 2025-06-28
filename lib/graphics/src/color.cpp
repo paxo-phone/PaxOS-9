@@ -7,8 +7,7 @@
 
 color_t COLOR_WHITE = 0xFFFF;
 
-color_t graphics::packRGB565(const uint8_t r, const uint8_t g, const uint8_t b)
-{
+color_t graphics::packRGB565(const uint8_t r, const uint8_t g, const uint8_t b) {
     uint16_t rgb = 0;
 
     rgb |= (r >> 3) << 11;
@@ -18,8 +17,7 @@ color_t graphics::packRGB565(const uint8_t r, const uint8_t g, const uint8_t b)
     return rgb;
 }
 
-void graphics::unpackRGB565(const color_t rgb, uint8_t* r, uint8_t* g, uint8_t* b)
-{
+void graphics::unpackRGB565(const color_t rgb, uint8_t* r, uint8_t* g, uint8_t* b) {
     // *r = (rgb >> 11) & 0x1F;
     // *r = (*r * 255) / 31; // Scale back to 8 bits
     //

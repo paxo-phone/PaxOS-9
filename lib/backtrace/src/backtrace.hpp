@@ -7,24 +7,24 @@
 #include <string>
 
 namespace backtrace_saver {
-    extern uint32_t backtraceEventId;
+extern uint32_t backtraceEventId;
 
-    extern backtrace_saver::re_restart_debug_t currentData; 
+extern backtrace_saver::re_restart_debug_t currentData;
 
-    extern bool backtraceSaved;
+extern bool backtraceSaved;
 
-    bool shouldSaveBacktrace();
+bool shouldSaveBacktrace();
 
-    bool isBacktraceEmpty();
+bool isBacktraceEmpty();
 
-    std::string getBacktraceMessage();
+std::string getBacktraceMessage();
 
-    backtrace_saver::re_restart_debug_t getCurrentBacktrace();
+backtrace_saver::re_restart_debug_t getCurrentBacktrace();
 
-    bool saveBacktrace();
+bool saveBacktrace();
 
-    void backtraceMessageGUI();
-}
+void backtraceMessageGUI();
+} // namespace backtrace_saver
 
 #endif
 

@@ -3,29 +3,24 @@
 
 #include "elements/Window.hpp"
 
-enum WINDOW_TYPE {
-    INFO, 
-    WARNING,
-    ERROR
-};
+enum WINDOW_TYPE { INFO, WARNING, ERROR };
 
 class GuiManager final {
-    private:
-       gui::elements::Window win;
-       GuiManager();
-       int showMessage(WINDOW_TYPE type, const std::string& msg );
+  private:
+    gui::elements::Window win;
+    GuiManager();
+    int showMessage(WINDOW_TYPE type, const std::string& msg);
 
-    
-    public:
-        static GuiManager& getInstance();
+  public:
+    static GuiManager& getInstance();
 
-        GuiManager(const GuiManager&) = delete;
-        GuiManager& operator=(const GuiManager&) = delete;
+    GuiManager(const GuiManager&) = delete;
+    GuiManager& operator=(const GuiManager&) = delete;
 
-        gui::elements::Window& getWindow() noexcept;
-        int showInfoMessage(const std::string& msg );
-        int showWarningMessage(const std::string& msg );
-        int showErrorMessage(const std::string& msg );
+    gui::elements::Window& getWindow() noexcept;
+    int showInfoMessage(const std::string& msg);
+    int showWarningMessage(const std::string& msg);
+    int showErrorMessage(const std::string& msg);
 };
 
 #endif

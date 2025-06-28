@@ -3,15 +3,13 @@
 
 #include "lua_widget.hpp"
 
-
 /**
  * Liste Verticale
  */
-class LuaVerticalList : public LuaWidget
-{
-    public:
+class LuaVerticalList : public LuaWidget {
+  public:
     LuaVerticalList(LuaWidget* parent, int x, int y, int width, int height);
-    
+
     void addChild(LuaWidget* widget);
     void setSpaceLine(int line);
     void setIndex(int i = 0);
@@ -22,22 +20,20 @@ class LuaVerticalList : public LuaWidget
     void setAutoSelect(bool autoSelect);
     void specificUpdate();
 
-
     void onSelect(sol::protected_function func);
 
-    protected:
-        VerticalList* widget = nullptr;
-        sol::protected_function onSelectFunc;
+  protected:
+    VerticalList* widget = nullptr;
+    sol::protected_function onSelectFunc;
 };
 
 /**
  * Liste Horizontale
  */
-class LuaHorizontalList : public LuaWidget
-{
-    public:
+class LuaHorizontalList : public LuaWidget {
+  public:
     LuaHorizontalList(LuaWidget* parent, int x, int y, int width, int height);
-    
+
     void addChild(LuaWidget* widget);
     void setSpaceLine(int line);
 

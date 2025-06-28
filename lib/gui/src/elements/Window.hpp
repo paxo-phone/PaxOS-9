@@ -7,20 +7,17 @@
 
 #include "../ElementBase.hpp"
 
-namespace gui::elements
-{
-    class Window final : public ElementBase
-    {
-    private:
+namespace gui::elements {
+class Window final : public ElementBase {
+  private:
+  public:
+    Window();
+    ~Window() override;
 
-    public:
-        Window();
-        ~Window() override;
+    static std::vector<Window*> windows;
 
-        static std::vector<Window*> windows;
+    void render() override;
+};
+} // namespace gui::elements
 
-        void render() override;
-    };
-} // gui::elements
-
-#endif //WINDOW_HPP
+#endif // WINDOW_HPP

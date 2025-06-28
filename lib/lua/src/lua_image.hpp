@@ -3,13 +3,12 @@
 
 #include "lua_widget.hpp"
 
-class LuaImage : public LuaWidget
-{
-    public:
-    LuaImage(LuaWidget* parent, storage::Path path, int x, int y, int width, int height, color_t background = COLOR_WHITE);
+class LuaImage : public LuaWidget {
+  public:
+    LuaImage(LuaWidget* parent, storage::Path path, int x, int y, int width, int height,
+             color_t background = COLOR_WHITE);
     void setTransparentColor(color_t color);
     Image* widget = nullptr;
 };
-
 
 #endif
