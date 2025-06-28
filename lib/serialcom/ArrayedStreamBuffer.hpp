@@ -30,7 +30,8 @@ namespace serialcom
 
         ~ArrayedStreamBuffer()
         {
-            if (this->stream && this->originalBuffer) this->stream->rdbuf(originalBuffer);
+            if (this->stream && this->originalBuffer)
+                this->stream->rdbuf(originalBuffer);
         }
 
         void installOnStream(std::ostream* stream)
@@ -42,7 +43,8 @@ namespace serialcom
 
         void flushBuffer()
         {
-            if (!this->stream || !this->originalBuffer) return;
+            if (!this->stream || !this->originalBuffer)
+                return;
             this->stream->rdbuf(originalBuffer);
             this->stream->write(buffer.data(), this->pptr() - this->pbase());
             this->stream->flush(); // Ensure it's flushed to output
@@ -66,7 +68,8 @@ namespace serialcom
                 Serial.flush();
             }
 #else
-            if (!this->stream || !this->originalBuffer) return;
+            if (!this->stream || !this->originalBuffer)
+                return;
             this->stream->rdbuf(originalBuffer);
             std::cout.write(log.c_str(), log.size());
             this->stream->rdbuf(this);
@@ -89,7 +92,8 @@ namespace serialcom
       private:
         int_type overflow(int_type ch) override
         {
-            if (!this->stream) return Base::overflow(ch);
+            if (!this->stream)
+                return Base::overflow(ch);
 
             // TODO: find a way to force flush on overflow without compromising an
             // eventual command log.

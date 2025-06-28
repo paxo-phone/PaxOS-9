@@ -21,12 +21,14 @@ namespace AppManager
         {
             requestAuth();
 
-            if (!auth) return;
+            if (!auth)
+                return;
         }
 
         app_state = background ? RUNNING_BACKGROUND : RUNNING;
 
-        if (!background) appStack.push_back(this);
+        if (!background)
+            appStack.push_back(this);
 
         luaInstance = std::make_shared<LuaFile>(path, manifest);
         luaInstance->app = this;
@@ -64,7 +66,8 @@ namespace AppManager
 
     bool App::isVisible() const
     {
-        if (!isLoaded()) return false;
+        if (!isLoaded())
+            return false;
 
         return appStack.back() == this;
     }
@@ -118,7 +121,8 @@ namespace AppManager
             win.updateAll();
             eventHandlerApp.update();
 
-            if (hardware::getHomeButton()) break;
+            if (hardware::getHomeButton())
+                break;
 
             if (btn->isTouched())
             {
@@ -164,7 +168,8 @@ namespace AppManager
 
                 // Store errors
                 app->errors = std::string(description);
-                if (maybe_exception) app->errors += ": " + std::string(maybe_exception->what());
+                if (maybe_exception)
+                    app->errors += ": " + std::string(maybe_exception->what());
 
                 // Stop the app
                 app->app_state = App::AppState::NOT_RUNNING;
@@ -195,7 +200,8 @@ namespace AppManager
         while (!hardware::getHomeButton()) // TODO: asynchronize this
         {
             win.updateAll();
-            if (btn->isTouched()) return 0;
+            if (btn->isTouched())
+                return 0;
         }
 
         return 0;
@@ -293,9 +299,11 @@ namespace AppManager
             else
                 app->visible = true;
 
-            if (manifest["name"].is_string()) app->name = manifest["name"];
+            if (manifest["name"].is_string())
+                app->name = manifest["name"];
 
-            if (manifest["background"].is_boolean()) app->background = manifest["background"];
+            if (manifest["background"].is_boolean())
+                app->background = manifest["background"];
 
             if (manifest["subdir"].is_string()) // todo, restrict only for subdirs
             {
@@ -315,7 +323,8 @@ namespace AppManager
 
             if (manifest["autorun"].is_boolean())
             {
-                if (manifest["autorun"] && app->background) app.get()->run();
+                if (manifest["autorun"] && app->background)
+                    app.get()->run();
             }
         }
     }
@@ -343,7 +352,8 @@ namespace AppManager
         {
             if (app->background == false) // app is not in background
             {
-                if (app->isRunning()) app->luaInstance->loop();
+                if (app->isRunning())
+                    app->luaInstance->loop();
             }
         }
 
@@ -407,7 +417,8 @@ namespace AppManager
     std::shared_ptr<App> get(const std::string& appName)
     {
         for (const auto& app : AppManager::appList)
-            if (app->fullName == appName) return app;
+            if (app->fullName == appName)
+                return app;
 
         libsystem::log("App not found: " + appName);
         return nullptr;
@@ -415,7 +426,8 @@ namespace AppManager
 
     std::shared_ptr<App> get(const uint8_t index)
     {
-        if (index < appList.size()) return appList[index];
+        if (index < appList.size())
+            return appList[index];
         libsystem::log("App index out of range");
         return nullptr;
     }
@@ -423,7 +435,8 @@ namespace AppManager
     std::shared_ptr<App> get(const lua_State* L)
     {
         for (const auto& app : appList)
-            if (app->luaInstance != nullptr && app->luaInstance->lua.lua_state() == L) return app;
+            if (app->luaInstance != nullptr && app->luaInstance->lua.lua_state() == L)
+                return app;
         libsystem::log("App not found for given lua_State instance");
         return nullptr;
     }
@@ -439,7 +452,8 @@ namespace AppManager
             }
         );
 
-        if (it != appList.end()) return *it;
+        if (it != appList.end())
+            return *it;
 
         libsystem::log("App not found for given sol::state instance");
         return nullptr;
@@ -461,7 +475,8 @@ namespace AppManager
             }
         );
 
-        if (it != appList.end()) return *it;
+        if (it != appList.end())
+            return *it;
 
         libsystem::log("App not found at path: " + path.str());
         return nullptr;
@@ -471,7 +486,8 @@ namespace AppManager
     {
         threadsync.lock();
         for (auto& app : appList)
-            if (app->luaInstance != nullptr && app->isRunning()) app->luaInstance->event_oncall();
+            if (app->luaInstance != nullptr && app->isRunning())
+                app->luaInstance->event_oncall();
         threadsync.unlock();
     }
 
@@ -563,7 +579,8 @@ namespace AppManager
                 Keyboard_manager::app = nullptr;
                 graphics::setScreenOrientation(graphics::PORTRAIT);
 
-                if (runcallback && callback) callback(result);
+                if (runcallback && callback)
+                    callback(result);
             }
         }
     } // namespace Keyboard_manager

@@ -36,7 +36,8 @@ namespace gui::elements
 
     void Input::widgetUpdate()
     {
-        if (m_clear->isTouched()) setText("");
+        if (m_clear->isTouched())
+            setText("");
     }
 
     void Input::setText(const std::string& text)
@@ -60,7 +61,8 @@ namespace gui::elements
     void Input::setPlaceHolder(const std::string& text)
     {
         this->m_placeHolder = text;
-        if (m_text->getText().length() == 0) m_text->setText(m_placeHolder);
+        if (m_text->getText().length() == 0)
+            m_text->setText(m_placeHolder);
 
         localGraphicalUpdate();
     }

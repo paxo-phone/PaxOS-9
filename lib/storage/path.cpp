@@ -112,7 +112,8 @@ namespace storage
         for (uint16_t i = 0; i < m_steps.size(); i++)
         {
             o += m_steps[i];
-            if (i != m_steps.size() - 1) o += "/";
+            if (i != m_steps.size() - 1)
+                o += "/";
             // o += SYSTEM_PATH_SEPARATOR;
         }
 
@@ -229,7 +230,8 @@ namespace storage
             pos++;
         }
 
-        if (!temp.empty()) m_steps.push_back(temp);
+        if (!temp.empty())
+            m_steps.push_back(temp);
 
         simplify();
     }
@@ -251,7 +253,8 @@ namespace storage
 
         for (const auto& entry : std::filesystem::directory_iterator(dirPath))
         {
-            if (onlyDirs && !entry.is_directory()) continue;
+            if (onlyDirs && !entry.is_directory())
+                continue;
 
             list.push_back(entry.path().filename().string());
         }
@@ -280,7 +283,8 @@ namespace storage
 
 #ifdef ESP_PLATFORM
         struct stat st;
-        if (stat(this->str().c_str(), &st) == 0) return true;
+        if (stat(this->str().c_str(), &st) == 0)
+            return true;
 
         return false;
 #endif
@@ -373,7 +377,8 @@ namespace storage
 #endif
 
 #ifdef ESP_PLATFORM
-        if (destinationPath.exists()) return false;
+        if (destinationPath.exists())
+            return false;
 
         if (this->isdir())
         {
@@ -382,7 +387,8 @@ namespace storage
                 Path newPath = destinationPath / entry;
                 Path oldPath = *this / entry;
 
-                if (!oldPath.copyTo(newPath)) return false;
+                if (!oldPath.copyTo(newPath))
+                    return false;
             }
             return true;
         }
@@ -449,7 +455,8 @@ namespace storage
     bool Path::remove(void) const
     {
         std::cout << "Remove action" << std::endl;
-        if (!this->exists()) return false;
+        if (!this->exists())
+            return false;
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
         return std::filesystem::remove(this->str());
 #endif
@@ -468,7 +475,8 @@ namespace storage
                 for (std::string child : children)
                 {
                     Path childPath = *this / child;
-                    if (!childPath.remove()) return false;
+                    if (!childPath.remove())
+                        return false;
                     // serialcom::SerialManager::sharedInstance->commandLog("Removing
                     // child " + child);
                     std::cout << "Removing child " << childPath.str() << std::endl;
@@ -530,13 +538,15 @@ namespace storage
 #endif
 
 #ifdef ESP_PLATFORM
-        if (!this->exists()) return false;
+        if (!this->exists())
+            return false;
 
         if (this->isfile())
         {
             // Copy single file
             FILE* source = fopen(this->str().c_str(), "rb");
-            if (!source) return false;
+            if (!source)
+                return false;
 
             FILE* dest = fopen(to.str().c_str(), "wb");
             if (!dest)
@@ -566,7 +576,8 @@ namespace storage
         else if (this->isdir())
         {
             // Create destination directory
-            if (!to.exists() && !to.newdir()) return false;
+            if (!to.exists() && !to.newdir())
+                return false;
 
             // Copy directory contents recursively
             std::vector<std::string> entries = this->listdir(false);

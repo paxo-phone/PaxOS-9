@@ -44,7 +44,8 @@ namespace backtrace_saver
         backtraceMessageStream << "backtrace: ";
         for (int i = 0; i < CONFIG_RESTART_DEBUG_STACK_DEPTH; i++)
         {
-            if (currentData.backtrace[i].first == 0) break;
+            if (currentData.backtrace[i].first == 0)
+                break;
             backtraceMessageStream << "0x" << std::hex << currentData.backtrace[i].first << ":0x"
                                    << std::hex << currentData.backtrace[i].second << " ";
         }
@@ -70,7 +71,8 @@ namespace backtrace_saver
 
     bool saveBacktrace()
     {
-        if (!shouldSaveBacktrace()) return false;
+        if (!shouldSaveBacktrace())
+            return false;
         if (!storage::Path("logs").exists() && !storage::Path("logs").newdir())
         {
             std::cout << "Couldn't create logs/ directory to save backtrace" << std::endl;
@@ -93,7 +95,8 @@ namespace backtrace_saver
 
         std::cout << "Backtrace saved to " << path.str() << std::endl;
 
-        if (backtraceEventId != -1) eventHandlerBack.removeEventListener(backtraceEventId);
+        if (backtraceEventId != -1)
+            eventHandlerBack.removeEventListener(backtraceEventId);
 
         return true;
     }
@@ -123,8 +126,10 @@ namespace backtrace_saver
         while (!hardware::getHomeButton()) // TODO: asynchronize this
         {
             win.updateAll();
-            if (quitButton->isTouched()) return;
-            if (printBacktraceButton->isTouched()) std::cout << getBacktraceMessage() << std::endl;
+            if (quitButton->isTouched())
+                return;
+            if (printBacktraceButton->isTouched())
+                std::cout << getBacktraceMessage() << std::endl;
         }
 
         return;

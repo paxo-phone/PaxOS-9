@@ -36,7 +36,8 @@ namespace hardware
                     delay(100);
                     pattern.erase(pattern.begin());
 
-                    if (pattern.size() == 0) hardware::setVibrator(false);
+                    if (pattern.size() == 0)
+                        hardware::setVibrator(false);
                 }
 
                 delay(1);

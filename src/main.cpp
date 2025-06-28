@@ -41,7 +41,8 @@ void mainLoop(void* data)
 {
     libsystem::log("[STARTUP]: run mainLoop");
 #ifdef ESP_PLATFORM
-    if (!backtrace_saver::isBacktraceEmpty()) backtrace_saver::backtraceMessageGUI();
+    if (!backtrace_saver::isBacktraceEmpty())
+        backtrace_saver::backtraceMessageGUI();
 
         // libsystem::setDeviceMode(libsystem::NORMAL);
 #endif
@@ -61,7 +62,8 @@ void mainLoop(void* data)
         {
             const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
 
-            if (oobeApp == nullptr) throw std::runtime_error("OOBE app not found.");
+            if (oobeApp == nullptr)
+                throw std::runtime_error("OOBE app not found.");
 
             oobeApp->run();
         }
@@ -87,7 +89,8 @@ void mainLoop(void* data)
             launcher = false;
         }
 
-        if (launcher) applications::launcher::update();
+        if (launcher)
+            applications::launcher::update();
 
         if (libsystem::getDeviceMode() == libsystem::NORMAL &&
             !AppManager::isAnyVisibleApp()) // si mode normal et pas d'app en cours

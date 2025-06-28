@@ -167,7 +167,8 @@ namespace serialcom
             serialManager->getInputCommand();
             if (serialManager->newData)
             {
-                if (CommandsManager::defaultInstance->shellMode) std::cout << std::endl;
+                if (CommandsManager::defaultInstance->shellMode)
+                    std::cout << std::endl;
                 Command newCommand = Command(serialManager->current_input);
                 serialManager->startCommandLog();
                 CommandsManager::defaultInstance->processCommand(newCommand);
@@ -206,7 +207,8 @@ namespace serialcom
             {
                 current_input[ndx] = rc;
                 ndx++;
-                if (ndx >= INPUT_MAX_SIZE) ndx = INPUT_MAX_SIZE - 1;
+                if (ndx >= INPUT_MAX_SIZE)
+                    ndx = INPUT_MAX_SIZE - 1;
             }
             else
             {

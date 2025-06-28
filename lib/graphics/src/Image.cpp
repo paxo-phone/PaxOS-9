@@ -27,7 +27,8 @@ std::shared_ptr<uint8_t[]> getFileData(storage::Path& path)
 
     storage::FileStream stream(path.str(), storage::Mode::READ);
 
-    if (!stream.isopen()) return data;
+    if (!stream.isopen())
+        return data;
 
     size_t i = 0;
     while (i < 2000) data.get()[i++] = stream.readchar();

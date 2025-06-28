@@ -101,7 +101,8 @@ namespace Contacts
     contact getContact(std::string name)
     {
         for (const auto& contact : contactList)
-            if (contact.name == name) return contact;
+            if (contact.name == name)
+                return contact;
 
         // Return an empty contact if no match is found
         return {"", ""};
@@ -110,7 +111,8 @@ namespace Contacts
     contact getByNumber(std::string number)
     {
         for (const auto& contact : contactList)
-            if (contact.phone == number) return contact;
+            if (contact.phone == number)
+                return contact;
 
         // Return an empty contact if no match is found
         return {"", ""};

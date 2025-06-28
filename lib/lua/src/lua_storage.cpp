@@ -50,8 +50,10 @@ std::vector<std::string> LuaStorage::listDir(std::string path)
 
 bool LuaStorage::legalPath(storage::Path path)
 {
-    if (!this->lua->perms.acces_files) return false;
-    if (path.m_steps[0] == "/" && !this->lua->perms.acces_files_root) return false;
+    if (!this->lua->perms.acces_files)
+        return false;
+    if (path.m_steps[0] == "/" && !this->lua->perms.acces_files_root)
+        return false;
 
     return true;
 }

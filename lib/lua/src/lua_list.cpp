@@ -47,7 +47,8 @@ void LuaVerticalList::onSelect(sol::protected_function func)
 void LuaVerticalList::select(int index)
 {
     this->widget->select(index);
-    if (onSelectFunc) onSelectFunc();
+    if (onSelectFunc)
+        onSelectFunc();
 }
 
 void LuaVerticalList::setSelectionColor(color_t color)

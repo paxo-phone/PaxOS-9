@@ -23,5 +23,6 @@ sol::table LuaCanvas::getTouch()
 
 void LuaCanvas::specificUpdate()
 {
-    if (widget->isFocused(true) && onTouchFunc) onTouchFunc(getTouch());
+    if (widget->isFocused(true) && onTouchFunc)
+        onTouchFunc(getTouch());
 }

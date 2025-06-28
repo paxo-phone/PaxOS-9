@@ -139,7 +139,8 @@ namespace graphics
 
     void Surface::pushSurface(Surface* surface, const int16_t x, const int16_t y)
     {
-        if (surface == nullptr) return;
+        if (surface == nullptr)
+            return;
 
         if (surface->m_transparent)
             surface->m_sprite.pushSprite(&m_sprite, x, y, surface->m_transparent_color);
@@ -284,7 +285,8 @@ namespace graphics
             storage::FileStream stream(image.getPath().str(), storage::Mode::READ);
             size_t size = stream.size();
 
-            if (!stream.isopen() || size == 0) return;
+            if (!stream.isopen() || size == 0)
+                return;
 
             std::cout << "Reading PNG...: " << size << std::endl;
             char* buffer = new char[size];
@@ -476,10 +478,14 @@ namespace graphics
     {
         if (font == ARIAL)
         {
-            if (fontSize == PT_8) return &ArialBold8ptFR;
-            if (fontSize == PT_12) return &ArialBold12ptFR;
-            if (fontSize == PT_16) return &Arial16ptFR;
-            if (fontSize == PT_24) return &Arial24ptFR;
+            if (fontSize == PT_8)
+                return &ArialBold8ptFR;
+            if (fontSize == PT_12)
+                return &ArialBold12ptFR;
+            if (fontSize == PT_16)
+                return &Arial16ptFR;
+            if (fontSize == PT_24)
+                return &Arial24ptFR;
         }
 
         return nullptr;
@@ -643,8 +649,10 @@ namespace graphics
 
     void Surface::setBuffer(void* buffer, int32_t w, int32_t h)
     {
-        if (w == -1) w = getWidth();
-        if (h == -1) h = getHeight();
+        if (w == -1)
+            w = getWidth();
+        if (h == -1)
+            h = getHeight();
 
         m_sprite.setBuffer(buffer, w, h, m_sprite.getColorDepth());
     }

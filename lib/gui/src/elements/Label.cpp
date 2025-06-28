@@ -206,7 +206,8 @@ namespace gui::elements
             }
         }
 
-        if (!currentLine.empty()) output.m_lines.push_back(currentLine);
+        if (!currentLine.empty())
+            output.m_lines.push_back(currentLine);
 
         return output;
     }
@@ -260,7 +261,8 @@ namespace gui::elements
         uint16_t out = getRadius() + getBorderSize() * 2 +
                        (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
 
-        if (allocatedSprite) m_surface = nullptr;
+        if (allocatedSprite)
+            m_surface = nullptr;
 
         return out;
     }
@@ -284,7 +286,9 @@ namespace gui::elements
     {
         m_cursorIndex = cursorIndex;
 
-        if (m_cursorIndex < 0) m_cursorIndex = 0;
-        if (m_cursorIndex > m_text.length()) m_cursorIndex = static_cast<int16_t>(m_text.length());
+        if (m_cursorIndex < 0)
+            m_cursorIndex = 0;
+        if (m_cursorIndex > m_text.length())
+            m_cursorIndex = static_cast<int16_t>(m_text.length());
     }
 } // namespace gui::elements

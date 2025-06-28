@@ -44,7 +44,8 @@ namespace gui::elements
 
     void Box::postRender()
     {
-        if (pressed) m_surface->drawRoundRect(0, 0, m_width, m_height, 3, COLOR_GREY);
+        if (pressed)
+            m_surface->drawRoundRect(0, 0, m_width, m_height, 3, COLOR_GREY);
     }
 
     void Box::onClick()

@@ -21,8 +21,9 @@ uint32_t LuaTime::monotonic()
 int findIndex(const std::vector<std::string>& vec, const std::string& target)
 {
     for (std::size_t i = 0; i < vec.size(); ++i)
-        if (vec[i] == target) return static_cast<int>(i); // Convertir en int si nécessaire
-    return -1; // Retourner -1 si la chaîne n'est pas trouvée
+        if (vec[i] == target)
+            return static_cast<int>(i); // Convertir en int si nécessaire
+    return -1;                          // Retourner -1 si la chaîne n'est pas trouvée
 }
 
 sol::table LuaTime::get(std::string format)
@@ -106,7 +107,8 @@ void LuaTimeInterval::call()
 {
     try
     {
-        if (func) func();
+        if (func)
+            func();
     }
     catch (const sol::error& e)
     {
@@ -165,7 +167,8 @@ void LuaTimeTimeout::call()
 
 LuaTimeTimeout::~LuaTimeTimeout()
 {
-    if (!done) lua->eventHandler.removeTimeout(id);
+    if (!done)
+        lua->eventHandler.removeTimeout(id);
 }
 
 void LuaTime::update()

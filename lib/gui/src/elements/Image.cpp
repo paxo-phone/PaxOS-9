@@ -41,7 +41,8 @@ namespace gui::ImagesList
         // Clear the background if it's a transparent image ?
         // I guess so ?
 
-        if (i.getType() != graphics::ImageType::BMP) img.surface->clear(backgroundColor);
+        if (i.getType() != graphics::ImageType::BMP)
+            img.surface->clear(backgroundColor);
 
         // printf("IMG--3-1\n");
         img.surface->drawImage(i, 0, 0, width, height);
@@ -93,7 +94,8 @@ namespace gui::elements
 
     void Image::render()
     {
-        if (m_isRendered == false) load(m_backgroundColor);
+        if (m_isRendered == false)
+            load(m_backgroundColor);
     }
 
     void Image::setTransparentColor(color_t color)

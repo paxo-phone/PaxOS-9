@@ -34,7 +34,8 @@ namespace StandbyMode
 
     void trigger()
     {
-        if (enabled == true) return;
+        if (enabled == true)
+            return;
         lastTrigger = os_millis();
 
         graphics::setBrightness(graphics::getBrightness());
@@ -44,7 +45,8 @@ namespace StandbyMode
     {
         lastPowerTrigger = os_millis();
 
-        if (powerMode == false /* && enabled == false*/) restorePower();
+        if (powerMode == false /* && enabled == false*/)
+            restorePower();
     }
 
     bool expired()

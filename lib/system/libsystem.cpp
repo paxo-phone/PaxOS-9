@@ -180,7 +180,8 @@ void libsystem::panic(const std::string& message, const bool restart)
 
 #endif
 
-    if (restart) libsystem::restart(true, 0, true);
+    if (restart)
+        libsystem::restart(true, 0, true);
 }
 
 void libsystem::log(const std::string& message)
@@ -230,10 +231,12 @@ void libsystem::displayBootErrors()
 
 void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBacktrace)
 {
-    if (timeout > 0) delay(timeout);
+    if (timeout > 0)
+        delay(timeout);
 
 #ifdef ESP_PLATFORM
-    if (saveBacktrace) throw Restart();
+    if (saveBacktrace)
+        throw Restart();
 
     esp_restart();
 #endif

@@ -77,7 +77,8 @@ void* custom_allocator(void* ud, void* ptr, size_t osize, size_t nsize)
     if (nsize == 0)
     {
         // Free the block
-        if (ptr != NULL) free(ptr);
+        if (ptr != NULL)
+            free(ptr);
         return NULL;
     }
     else
@@ -1199,7 +1200,8 @@ void LuaFile::runBackground(std::vector<std::string> arg)
 void LuaFile::wakeup(std::vector<std::string> arg)
 {
     sol::protected_function func = lua["wakeup"];
-    if (!func.valid()) return;
+    if (!func.valid())
+        return;
 
     lua["wakeup"](arg);
 }
@@ -1208,7 +1210,8 @@ void LuaFile::stop(std::vector<std::string> arg)
 {
     const sol::protected_function func = lua.get<sol::protected_function>("quit");
 
-    if (!func.valid()) return;
+    if (!func.valid())
+        return;
 
     lua["quit"](arg);
 }

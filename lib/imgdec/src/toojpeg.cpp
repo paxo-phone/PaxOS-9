@@ -590,9 +590,11 @@ namespace // anonymous namespace to hide local functions / constants / etc.
     template <typename Number, typename Limit>
     Number clamp(Number value, Limit minValue, Limit maxValue)
     {
-        if (value <= minValue) return minValue; // never smaller than the minimum
-        if (value >= maxValue) return maxValue; // never bigger  than the maximum
-        return value;                           // value was inside interval, keep it
+        if (value <= minValue)
+            return minValue; // never smaller than the minimum
+        if (value >= maxValue)
+            return maxValue; // never bigger  than the maximum
+        return value;        // value was inside interval, keep it
     }
 
     // convert from RGB to YCbCr, constants are similar to ITU-R, see
@@ -705,7 +707,8 @@ namespace // anonymous namespace to hide local functions / constants / etc.
                 int(value + (value >= 0 ? +0.5f : -0.5f)
                 ); // C++11's nearbyint() achieves a similar effect
             // remember offset of last non-zero coefficient
-            if (quantized[i] != 0) posNonZero = i;
+            if (quantized[i] != 0)
+                posNonZero = i;
         }
 
         // same "average color" as previous block ?
@@ -788,9 +791,11 @@ namespace TooJpeg
     )
     {
         // reject invalid pointers
-        if (output == nullptr || pixels_ == nullptr) return false;
+        if (output == nullptr || pixels_ == nullptr)
+            return false;
         // check image format
-        if (width == 0 || height == 0) return false;
+        if (width == 0 || height == 0)
+            return false;
 
         // number of components
         const auto numComponents = isRGB ? 3 : 1;
@@ -802,7 +807,8 @@ namespace TooJpeg
 
         // grayscale images can't be downsampled (because there are no Cb + Cr
         // channels)
-        if (!isRGB) downsample = false;
+        if (!isRGB)
+            downsample = false;
 
         // wrapper for all output operations
         BitWriter bitWriter(output);
@@ -1099,7 +1105,8 @@ namespace TooJpeg
                                 auto pixelPos =
                                     row * int(width) + column; // the cast ensures that we don't run
                                                                // into multiplication overflows
-                                if (column < maxWidth) column++;
+                                if (column < maxWidth)
+                                    column++;
 
                                 // grayscale images have solely a Y channel which
                                 // can be easily derived from the input pixel by
@@ -1149,7 +1156,8 @@ namespace TooJpeg
                 }
 
                 // grayscale images don't need any Cb and Cr information
-                if (!isRGB) continue;
+                if (!isRGB)
+                    continue;
 
                 // ////////////////////////////////////////
                 // the following lines are only relevant for YCbCr420:

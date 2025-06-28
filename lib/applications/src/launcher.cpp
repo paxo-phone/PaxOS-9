@@ -22,10 +22,14 @@ std::string getFormatedDate()
     int16_t month = Gsm::Time::getMonth();
     int16_t year = Gsm::Time::getYear();
 
-    if (day_ == -1) day_ = 1;
-    if (day == -1) day = 1;
-    if (month == -1) month = 1;
-    if (year == -1) year = 1970;
+    if (day_ == -1)
+        day_ = 1;
+    if (day == -1)
+        day = 1;
+    if (month == -1)
+        month = 1;
+    if (year == -1)
+        year = 1970;
 
     std::string dayName = daysOfWeek
         [(day += month < 3 ? year-- : year - 2,
@@ -42,13 +46,20 @@ std::string getBatteryIconFilename()
     const double batteryLevel =
         Gsm::getBatteryLevel(); // TODO: Replace with actual battery level calculation
 
-    if (batteryLevel < 0.2) return isCharging ? "battery_charging_full" : "battery_0_bar";
-    if (batteryLevel < 0.3) return isCharging ? "battery_charging_20" : "battery_1_bar";
-    if (batteryLevel < 0.5) return isCharging ? "battery_charging_30" : "battery_2_bar";
-    if (batteryLevel < 0.6) return isCharging ? "battery_charging_50" : "battery_3_bar";
-    if (batteryLevel < 0.7) return isCharging ? "battery_charging_60" : "battery_4_bar";
-    if (batteryLevel < 0.8) return isCharging ? "battery_charging_80" : "battery_5_bar";
-    if (batteryLevel < 0.9) return isCharging ? "battery_charging_90" : "battery_6_bar";
+    if (batteryLevel < 0.2)
+        return isCharging ? "battery_charging_full" : "battery_0_bar";
+    if (batteryLevel < 0.3)
+        return isCharging ? "battery_charging_20" : "battery_1_bar";
+    if (batteryLevel < 0.5)
+        return isCharging ? "battery_charging_30" : "battery_2_bar";
+    if (batteryLevel < 0.6)
+        return isCharging ? "battery_charging_50" : "battery_3_bar";
+    if (batteryLevel < 0.7)
+        return isCharging ? "battery_charging_60" : "battery_4_bar";
+    if (batteryLevel < 0.8)
+        return isCharging ? "battery_charging_80" : "battery_5_bar";
+    if (batteryLevel < 0.9)
+        return isCharging ? "battery_charging_90" : "battery_6_bar";
 
     return "battery_full";
 }
@@ -134,14 +145,16 @@ void applications::launcher::update()
             dateLabel->enable();
         }
 
-        if (flightModeSwitch->isTouched()) Gsm::setFlightMode(flightModeSwitch->getState());
+        if (flightModeSwitch->isTouched())
+            Gsm::setFlightMode(flightModeSwitch->getState());
     }
 
     // std::cout << "launcher::update 3" << std::endl;
 
     if (hardware::isCharging())
     {
-        if (chargingStartTime == 0) chargingStartTime = os_millis();
+        if (chargingStartTime == 0)
+            chargingStartTime = os_millis();
 
         if (chargingStartTime + 2000 > os_millis())
             chargingPopupBox->enable();
@@ -177,7 +190,8 @@ void applications::launcher::update()
 
     // Update, draw AND update touch events
     // printf("before\n");
-    if (launcherWindow != nullptr) launcherWindow->updateAll();
+    if (launcherWindow != nullptr)
+        launcherWindow->updateAll();
     // printf("after\n");
 
     // Check touch events
@@ -403,7 +417,8 @@ std::shared_ptr<AppManager::App> applications::launcher::getApp()
 
 void applications::launcher::free()
 {
-    if (!allocated) return;
+    if (!allocated)
+        return;
 
     if (launcherWindow != nullptr)
     {

@@ -69,7 +69,8 @@ namespace Conversations
 
         storage::Path parentPath = filePath / "../";
 
-        if (!parentPath.exists()) parentPath.newdir();
+        if (!parentPath.exists())
+            parentPath.newdir();
 
         nlohmann::json json;
         json["number"] = conv.number;

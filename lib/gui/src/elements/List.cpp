@@ -64,8 +64,10 @@ namespace gui::elements
                 barY = (float) (m_children[m_focusedIndex]->m_y +
                                 m_children[m_focusedIndex]->getHeight() - getHeight()) *
                        getHeight() / maxHeight;
-                if (barY < 0) barY = 0;
-                if (barY + barLen > getHeight()) barY = getHeight() - barLen;
+                if (barY < 0)
+                    barY = 0;
+                if (barY + barLen > getHeight())
+                    barY = getHeight() - barLen;
             }
             m_surface->fillRoundRect(getWidth() - 3, barY, 3, barLen, 1, COLOR_GREY);
         }
@@ -86,7 +88,8 @@ namespace gui::elements
     {
         if (index >= 0 && index < m_children.size())
         {
-            if (!m_autoSelect) m_focusedIndex = index;
+            if (!m_autoSelect)
+                m_focusedIndex = index;
         }
     }
 
@@ -106,7 +109,8 @@ namespace gui::elements
         {
             m_focusedIndex = index;
             ElementBase* oldSelection = this->getElementAt(m_oldFocusedIndex);
-            if (oldSelection != nullptr) oldSelection->setBackgroundColor(m_backgroundColor);
+            if (oldSelection != nullptr)
+                oldSelection->setBackgroundColor(m_backgroundColor);
 
             ElementBase* selection = this->getElementAt(index);
             if (selection != nullptr)
@@ -211,7 +215,8 @@ namespace gui::elements
                 minScroll = -m_children.front()->getHeight() / 2 - getHeight() / 2;
                 maxScroll =
                     m_children.back()->m_y + m_children.back()->getHeight() / 2 - getHeight() / 2;
-                if (maxScroll < 0) maxScroll = 0;
+                if (maxScroll < 0)
+                    maxScroll = 0;
             }
 
             if (m_verticalScroll - y < minScroll)
@@ -248,7 +253,8 @@ namespace gui::elements
         m_focusedElement = element;
         m_focusedIndex = focusedIndex;
 
-        if (m_autoSelect && m_focusedElement != nullptr) select(m_focusedIndex);
+        if (m_autoSelect && m_focusedElement != nullptr)
+            select(m_focusedIndex);
 
         localGraphicalUpdate();
     }
@@ -368,7 +374,8 @@ namespace gui::elements
         {
             m_focusedIndex = index;
             ElementBase* oldSelection = this->getElementAt(m_oldFocusedIndex);
-            if (oldSelection != nullptr) oldSelection->setBackgroundColor(m_backgroundColor);
+            if (oldSelection != nullptr)
+                oldSelection->setBackgroundColor(m_backgroundColor);
 
             ElementBase* selection = this->getElementAt(index);
             if (selection != nullptr)
@@ -446,7 +453,8 @@ namespace gui::elements
                 minScroll = -m_children.front()->getWidth() / 2 - getWidth() / 2;
                 maxScroll =
                     m_children.back()->m_x + m_children.back()->getWidth() / 2 - getWidth() / 2;
-                if (maxScroll < 0) maxScroll = 0;
+                if (maxScroll < 0)
+                    maxScroll = 0;
             }
 
             if (m_horizontalScroll - x < minScroll)
@@ -486,7 +494,8 @@ namespace gui::elements
         m_focusedElement = element;
         m_focusedIndex = focusedIndex;
 
-        if (m_autoSelect && m_focusedElement != nullptr) select(m_focusedIndex);
+        if (m_autoSelect && m_focusedElement != nullptr)
+            select(m_focusedIndex);
 
         localGraphicalUpdate();
     }

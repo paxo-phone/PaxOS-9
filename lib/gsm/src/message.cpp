@@ -8,7 +8,8 @@ namespace Message
     void loadMessages(const std::string& filePath, std::vector<Message>& messages)
     {
         std::ifstream file(filePath);
-        if (!file.is_open()) return;
+        if (!file.is_open())
+            return;
 
         std::string content(
             (std::istreambuf_iterator<char>(file)),
@@ -39,7 +40,8 @@ namespace Message
         }
 
         std::ofstream file(filePath);
-        if (!file.is_open()) return;
+        if (!file.is_open())
+            return;
 
         file << json.dump(4);
         file.close();

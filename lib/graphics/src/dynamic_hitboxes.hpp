@@ -969,11 +969,14 @@ static inline int map_input_char_to_index(char c)
 {
     char lower_c = std::tolower(c);
     // a-z -> 0-25
-    if (lower_c >= 'a' && lower_c <= 'z') return lower_c - 'a';
+    if (lower_c >= 'a' && lower_c <= 'z')
+        return lower_c - 'a';
     // space -> 26
-    if (c == ' ') return 26;
+    if (c == ' ')
+        return 26;
     // 0-9 -> 27
-    if (std::isdigit(c)) return 27;
+    if (std::isdigit(c))
+        return 27;
     // others -> 28
     return 28;
 }
@@ -1022,7 +1025,8 @@ void predict_next_char_probs(
     // Softmax to get probabilities
     float max_logit = output_logits[0];
     for (int k = 1; k < OUTPUT_VOCAB_SIZE; ++k)
-        if (output_logits[k] > max_logit) max_logit = output_logits[k];
+        if (output_logits[k] > max_logit)
+            max_logit = output_logits[k];
 
     float exp_sum = 0.0f;
     for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k)

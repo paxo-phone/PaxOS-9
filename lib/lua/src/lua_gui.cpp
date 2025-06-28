@@ -48,10 +48,13 @@ LuaImage* LuaGui::image(
 {
     storage::Path path_(path);
 
-    if (!this->lua->perms.acces_files) return nullptr;
-    if (path_.m_steps[0] == "/" && !this->lua->perms.acces_files_root) return nullptr;
+    if (!this->lua->perms.acces_files)
+        return nullptr;
+    if (path_.m_steps[0] == "/" && !this->lua->perms.acces_files_root)
+        return nullptr;
 
-    if (path_.m_steps[0] != "/") path_ = this->lua->directory / path_;
+    if (path_.m_steps[0] != "/")
+        path_ = this->lua->directory / path_;
 
     LuaImage* w = new LuaImage(parent, path_, x, y, width, height, background);
     widgets.push_back(w);
@@ -150,7 +153,8 @@ void LuaGui::del(LuaWidget* widget)
     if (lua->lua_time.running)
     {
         delete widget;
-        if (mainWindow == widget) mainWindow = nullptr;
+        if (mainWindow == widget)
+            mainWindow = nullptr;
         widget = nullptr;
     }
     else // auto enable async if not already done by lua
@@ -161,7 +165,8 @@ void LuaGui::del(LuaWidget* widget)
                     [](LuaWidget* widget, LuaWidget* mainWindow)
                     {
                         delete widget;
-                        if (mainWindow == widget) mainWindow = nullptr;
+                        if (mainWindow == widget)
+                            mainWindow = nullptr;
                         widget = nullptr;
                     }
                 ),
@@ -175,7 +180,8 @@ void LuaGui::del(LuaWidget* widget)
 
 void LuaGui::update()
 {
-    if (mainWindow != nullptr) mainWindow->update();
+    if (mainWindow != nullptr)
+        mainWindow->update();
 }
 
 std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText)

@@ -74,7 +74,8 @@ imgdec::IMGData imgdec::decodeHeader(const uint8_t* rawData)
 
         // If we reach the end of the loop without finding the SOF0 marker, it's
         // an error
-        if (i >= 2000) std::cerr << "Invalid JPEG file: SOF0 marker not found." << std::endl;
+        if (i >= 2000)
+            std::cerr << "Invalid JPEG file: SOF0 marker not found." << std::endl;
     }
     /*else
     {

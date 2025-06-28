@@ -32,7 +32,8 @@ namespace libsystem
             // Open file in binary mode (FileStream is always binary)
             openFileStream(m_path, storage::READ);
 
-            if (!checkFormat()) throw exceptions::RuntimeError("File is the wrong format.");
+            if (!checkFormat())
+                throw exceptions::RuntimeError("File is the wrong format.");
 
             parse();
 
@@ -231,7 +232,8 @@ namespace libsystem
 
     std::string FileConfig::getNamespacedKey(const std::string& key) const
     {
-        if (m_currentNode->getParent() == nullptr) return key;
+        if (m_currentNode->getParent() == nullptr)
+            return key;
 
         return m_currentNode->getPath() + "." + key;
     }
@@ -371,7 +373,8 @@ namespace libsystem
     {
         std::vector<std::string> output;
 
-        if (m_fileStream->readchar() != '[') throw std::invalid_argument("FileConfig List Error");
+        if (m_fileStream->readchar() != '[')
+            throw std::invalid_argument("FileConfig List Error");
 
         std::string lst;
         std::string var;
@@ -440,7 +443,8 @@ namespace libsystem
 
     std::string FileConfig::ValueNode::getPath()
     {
-        if (getParent() == nullptr) return m_key;
+        if (getParent() == nullptr)
+            return m_key;
 
         return getParent()->getPath() + "." + m_key;
     }
@@ -596,7 +600,8 @@ namespace libsystem
     {
         const auto it = m_values.find(key);
 
-        if (it == m_values.end()) throw exceptions::RuntimeError("Cannot find value.");
+        if (it == m_values.end())
+            throw exceptions::RuntimeError("Cannot find value.");
 
         return it->second;
     }
@@ -612,7 +617,8 @@ namespace libsystem
     {
         const auto it = m_namespaces.find(name);
 
-        if (it == m_namespaces.end()) throw exceptions::RuntimeError("Cannot find namespace.");
+        if (it == m_namespaces.end())
+            throw exceptions::RuntimeError("Cannot find namespace.");
 
         return it->second;
     }
@@ -661,6 +667,7 @@ namespace libsystem
         for (const auto& [fst, snd] : m_values) snd->write(fileStream);
 
         // Write end namespace OpCode, if not top-level namespace
-        if (getParent() != nullptr) fileStream->write(END_NAMESPACE);
+        if (getParent() != nullptr)
+            fileStream->write(END_NAMESPACE);
     }
 } // namespace libsystem

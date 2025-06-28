@@ -167,7 +167,8 @@ namespace gui::elements
         {
             int x = 0;
             std::string str = std::to_string(m_Value);
-            if (m_isPercentage) str = str + "%";
+            if (m_isPercentage)
+                str = str + "%";
             const uint16_t textWidth = this->getAndSetSurface()->m_sprite.textWidth(str.c_str());
             const uint16_t textHeight = this->getAndSetSurface()->getTextHeight();
             if (textWidth <= valueSize - 10)

@@ -97,7 +97,8 @@ int GuiManager::showMessage(WINDOW_TYPE type, const std::string& msg)
     while (!hardware::getHomeButton())
     {
         popup.updateAll();
-        if (btnOK->isTouched()) return 1;
+        if (btnOK->isTouched())
+            return 1;
     }
     return 1;
 }

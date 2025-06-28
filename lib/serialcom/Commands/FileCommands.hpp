@@ -605,7 +605,8 @@ namespace serialcom
 
                         // [Magic 3B][CmdID 8B][PayloadSize 2B] = 13B
                         constexpr size_t HEADER_PREFIX_LEN = 13;
-                        if (bufferView.size() < HEADER_PREFIX_LEN) continue;
+                        if (bufferView.size() < HEADER_PREFIX_LEN)
+                            continue;
 
                         // We have enough for the prefix, now read the expected data
                         // payload size.
@@ -617,7 +618,8 @@ namespace serialcom
                         const size_t totalPacketSize =
                             HEADER_PREFIX_LEN + METADATA_LEN + expectedDataSize;
 
-                        if (bufferView.size() < totalPacketSize) continue;
+                        if (bufferView.size() < totalPacketSize)
+                            continue;
 
                         packetView = bufferView.substr(0, totalPacketSize);
                         break;

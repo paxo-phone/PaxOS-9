@@ -36,39 +36,45 @@ namespace gui::elements
 
         void setBorderColor(color_t color)
         {
-            if (m_label == nullptr) return;
+            if (m_label == nullptr)
+                return;
 
             m_label->setBorderColor(color);
         }
         void setFontSize(uint16_t r)
         {
-            if (m_label == nullptr) return;
+            if (m_label == nullptr)
+                return;
 
             m_label->setFontSize(r);
         }
 
         void setBackgroundColor(color_t color)
         {
-            if (m_label == nullptr) return;
+            if (m_label == nullptr)
+                return;
 
             m_label->setBackgroundColor(color);
         }
 
         void setVerticalAlignment(Label::Alignement alignment)
         {
-            if (m_label == nullptr) return;
+            if (m_label == nullptr)
+                return;
 
             m_label->setVerticalAlignment(alignment);
         }
         void setHorizontalAlignment(Label::Alignement alignment)
         {
-            if (m_label == nullptr) return;
+            if (m_label == nullptr)
+                return;
 
             m_label->setHorizontalAlignment(alignment);
         }
         void setTextColor(color_t color)
         {
-            if (m_label == nullptr) return;
+            if (m_label == nullptr)
+                return;
 
             m_label->setTextColor(color);
         }

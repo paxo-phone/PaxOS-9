@@ -25,7 +25,8 @@ namespace gui::elements
 
         m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, 10, 2, COLOR_WHITE, COLOR_DARK);
 
-        if (m_state) m_surface->fillRoundRect(4, 4, m_width - 8, m_height - 8, 10, COLOR_DARK);
+        if (m_state)
+            m_surface->fillRoundRect(4, 4, m_width - 8, m_height - 8, 10, COLOR_DARK);
     }
 
     void Radio::onReleased()

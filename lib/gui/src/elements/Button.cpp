@@ -78,10 +78,13 @@ namespace gui::elements
         uint16_t space = (m_image != nullptr && m_label != nullptr) ? 10 : 0;
         uint16_t w = space;
 
-        if (m_image != nullptr) w += m_image->getWidth();
-        if (m_label != nullptr) w += m_label->getTextWidth();
+        if (m_image != nullptr)
+            w += m_image->getWidth();
+        if (m_label != nullptr)
+            w += m_label->getTextWidth();
 
-        if (m_image != nullptr) m_image->setX(getWidth() / 2 - w / 2);
+        if (m_image != nullptr)
+            m_image->setX(getWidth() / 2 - w / 2);
 
         if (m_label != nullptr)
         {

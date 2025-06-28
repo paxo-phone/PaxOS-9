@@ -99,7 +99,8 @@ namespace serialcom
 
         for (auto const& [key, val] : command_types_raw_strings)
         {
-            if (val.size() != command_size) continue;
+            if (val.size() != command_size)
+                continue;
 
             if (memcmp(command_type, val.c_str(), command_size) == 0)
             {
@@ -132,7 +133,8 @@ namespace serialcom
                 current_index++;
 
             // check if the input has ended
-            if (input[current_index] == '\0') break;
+            if (input[current_index] == '\0')
+                break;
 
             bool isUsingQuotes = false;
 

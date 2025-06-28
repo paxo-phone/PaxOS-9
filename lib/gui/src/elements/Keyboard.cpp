@@ -199,7 +199,8 @@ namespace gui::elements
             getLastTouchPosRel(&touchX, &touchY);
 
             const char pressedKey = getKey(touchX, touchY);
-            if (pressedKey == KEY_NULL) return;
+            if (pressedKey == KEY_NULL)
+                return;
 
             processKey(pressedKey);
         }
@@ -210,7 +211,8 @@ namespace gui::elements
             m_exit = true;
         }
 
-        if (m_confirmBox->isTouched()) m_exit = true;
+        if (m_confirmBox->isTouched())
+            m_exit = true;
 
         if (m_backspaceBox->isTouched())
         {
@@ -326,7 +328,8 @@ namespace gui::elements
     char Keyboard::getKey(const int16_t x, const int16_t y) const
     {
         // Check if the position is in the keyboard box
-        if (!(x >= 30 && x <= 450 && y >= 140 && y <= 300)) return KEY_NULL;
+        if (!(x >= 30 && x <= 450 && y >= 140 && y <= 300))
+            return KEY_NULL;
 
         int bestRow = -1;
         int bestColumn = -1;
@@ -388,7 +391,8 @@ namespace gui::elements
 
         for (uint8_t i = 0; i < keyCount; i++)
         {
-            if (static_cast<float>(x) >= boxX && static_cast<float>(x) <= boxX + keyWidth) return i;
+            if (static_cast<float>(x) >= boxX && static_cast<float>(x) <= boxX + keyWidth)
+                return i;
 
             boxX += keyWidth;
         }
@@ -467,7 +471,8 @@ namespace gui::elements
         char last1 = ' ', last2 = ' ', last3 = ' ';
         std::string alphabets;
         for (char c : m_buffer)
-            if (std::isalpha(static_cast<unsigned char>(c))) alphabets.push_back(c);
+            if (std::isalpha(static_cast<unsigned char>(c)))
+                alphabets.push_back(c);
 
         if (alphabets.size() >= 3)
         {
@@ -570,7 +575,8 @@ namespace gui::elements
             // Origin Touch : " + std::to_string(originTouchX) + ", " +
             // std::to_string(originTouchY) + ".");
 
-            if (m_trackpadTicks < UINT8_MAX) m_trackpadTicks++;
+            if (m_trackpadTicks < UINT8_MAX)
+                m_trackpadTicks++;
 
             if (isTrackpadActive())
             {
@@ -641,8 +647,10 @@ namespace gui::elements
 
     bool Keyboard::isPointInTrackpad(const int16_t x, const int16_t y) const
     {
-        if (x < 110 || x > 370) return false;
-        if (y <= 260 || y > 300) return false;
+        if (x < 110 || x > 370)
+            return false;
+        if (y <= 260 || y > 300)
+            return false;
 
         return true;
     }
@@ -664,8 +672,10 @@ namespace gui::elements
 
     void Keyboard::removeChar()
     {
-        if (m_buffer.empty()) return;
-        if (m_label->getCursorIndex() <= 0) return;
+        if (m_buffer.empty())
+            return;
+        if (m_label->getCursorIndex() <= 0)
+            return;
 
         m_buffer.erase(m_label->getCursorIndex() - 1, 1);
 

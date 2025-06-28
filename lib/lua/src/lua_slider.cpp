@@ -71,5 +71,6 @@ void LuaSlider::onChange(sol::protected_function func)
 
 void LuaSlider::specificUpdate()
 {
-    if (onChangeFunc && widget->hasChanged()) onChangeFunc();
+    if (onChangeFunc && widget->hasChanged())
+        onChangeFunc();
 }

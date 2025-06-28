@@ -527,7 +527,8 @@ namespace base64
     {
         typedef typename OutputBuffer::value_type output_value_type;
         static_assert(std::is_same_v<output_value_type, char> || std::is_same_v<output_value_type, signed char> || std::is_same_v<output_value_type, unsigned char> || std::is_same_v<output_value_type, std::byte>);
-        if (base64Text.empty()) return OutputBuffer();
+        if (base64Text.empty())
+            return OutputBuffer();
 
         if ((base64Text.size() & 3) != 0)
             throw std::runtime_error{"Invalid base64 encoded data - Size not divisible by 4"};

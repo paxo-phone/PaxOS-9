@@ -24,7 +24,8 @@ void EventHandler::update(std::function<bool()> forced_exit)
 {
     // Handle events
     for (auto& event : events)
-        if (event->condition->call()) event->callback->call();
+        if (event->condition->call())
+            event->callback->call();
 
     // Handle timeouts
     auto now = os_millis();
@@ -42,7 +43,8 @@ void EventHandler::update(std::function<bool()> forced_exit)
             ++it;
         }
 
-        if (forced_exit()) return;
+        if (forced_exit())
+            return;
     }
 
     // Handle intervals
@@ -67,7 +69,8 @@ void EventHandler::update(std::function<bool()> forced_exit)
                 }
             }
 
-            if (forced_exit()) return;
+            if (forced_exit())
+                return;
         }
     }
     catch (const std::exception& e)
@@ -152,11 +155,14 @@ uint32_t EventHandler::findAvailableId()
     {
         found = true;
         for (auto& event : events)
-            if (event->id == nextId) found = false;
+            if (event->id == nextId)
+                found = false;
         for (auto& timeout : timeouts)
-            if (timeout->id == nextId) found = false;
+            if (timeout->id == nextId)
+                found = false;
         for (auto& interval : intervals)
-            if (interval.id == nextId) found = false;
+            if (interval.id == nextId)
+                found = false;
 
         nextId++;
     }

@@ -72,7 +72,8 @@ namespace gui::elements
     void Canvas::drawPolygon(std::vector<std::pair<int16_t, int16_t>> vertices, color_t color)
     {
         StandbyMode::triggerPower();
-        if (vertices.empty()) return;
+        if (vertices.empty())
+            return;
 
         std::pair<int16_t, int16_t> firstPosition = vertices[0];
 
@@ -103,7 +104,8 @@ namespace gui::elements
     void Canvas::fillPolygon(std::vector<std::pair<int16_t, int16_t>> vertices, color_t color)
     {
         StandbyMode::triggerPower();
-        if (vertices.empty()) return;
+        if (vertices.empty())
+            return;
 
         for (std::pair<int16_t, int16_t> vertex : vertices)
         {
@@ -149,7 +151,8 @@ namespace gui::elements
                                                 the end of the vector */
                 ];
 
-                if (vertex1.second > vertex2.second) std::swap(vertex1, vertex2);
+                if (vertex1.second > vertex2.second)
+                    std::swap(vertex1, vertex2);
 
                 if (y >= vertex1.second && y < vertex2.second) // avoid division by zero
                 {
@@ -159,8 +162,10 @@ namespace gui::elements
                     uint16_t xIntersection = vertex1.first + (y - vertex1.second) *
                                                                  (vertex2.first - vertex1.first) /
                                                                  (vertex2.second - vertex1.second);
-                    if (xIntersection < minimumXIntersection) minimumXIntersection = xIntersection;
-                    if (xIntersection > maximumXIntersection) maximumXIntersection = xIntersection;
+                    if (xIntersection < minimumXIntersection)
+                        minimumXIntersection = xIntersection;
+                    if (xIntersection > maximumXIntersection)
+                        maximumXIntersection = xIntersection;
 
                     if (minimumXIntersection <= k_maximumXIntersection &&
                         maximumXIntersection >= k_minimumXIntersection)

@@ -264,9 +264,12 @@ namespace Gsm
         unsigned char byte = 0;
         auto charToVal = [](char c) -> unsigned char
         {
-            if (c >= '0' && c <= '9') return c - '0';
-            if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-            if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+            if (c >= '0' && c <= '9')
+                return c - '0';
+            if (c >= 'a' && c <= 'f')
+                return c - 'a' + 10;
+            if (c >= 'A' && c <= 'F')
+                return c - 'A' + 10;
             throw std::invalid_argument("Invalid hex char");
         };
         byte = (charToVal(c1) << 4) | charToVal(c2);
@@ -296,7 +299,8 @@ namespace Gsm
                 digit_char = data_hex[byte_idx * 2];
             if (digit_char == 'F' || digit_char == 'f')
             {
-                if (i == num_digits_to_read - 1 && (num_digits_to_read % 2 != 0)) continue;
+                if (i == num_digits_to_read - 1 && (num_digits_to_read % 2 != 0))
+                    continue;
             }
             result += digit_char;
         }
@@ -654,14 +658,16 @@ namespace Gsm
     )
     {
         std::string text = "";
-        if (num_septets <= 0 || packed_octets.empty()) return text;
+        if (num_septets <= 0 || packed_octets.empty())
+            return text;
 
         int current_octet_idx = 0;
         int bit_shift = 0;
 
         for (int i = 0; i < num_septets; ++i)
         {
-            if (current_octet_idx >= packed_octets.size()) break;
+            if (current_octet_idx >= packed_octets.size())
+                break;
             unsigned char current_septet;
 
             current_septet = (packed_octets[current_octet_idx] >> bit_shift);
@@ -684,7 +690,8 @@ namespace Gsm
 
             current_septet &= 0x7F;
 
-            if (i >= udh_septet_length) text += gsm7SeptetToUtf8(current_septet);
+            if (i >= udh_septet_length)
+                text += gsm7SeptetToUtf8(current_septet);
 
             bit_shift += 7;
             if (bit_shift >= 8)
@@ -743,11 +750,13 @@ namespace Gsm
             current_pos += 2;
             if (sca_len_octets > 0)
             {
-                if (current_pos + sca_len_octets * 2 > pdu_hex_string.length()) return false;
+                if (current_pos + sca_len_octets * 2 > pdu_hex_string.length())
+                    return false;
                 current_pos += sca_len_octets * 2;
             }
 
-            if (current_pos + 2 > pdu_hex_string.length()) return false;
+            if (current_pos + 2 > pdu_hex_string.length())
+                return false;
             unsigned char tpdu_type_octet =
                 hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
             current_pos += 2;
@@ -758,22 +767,27 @@ namespace Gsm
             {
                 result.type = SmsType::TEXT_SMS;
 
-                if (current_pos + 2 > pdu_hex_string.length()) return false;
+                if (current_pos + 2 > pdu_hex_string.length())
+                    return false;
                 int oa_len_digits =
                     hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
                 current_pos += 2;
-                if (current_pos + 2 > pdu_hex_string.length()) return false;
+                if (current_pos + 2 > pdu_hex_string.length())
+                    return false;
                 current_pos += 2;
                 int oa_addr_len_octets = (oa_len_digits + 1) / 2;
-                if (current_pos + oa_addr_len_octets * 2 > pdu_hex_string.length()) return false;
+                if (current_pos + oa_addr_len_octets * 2 > pdu_hex_string.length())
+                    return false;
                 std::string oa_hex = pdu_hex_string.substr(current_pos, oa_addr_len_octets * 2);
                 result.senderNumber = decodeSemiOctets(oa_hex, oa_len_digits);
                 current_pos += oa_addr_len_octets * 2;
 
-                if (current_pos + 2 > pdu_hex_string.length()) return false;
+                if (current_pos + 2 > pdu_hex_string.length())
+                    return false;
                 current_pos += 2;
 
-                if (current_pos + 2 > pdu_hex_string.length()) return false;
+                if (current_pos + 2 > pdu_hex_string.length())
+                    return false;
                 unsigned char tp_dcs =
                     hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
                 current_pos += 2;
@@ -829,12 +843,14 @@ namespace Gsm
                     return false;
                 }
 
-                if (current_pos + 7 * 2 > pdu_hex_string.length()) return false;
+                if (current_pos + 7 * 2 > pdu_hex_string.length())
+                    return false;
                 std::string scts_hex = pdu_hex_string.substr(current_pos, 7 * 2);
                 result.serviceCenterTimestamp = decodeSemiOctets(scts_hex, 14);
                 current_pos += 7 * 2;
 
-                if (current_pos + 2 > pdu_hex_string.length()) return false;
+                if (current_pos + 2 > pdu_hex_string.length())
+                    return false;
                 unsigned char tp_udl =
                     hexPairToByte(pdu_hex_string[current_pos], pdu_hex_string[current_pos + 1]);
                 current_pos += 2;
@@ -850,7 +866,8 @@ namespace Gsm
                 if (current_pos + ud_expected_octet_len * 2 > pdu_hex_string.length())
                 {
                     ud_expected_octet_len = (pdu_hex_string.length() - current_pos) / 2;
-                    if (ud_expected_octet_len < 0) ud_expected_octet_len = 0;
+                    if (ud_expected_octet_len < 0)
+                        ud_expected_octet_len = 0;
                     if (ud_expected_octet_len == 0)
                     {
                         result.messageContent = "";
@@ -876,10 +893,12 @@ namespace Gsm
                         {
                             for (int ie_pos = 1; ie_pos < udh_octet_len;)
                             {
-                                if (ie_pos + 1 >= udh_octet_len) break;
+                                if (ie_pos + 1 >= udh_octet_len)
+                                    break;
                                 unsigned char iei = ud_bytes[ie_pos];
                                 unsigned char iedl = ud_bytes[ie_pos + 1];
-                                if (ie_pos + 1 + iedl >= udh_octet_len) break;
+                                if (ie_pos + 1 + iedl >= udh_octet_len)
+                                    break;
 
                                 if (iei == 0x05 && iedl == 0x04)
                                 {
@@ -1021,7 +1040,8 @@ namespace Gsm
                         file2.close();
                     }
                 }
-                if (ExternalEvents::onNewMessage) ExternalEvents::onNewMessage();
+                if (ExternalEvents::onNewMessage)
+                    ExternalEvents::onNewMessage();
             }
 
             auto delete_req = std::make_shared<Request>();
@@ -1063,10 +1083,12 @@ namespace Gsm
 
             while (std::getline(ss_block, line, '\n'))
             {
-                if (!line.empty() && line.back() == '\r') line.pop_back();
+                if (!line.empty() && line.back() == '\r')
+                    line.pop_back();
                 line.erase(0, line.find_first_not_of(" \t"));
                 line.erase(line.find_last_not_of(" \t") + 1);
-                if (line.empty()) continue;
+                if (line.empty())
+                    continue;
 
                 if (line.rfind("+CMGR:", 0) == 0)
                 {
@@ -1112,10 +1134,12 @@ namespace Gsm
 
             while (std::getline(ss_block, line, '\n'))
             {
-                if (!line.empty() && line.back() == '\r') line.pop_back();
+                if (!line.empty() && line.back() == '\r')
+                    line.pop_back();
                 line.erase(0, line.find_first_not_of(" \t"));
                 line.erase(line.find_last_not_of(" \t") + 1);
-                if (line.empty()) continue;
+                if (line.empty())
+                    continue;
 
                 if (line.rfind("+CMGL:", 0) == 0)
                 {
@@ -1208,7 +1232,8 @@ namespace Gsm
                 std::stringstream ss(values);
                 char comma;
                 ss >> std::ws >> rssi >> std::ws >> comma >> std::ws >> ber;
-                if (!ss.fail() && comma == ',') success = true;
+                if (!ss.fail() && comma == ',')
+                    success = true;
             }
             if (success)
             {
@@ -1344,7 +1369,8 @@ namespace Gsm
 
             while (std::getline(ss_block, line, '\n'))
             {
-                if (!line.empty() && line.back() == '\r') line.pop_back();
+                if (!line.empty() && line.back() == '\r')
+                    line.pop_back();
                 line.erase(0, line.find_first_not_of(" \t"));
                 line.erase(line.find_last_not_of(" \t") + 1);
 
@@ -1419,7 +1445,8 @@ namespace Gsm
                 update_successful = true;
             }
 
-            if (!update_successful) voltageValid = false;
+            if (!update_successful)
+                voltageValid = false;
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -1429,7 +1456,8 @@ namespace Gsm
     double getBatteryLevel()
     {
 #ifdef ESP_PLATFORM
-        if (currentVoltage_mV == -1) return 1;
+        if (currentVoltage_mV == -1)
+            return 1;
         const double voltage_V = currentVoltage_mV / 1000.0;
         const double batteryLevel = 3.083368 * std::pow(voltage_V, 3) -
                                     37.21203 * std::pow(voltage_V, 2) + 150.5735 * voltage_V -
@@ -1454,7 +1482,8 @@ namespace Gsm
 
             while (std::getline(ss_block, line, '\n'))
             {
-                if (!line.empty() && line.back() == '\r') line.pop_back();
+                if (!line.empty() && line.back() == '\r')
+                    line.pop_back();
                 line.erase(0, line.find_first_not_of(" \t"));
                 line.erase(line.find_last_not_of(" \t") + 1);
                 if (line.rfind("+CPIN:", 0) == 0)
@@ -1762,7 +1791,8 @@ namespace Gsm
         requestCgreg->command = "AT+CGREG=1";
         requestCgreg->callback = [](const std::string& response) -> bool
         {
-            if (response.find("OK") != std::string::npos) updateGprsAttachmentStatusInternal();
+            if (response.find("OK") != std::string::npos)
+                updateGprsAttachmentStatusInternal();
             return false;
         };
         {
@@ -1792,7 +1822,8 @@ namespace Gsm
         {
             return true;
         }
-        if (data.rfind("+CME ERROR:", 0) == 0 || data.rfind("+CMS ERROR:", 0) == 0) return true;
+        if (data.rfind("+CME ERROR:", 0) == 0 || data.rfind("+CMS ERROR:", 0) == 0)
+            return true;
         return false;
     }
 
@@ -1834,9 +1865,11 @@ namespace Gsm
 
     bool isURC(const std::string& data)
     {
-        if (data.empty()) return false;
+        if (data.empty())
+            return false;
         for (const std::string& prefix : known_urc_prefixes)
-            if (data.find(prefix) == 0) return true;
+            if (data.find(prefix) == 0)
+                return true;
         return false;
     }
 
@@ -1854,13 +1887,16 @@ namespace Gsm
             if (firstQuote != std::string::npos && secondQuote != std::string::npos)
             {
                 lastIncomingCallNumber = data.substr(firstQuote + 1, secondQuote - firstQuote - 1);
-                if (ExternalEvents::onIncommingCall) ExternalEvents::onIncommingCall();
-                if (currentCallState != CallState::RINGING) currentCallState = CallState::RINGING;
+                if (ExternalEvents::onIncommingCall)
+                    ExternalEvents::onIncommingCall();
+                if (currentCallState != CallState::RINGING)
+                    currentCallState = CallState::RINGING;
             }
         }
         else if (data.rfind("+HTTPACTION:", 0) == 0)
         {
-            if (currentHttpState != HttpState::ACTION_IN_PROGRESS) return;
+            if (currentHttpState != HttpState::ACTION_IN_PROGRESS)
+                return;
 
             int statusCode = 0, dataLen = 0;
             sscanf(data.c_str(), "+HTTPACTION: %*d,%d,%d", &statusCode, &dataLen);
@@ -1927,7 +1963,8 @@ namespace Gsm
                     }
                     if (currentCallState != previousState)
                     {
-                        if (currentCallState == CallState::IDLE) lastIncomingCallNumber = "";
+                        if (currentCallState == CallState::IDLE)
+                            lastIncomingCallNumber = "";
                     }
                 }
                 catch (...)
@@ -1987,7 +2024,8 @@ namespace Gsm
                 {
                     std::string stat_str = data.substr(comma_pos + 1);
                     size_t next_comma = stat_str.find(',');
-                    if (next_comma != std::string::npos) stat_str = stat_str.substr(0, next_comma);
+                    if (next_comma != std::string::npos)
+                        stat_str = stat_str.substr(0, next_comma);
                     stat_str.erase(0, stat_str.find_first_not_of(" \t"));
                     int stat = std::stoi(stat_str);
                     bool attached = (stat == 1 || stat == 5);
@@ -2009,8 +2047,10 @@ namespace Gsm
         }
         else if (data == "Call Ready" || data == "SMS Ready" || data == "+SIMREADY")
         {
-            if (currentCallState == CallState::UNKNOWN) currentCallState = CallState::IDLE;
-            if (!pinStatusValid) updatePinStatusInternal();
+            if (currentCallState == CallState::UNKNOWN)
+                currentCallState = CallState::IDLE;
+            if (!pinStatusValid)
+                updatePinStatusInternal();
         }
         else if (data.find("+CGEV:") == 0)
         {
@@ -2099,7 +2139,8 @@ namespace Gsm
                 lastPinStatusUpdateTime = std::chrono::steady_clock::now();
                 updatePinStatusInternal();
             }
-            if (completionCallback) completionCallback(success);
+            if (completionCallback)
+                completionCallback(success);
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -2120,7 +2161,8 @@ namespace Gsm
                 flightModeStateValid = true;
                 lastFlightModeUpdateTime = std::chrono::steady_clock::now();
             }
-            if (completionCallback) completionCallback(success);
+            if (completionCallback)
+                completionCallback(success);
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -2140,7 +2182,8 @@ namespace Gsm
                 pduModeStateValid = true;
                 lastPduModeUpdateTime = std::chrono::steady_clock::now();
             }
-            if (completionCallback) completionCallback(success);
+            if (completionCallback)
+                completionCallback(success);
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -2167,7 +2210,8 @@ namespace Gsm
             }
             else
             {
-                if (completionCallback) completionCallback(false, -1);
+                if (completionCallback)
+                    completionCallback(false, -1);
                 return false;
             }
         };
@@ -2197,7 +2241,8 @@ namespace Gsm
                     { /* ignore */
                     }
                 }
-                if (response.find("OK") != std::string::npos) success = true;
+                if (response.find("OK") != std::string::npos)
+                    success = true;
             }
             else if (response.find("OK") != std::string::npos)
             {
@@ -2207,7 +2252,8 @@ namespace Gsm
             {
                 success = false;
             }
-            if (completionCallback) completionCallback(success, messageRef);
+            if (completionCallback)
+                completionCallback(success, messageRef);
             return false;
         };
         request1->next = request2;
@@ -2438,7 +2484,8 @@ namespace Gsm
             }
         }
 
-        if (bitsInCurrentOctet > 0 && septetCount > 0) packedOctets.push_back(currentOctet);
+        if (bitsInCurrentOctet > 0 && septetCount > 0)
+            packedOctets.push_back(currentOctet);
 
         for (unsigned char oct : packedOctets) packedDataHex += byteToHex(oct);
         return packedDataHex;
@@ -2474,7 +2521,8 @@ namespace Gsm
             cleanNumber.end()
         );
 
-        if (cleanNumber.empty()) return {"", -1};
+        if (cleanNumber.empty())
+            return {"", -1};
         pdu += byteToHex(static_cast<unsigned char>(cleanNumber.length()));
         cmgsLength++;
         pdu += (isInternational ? "91" : "81");
@@ -2504,7 +2552,8 @@ namespace Gsm
     void sendMySms(const std::string& recipient, const std::string& text)
     {
         std::pair<std::string, int> pduData = Gsm::encodePduSubmit(recipient, text);
-        if (pduData.second == -1) return;
+        if (pduData.second == -1)
+            return;
         std::string pduString = pduData.first;
         int cmgsLength = pduData.second;
 
@@ -2537,7 +2586,8 @@ namespace Gsm
     {
         if (currentCallState != CallState::IDLE)
         {
-            if (completionCallback) completionCallback(false);
+            if (completionCallback)
+                completionCallback(false);
             return;
         }
         auto request = std::make_shared<Request>();
@@ -2545,8 +2595,10 @@ namespace Gsm
         request->callback = [completionCallback, number](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
-            if (success) currentCallState = CallState::DIALING;
-            if (completionCallback) completionCallback(success);
+            if (success)
+                currentCallState = CallState::DIALING;
+            if (completionCallback)
+                completionCallback(success);
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -2557,7 +2609,8 @@ namespace Gsm
     {
         if (currentCallState != CallState::RINGING)
         {
-            if (completionCallback) completionCallback(false);
+            if (completionCallback)
+                completionCallback(false);
             return;
         }
         auto request = std::make_shared<Request>();
@@ -2565,8 +2618,10 @@ namespace Gsm
         request->callback = [completionCallback](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
-            if (success) currentCallState = CallState::ACTIVE;
-            if (completionCallback) completionCallback(success);
+            if (success)
+                currentCallState = CallState::ACTIVE;
+            if (completionCallback)
+                completionCallback(success);
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -2577,7 +2632,8 @@ namespace Gsm
     {
         if (currentCallState == CallState::IDLE || currentCallState == CallState::UNKNOWN)
         {
-            if (completionCallback) completionCallback(false);
+            if (completionCallback)
+                completionCallback(false);
             return;
         }
         auto request = std::make_shared<Request>();
@@ -2590,7 +2646,8 @@ namespace Gsm
                 currentCallState = CallState::IDLE;
                 lastIncomingCallNumber = "";
             }
-            if (completionCallback) completionCallback(success);
+            if (completionCallback)
+                completionCallback(success);
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -2601,7 +2658,8 @@ namespace Gsm
     {
         if (currentHttpState != HttpState::IDLE)
         {
-            if (callbacks.on_complete) callbacks.on_complete();
+            if (callbacks.on_complete)
+                callbacks.on_complete();
             return;
         }
 
@@ -2720,7 +2778,8 @@ namespace Gsm
 
     static void _completeHttpRequest(HttpResult result)
     {
-        if (currentHttpCallbacks.on_complete) currentHttpCallbacks.on_complete();
+        if (currentHttpCallbacks.on_complete)
+            currentHttpCallbacks.on_complete();
 
         currentHttpCallbacks = {};
         currentHttpState = HttpState::TERMINATING;
@@ -2819,7 +2878,8 @@ namespace Gsm
         }
 #endif
 
-        if (!incomingData.empty()) lineBuffer += incomingData;
+        if (!incomingData.empty())
+            lineBuffer += incomingData;
 
         size_t lineEndPos;
         while ((lineEndPos = lineBuffer.find('\n')) != std::string::npos)
@@ -2827,11 +2887,13 @@ namespace Gsm
             std::string line = lineBuffer.substr(0, lineEndPos);
             lineBuffer.erase(0, lineEndPos + 1);
 
-            if (!line.empty() && line.back() == '\r') line.pop_back();
+            if (!line.empty() && line.back() == '\r')
+                line.pop_back();
             line.erase(0, line.find_first_not_of(" \t\r\n"));
             line.erase(line.find_last_not_of(" \t\r\n") + 1);
 
-            if (line.empty()) continue;
+            if (line.empty())
+                continue;
 
             if ((state == SerialRunState::COMMAND_RUNNING) && currentRequest &&
                 line == currentRequest->command)
@@ -2881,7 +2943,8 @@ namespace Gsm
                     if (data.size() == data.capacity())
                     {
                         std::string_view dataView(data.data(), data.size());
-                        if (currentHttpCallbacks.on_data) currentHttpCallbacks.on_data(dataView);
+                        if (currentHttpCallbacks.on_data)
+                            currentHttpCallbacks.on_data(dataView);
                         httpBytesRead += data.size();
 
                         if (httpBytesRead >= httpBytesTotal)
