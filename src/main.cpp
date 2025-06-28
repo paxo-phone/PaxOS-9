@@ -174,9 +174,18 @@ void mainLoop(void* data) {
 
 void perform_google_request() {
     // 1. Create a request object
+    Network::setRoutingPolicy(Network::RoutingPolicy::WIFI_ONLY);
     auto request = std::make_shared<Network::Request>();
-    request->url = "http://www.google.com";
-    request->method = Network::HttpMethod::GET;
+    request->url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=YOUR_API_KEY";
+    request->method = Network::HttpMethod::POST;
+    request->headers["Content-Type"] = "application/json";
+    request->post_body = R"({
+        "contents": [{
+            "parts": [{
+                "text": "Hello, world!"
+            }]
+        }]
+    })";
 
     // 2. Define your callbacks
     request->on_response = [](int http_code) {
@@ -186,7 +195,7 @@ void perform_google_request() {
     request->on_data = [](const char* data, int len) {
         std::cout << "Received data chunk of size: " << len << std::endl;
         // Note: data is not null-terminated, use the 'len'
-        // std::cout.write(data, len); 
+        std::cout.write(data, len); 
     };
 
     request->on_complete = [](Network::NetworkStatus status) {

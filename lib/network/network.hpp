@@ -60,6 +60,9 @@ namespace Network
         std::map<std::string, std::string> headers;
         std::string post_body;
 
+        // Internal handle used by the network manager (e.g., for cURL handle)
+        void* internal_handle = nullptr;
+
         OnResponseCallback on_response;
         OnDataCallback on_data;
         OnCompleteCallback on_complete;
