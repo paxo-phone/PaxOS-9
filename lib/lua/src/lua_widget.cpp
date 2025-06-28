@@ -1,5 +1,6 @@
-#include "lua_gui.hpp"
 #include "lua_widget.hpp"
+
+#include "lua_gui.hpp"
 
 LuaWidget* LuaWidget::rootOfDelete = nullptr;
 

@@ -1,7 +1,8 @@
+#include "lua_gui.hpp"
+
 #include "app.hpp"
 #include "libsystem.hpp"
 #include "lua_file.hpp"
-#include "lua_gui.hpp"
 
 #include <graphics.hpp>
 #include <threads.hpp>
@@ -274,6 +275,7 @@ void LuaGui::showWarningMessage(const std::string& msg)
     GuiManager& guiManager = GuiManager::getInstance();
     guiManager.showWarningMessage(msg);
 }
+
 void LuaGui::showInfoMessage(const std::string& msg)
 {
 

@@ -12,6 +12,7 @@ class LuaRadio : public LuaWidget
     {
         widget->setState(state);
     }
+
     bool getState()
     {
         return widget->getState();

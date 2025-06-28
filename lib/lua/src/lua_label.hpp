@@ -12,6 +12,7 @@ class LuaLabel : public LuaWidget
     {
         widget->setText(text);
     }
+
     std::string getText()
     {
         return widget->getText();
@@ -26,6 +27,7 @@ class LuaLabel : public LuaWidget
     {
         return widget->getTextWidth();
     }
+
     int getTextHeight()
     {
         return widget->getTextHeight();
@@ -35,6 +37,7 @@ class LuaLabel : public LuaWidget
     {
         widget->setVerticalAlignment(alignment);
     }
+
     void setHorizontalAlignment(Label::Alignement alignment)
     {
         widget->setHorizontalAlignment(alignment);

@@ -1,5 +1,6 @@
-#include "delay.hpp"
 #include "threads.hpp"
+
+#include "delay.hpp"
 
 #include <clock.hpp>
 #include <gsm2.hpp>

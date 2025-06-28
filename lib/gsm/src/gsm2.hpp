@@ -187,6 +187,7 @@ namespace Gsm
     void refreshVoltage();
     void refreshPinStatus();
     void refreshPduModeStatus();
+
     // Call state is primarily updated via URCs and call actions
 
     // --- Time Sub-Namespace ---

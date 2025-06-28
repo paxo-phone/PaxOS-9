@@ -9,6 +9,7 @@ class LuaStorageFile
 {
   public:
     LuaStorageFile(storage::Path filename, uint8_t mode = 0);
+
     ~LuaStorageFile() {}
 
     void open();

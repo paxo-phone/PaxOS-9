@@ -2,10 +2,11 @@
 // Created by Charles on 13/03/2024.
 //
 
+#include "Keyboard.hpp"
+
 #include "Box.hpp"
 #include "Filter.hpp"
 #include "Image.hpp"
-#include "Keyboard.hpp"
 
 #include <Surface.hpp>
 #include <dynamic_hitboxes.hpp>

@@ -1,5 +1,6 @@
-#include "../fonts/Arial-charset.h"
 #include "decodeutf8.h"
+
+#include "../fonts/Arial-charset.h"
 #include "decodeutf8.hpp"
 
 #include <stdint.h>

@@ -41,6 +41,7 @@ namespace gui::elements
 
             m_label->setBorderColor(color);
         }
+
         void setFontSize(uint16_t r)
         {
             if (m_label == nullptr)
@@ -64,6 +65,7 @@ namespace gui::elements
 
             m_label->setVerticalAlignment(alignment);
         }
+
         void setHorizontalAlignment(Label::Alignement alignment)
         {
             if (m_label == nullptr)
@@ -71,6 +73,7 @@ namespace gui::elements
 
             m_label->setHorizontalAlignment(alignment);
         }
+
         void setTextColor(color_t color)
         {
             if (m_label == nullptr)

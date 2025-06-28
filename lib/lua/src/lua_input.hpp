@@ -7,14 +7,17 @@ class LuaInput : public LuaWidget
 {
   public:
     LuaInput(LuaWidget* parent, int x, int y);
+
     void setText(const std::string& text)
     {
         widget->setText(text);
     }
+
     void setPlaceHolder(const std::string& text)
     {
         widget->setPlaceHolder(text);
     }
+
     void setTitle(const std::string& text)
     {
         widget->setTitle(text);
@@ -24,6 +27,7 @@ class LuaInput : public LuaWidget
     {
         return widget->getText();
     }
+
     void onChange(sol::protected_function func)
     {
         onChangeFunc = func;

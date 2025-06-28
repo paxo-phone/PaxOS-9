@@ -12,10 +12,12 @@ class LuaSwitch : public LuaWidget
     {
         widget->setState(state);
     }
+
     bool getState()
     {
         return widget->getState();
     }
+
     void onChange(sol::protected_function func)
     {
         onChangeFunc = func;

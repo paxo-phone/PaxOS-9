@@ -3,6 +3,7 @@
 //
 
 #include "Image.hpp"
+
 #include "imgdec.hpp"
 
 #include <filestream.hpp>
@@ -17,6 +18,7 @@ uint64_t getFileSize(storage::Path& path)
 {
     return 0;
 }
+
 #include <iostream>
 
 // TODO: Replace this with "storage"

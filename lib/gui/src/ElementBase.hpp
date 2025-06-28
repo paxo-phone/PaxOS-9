@@ -64,6 +64,7 @@ namespace gui
         bool isFocused(bool forced = false); // retourne si le doigt est sur le widget
 
         virtual void onClick() {}
+
         virtual void onLongClick() {}
 
         /**

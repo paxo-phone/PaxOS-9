@@ -62,6 +62,7 @@ inline long long getCurrentTimestamp()
     )
         .count();
 }
+
 // --- END: User-Provided External Dependencies (Declarations) ---
 
 namespace Gsm
@@ -208,30 +209,37 @@ namespace Gsm
         {
             return timeValid ? year : -1;
         }
+
         int getMonth()
         {
             return timeValid ? month : -1;
         }
+
         int getDay()
         {
             return timeValid ? day : -1;
         }
+
         int getHour()
         {
             return timeValid ? hour : -1;
         }
+
         int getMinute()
         {
             return timeValid ? minute : -1;
         }
+
         int getSecond()
         {
             return timeValid ? second : -1;
         }
+
         int getTimezoneOffsetQuarterHours()
         {
             return timeValid ? timezoneOffsetQuarterHours : 0;
         }
+
         bool isTimeValid()
         {
             return timeValid;
@@ -1067,6 +1075,7 @@ namespace Gsm
     // Forward declarations for helper functions
     bool isEndIdentifier(const std::string& data);
     bool isURC(const std::string& data);
+
     // end of forward declarations
 
     static void queueReadSms(const std::string& memory_store, int index)
@@ -2071,54 +2080,67 @@ namespace Gsm
     {
         return {currentRssi, currentBer};
     }
+
     bool isNetworkQualityValid()
     {
         return networkQualityValid;
     }
+
     bool isConnected()
     {
         return isGprsAttached;
     }
+
     bool isConnectedStateValid()
     {
         return gprsStateValid;
     }
+
     bool isFlightModeActive()
     {
         return flightModeState;
     }
+
     bool isFlightModeStateValid()
     {
         return flightModeStateValid;
     }
+
     int getVoltage()
     {
         return currentVoltage_mV;
     }
+
     bool isVoltageValid()
     {
         return voltageValid;
     }
+
     bool isPinRequired()
     {
         return pinRequiresPin;
     }
+
     bool isPinStatusValid()
     {
         return pinStatusValid;
     }
+
     bool isPduModeEnabled()
     {
         return pduModeEnabled;
     }
+
     bool isPduModeStateValid()
     {
         return pduModeStateValid;
     }
+
     CallState getCallState()
     {
         return currentCallState;
     }
+
     std::string getLastIncomingNumber()
     {
         return lastIncomingCallNumber;
@@ -2800,22 +2822,27 @@ namespace Gsm
     {
         updateNetworkQualityInternal();
     }
+
     void refreshConnectionStatus()
     {
         updateGprsAttachmentStatusInternal();
     }
+
     void refreshFlightModeStatus()
     {
         updateFlightModeStatusInternal();
     }
+
     void refreshVoltage()
     {
         updateVoltageInternal();
     }
+
     void refreshPinStatus()
     {
         updatePinStatusInternal();
     }
+
     void refreshPduModeStatus()
     {
         updatePduModeStatusInternal();

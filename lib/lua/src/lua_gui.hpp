@@ -24,6 +24,7 @@ struct KeyboardCallbackData
 
     KeyboardCallbackData(lua_State* L, sol::reference&& ref) : L(L), callbackRef(std::move(ref)) {}
 };
+
 extern std::vector<std::unique_ptr<KeyboardCallbackData>> callback_memory;
 
 class LuaGui

@@ -486,7 +486,9 @@ namespace // anonymous namespace to hide local functions / constants / etc.
     struct BitCode
     {
         BitCode() = default; // undefined state, must be initialized at a later time
+
         BitCode(uint16_t code_, uint8_t numBits_) : code(code_), numBits(numBits_) {}
+
         uint16_t code;   // JPEG's Huffman codes are limited to 16 bits
         uint8_t numBits; // number of valid bits
     };
@@ -496,6 +498,7 @@ namespace // anonymous namespace to hide local functions / constants / etc.
     {
         // user-supplied callback that writes/stores one byte
         TooJpeg::WRITE_ONE_BYTE output;
+
         // initialize writer
         explicit BitWriter(TooJpeg::WRITE_ONE_BYTE output_) : output(output_) {}
 
@@ -603,10 +606,12 @@ namespace // anonymous namespace to hide local functions / constants / etc.
     {
         return +0.299f * r + 0.587f * g + 0.114f * b;
     }
+
     float rgb2cb(float r, float g, float b)
     {
         return -0.16874f * r - 0.33126f * g + 0.5f * b;
     }
+
     float rgb2cr(float r, float g, float b)
     {
         return +0.5f * r - 0.41869f * g - 0.08131f * b;

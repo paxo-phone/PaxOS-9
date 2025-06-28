@@ -9,22 +9,27 @@ class LuaButton : public LuaWidget
 {
   public:
     LuaButton(LuaWidget* parent, int x, int y, int width, int height);
+
     void setText(const std::string& text)
     {
         widget->setText(text);
     }
+
     std::string getText()
     {
         return widget->getText();
     }
+
     void setIcon(const std::string& path)
     {
         widget->setIcon(storage::Path(path));
     }
+
     void setTheme(bool theme)
     {
         widget->setTheme(theme);
     }
+
     void format()
     {
         widget->format();

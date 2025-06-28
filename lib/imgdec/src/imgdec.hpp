@@ -19,6 +19,7 @@ namespace imgdec
     };
 
     typedef struct IMGData IMGData;
+
     struct IMGData
     {
         IMGType type = ERROR;

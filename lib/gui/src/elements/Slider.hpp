@@ -119,6 +119,7 @@ namespace gui::elements
 
         void slide();
         void widgetUpdate();
+
         bool hasChanged()
         {
             return m_hasChanged;

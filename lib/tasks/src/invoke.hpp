@@ -62,6 +62,7 @@ namespace invoke_hpp
     template <typename T, T... Ints> struct integer_sequence
     {
         using value_type = T;
+
         static constexpr std::size_t size() noexcept
         {
             return sizeof...(Ints);

@@ -1,5 +1,6 @@
-#include "conversation.hpp"
 #include "lua_gsm.hpp"
+
+#include "conversation.hpp"
 
 #include <clock.hpp>
 #include <gsm2.hpp>

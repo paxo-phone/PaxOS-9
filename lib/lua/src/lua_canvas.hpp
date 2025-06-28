@@ -19,6 +19,7 @@ class LuaCanvas : public LuaWidget
     {
         widget->drawRect(x, y, w, h, color);
     }
+
     void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color)
     {
         widget->fillRect(x, y, w, h, color);
@@ -28,6 +29,7 @@ class LuaCanvas : public LuaWidget
     {
         widget->drawCircle(x, y, radius, color);
     }
+
     void fillCircle(int16_t x, int16_t y, uint16_t radius, color_t color)
     {
         widget->fillCircle(x, y, radius, color);
@@ -37,6 +39,7 @@ class LuaCanvas : public LuaWidget
     {
         widget->drawRoundRect(x, y, w, h, radius, color);
     }
+
     void fillRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t radius, color_t color)
     {
         widget->fillRoundRect(x, y, w, h, radius, color);
@@ -49,6 +52,7 @@ class LuaCanvas : public LuaWidget
             castedVertices.push_back(std::make_pair(vertex[0], vertex[1]));
         widget->drawPolygon(castedVertices, color);
     }
+
     void fillPolygon(sol::table vertices, color_t color)
     {
         std::vector<std::pair<int16_t, int16_t>> castedVertices;
@@ -75,6 +79,7 @@ class LuaCanvas : public LuaWidget
     {
         widget->drawTextCentered(x, y, text, color, horizontallyCentered, verticallyCentered);
     }
+
     void drawTextCenteredInRect(
         int16_t x, int16_t y, uint16_t w, uint16_t h, std::string text, color_t color,
         bool horizontallyCentered, bool verticallyCentered

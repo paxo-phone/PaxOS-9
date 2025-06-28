@@ -1,4 +1,5 @@
 #include "Command.hpp"
+
 #include "Commands/ConsoleCommand.hpp"
 #include "Commands/FileCommands.hpp"
 #include "Commands/InfoCommand.hpp"

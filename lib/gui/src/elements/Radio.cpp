@@ -1,5 +1,6 @@
-#include "Image.hpp"
 #include "Radio.hpp"
+
+#include "Image.hpp"
 
 #include <Surface.hpp>
 #include <cstdio>

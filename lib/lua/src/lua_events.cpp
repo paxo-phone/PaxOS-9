@@ -1,5 +1,6 @@
-#include "SOL2/sol.hpp"
 #include "lua_events.hpp"
+
+#include "SOL2/sol.hpp"
 #include "lua_file.hpp"
 
 #include <gsm2.hpp>

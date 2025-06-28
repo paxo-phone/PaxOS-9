@@ -59,16 +59,19 @@ class LuaFile
         if (oncall.valid())
             oncall();
     }
+
     void event_onlowbattery()
     {
         if (onlowbattery.valid())
             onlowbattery();
     }
+
     void event_oncharging()
     {
         if (oncharging.valid())
             oncharging();
     }
+
     void event_onmessage()
     {
         if (onmessage.valid())

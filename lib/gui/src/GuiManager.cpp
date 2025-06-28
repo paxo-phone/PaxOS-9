@@ -1,4 +1,5 @@
 #include "GuiManager.hpp"
+
 #include "elements/Button.hpp"
 #include "elements/Canvas.hpp"
 #include "elements/Label.hpp"
