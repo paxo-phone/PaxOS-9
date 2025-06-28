@@ -75,6 +75,7 @@ ReferenceAlignment: Left
 # INCLUDE HEADERS
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
+SeparateDefinitionBlocks: Always
 
 # COMMENTS
 ReflowComments: true
