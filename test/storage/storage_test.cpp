@@ -20,9 +20,7 @@ TEST(StorageTest, PathTest) {
     EXPECT_TRUE(storage::Path("/dir1/test.txt").isfile());
     EXPECT_FALSE(storage::Path("/dir1/test.txt").isdir());
 
-    EXPECT_TRUE(
-        storage::Path("/dir1/test.txt").rename(storage::Path("/dir1/test2.txt"))
-    );
+    EXPECT_TRUE(storage::Path("/dir1/test.txt").rename(storage::Path("/dir1/test2.txt")));
     EXPECT_TRUE(storage::Path("/dir1/test2.txt").exists());
     EXPECT_TRUE(storage::Path("/dir1/test2.txt").remove());
     EXPECT_FALSE(storage::Path("/dir1/test2.txt").exists());

@@ -1,6 +1,5 @@
-#include "lua_widget.hpp"
-
 #include "lua_gui.hpp"
+#include "lua_widget.hpp"
 
 LuaWidget* LuaWidget::rootOfDelete = nullptr;
 
@@ -10,13 +9,9 @@ void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent) {
 }
 
 LuaWidget::~LuaWidget() {
-    if (rootOfDelete == nullptr) {
-        rootOfDelete = this;
-    }
+    if (rootOfDelete == nullptr) rootOfDelete = this;
 
-    for (LuaWidget* child : children) {
-        delete child;
-    }
+    for (LuaWidget* child : children) delete child;
 
     if (rootOfDelete == this && this->parent != nullptr) {
         LuaWidget* widget = this;
@@ -55,9 +50,7 @@ LuaWidget::~LuaWidget() {
 }
 
 void LuaWidget::update() {
-    if (this->widget->getParent() == nullptr) {
-        this->widget->updateAll();
-    }
+    if (this->widget->getParent() == nullptr) this->widget->updateAll();
 
     specificUpdate();
 
@@ -144,16 +137,12 @@ void LuaWidget::update() {
         touch.resetScrollHorizontal();
     }*/
 
-    for (int i = 0; i < this->children.size(); i++) {
-        children[i]->update();
-    }
+    for (int i = 0; i < this->children.size(); i++) children[i]->update();
 }
 
 void LuaWidget::clear() {
 
-    while (!this->children.empty()) {
-        delete this->children[0];
-    }
+    while (!this->children.empty()) delete this->children[0];
 }
 
 void LuaWidget::addChild(LuaWidget* child) {

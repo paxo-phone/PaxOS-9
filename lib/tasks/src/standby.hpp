@@ -5,26 +5,26 @@
 #include <stdint.h>
 
 namespace StandbyMode {
-void trigger();
-void triggerPower(); // when a process needs power
-void update();
+    void trigger();
+    void triggerPower(); // when a process needs power
+    void update();
 
-void wait();
+    void wait();
 
-void setSleepTime(uint64_t sleepTime);
+    void setSleepTime(uint64_t sleepTime);
 
-bool state();
-bool expired(); // check if it's time to sleep
-void reset();
+    bool state();
+    bool expired(); // check if it's time to sleep
+    void reset();
 
-void enable();
-void disable();
+    void enable();
+    void disable();
 
-void savePower();
-void restorePower();
-void sleepCycle();
+    void savePower();
+    void restorePower();
+    void sleepCycle();
 
-extern std::mutex buisy_io;
+    extern std::mutex buisy_io;
 } // namespace StandbyMode
 
 #endif

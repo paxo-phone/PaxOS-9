@@ -9,28 +9,13 @@ using namespace serialcom;
 TEST(Commands, CONSOLE_COMMAND) {
     SerialManager::sharedInstance->changeConsoleLockTo(false);
 
-    testCommand(
-        "console lock",
-        true,
-        Command::CommandType::console,
-        CONSOLE_LOCKED
-    );
+    testCommand("console lock", true, Command::CommandType::console, CONSOLE_LOCKED);
     ASSERT_TRUE(SerialManager::sharedInstance->getConsoleLockState());
 
-    testCommand(
-        "console unlock",
-        true,
-        Command::CommandType::console,
-        CONSOLE_UNLOCKED
-    );
+    testCommand("console unlock", true, Command::CommandType::console, CONSOLE_UNLOCKED);
     ASSERT_FALSE(SerialManager::sharedInstance->getConsoleLockState());
 
-    testCommand(
-        "console lock",
-        false,
-        Command::CommandType::console,
-        NON_SHELL_MODE_NO_ERROR_CODE
-    );
+    testCommand("console lock", false, Command::CommandType::console, NON_SHELL_MODE_NO_ERROR_CODE);
     ASSERT_TRUE(SerialManager::sharedInstance->getConsoleLockState());
 
     testCommand(

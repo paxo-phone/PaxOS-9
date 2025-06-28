@@ -9,8 +9,7 @@
 #include <esp_task_wdt.h>
 #endif
 
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
-    defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 
 #include <cstdint>
 #include <stdint.h>
@@ -29,7 +28,7 @@ uint64_t os_millis(void);
  */
 uint64_t os_millis(void);
 
-#else /* #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||       \
+#else /* #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                           \
          defined(__APPLE__) */
 
 extern unsigned long sleepStartTimeMillis;

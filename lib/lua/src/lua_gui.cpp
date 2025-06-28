@@ -1,8 +1,7 @@
-#include "lua_gui.hpp"
-
 #include "app.hpp"
 #include "libsystem.hpp"
 #include "lua_file.hpp"
+#include "lua_gui.hpp"
 
 #include <graphics.hpp>
 #include <threads.hpp>
@@ -16,17 +15,13 @@ LuaGui::LuaGui(LuaFile* lua) {
 LuaGui::~LuaGui() {
     std::vector<bool> hasParent;
 
-    for (int i = 0; i < widgets.size(); i++) {
-        if (widgets[i]->widget->getParent() != nullptr) {
+    for (int i = 0; i < widgets.size(); i++)
+        if (widgets[i]->widget->getParent() != nullptr)
             hasParent.push_back(true);
-        } else {
+        else
             hasParent.push_back(false);
-        }
-    }
 
-    while (widgets.size()) {
-        delete widgets[0];
-    }
+    while (widgets.size()) delete widgets[0];
 }
 
 LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height) {
@@ -36,8 +31,7 @@ LuaBox* LuaGui::box(LuaWidget* parent, int x, int y, int width, int height) {
     return w;
 }
 
-LuaCanvas*
-    LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height) {
+LuaCanvas* LuaGui::canvas(LuaWidget* parent, int x, int y, int width, int height) {
     LuaCanvas* w = new LuaCanvas(parent, x, y, width, height, this->lua);
     widgets.push_back(w);
     w->gui = this;
@@ -45,21 +39,14 @@ LuaCanvas*
 }
 
 LuaImage* LuaGui::image(
-    LuaWidget* parent, std::string path, int x, int y, int width, int height,
-    color_t background
+    LuaWidget* parent, std::string path, int x, int y, int width, int height, color_t background
 ) {
     storage::Path path_(path);
 
-    if (!this->lua->perms.acces_files) {
-        return nullptr;
-    }
-    if (path_.m_steps[0] == "/" && !this->lua->perms.acces_files_root) {
-        return nullptr;
-    }
+    if (!this->lua->perms.acces_files) return nullptr;
+    if (path_.m_steps[0] == "/" && !this->lua->perms.acces_files_root) return nullptr;
 
-    if (path_.m_steps[0] != "/") {
-        path_ = this->lua->directory / path_;
-    }
+    if (path_.m_steps[0] != "/") path_ = this->lua->directory / path_;
 
     LuaImage* w = new LuaImage(parent, path_, x, y, width, height, background);
     widgets.push_back(w);
@@ -68,8 +55,7 @@ LuaImage* LuaGui::image(
     return w;
 }
 
-LuaLabel*
-    LuaGui::label(LuaWidget* parent, int x, int y, int width, int height) {
+LuaLabel* LuaGui::label(LuaWidget* parent, int x, int y, int width, int height) {
     LuaLabel* w = new LuaLabel(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
@@ -83,26 +69,21 @@ LuaInput* LuaGui::input(LuaWidget* parent, int x, int y) {
     return w;
 }
 
-LuaButton*
-    LuaGui::button(LuaWidget* parent, int x, int y, int width, int height) {
+LuaButton* LuaGui::button(LuaWidget* parent, int x, int y, int width, int height) {
     LuaButton* w = new LuaButton(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaVerticalList* LuaGui::verticalList(
-    LuaWidget* parent, int x, int y, int width, int height
-) {
+LuaVerticalList* LuaGui::verticalList(LuaWidget* parent, int x, int y, int width, int height) {
     LuaVerticalList* w = new LuaVerticalList(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
     return w;
 }
 
-LuaHorizontalList* LuaGui::horizontalList(
-    LuaWidget* parent, int x, int y, int width, int height
-) {
+LuaHorizontalList* LuaGui::horizontalList(LuaWidget* parent, int x, int y, int width, int height) {
     LuaHorizontalList* w = new LuaHorizontalList(parent, x, y, width, height);
     widgets.push_back(w);
     w->gui = this;
@@ -131,19 +112,11 @@ LuaCheckbox* LuaGui::checkbox(LuaWidget* parent, int x, int y) {
 }
 
 LuaSlider* LuaGui::slider(
-    LuaWidget* parent, int x, int y, int width, int height, int minValue,
-    int maxValue, int defaultValue
+    LuaWidget* parent, int x, int y, int width, int height, int minValue, int maxValue,
+    int defaultValue
 ) {
-    LuaSlider* slider = new LuaSlider(
-        parent,
-        x,
-        y,
-        width,
-        height,
-        minValue,
-        maxValue,
-        defaultValue
-    );
+    LuaSlider* slider =
+        new LuaSlider(parent, x, y, width, height, minValue, maxValue, defaultValue);
     widgets.push_back(slider);
     slider->gui = this;
     return slider;
@@ -160,23 +133,18 @@ void LuaGui::del(LuaWidget* widget) {
     // prevent a widget to remove itself during its execution
     if (lua->lua_time.running) {
         delete widget;
-        if (mainWindow == widget) {
-            mainWindow = nullptr;
-        }
+        if (mainWindow == widget) mainWindow = nullptr;
         widget = nullptr;
     } else // auto enable async if not already done by lua
     {
         lua->eventHandler.setTimeout(
             new Callback<>(std::bind(
-                std::function<void(LuaWidget*, LuaWidget*)>(
-                    [](LuaWidget* widget, LuaWidget* mainWindow) {
-                        delete widget;
-                        if (mainWindow == widget) {
-                            mainWindow = nullptr;
-                        }
-                        widget = nullptr;
-                    }
-                ),
+                std::function<void(LuaWidget*, LuaWidget*)>([](LuaWidget* widget,
+                                                               LuaWidget* mainWindow) {
+                    delete widget;
+                    if (mainWindow == widget) mainWindow = nullptr;
+                    widget = nullptr;
+                }),
                 widget,
                 mainWindow
             )),
@@ -186,17 +154,11 @@ void LuaGui::del(LuaWidget* widget) {
 }
 
 void LuaGui::update() {
-    if (mainWindow != nullptr) {
-        mainWindow->update();
-    }
+    if (mainWindow != nullptr) mainWindow->update();
 }
 
-std::string LuaGui::keyboard(
-    const std::string& placeholder, const std::string& defaultText
-) {
-    libsystem::log(
-        "[WARNING]: Keyboard is deprecated. Use keyboard_async instead."
-    );
+std::string LuaGui::keyboard(const std::string& placeholder, const std::string& defaultText) {
+    libsystem::log("[WARNING]: Keyboard is deprecated. Use keyboard_async instead.");
     graphics::setScreenOrientation(graphics::LANDSCAPE);
 
     auto key = new Keyboard(defaultText);
@@ -216,8 +178,7 @@ std::string LuaGui::keyboard(
 }
 
 void LuaGui::keyboard_async(
-    const std::string& placeholder, const std::string& defaultText,
-    sol::function callback
+    const std::string& placeholder, const std::string& defaultText, sol::function callback
 ) {
     printf("Calling keyboard_async\n");
     // Store a REFERENCE to the callback, NOT a copy of the sol::function.
@@ -242,9 +203,8 @@ void LuaGui::keyboard_async(
                     std::cerr << "Callback error: " << err.what() << std::endl;
 
                     // Show error (same as your pushError function)
-                    std::string error_message =
-                        "The callback for keyboard_async encountered an "
-                        "error: ";
+                    std::string error_message = "The callback for keyboard_async encountered an "
+                                                "error: ";
                     error_message += err.what();
                     showErrorMessage(error_message);
                 }

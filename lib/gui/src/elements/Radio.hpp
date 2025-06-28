@@ -5,19 +5,19 @@
 #include "Image.hpp"
 
 namespace gui::elements {
-class Radio final : public ElementBase {
-  public:
-    Radio(uint16_t x, uint16_t y);
-    ~Radio() override;
+    class Radio final : public ElementBase {
+      public:
+        Radio(uint16_t x, uint16_t y);
+        ~Radio() override;
 
-    void render() override;
-    void onReleased();
-    void setState(bool state);
-    bool getState();
+        void render() override;
+        void onReleased();
+        void setState(bool state);
+        bool getState();
 
-  private:
-    bool m_state = false;
-};
+      private:
+        bool m_state = false;
+    };
 } // namespace gui::elements
 
 #endif

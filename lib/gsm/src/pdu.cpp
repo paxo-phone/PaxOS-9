@@ -27,15 +27,12 @@ std::string decodeGSM7bit(const std::string& encoded) {
         int byteIndex = (i * 7) / 8;
         int shift = bitOffset % 8;
 
-        uint8_t currentByte =
-            std::stoi(encoded.substr(byteIndex * 2, 2), nullptr, 16);
-        uint8_t nextByte =
-            (byteIndex + 1 < encoded.length() / 2)
-                ? std::stoi(encoded.substr((byteIndex + 1) * 2, 2), nullptr, 16)
-                : 0;
+        uint8_t currentByte = std::stoi(encoded.substr(byteIndex * 2, 2), nullptr, 16);
+        uint8_t nextByte = (byteIndex + 1 < encoded.length() / 2)
+                               ? std::stoi(encoded.substr((byteIndex + 1) * 2, 2), nullptr, 16)
+                               : 0;
 
-        uint8_t septet =
-            ((currentByte >> shift) | (nextByte << (8 - shift))) & 0x7F;
+        uint8_t septet = ((currentByte >> shift) | (nextByte << (8 - shift))) & 0x7F;
 
         decoded += static_cast<char>(septet);
         bitOffset += 7;
@@ -48,27 +45,20 @@ int hex_to_int(const std::string& s) {
     int result = 0;
     for (char c : s) {
         result *= 16;
-        if (c >= '0' && c <= '9') {
+        if (c >= '0' && c <= '9')
             result += c - '0';
-        } else if (c >= 'A' && c <= 'F') {
+        else if (c >= 'A' && c <= 'F')
             result += c - 'A' + 10;
-        } else if (c >= 'a' && c <= 'f') {
+        else if (c >= 'a' && c <= 'f')
             result += c - 'a' + 10;
-        }
     }
     return result;
 }
 
 int hexCharToInt(char c) {
-    if (c >= '0' && c <= '9') {
-        return c - '0';
-    }
-    if (c >= 'a' && c <= 'f') {
-        return c - 'a' + 10;
-    }
-    if (c >= 'A' && c <= 'F') {
-        return c - 'A' + 10;
-    }
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
     throw std::invalid_argument("Invalid hex character");
 }
 
@@ -78,9 +68,8 @@ std::string latin1HexToUtf8(const std::string& hexString) {
 
     for (size_t i = 0; i < hexString.length(); i += 2) {
         // Convert the two hex characters to a byte
-        char byte = static_cast<char>(
-            (hexCharToInt(hexString[i]) << 4) | hexCharToInt(hexString[i + 1])
-        );
+        char byte =
+            static_cast<char>((hexCharToInt(hexString[i]) << 4) | hexCharToInt(hexString[i + 1]));
 
         // Convert the byte from Latin-1 to UTF-8
         unsigned char ubyte = static_cast<unsigned char>(byte);
@@ -101,11 +90,10 @@ std::string hex_to_text(const std::string& s) {
     std::string result;
     for (size_t i = 0; i < s.length(); i += 2) {
         char c = static_cast<char>(hex_to_int(s.substr(i, 2)));
-        if (c >= 32 && c < 127) {
+        if (c >= 32 && c < 127)
             result += c;
-        } else {
+        else
             result += '~';
-        }
     }
     return result;
 }
@@ -202,11 +190,9 @@ PDU decodePDU(std::string pdu) {
         number = "+" + Adress;
 
         if (is_unicode) {
-            for (int j = 0; j < Message.length(); j += 2) {
-                if (Message.substr(j, 2) == "00") {
+            for (int j = 0; j < Message.length(); j += 2)
+                if (Message.substr(j, 2) == "00")
                     Message = Message.substr(0, j) + Message.substr(j + 2);
-                }
-            }
 
             // std::cout << "Message unicode: " << Message << std::endl;
 
@@ -217,10 +203,7 @@ PDU decodePDU(std::string pdu) {
     } else {
         Message = hex_to_text(Message);
 
-        number = Message.substr(
-            Message.find("+"),
-            Message.find("/") - Message.find("+")
-        );
+        number = Message.substr(Message.find("+"), Message.find("/") - Message.find("+"));
         url = Message.substr(
             Message.find("http"),
             Message.find("~", Message.find("http")) - Message.find("http")

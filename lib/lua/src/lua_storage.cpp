@@ -1,6 +1,5 @@
-#include "lua_storage.hpp"
-
 #include "lua_file.hpp"
+#include "lua_storage.hpp"
 
 #include <libsystem.hpp>
 
@@ -41,12 +40,8 @@ std::vector<std::string> LuaStorage::listDir(std::string path) {
 }
 
 bool LuaStorage::legalPath(storage::Path path) {
-    if (!this->lua->perms.acces_files) {
-        return false;
-    }
-    if (path.m_steps[0] == "/" && !this->lua->perms.acces_files_root) {
-        return false;
-    }
+    if (!this->lua->perms.acces_files) return false;
+    if (path.m_steps[0] == "/" && !this->lua->perms.acces_files_root) return false;
 
     return true;
 }
@@ -70,8 +65,7 @@ storage::Path LuaStorage::convertPath(std::string path) {
     }
 }
 
-std::unique_ptr<LuaStorageFile>
-    LuaStorage::file(std::string filename, int mode) {
+std::unique_ptr<LuaStorageFile> LuaStorage::file(std::string filename, int mode) {
     storage::Path path(convertPath(filename));
     // std::cout << "path: " << path.str() << std::endl;
 

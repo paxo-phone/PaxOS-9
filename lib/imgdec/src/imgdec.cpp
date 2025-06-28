@@ -18,9 +18,7 @@ inline uint16_t make16L(const uint8_t v1, const uint8_t v2) {
 }
 
 // Create a uint32 with 4x uint8 (Little endian)
-inline uint32_t make32L(
-    const uint8_t v1, const uint8_t v2, const uint8_t v3, const uint8_t v4
-) {
+inline uint32_t make32L(const uint8_t v1, const uint8_t v2, const uint8_t v3, const uint8_t v4) {
     return (v4 << 24) + (v3 << 16) + (v2 << 8) + v1;
 }
 
@@ -30,9 +28,7 @@ inline uint16_t make16B(const uint8_t v1, const uint8_t v2) {
 }
 
 // Create a uint32 with 4x uint8 (Big endian)
-inline uint32_t make32B(
-    const uint8_t v1, const uint8_t v2, const uint8_t v3, const uint8_t v4
-) {
+inline uint32_t make32B(const uint8_t v1, const uint8_t v2, const uint8_t v3, const uint8_t v4) {
     return (v1 << 24) + (v2 << 16) + (v3 << 8) + v4;
 }
 
@@ -42,18 +38,13 @@ imgdec::IMGData imgdec::decodeHeader(const uint8_t* rawData) {
     if (rawData[0x00] == 'B' && rawData[0x01] == 'M') {
         imgData.type = BMP;
 
-        imgData.width =
-            make32L(rawData[0x12], rawData[0x13], rawData[0x14], rawData[0x15]);
-        imgData.heigth =
-            make32L(rawData[0x16], rawData[0x17], rawData[0x18], rawData[0x19]);
-    } else if (rawData[0x01] == 'P' && rawData[0x02] == 'N' &&
-               rawData[0x03] == 'G') {
+        imgData.width = make32L(rawData[0x12], rawData[0x13], rawData[0x14], rawData[0x15]);
+        imgData.heigth = make32L(rawData[0x16], rawData[0x17], rawData[0x18], rawData[0x19]);
+    } else if (rawData[0x01] == 'P' && rawData[0x02] == 'N' && rawData[0x03] == 'G') {
         imgData.type = PNG;
 
-        imgData.width =
-            make32B(rawData[0x10], rawData[0x11], rawData[0x12], rawData[0x13]);
-        imgData.heigth =
-            make32B(rawData[0x14], rawData[0x15], rawData[0x16], rawData[0x17]);
+        imgData.width = make32B(rawData[0x10], rawData[0x11], rawData[0x12], rawData[0x13]);
+        imgData.heigth = make32B(rawData[0x14], rawData[0x15], rawData[0x16], rawData[0x17]);
     } else {
         imgData.type = JPG;
 
@@ -72,10 +63,7 @@ imgdec::IMGData imgdec::decodeHeader(const uint8_t* rawData) {
 
         // If we reach the end of the loop without finding the SOF0 marker, it's
         // an error
-        if (i >= 2000) {
-            std::cerr << "Invalid JPEG file: SOF0 marker not found."
-                      << std::endl;
-        }
+        if (i >= 2000) std::cerr << "Invalid JPEG file: SOF0 marker not found." << std::endl;
     }
     /*else
     {
@@ -93,8 +81,7 @@ void myOutput(unsigned char byte) {
 }
 
 void imgdec::encodeJpg(
-    const uint8_t* rawData, uint32_t width, uint32_t height,
-    storage::Path filename
+    const uint8_t* rawData, uint32_t width, uint32_t height, storage::Path filename
 ) {
     std::string path = filename.str();
 
@@ -106,25 +93,17 @@ void imgdec::encodeJpg(
     // start JPEG compression
     // note: myOutput is the function defined in line 18, it saves the output in
     // example.jpg optional parameters:
-    const bool isRGB = true; // true = RGB image, else false = grayscale
-    const auto quality = 90; // compression quality: 0 = worst, 100 = best, 80
-                             // to 90 are most often used
+    const bool isRGB = true;       // true = RGB image, else false = grayscale
+    const auto quality = 90;       // compression quality: 0 = worst, 100 = best, 80
+                                   // to 90 are most often used
     const bool downsample = false; // false = save as YCbCr444 JPEG (better
                                    // quality), true = YCbCr420 (smaller file)
     const char* comment = "mms";   // arbitrary JPEG comment
 
     std::cout << "ready to write: " << path << std::endl;
 
-    auto ok = TooJpeg::writeJpeg(
-        myOutput,
-        rawData,
-        width,
-        height,
-        isRGB,
-        quality,
-        downsample,
-        comment
-    );
+    auto ok =
+        TooJpeg::writeJpeg(myOutput, rawData, width, height, isRGB, quality, downsample, comment);
 
     myFile.close();
 }

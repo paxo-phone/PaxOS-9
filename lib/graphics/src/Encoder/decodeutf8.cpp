@@ -1,6 +1,5 @@
-#include "decodeutf8.h"
-
 #include "../fonts/Arial-charset.h"
+#include "decodeutf8.h"
 #include "decodeutf8.hpp"
 
 #include <stdint.h>
@@ -74,7 +73,7 @@ uint16_t decodeUTF8(uint8_t c) {
         if ((c & 0xE0) == 0xC0) {              // 11 bit Unicode Code Point
             decoderBuffer = ((c & 0x1F) << 6); // Save first 5 bits
             decoderState = 1;
-        } else if ((c & 0xF0) == 0xE0) { // 16 bit Unicode Code Point      {
+        } else if ((c & 0xF0) == 0xE0) {        // 16 bit Unicode Code Point      {
             decoderBuffer = ((c & 0x0F) << 12); // Save first 4 bits
             decoderState = 2;
         }
@@ -82,11 +81,9 @@ uint16_t decodeUTF8(uint8_t c) {
     } else {
         decoderState--;
         if (decoderState == 1) {
-            decoderBuffer |=
-                ((c & 0x3F) << 6); // Add next 6 bits of 16 bit code point
+            decoderBuffer |= ((c & 0x3F) << 6); // Add next 6 bits of 16 bit code point
         } else if (decoderState == 0) {
-            decoderBuffer |=
-                (c & 0x3F); // Add last 6 bits of code point (UTF8-tail)
+            decoderBuffer |= (c & 0x3F); // Add last 6 bits of code point (UTF8-tail)
             return decoderBuffer;
         }
     }
@@ -99,9 +96,7 @@ std::string decodeString(std::string& code) {
     std::vector<uint16_t> code_16;
 
     // First decode UTF8 characters
-    for (int i = 0; i < code.size(); i++) {
-        code_16.push_back(decodeUTF8(code[i]));
-    }
+    for (int i = 0; i < code.size(); i++) code_16.push_back(decodeUTF8(code[i]));
 
     // Process each character
     for (int i = 0; i < code.size(); i++) {
@@ -117,9 +112,8 @@ std::string decodeString(std::string& code) {
         }
 
         // Only add ASCII characters that are printable
-        if (!result && code_16[i] <= 0x7F && isprint(code_16[i])) {
+        if (!result && code_16[i] <= 0x7F && isprint(code_16[i]))
             code_8.push_back(static_cast<char>(code_16[i]));
-        }
         // Characters above 0x7F that aren't in the table are ignored
     }
     return code_8;

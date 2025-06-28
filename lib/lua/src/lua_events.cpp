@@ -1,6 +1,5 @@
-#include "lua_events.hpp"
-
 #include "SOL2/sol.hpp"
+#include "lua_events.hpp"
 #include "lua_file.hpp"
 
 #include <gsm2.hpp>
@@ -18,11 +17,8 @@ uint32_t LuaTime::monotonic() {
 }
 
 int findIndex(const std::vector<std::string>& vec, const std::string& target) {
-    for (std::size_t i = 0; i < vec.size(); ++i) {
-        if (vec[i] == target) {
-            return static_cast<int>(i); // Convertir en int si nécessaire
-        }
-    }
+    for (std::size_t i = 0; i < vec.size(); ++i)
+        if (vec[i] == target) return static_cast<int>(i); // Convertir en int si nécessaire
     return -1; // Retourner -1 si la chaîne n'est pas trouvée
 }
 
@@ -59,20 +55,17 @@ sol::table LuaTime::get(std::string format) {
     // Remplir le tableau avec des nombres
     for (int i = 0; i < result.size(); i++) {
         int index = findIndex(identifiers, result[i]);
-        if (index != -1) {
+        if (index != -1)
             array[i + 1] = date[index];
-        } else {
+        else
             return lua->lua.create_table();
-        }
     }
 
     // Retourner le tableau Lua
     return array;
 }
 
-LuaTimeInterval::LuaTimeInterval(
-    LuaFile* lua, sol::protected_function func, uint32_t interval
-) {
+LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::protected_function func, uint32_t interval) {
     this->lua = lua;
     this->func = func;
     this->interval = interval;
@@ -83,8 +76,7 @@ LuaTimeInterval::LuaTimeInterval(
 }
 
 uint32_t LuaTimeEvent::addEventListener(
-    LuaFile* lua, sol::protected_function condition,
-    sol::protected_function callback
+    LuaFile* lua, sol::protected_function condition, sol::protected_function callback
 ) {
     //    this->lua = lua;
     this->condition = condition;
@@ -103,9 +95,7 @@ int LuaTimeInterval::getId() {
 
 void LuaTimeInterval::call() {
     try {
-        if (func) {
-            func();
-        }
+        if (func) func();
     } catch (const sol::error& e) {
         // Handle Solidity specific errors
         std::cerr << "Sol error: " << e.what() << std::endl;
@@ -122,16 +112,12 @@ LuaTimeInterval::~LuaTimeInterval() {
     lua->eventHandler.removeInterval(id);
 }
 
-LuaTimeTimeout::LuaTimeTimeout(
-    LuaFile* lua, sol::protected_function func, uint32_t timeout
-) {
+LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint32_t timeout) {
     this->lua = lua;
     this->func = func;
     this->timeout = timeout;
     this->id = lua->eventHandler.setTimeout(
-        new Callback<>(
-            std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))
-        ),
+        new Callback<>(std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))),
         timeout
     );
 }
@@ -155,9 +141,7 @@ void LuaTimeTimeout::call() {
 }
 
 LuaTimeTimeout::~LuaTimeTimeout() {
-    if (!done) {
-        lua->eventHandler.removeTimeout(id);
-    }
+    if (!done) lua->eventHandler.removeTimeout(id);
 }
 
 void LuaTime::update() {
@@ -209,10 +193,6 @@ void LuaTime::removeTimeout(int id) {
 }
 
 LuaTime::~LuaTime() {
-    for (int i = 0; i < intervals.size(); i++) {
-        delete intervals[i];
-    }
-    for (int i = 0; i < timeouts.size(); i++) {
-        delete timeouts[i];
-    }
+    for (int i = 0; i < intervals.size(); i++) delete intervals[i];
+    for (int i = 0; i < timeouts.size(); i++) delete timeouts[i];
 }

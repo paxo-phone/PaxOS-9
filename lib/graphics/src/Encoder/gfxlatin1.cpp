@@ -1,6 +1,5 @@
-#include "gfxlatin1.h"
-
 #include "decodeutf8.h"
+#include "gfxlatin1.h"
 
 #include <cstring>
 

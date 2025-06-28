@@ -4,7 +4,6 @@
 //
 
 #include "graphics.hpp"
-
 #include "standby.hpp"
 
 #include <Surface.hpp>
@@ -21,21 +20,21 @@ FT6236G ct;
 #endif
 
 namespace {
-bool running;
+    bool running;
 
-std::shared_ptr<LGFX> lcd;
+    std::shared_ptr<LGFX> lcd;
 
-graphics::EScreenOrientation screenOrientation;
-std::shared_ptr<graphics::Surface> landscapeBuffer;
+    graphics::EScreenOrientation screenOrientation;
+    std::shared_ptr<graphics::Surface> landscapeBuffer;
 
-int16_t touchX = 0, touchY = 0;
+    int16_t touchX = 0, touchY = 0;
 
-bool liveTouchState = false; // is screen touched (brute and fast)
-int16_t newTouchX = 0, newTouchY = 0;
+    bool liveTouchState = false; // is screen touched (brute and fast)
+    int16_t newTouchX = 0, newTouchY = 0;
 
-bool isTouchRead = false;
+    bool isTouchRead = false;
 
-uint16_t brightness = 0xFF / 3;
+    uint16_t brightness = 0xFF / 3;
 } // namespace
 
 void graphics::touchIsRead() {
@@ -48,14 +47,10 @@ uint16_t graphics::getBrightness() {
 
 void graphics::setBrightness(uint16_t value, const bool temp) {
     static bool running = false;
-    if (running) {
-        return;
-    }
+    if (running) return;
     running = true;
 
-    if (!temp) {
-        brightness = value;
-    }
+    if (!temp) brightness = value;
 
 #ifdef ESP_PLATFORM
     static uint16_t oldValue = 0;
@@ -82,9 +77,7 @@ void graphics::setBrightness(uint16_t value, const bool temp) {
 #else
 
     // Simulate a switched off display
-    if (value == 0) {
-        lcd->fillScreen(0x0000);
-    }
+    if (value == 0) lcd->fillScreen(0x0000);
 
 #endif
 
@@ -105,8 +98,7 @@ graphics::GraphicsInitCode graphics::init() {
     // We need to create a "landscape buffer" used as a screen.
     // Because LovyanGFX as a weird color glitch when using "setRotation()".
     // But, by using a temporary buffer, the glitch doesn't appear.
-    landscapeBuffer =
-        std::make_shared<Surface>(getScreenHeight(), getScreenWidth());
+    landscapeBuffer = std::make_shared<Surface>(getScreenHeight(), getScreenWidth());
 
 #endif
 
@@ -121,13 +113,9 @@ graphics::GraphicsInitCode graphics::init() {
     lcd->setTextColor(packRGB565(58, 186, 153));
     lcd->setCursor(
         static_cast<int32_t>(
-            0.5 * static_cast<double>(
-                      getScreenWidth() - lcd->textWidth(initText.c_str())
-                  )
+            0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))
         ),
-        static_cast<int32_t>(
-            0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())
-        )
+        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight()))
     );
     lcd->printf("%s", initText.c_str());
 
@@ -207,8 +195,7 @@ void graphics::SDLInit(void (*appMain)()) {
     running = true;
 
     // Multithreading can be an issue, be careful
-    SDL_Thread* thread =
-        SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
+    SDL_Thread* thread = SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
     if (thread == nullptr) {
         printf("Unable to create thread : %s\n", SDL_GetError());
         exit(1);
@@ -255,8 +242,7 @@ void graphics::showSurface(const Surface* surface, int x, int y) {
 }
 
 void graphics::setWindow(
-    const uint16_t x, const uint16_t y, const uint16_t width,
-    const uint16_t height
+    const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height
 ) {
     lcd->setWindow(x, y, x + width, y + height);
 }
@@ -277,9 +263,7 @@ void graphics::getTouchPos(int16_t* x, int16_t* y) {
 #ifdef ESP_PLATFORM
 int getTouch(uint16_t* pPoints) {
     TOUCHINFO ti;
-    if (ct.getSamples(&ti) != FT_SUCCESS) {
-        return 0; // something went wrong
-    }
+    if (ct.getSamples(&ti) != FT_SUCCESS) return 0; // something went wrong
     if (pPoints) {
         // swap X/Y since the display is used 90 degrees rotated
         pPoints[0] = ti.x[0];
@@ -292,9 +276,7 @@ int getTouch(uint16_t* pPoints) {
 #endif
 
 void graphics::touchUpdate() {
-    if (StandbyMode::state() == true) {
-        return;
-    }
+    if (StandbyMode::state() == true) return;
 
     int16_t currentLiveTouchX = 0, currentLiveTouchY = 0;
 
@@ -337,9 +319,7 @@ void graphics::touchUpdate() {
     //    last processed.
     if (currentLiveTouchX != touchX || currentLiveTouchY != touchY) {
         if (!StandbyMode::state()) // only trigger if not already in standby
-        {
             StandbyMode::trigger();
-        }
     }
     // else
     // {
@@ -381,8 +361,7 @@ graphics::EScreenOrientation graphics::getScreenOrientation() {
     return screenOrientation;
 }
 
-void graphics::setScreenOrientation(const EScreenOrientation screenOrientation
-) {
+void graphics::setScreenOrientation(const EScreenOrientation screenOrientation) {
     // Update the screen orientation (and the screen size)
     // Maybe use another name for the parameter ?
     // Or store it in another place ?

@@ -8,16 +8,16 @@
 #include "../ElementBase.hpp"
 
 namespace gui::elements {
-class Window final : public ElementBase {
-  private:
-  public:
-    Window();
-    ~Window() override;
+    class Window final : public ElementBase {
+      private:
+      public:
+        Window();
+        ~Window() override;
 
-    static std::vector<Window*> windows;
+        static std::vector<Window*> windows;
 
-    void render() override;
-};
+        void render() override;
+    };
 } // namespace gui::elements
 
 #endif // WINDOW_HPP

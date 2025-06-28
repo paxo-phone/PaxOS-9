@@ -74,9 +74,7 @@ void* custom_allocator(void* ud, void* ptr, size_t osize, size_t nsize) {
     // std::cout << "custom_allocator: " << nsize << std::endl;
     if (nsize == 0) {
         // Free the block
-        if (ptr != NULL) {
-            free(ptr);
-        }
+        if (ptr != NULL) free(ptr);
         return NULL;
     } else {
 // Allocate or resize the block
@@ -89,15 +87,13 @@ void* custom_allocator(void* ud, void* ptr, size_t osize, size_t nsize) {
 }
 
 int sol_exception_handler(
-    lua_State* L, sol::optional<const std::exception&> maybe_exception,
-    sol::string_view description
+    lua_State* L, sol::optional<const std::exception&> maybe_exception, sol::string_view description
 ) {
     std::cerr << "An error occurred in Lua: ";
-    if (maybe_exception) {
+    if (maybe_exception)
         std::cerr << maybe_exception->what() << std::endl;
-    } else {
+    else
         std::cerr << description << std::endl;
-    }
     lua_error(L);
     abort();
     return 0;
@@ -120,19 +116,16 @@ std::string tableToString(const sol::table& table) {
     ss << "{";
 
     int size = 0;
-    for (const auto& pair : table) {
-        size++;
-    }
+    for (const auto& pair : table) size++;
 
     int i = 0;
     for (const auto& pair : table) {
-        if (pair.first.is<std::string>()) {
+        if (pair.first.is<std::string>())
             ss << "[\"" << pair.first.as<std::string>() << "\"]";
-        } else if (pair.first.is<int>()) {
+        else if (pair.first.is<int>())
             ss << "[" << pair.first.as<int>() << "]";
-        } else { // Assuming it's an identifier
+        else // Assuming it's an identifier
             ss << "[\"" << pair.first.as<std::string>() << "\"]";
-        }
         i++;
         ss << "=";
 
@@ -162,13 +155,10 @@ std::string tableToString(const sol::table& table) {
 }
 
 // Function to save a Lua table to a file
-void save_lua_table(
-    sol::state& lua, const std::string& path, sol::table table
-) {
+void save_lua_table(sol::state& lua, const std::string& path, sol::table table) {
     std::ofstream file(path);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open file for writing: " << path
-                  << std::endl;
+        std::cerr << "Error: Could not open file for writing: " << path << std::endl;
         return;
     }
 
@@ -192,8 +182,7 @@ void save_lua_table(
 sol::table load_lua_table(sol::state& lua, const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open file for reading: " << path
-                  << std::endl;
+        std::cerr << "Error: Could not open file for reading: " << path << std::endl;
         return sol::table{};
     }
 
@@ -203,14 +192,12 @@ sol::table load_lua_table(sol::state& lua, const std::string& path) {
     sol::table resultTable;
     try {
         lua.script("returntable=" + content.str());
-        std::string tableName =
-            "returntable"; // Adjust if your table has a different name
-                           // Retrieve the created table from the Lua state
+        std::string tableName = "returntable"; // Adjust if your table has a different name
+                                               // Retrieve the created table from the Lua state
         resultTable = lua[tableName];
     } catch (const sol::error& e) {
         // Handle Solidity specific errors
-        std::cerr << "Sol error on table serialisation" << e.what()
-                  << std::endl;
+        std::cerr << "Sol error on table serialisation" << e.what() << std::endl;
     } catch (const std::exception& e) {
         // Handle other standard exceptions
         std::cerr << "Error: " << e.what() << std::endl;
@@ -242,9 +229,7 @@ void LuaFile::load() {
     file2.close();
 
     if (!nlohmann::json::accept(conf)) {
-        std::cerr
-            << "Les permissions de l'app ne sont pas définies ou sont invalides"
-            << std::endl;
+        std::cerr << "Les permissions de l'app ne sont pas définies ou sont invalides" << std::endl;
         std::cerr << "Conf: " << conf << " in " << manifest.str() << std::endl;
         return;
     }
@@ -252,51 +237,28 @@ void LuaFile::load() {
     nlohmann::json confJson = nlohmann::json::parse(conf);
 
     // en fonction de la configuration, choisir les permissions
-    perms.acces_files = std::find(
-                            confJson["access"].begin(),
-                            confJson["access"].end(),
-                            "files"
-                        ) != confJson["access"].end();
-    perms.acces_files_root = std::find(
-                                 confJson["access"].begin(),
-                                 confJson["access"].end(),
-                                 "files_root"
-                             ) != confJson["access"].end();
-    perms.acces_gsm = std::find(
-                          confJson["access"].begin(),
-                          confJson["access"].end(),
-                          "gsm"
-                      ) != confJson["access"].end();
-    perms.acces_gui = std::find(
-                          confJson["access"].begin(),
-                          confJson["access"].end(),
-                          "gui"
-                      ) != confJson["access"].end();
-    perms.acces_hardware = std::find(
-                               confJson["access"].begin(),
-                               confJson["access"].end(),
-                               "hardware"
-                           ) != confJson["access"].end();
-    perms.acces_time = std::find(
-                           confJson["access"].begin(),
-                           confJson["access"].end(),
-                           "time"
-                       ) != confJson["access"].end();
-    perms.acces_web = std::find(
-                          confJson["access"].begin(),
-                          confJson["access"].end(),
-                          "web"
-                      ) != confJson["access"].end();
-    perms.acces_web_paxo = std::find(
-                               confJson["access"].begin(),
-                               confJson["access"].end(),
-                               "web_paxo"
-                           ) != confJson["access"].end();
-    perms.acces_password_manager = std::find(
-                                       confJson["access"].begin(),
-                                       confJson["access"].end(),
-                                       "password_manager"
-                                   ) != confJson["access"].end();
+    perms.acces_files = std::find(confJson["access"].begin(), confJson["access"].end(), "files") !=
+                        confJson["access"].end();
+    perms.acces_files_root =
+        std::find(confJson["access"].begin(), confJson["access"].end(), "files_root") !=
+        confJson["access"].end();
+    perms.acces_gsm = std::find(confJson["access"].begin(), confJson["access"].end(), "gsm") !=
+                      confJson["access"].end();
+    perms.acces_gui = std::find(confJson["access"].begin(), confJson["access"].end(), "gui") !=
+                      confJson["access"].end();
+    perms.acces_hardware =
+        std::find(confJson["access"].begin(), confJson["access"].end(), "hardware") !=
+        confJson["access"].end();
+    perms.acces_time = std::find(confJson["access"].begin(), confJson["access"].end(), "time") !=
+                       confJson["access"].end();
+    perms.acces_web = std::find(confJson["access"].begin(), confJson["access"].end(), "web") !=
+                      confJson["access"].end();
+    perms.acces_web_paxo =
+        std::find(confJson["access"].begin(), confJson["access"].end(), "web_paxo") !=
+        confJson["access"].end();
+    perms.acces_password_manager =
+        std::find(confJson["access"].begin(), confJson["access"].end(), "password_manager") !=
+        confJson["access"].end();
 
     confJson.clear();
 
@@ -306,13 +268,10 @@ void LuaFile::load() {
 
     lua["require"] = [&](const std::string& filename) -> sol::object {
         // Load the file
-        sol::load_result chunk =
-            lua.load_file(this->lua_storage.convertPath(filename).str());
+        sol::load_result chunk = lua.load_file(this->lua_storage.convertPath(filename).str());
         if (!chunk.valid()) {
             sol::error err = chunk;
-            throw std::runtime_error(
-                "Error loading module '" + filename + "': " + err.what()
-            );
+            throw std::runtime_error("Error loading module '" + filename + "': " + err.what());
         }
 
         // 4. Execute the loaded chunk and return its results
@@ -408,32 +367,21 @@ void LuaFile::load() {
             sol::overload(
                 static_cast<LuaJson (LuaJson::*)(std::string)>(&LuaJson::op),
                 static_cast<int (LuaJson::*)(std::string)>(&LuaJson::get_int),
-                static_cast<double (LuaJson::*)(std::string)>(
-                    &LuaJson::get_double
-                ),
+                static_cast<double (LuaJson::*)(std::string)>(&LuaJson::get_double),
                 static_cast<bool (LuaJson::*)(std::string)>(&LuaJson::get_bool)
             ),
             "__newindex",
             sol::overload(
-                static_cast<void (LuaJson::*)(std::string, int)>(
-                    &LuaJson::set_int
-                ),
-                static_cast<void (LuaJson::*)(std::string, double)>(
-                    &LuaJson::set_double
-                ),
-                static_cast<void (LuaJson::*)(std::string, bool)>(
-                    &LuaJson::set_bool
-                ),
-                static_cast<void (LuaJson::*)(std::string, std::string)>(
-                    &LuaJson::set
-                )
+                static_cast<void (LuaJson::*)(std::string, int)>(&LuaJson::set_int),
+                static_cast<void (LuaJson::*)(std::string, double)>(&LuaJson::set_double),
+                static_cast<void (LuaJson::*)(std::string, bool)>(&LuaJson::set_bool),
+                static_cast<void (LuaJson::*)(std::string, std::string)>(&LuaJson::set)
             )
         );
 
         lua["Json"] = json_ud;
 
-        lua["saveTable"] = [&](const std::string& filename,
-                               const sol::table& table) {
+        lua["saveTable"] = [&](const std::string& filename, const sol::table& table) {
             save_lua_table(lua, lua_storage.convertPath(filename).str(), table);
         };
 
@@ -461,8 +409,7 @@ void LuaFile::load() {
                    int y,
                    int width,
                    int height) -> LuaImage* {
-                    return gui
-                        ->image(parent, path, x, y, width, height, COLOR_WHITE);
+                    return gui->image(parent, path, x, y, width, height, COLOR_WHITE);
                 },
                 &LuaGui::image
             ),
@@ -770,8 +717,7 @@ void LuaFile::load() {
          *
          */
         {
-            auto color =
-                lua["color"].get_or_create<sol::table>(sol::new_table());
+            auto color = lua["color"].get_or_create<sol::table>(sol::new_table());
 
             color.set("dark", COLOR_DARK);
             color.set("light", COLOR_LIGHT);
@@ -800,16 +746,14 @@ void LuaFile::load() {
 
             color.set_function(
                 "toColor",
-                [&](const uint8_t r, const uint8_t g, const uint8_t b
-                ) -> color_t {
+                [&](const uint8_t r, const uint8_t g, const uint8_t b) -> color_t {
                     return graphics::packRGB565(r, g, b);
                 }
             );
 
             color.set_function(
                 "toRGB",
-                [&](const color_t rgb
-                ) -> std::tuple<uint8_t, uint8_t, uint8_t> {
+                [&](const color_t rgb) -> std::tuple<uint8_t, uint8_t, uint8_t> {
                     uint8_t r, g, b;
                     graphics::unpackRGB565(rgb, &r, &g, &b);
                     return std::make_tuple(r, g, b);
@@ -847,9 +791,7 @@ void LuaFile::load() {
             "launch",
             sol::overload(
                 [&](std::string name, std::vector<std::string> arg) {
-                    std::cerr
-                        << "launch is deprecated, use system.app:launch instead"
-                        << std::endl;
+                    std::cerr << "launch is deprecated, use system.app:launch instead" << std::endl;
                     try {
                         AppManager::get(name)->run(arg);
                     } catch (std::runtime_error& e) {
@@ -957,20 +899,13 @@ void LuaFile::load() {
         // auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
 
         auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
-        auto systemConfig =
-            system["config"].get_or_create<sol::table>(sol::new_table());
+        auto systemConfig = system["config"].get_or_create<sol::table>(sol::new_table());
 
         // paxo.system.config.get()
         systemConfig.set_function("getBool", &paxolua::system::config::getBool);
         systemConfig.set_function("getInt", &paxolua::system::config::getInt);
-        systemConfig.set_function(
-            "getFloat",
-            &paxolua::system::config::getFloat
-        );
-        systemConfig.set_function(
-            "getString",
-            &paxolua::system::config::getString
-        );
+        systemConfig.set_function("getFloat", &paxolua::system::config::getFloat);
+        systemConfig.set_function("getString", &paxolua::system::config::getString);
 
         // paxo.system.config.set()
         systemConfig.set_function(
@@ -1027,16 +962,12 @@ void LuaFile::load() {
         app.set_function("stopApp", sol::overload([&](std::string name) {
                              try {
                                  auto app = AppManager::get(name);
-                                 if (app->luaInstance != nullptr &&
-                                     app->luaInstance.get() != this) {
+                                 if (app->luaInstance != nullptr && app->luaInstance.get() != this)
                                      app->kill();
-                                 }
                              } catch (std::runtime_error& e) {
-                                 std::cerr << "Erreur: " << e.what()
-                                           << std::endl;
+                                 std::cerr << "Erreur: " << e.what() << std::endl;
                                  // Ajout message d'erreur
-                                 GuiManager& guiManager =
-                                     GuiManager::getInstance();
+                                 GuiManager& guiManager = GuiManager::getInstance();
                                  guiManager.showErrorMessage(e.what());
                              }
 
@@ -1052,17 +983,10 @@ void LuaFile::load() {
         // auto paxo = lua["paxo"].get_or_create<sol::table>(sol::new_table());
 
         auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
-        auto systemSettings =
-            lua["settings"].get_or_create<sol::table>(sol::new_table());
+        auto systemSettings = lua["settings"].get_or_create<sol::table>(sol::new_table());
 
-        systemSettings.set_function(
-            "getBrightness",
-            &libsystem::paxoConfig::getBrightness
-        );
-        systemSettings.set_function(
-            "setBrightness",
-            &libsystem::paxoConfig::setBrightness
-        );
+        systemSettings.set_function("getBrightness", &libsystem::paxoConfig::getBrightness);
+        systemSettings.set_function("setBrightness", &libsystem::paxoConfig::setBrightness);
         systemSettings.set_function(
             "setStandBySleepTime",
             &libsystem::paxoConfig::setStandBySleepTime
@@ -1072,56 +996,29 @@ void LuaFile::load() {
             &libsystem::paxoConfig::getStandBySleepTime
         );
 
-        systemSettings.set_function(
-            "getOSVersion",
-            &libsystem::paxoConfig::getOSVersion
-        );
+        systemSettings.set_function("getOSVersion", &libsystem::paxoConfig::getOSVersion);
 
-        systemSettings.set_function(
-            "getConnectedWifi",
-            &libsystem::paxoConfig::getConnectedWifi
-        );
-        systemSettings.set_function(
-            "connectWifi",
-            &libsystem::paxoConfig::connectWifi
-        );
-        systemSettings.set_function(
-            "getAvailableWifiSSID",
-            [&]() -> sol::table {
-                std::vector<std::string> lstSSID =
-                    libsystem::paxoConfig::getAvailableWifiSSID();
+        systemSettings.set_function("getConnectedWifi", &libsystem::paxoConfig::getConnectedWifi);
+        systemSettings.set_function("connectWifi", &libsystem::paxoConfig::connectWifi);
+        systemSettings.set_function("getAvailableWifiSSID", [&]() -> sol::table {
+            std::vector<std::string> lstSSID = libsystem::paxoConfig::getAvailableWifiSSID();
 
-                sol::table result = lua.create_table();
-                for (const auto elem : lstSSID) {
-                    result.add(elem);
-                }
-                return result;
-            }
-        );
+            sol::table result = lua.create_table();
+            for (const auto elem : lstSSID) result.add(elem);
+            return result;
+        });
 
         systemSettings.set_function(
             "getBackgroundColor",
             &libsystem::paxoConfig::getBackgroundColor
         );
-        systemSettings.set_function(
-            "getTextColor",
-            &libsystem::paxoConfig::getTextColor
-        );
-        systemSettings.set_function(
-            "getBorderColor",
-            &libsystem::paxoConfig::getBorderColor
-        );
+        systemSettings.set_function("getTextColor", &libsystem::paxoConfig::getTextColor);
+        systemSettings.set_function("getBorderColor", &libsystem::paxoConfig::getBorderColor);
         systemSettings.set_function("setBackgroundColor", [](int color) {
             libsystem::paxoConfig::setBackgroundColor(color_t(color), true);
         });
-        systemSettings.set_function(
-            "setTextColor",
-            &libsystem::paxoConfig::setTextColor
-        );
-        systemSettings.set_function(
-            "setBorderColor",
-            &libsystem::paxoConfig::setBorderColor
-        );
+        systemSettings.set_function("setTextColor", &libsystem::paxoConfig::setTextColor);
+        systemSettings.set_function("setBorderColor", &libsystem::paxoConfig::setBorderColor);
 
         if (perms.acces_password_manager) {
             systemSettings.set_function("setSimPin", &Gsm::setPin);
@@ -1156,18 +1053,18 @@ void LuaFile::load() {
     // lua.set_exception_handler(sol_exception_handler);
 }
 
-#define SAFE_CALL(func, lua, arg)                                              \
-    do {                                                                       \
-        sol::protected_function_result result = func(arg);                     \
-        if (!result.valid()) {                                                 \
-            sol::error err = result;                                           \
-            const char* what = err.what();                                     \
-            if (what) {                                                        \
-                printf("Error from Lua: %s\n", what);                          \
-            } else {                                                           \
-                printf("Unknown Lua error occurred\n");                        \
-            }                                                                  \
-        }                                                                      \
+#define SAFE_CALL(func, lua, arg)                                                                  \
+    do {                                                                                           \
+        sol::protected_function_result result = func(arg);                                         \
+        if (!result.valid()) {                                                                     \
+            sol::error err = result;                                                               \
+            const char* what = err.what();                                                         \
+            if (what) {                                                                            \
+                printf("Error from Lua: %s\n", what);                                              \
+            } else {                                                                               \
+                printf("Unknown Lua error occurred\n");                                            \
+            }                                                                                      \
+        }                                                                                          \
     } while (0)
 
 void LuaFile::run(std::vector<std::string> arg) {
@@ -1192,8 +1089,7 @@ void LuaFile::runBackground(std::vector<std::string> arg) {
 
     lua.set_exception_handler(AppManager::pushError);
 
-    std::cout << "Loading Lua File In Background: " << filename.str()
-              << std::endl;
+    std::cout << "Loading Lua File In Background: " << filename.str() << std::endl;
     storage::FileStream file(filename.str(), storage::READ);
     std::string code = file.read();
     file.close();
@@ -1207,20 +1103,15 @@ void LuaFile::runBackground(std::vector<std::string> arg) {
 
 void LuaFile::wakeup(std::vector<std::string> arg) {
     sol::protected_function func = lua["wakeup"];
-    if (!func.valid()) {
-        return;
-    }
+    if (!func.valid()) return;
 
     lua["wakeup"](arg);
 }
 
 void LuaFile::stop(std::vector<std::string> arg) {
-    const sol::protected_function func =
-        lua.get<sol::protected_function>("quit");
+    const sol::protected_function func = lua.get<sol::protected_function>("quit");
 
-    if (!func.valid()) {
-        return;
-    }
+    if (!func.valid()) return;
 
     lua["quit"](arg);
 }

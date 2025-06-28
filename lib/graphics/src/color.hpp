@@ -14,43 +14,42 @@
 typedef uint16_t color_t;
 
 namespace graphics {
-/**
- * Create a RGB565 value from 3 8-bit RGB components.
- * @param r The red component.
- * @param g The green component.
- * @param b The blue component.
- * @see graphics::constPackRGB565()
- * @return A RGB565 color.
- */
-color_t packRGB565(uint8_t r, uint8_t g, uint8_t b);
+    /**
+     * Create a RGB565 value from 3 8-bit RGB components.
+     * @param r The red component.
+     * @param g The green component.
+     * @param b The blue component.
+     * @see graphics::constPackRGB565()
+     * @return A RGB565 color.
+     */
+    color_t packRGB565(uint8_t r, uint8_t g, uint8_t b);
 
-/**
- * Extracts the red, green and blue components from a RGB565 color.
- * @param rgb The RGB565 color to unpack.
- * @param r The red component output pointer.
- * @param g The green component output pointer.
- * @param b The blue component output pointer.
- */
-void unpackRGB565(color_t rgb, uint8_t* r, uint8_t* g, uint8_t* b);
+    /**
+     * Extracts the red, green and blue components from a RGB565 color.
+     * @param rgb The RGB565 color to unpack.
+     * @param r The red component output pointer.
+     * @param g The green component output pointer.
+     * @param b The blue component output pointer.
+     */
+    void unpackRGB565(color_t rgb, uint8_t* r, uint8_t* g, uint8_t* b);
 
-/**
- * Create a RGB565 value from 3 8-bit RGB components.
- * This function is evaluated at compile-time.
- * @param r The red component.
- * @param g The green component.
- * @param b The blue component.
- * @return A RGB565 color.
- */
-constexpr color_t
-    constPackRGB565(const uint8_t r, const uint8_t g, const uint8_t b) {
-    uint16_t rgb = 0;
+    /**
+     * Create a RGB565 value from 3 8-bit RGB components.
+     * This function is evaluated at compile-time.
+     * @param r The red component.
+     * @param g The green component.
+     * @param b The blue component.
+     * @return A RGB565 color.
+     */
+    constexpr color_t constPackRGB565(const uint8_t r, const uint8_t g, const uint8_t b) {
+        uint16_t rgb = 0;
 
-    rgb |= (r >> 3) << 11;
-    rgb |= (g >> 2) << 5;
-    rgb |= (b >> 3);
+        rgb |= (r >> 3) << 11;
+        rgb |= (g >> 2) << 5;
+        rgb |= (b >> 3);
 
-    return rgb;
-}
+        return rgb;
+    }
 } // namespace graphics
 
 #define COLOR_DARK 0x0000

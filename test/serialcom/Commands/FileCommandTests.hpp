@@ -262,20 +262,14 @@ TEST(Commands, FILE_COMMANDS) {
     // cp and mv tests, read result to make sure it works
 
     executeCommand("rm /FILE_COMMANDS_TEST/emptyFileCopy.txt", true);
-    executeCommand(
-        "rm /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileCopy.txt",
-        true
-    );
+    executeCommand("rm /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileCopy.txt", true);
 
     testCommand(
         "cp /FILE_COMMANDS_TEST/emptyFile.txt "
         "/FILE_COMMANDS_TEST/emptyFileCopy.txt",
         true,
         Command::CommandType::cp,
-        COPY_SUCCESS(
-            "/FILE_COMMANDS_TEST/emptyFile.txt",
-            "/FILE_COMMANDS_TEST/emptyFileCopy.txt"
-        )
+        COPY_SUCCESS("/FILE_COMMANDS_TEST/emptyFile.txt", "/FILE_COMMANDS_TEST/emptyFileCopy.txt")
     );
     testCommand(
         "cp /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFile.txt "
@@ -297,8 +291,7 @@ TEST(Commands, FILE_COMMANDS) {
         "ls /FILE_COMMANDS_TEST",
         true,
         Command::CommandType::ls,
-        LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") +
-            "\nemptyFile.txt\nemptyFileCopy.txt"
+        LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nemptyFile.txt\nemptyFileCopy.txt"
     );
     testCommand(
         "ls /FILE_COMMANDS_TEST_NON_SHELL_MODE",
@@ -309,20 +302,14 @@ TEST(Commands, FILE_COMMANDS) {
     );
 
     executeCommand("rm /FILE_COMMANDS_TEST/emptyFileMoved.txt", true);
-    executeCommand(
-        "rm /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileMoved.txt",
-        true
-    );
+    executeCommand("rm /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFileMoved.txt", true);
 
     testCommand(
         "mv /FILE_COMMANDS_TEST/emptyFile.txt "
         "/FILE_COMMANDS_TEST/emptyFileMoved.txt",
         true,
         Command::CommandType::mv,
-        MOVE_SUCCESS(
-            "/FILE_COMMANDS_TEST/emptyFile.txt",
-            "/FILE_COMMANDS_TEST/emptyFileMoved.txt"
-        )
+        MOVE_SUCCESS("/FILE_COMMANDS_TEST/emptyFile.txt", "/FILE_COMMANDS_TEST/emptyFileMoved.txt")
     );
     testCommand(
         "mv /FILE_COMMANDS_TEST_NON_SHELL_MODE/emptyFile.txt "
@@ -344,8 +331,7 @@ TEST(Commands, FILE_COMMANDS) {
         "ls /FILE_COMMANDS_TEST",
         true,
         Command::CommandType::ls,
-        LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") +
-            "\nemptyFileCopy.txt\nemptyFileMoved.txt"
+        LS_SUCCESS_OUPUT_HEADER("/FILE_COMMANDS_TEST") + "\nemptyFileCopy.txt\nemptyFileMoved.txt"
     );
     testCommand(
         "ls /FILE_COMMANDS_TEST_NON_SHELL_MODE",

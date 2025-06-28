@@ -17,7 +17,7 @@
 #include <threads.hpp>
 
 namespace AppManager {
-class App;
+    class App;
 }
 
 struct Permissions {
@@ -52,27 +52,20 @@ class LuaFile {
     sol::protected_function onmessageerror;
 
     void event_oncall() {
-        if (oncall.valid()) {
-            oncall();
-        }
+        if (oncall.valid()) oncall();
     }
     void event_onlowbattery() {
-        if (onlowbattery.valid()) {
-            onlowbattery();
-        }
+        if (onlowbattery.valid()) onlowbattery();
     }
     void event_oncharging() {
-        if (oncharging.valid()) {
-            oncharging();
-        }
+        if (oncharging.valid()) oncharging();
     }
     void event_onmessage() {
         if (onmessage.valid()) {
             sol::protected_function_result result = onmessage();
             if (!result.valid()) {
                 sol::error err = result;
-                std::cout << "[LuaFile] onmessage event error: " << err.what()
-                          << std::endl;
+                std::cout << "[LuaFile] onmessage event error: " << err.what() << std::endl;
             } else {
                 std::cout << "onmessage event activated" << std::endl;
             }
@@ -84,8 +77,7 @@ class LuaFile {
             sol::protected_function_result result = onmessageerror();
             if (!result.valid()) {
                 sol::error err = result;
-                std::cout << "[LuaFile] onmessageerror event error: "
-                          << err.what() << std::endl;
+                std::cout << "[LuaFile] onmessageerror event error: " << err.what() << std::endl;
             } else {
                 std::cout << "onmessageerror event activated" << std::endl;
             }

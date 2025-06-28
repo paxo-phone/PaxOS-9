@@ -7,9 +7,7 @@ class LuaFile;
 
 class LuaTimeInterval {
   public:
-    LuaTimeInterval(
-        LuaFile* lua, sol::protected_function func, uint32_t interval
-    );
+    LuaTimeInterval(LuaFile* lua, sol::protected_function func, uint32_t interval);
     int getId();
     void call();
     ~LuaTimeInterval();
@@ -24,8 +22,7 @@ class LuaTimeInterval {
 class LuaTimeEvent {
   public:
     uint32_t addEventListener(
-        LuaFile* lua, sol::protected_function condition,
-        sol::protected_function callback
+        LuaFile* lua, sol::protected_function condition, sol::protected_function callback
     );
     void call();
 
@@ -37,9 +34,7 @@ class LuaTimeEvent {
 
 class LuaTimeTimeout {
   public:
-    LuaTimeTimeout(
-        LuaFile* lua, sol::protected_function func, uint32_t timeout
-    );
+    LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint32_t timeout);
     int getId();
     void call();
     ~LuaTimeTimeout();

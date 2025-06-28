@@ -1,6 +1,5 @@
-#include "hardware.hpp"
-
 #include "gpio.hpp"
+#include "hardware.hpp"
 
 #include <libsystem.hpp>
 
@@ -120,9 +119,7 @@ bool hardware::getHomeButton() {
 uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin) {
 #ifdef ESP_PLATFORM
 
-    if (begin) {
-        Wire.begin(sda, scl);
-    }
+    if (begin) Wire.begin(sda, scl);
 
     uint8_t count = 0;
 
@@ -143,13 +140,10 @@ uint8_t hardware::scanI2C(const int sda, const int scl, const bool begin) {
 #endif
 }
 
-hardware::I2CResponse hardware::checkI2C(
-    const uint8_t address, const int sda, const int scl, const bool begin
-) {
+hardware::I2CResponse
+    hardware::checkI2C(const uint8_t address, const int sda, const int scl, const bool begin) {
 #ifdef ESP_PLATFORM
-    if (begin) {
-        Wire.begin(sda, scl);
-    }
+    if (begin) Wire.begin(sda, scl);
     Wire.beginTransmission(address);
 
     return static_cast<I2CResponse>(Wire.endTransmission());
@@ -170,8 +164,8 @@ bool hardware::isCharging() {
 }
 
 namespace hardware::input {
-InputFrame lastFrame;
-InputFrame frame;
+    InputFrame lastFrame;
+    InputFrame frame;
 } // namespace hardware::input
 
 void hardware::input::update() {
@@ -180,8 +174,7 @@ void hardware::input::update() {
     frame.homeButtonState = getHomeButton() ? PRESSED : RELEASED;
 }
 
-hardware::input::ButtonState hardware::input::getButtonState(const Button button
-) {
+hardware::input::ButtonState hardware::input::getButtonState(const Button button) {
     switch (button) {
     case HOME:
         return getHomeButton() ? PRESSED : RELEASED;
@@ -193,8 +186,7 @@ hardware::input::ButtonState hardware::input::getButtonState(const Button button
 bool hardware::input::getButtonDown(const Button button) {
     switch (button) {
     case HOME:
-        return lastFrame.homeButtonState == RELEASED &&
-               frame.homeButtonState == PRESSED;
+        return lastFrame.homeButtonState == RELEASED && frame.homeButtonState == PRESSED;
     default:
         throw libsystem::exceptions::InvalidArgument("Unknown button.");
     }
@@ -203,8 +195,7 @@ bool hardware::input::getButtonDown(const Button button) {
 bool hardware::input::getButtonUp(const Button button) {
     switch (button) {
     case HOME:
-        return lastFrame.homeButtonState == PRESSED &&
-               frame.homeButtonState == RELEASED;
+        return lastFrame.homeButtonState == PRESSED && frame.homeButtonState == RELEASED;
     default:
         throw libsystem::exceptions::InvalidArgument("Unknown button.");
     }

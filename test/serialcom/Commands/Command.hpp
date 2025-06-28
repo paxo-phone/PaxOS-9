@@ -15,43 +15,19 @@ TEST(Commands, COMMAND_STRUCTURE) {
     ASSERT_EQ(command.type, Command::CommandType::unknown);
 
     // test the arguments
-    for (size_t i = 0; i < MAX_COMMAND_ARGUMENTS_COUNT; i++) {
-        for (size_t j = 0; j < MAX_ARGUMENT_SIZE; j++) {
-            ASSERT_EQ(command.arguments[i][j], '\0');
-        }
-    }
+    for (size_t i = 0; i < MAX_COMMAND_ARGUMENTS_COUNT; i++)
+        for (size_t j = 0; j < MAX_ARGUMENT_SIZE; j++) ASSERT_EQ(command.arguments[i][j], '\0');
 
     // test the command type strings
-    ASSERT_EQ(
-        Command::command_types_raw_strings[Command::CommandType::info],
-        "info"
-    );
-    ASSERT_EQ(
-        Command::command_types_raw_strings[Command::CommandType::echo],
-        "echo"
-    );
-    ASSERT_EQ(
-        Command::command_types_raw_strings[Command::CommandType::apps],
-        "apps"
-    );
-    ASSERT_EQ(
-        Command::command_types_raw_strings[Command::CommandType::files],
-        "files"
-    );
-    ASSERT_EQ(
-        Command::command_types_raw_strings[Command::CommandType::elevate],
-        "elevate"
-    );
-    ASSERT_EQ(
-        Command::command_types_raw_strings[Command::CommandType::lte],
-        "lte"
-    );
+    ASSERT_EQ(Command::command_types_raw_strings[Command::CommandType::info], "info");
+    ASSERT_EQ(Command::command_types_raw_strings[Command::CommandType::echo], "echo");
+    ASSERT_EQ(Command::command_types_raw_strings[Command::CommandType::apps], "apps");
+    ASSERT_EQ(Command::command_types_raw_strings[Command::CommandType::files], "files");
+    ASSERT_EQ(Command::command_types_raw_strings[Command::CommandType::elevate], "elevate");
+    ASSERT_EQ(Command::command_types_raw_strings[Command::CommandType::lte], "lte");
 
     // test the unknown command type
-    ASSERT_EQ(
-        Command::command_types_raw_strings[Command::CommandType::unknown],
-        ""
-    );
+    ASSERT_EQ(Command::command_types_raw_strings[Command::CommandType::unknown], "");
 
     // test the input max size
     ASSERT_EQ(

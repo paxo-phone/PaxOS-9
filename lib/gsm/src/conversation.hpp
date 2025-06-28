@@ -12,29 +12,29 @@
 #define MAX_MESSAGES 40
 
 namespace Conversations {
-struct Message {
-    std::string message;
-    bool who; // false = myself, true = the other
-    std::string date;
-};
+    struct Message {
+        std::string message;
+        bool who; // false = myself, true = the other
+        std::string date;
+    };
 
-struct Conversation {
-    std::string number;
-    std::vector<Message> messages;
-};
+    struct Conversation {
+        std::string number;
+        std::vector<Message> messages;
+    };
 
-/**
- * @brief Load a conversation from a file
- * @param filePath The file path containing the conversation to load
- * @param conv The conversation to load into
- */
-void loadConversation(const storage::Path& filePath, Conversation& conv);
-/**
- * @brief Save a conversation to a file
- * @param filePath The file path to save the conversation to
- * @param conv The conversation to save
- */
-void saveConversation(const storage::Path& filePath, const Conversation& conv);
+    /**
+     * @brief Load a conversation from a file
+     * @param filePath The file path containing the conversation to load
+     * @param conv The conversation to load into
+     */
+    void loadConversation(const storage::Path& filePath, Conversation& conv);
+    /**
+     * @brief Save a conversation to a file
+     * @param filePath The file path to save the conversation to
+     * @param conv The conversation to save
+     */
+    void saveConversation(const storage::Path& filePath, const Conversation& conv);
 } // namespace Conversations
 
 #endif // CONVERSATION_HPP

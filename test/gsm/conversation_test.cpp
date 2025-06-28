@@ -8,8 +8,7 @@
 TEST(ConversationTest, SaveLoadConversation) {
     // Chemin du répertoire des messages
     storage::Path messagesDir(MESSAGES_LOCATION);
-    std::cout << "Checking if directory exists: " << messagesDir.str()
-              << std::endl;
+    std::cout << "Checking if directory exists: " << messagesDir.str() << std::endl;
     if (!messagesDir.exists()) {
         std::cout << "Directory does not exist. Creating..." << std::endl;
         std::string command = "mkdir -p " + messagesDir.str();
@@ -35,8 +34,7 @@ TEST(ConversationTest, SaveLoadConversation) {
     json["number"] = conv.number;
 
     for (const auto& msg : conv.messages) {
-        json["messages"].push_back(
-            {{"message", msg.message}, {"who", msg.who}, {"date", msg.date}}
+        json["messages"].push_back({{"message", msg.message}, {"who", msg.who}, {"date", msg.date}}
         );
     }
     writeStream.write(json.dump(4));

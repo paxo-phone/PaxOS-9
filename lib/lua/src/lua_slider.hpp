@@ -6,8 +6,8 @@
 class LuaSlider : public LuaWidget {
   public:
     LuaSlider(
-        LuaWidget* parent, int x, int y, int width, int height, int minValue,
-        int maxValue, int defaultValue
+        LuaWidget* parent, int x, int y, int width, int height, int minValue, int maxValue,
+        int defaultValue
     );
 
     void setValue(int value);

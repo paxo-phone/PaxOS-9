@@ -40,11 +40,9 @@ using namespace gui::elements;
 void mainLoop(void* data) {
     libsystem::log("[STARTUP]: run mainLoop");
 #ifdef ESP_PLATFORM
-    if (!backtrace_saver::isBacktraceEmpty()) {
-        backtrace_saver::backtraceMessageGUI();
-    }
+    if (!backtrace_saver::isBacktraceEmpty()) backtrace_saver::backtraceMessageGUI();
 
-    // libsystem::setDeviceMode(libsystem::NORMAL);
+        // libsystem::setDeviceMode(libsystem::NORMAL);
 #endif
 
     GuiManager& guiManager = GuiManager::getInstance();
@@ -58,12 +56,9 @@ void mainLoop(void* data) {
     if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
         // Launch OOBE app
         try {
-            const std::shared_ptr<AppManager::App> oobeApp =
-                AppManager::get(".oobe");
+            const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
 
-            if (oobeApp == nullptr) {
-                throw std::runtime_error("OOBE app not found.");
-            }
+            if (oobeApp == nullptr) throw std::runtime_error("OOBE app not found.");
 
             oobeApp->run();
         } catch (std::runtime_error& e) {
@@ -80,32 +75,26 @@ void mainLoop(void* data) {
         AppManager::loop();
         eventHandlerApp.update();
 
-        if (AppManager::isAnyVisibleApp() &&
-            launcher) // free the launcher is an app is running and the launcher
-                      // is active
+        if (AppManager::isAnyVisibleApp() && launcher) // free the launcher is an app is running and
+                                                       // the launcher is active
         {
             applications::launcher::free();
             launcher = false;
         }
 
-        if (launcher) {
-            applications::launcher::update();
-        }
+        if (launcher) applications::launcher::update();
 
         if (libsystem::getDeviceMode() == libsystem::NORMAL &&
-            !AppManager::isAnyVisibleApp(
-            )) // si mode normal et pas d'app en cours
+            !AppManager::isAnyVisibleApp()) // si mode normal et pas d'app en cours
         {
             if (!launcher) // si pas de launcher -> afficher un launcher
             {
                 applications::launcher::init();
                 launcher = true;
             } else // si launcher -> l'update et peut être lancer une app
-            {
                 if (applications::launcher::iconTouched()) {
                     // run the app
-                    const std::shared_ptr<AppManager::App> app =
-                        applications::launcher::getApp();
+                    const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
 
                     // Free the launcher resources
                     applications::launcher::free();
@@ -120,13 +109,11 @@ void mainLoop(void* data) {
                         guiManager.showErrorMessage(e.what());
                     }
                 }
-            }
         }
 
         if (hardware::getHomeButton()) // si on appuie sur HOME
         {
-            while (hardware::getHomeButton())
-                ;
+            while (hardware::getHomeButton());
 
             if (libsystem::getDeviceMode() == libsystem::SLEEP) {
                 setDeviceMode(libsystem::NORMAL);
@@ -146,8 +133,7 @@ void mainLoop(void* data) {
             }
         }
 
-        if (libsystem::getDeviceMode() == libsystem::SLEEP &&
-            AppManager::isAnyVisibleApp()) {
+        if (libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp()) {
             setDeviceMode(libsystem::NORMAL);
             StandbyMode::disable();
         }
@@ -165,11 +151,10 @@ void mainLoop(void* data) {
             StandbyMode::enable();
         }
 
-        if (libsystem::getDeviceMode() == libsystem::SLEEP) {
+        if (libsystem::getDeviceMode() == libsystem::SLEEP)
             StandbyMode::sleepCycle();
-        } else {
+        else
             StandbyMode::wait();
-        }
 
         /*std::cout << "states: "
                   << "StandbyMode: " << (StandbyMode::state() ? "enabled" :
@@ -199,11 +184,10 @@ void init(void* data) {
         graphicsInitCode != graphics::SUCCESS) {
         libsystem::registerBootError("Graphics initialization error.");
 
-        if (graphicsInitCode == graphics::ERROR_NO_TOUCHSCREEN) {
+        if (graphicsInitCode == graphics::ERROR_NO_TOUCHSCREEN)
             libsystem::registerBootError("No touchscreen found.");
-        } else if (graphicsInitCode == graphics::ERROR_FAULTY_TOUCHSCREEN) {
+        else if (graphicsInitCode == graphics::ERROR_FAULTY_TOUCHSCREEN)
             libsystem::registerBootError("Faulty touchscreen detected.");
-        }
     }
     setScreenOrientation(graphics::PORTRAIT);
 
@@ -236,8 +220,7 @@ void init(void* data) {
 
 #ifdef ESP_PLATFORM
     backtrace_saver::init();
-    std::cout << "backtrace: " << backtrace_saver::getBacktraceMessage()
-              << std::endl;
+    std::cout << "backtrace: " << backtrace_saver::getBacktraceMessage() << std::endl;
     backtrace_saver::backtraceEventId = eventHandlerBack.addEventListener(
         new Condition<>(&backtrace_saver::shouldSaveBacktrace),
         new Callback<>(&backtrace_saver::saveBacktrace)
@@ -264,17 +247,13 @@ void init(void* data) {
         systemConfig.write();
     }
 
-    if (!systemConfig.has("settings.color.background")) {
+    if (!systemConfig.has("settings.color.background"))
         libsystem::paxoConfig::setBackgroundColor(0xFFFF, true);
-    } else {
-        COLOR_WHITE = static_cast<color_t>(
-            systemConfig.get<uint16_t>("settings.color.background")
-        );
-    }
+    else
+        COLOR_WHITE = static_cast<color_t>(systemConfig.get<uint16_t>("settings.color.background"));
 
     libsystem::log(
-        "settings.brightness: " +
-        std::to_string(systemConfig.get<uint8_t>("settings.brightness"))
+        "settings.brightness: " + std::to_string(systemConfig.get<uint8_t>("settings.brightness"))
     );
 
     graphics::setBrightness(systemConfig.get<uint8_t>("settings.brightness"));

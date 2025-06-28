@@ -64,8 +64,7 @@ class LGFX : public lgfx::LGFX_Device {
             cfg.pwm_channel = 0;
 
             _light_instance.config(cfg);
-            _panel_instance.setLight(&_light_instance
-            ); // バックライトをパネルにセットします。
+            _panel_instance.setLight(&_light_instance); // バックライトをパネルにセットします。
         }
 
         setPanel(&_panel_instance); // 使用するパネルをセットします。

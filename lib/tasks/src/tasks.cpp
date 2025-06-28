@@ -19,11 +19,8 @@ EventHandler::~EventHandler() {
 
 void EventHandler::update(std::function<bool()> forced_exit) {
     // Handle events
-    for (auto& event : events) {
-        if (event->condition->call()) {
-            event->callback->call();
-        }
-    }
+    for (auto& event : events)
+        if (event->condition->call()) event->callback->call();
 
     // Handle timeouts
     auto now = os_millis();
@@ -37,9 +34,7 @@ void EventHandler::update(std::function<bool()> forced_exit) {
             ++it;
         }
 
-        if (forced_exit()) {
-            return;
-        }
+        if (forced_exit()) return;
     }
 
     // Handle intervals
@@ -47,8 +42,7 @@ void EventHandler::update(std::function<bool()> forced_exit) {
         for (int i = 0; i < intervals.size(); i++) {
             if (intervals.size() > i) {
                 if (intervals[i].callback) {
-                    if (now >=
-                        intervals[i].lastTrigger + intervals[i].interval) {
+                    if (now >= intervals[i].lastTrigger + intervals[i].interval) {
                         intervals[i].callback();
                         intervals[i].lastTrigger = now;
                     }
@@ -58,17 +52,14 @@ void EventHandler::update(std::function<bool()> forced_exit) {
                 }
             }
 
-            if (forced_exit()) {
-                return;
-            }
+            if (forced_exit()) return;
         }
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
     }
 }
 
-uint32_t
-    EventHandler::addEventListener(Function* condition, Function* callback) {
+uint32_t EventHandler::addEventListener(Function* condition, Function* callback) {
     uint32_t id = findAvailableId();
     events.push_back(new Event(condition, callback, id));
     return id;
@@ -106,9 +97,7 @@ void EventHandler::removeTimeout(uint32_t id) {
     );
 }
 
-uint32_t EventHandler::setInterval(
-    std::function<void()> callback, uint64_t interval
-) {
+uint32_t EventHandler::setInterval(std::function<void()> callback, uint64_t interval) {
     uint32_t id = findAvailableId();
     intervals.push_back(Interval(callback, interval, id));
     return id;
@@ -134,21 +123,12 @@ uint32_t EventHandler::findAvailableId() {
 
     while (!found) {
         found = true;
-        for (auto& event : events) {
-            if (event->id == nextId) {
-                found = false;
-            }
-        }
-        for (auto& timeout : timeouts) {
-            if (timeout->id == nextId) {
-                found = false;
-            }
-        }
-        for (auto& interval : intervals) {
-            if (interval.id == nextId) {
-                found = false;
-            }
-        }
+        for (auto& event : events)
+            if (event->id == nextId) found = false;
+        for (auto& timeout : timeouts)
+            if (timeout->id == nextId) found = false;
+        for (auto& interval : intervals)
+            if (interval.id == nextId) found = false;
 
         nextId++;
     }

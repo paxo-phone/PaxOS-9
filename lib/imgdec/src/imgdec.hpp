@@ -9,22 +9,19 @@
 #include <path.hpp>
 
 namespace imgdec {
-enum IMGType { ERROR, BMP, PNG, JPG };
+    enum IMGType { ERROR, BMP, PNG, JPG };
 
-typedef struct IMGData IMGData;
-struct IMGData {
-    IMGType type = ERROR;
+    typedef struct IMGData IMGData;
+    struct IMGData {
+        IMGType type = ERROR;
 
-    uint32_t width = -1;
-    uint32_t heigth = -1;
-};
+        uint32_t width = -1;
+        uint32_t heigth = -1;
+    };
 
-IMGData decodeHeader(const uint8_t* rawData);
+    IMGData decodeHeader(const uint8_t* rawData);
 
-void encodeJpg(
-    const uint8_t* rawData, uint32_t width, uint32_t heigth,
-    storage::Path filename
-);
+    void encodeJpg(const uint8_t* rawData, uint32_t width, uint32_t heigth, storage::Path filename);
 } // namespace imgdec
 
 #endif // IMGDEC_HPP

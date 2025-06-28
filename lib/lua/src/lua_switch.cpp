@@ -1,7 +1,6 @@
-#include "lua_switch.hpp"
-
 #include "lua_file.hpp"
 #include "lua_gui.hpp"
+#include "lua_switch.hpp"
 
 LuaSwitch::LuaSwitch(LuaWidget* parent, int x, int y, LuaGui* gui) {
     widget = new Switch(x, y);

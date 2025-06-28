@@ -15,107 +15,94 @@
 #include <optional>
 
 namespace graphics {
-class SImage;
+    class SImage;
 
-class Surface {
-    friend void showSurface(const Surface* surface);
+    class Surface {
+        friend void showSurface(const Surface* surface);
 
-  public:
-    lgfx::LGFX_Sprite m_sprite;
+      public:
+        lgfx::LGFX_Sprite m_sprite;
 
-    color_t m_color;
-    bool m_transparent;
-    color_t m_transparent_color;
+        color_t m_color;
+        bool m_transparent;
+        color_t m_transparent_color;
 
-    EFont m_font;
-    float m_fontSize;
-    color_t m_text_color;
-    uint8_t m_color_depth;
+        EFont m_font;
+        float m_fontSize;
+        color_t m_text_color;
+        uint8_t m_color_depth;
 
-  public:
-    Surface(uint16_t width, uint16_t height, const uint8_t color_depth = 16);
-    ~Surface();
+      public:
+        Surface(uint16_t width, uint16_t height, const uint8_t color_depth = 16);
+        ~Surface();
 
-    [[nodiscard]] uint16_t getWidth() const;
-    [[nodiscard]] uint16_t getHeight() const;
+        [[nodiscard]] uint16_t getWidth() const;
+        [[nodiscard]] uint16_t getHeight() const;
 
-    uint16_t getPixel(uint16_t x, uint16_t y);
-    void setPixel(uint16_t x, uint16_t y, color_t value);
+        uint16_t getPixel(uint16_t x, uint16_t y);
+        void setPixel(uint16_t x, uint16_t y, color_t value);
 
-    void pushSurface(Surface* surface, int16_t x, int16_t y);
-    void pushSurfaceWithScale(
-        Surface* surface, int16_t x, int16_t y, float scale
-    );
+        void pushSurface(Surface* surface, int16_t x, int16_t y);
+        void pushSurfaceWithScale(Surface* surface, int16_t x, int16_t y, float scale);
 
-    void clear(color_t color);
-    void clear();
+        void clear(color_t color);
+        void clear();
 
-    void setColor(const color_t color);
+        void setColor(const color_t color);
 
-    void setTransparency(bool enabled);
-    void setTransparentColor(color_t color);
+        void setTransparency(bool enabled);
+        void setTransparentColor(color_t color);
 
-    void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
-    void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
+        void fillRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
+        void drawRect(int16_t x, int16_t y, uint16_t w, uint16_t h, color_t color);
 
-    void drawCircle(int16_t x, int16_t y, uint16_t r, color_t color);
-    void fillCircle(int16_t x, int16_t y, uint16_t r, color_t color);
+        void drawCircle(int16_t x, int16_t y, uint16_t r, color_t color);
+        void fillCircle(int16_t x, int16_t y, uint16_t r, color_t color);
 
-    void fillRoundRect(
-        int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color
-    );
-    void fillRoundRectWithBorder(
-        int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs,
-        uint16_t Backcolor, uint16_t Bordercolor
-    );
-    void drawRoundRect(
-        int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color
-    );
+        void fillRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
+        void fillRoundRectWithBorder(
+            int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs, uint16_t Backcolor,
+            uint16_t Bordercolor
+        );
+        void drawRoundRect(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t r, color_t color);
 
-    void
-        drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
+        void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, color_t color);
 
-    bool saveAsJpg(const storage::Path filename);
-    void drawImage(
-        const SImage& image, int16_t x, int16_t y, uint16_t w = 0,
-        uint16_t h = 0
-    );
+        bool saveAsJpg(const storage::Path filename);
+        void drawImage(const SImage& image, int16_t x, int16_t y, uint16_t w = 0, uint16_t h = 0);
 
-    void setFont(EFont font);
-    void setFontSize(float fontSize);
-    void setTextColor(const color_t textColor);
-    uint16_t getTextWidth(std::string text);
-    uint16_t getTextHeight() const;
-    void drawText(
-        std::string& otext, int16_t x, int16_t y,
-        std::optional<color_t> color = std::nullopt
-    );
+        void setFont(EFont font);
+        void setFontSize(float fontSize);
+        void setTextColor(const color_t textColor);
+        uint16_t getTextWidth(std::string text);
+        uint16_t getTextHeight() const;
+        void drawText(
+            std::string& otext, int16_t x, int16_t y, std::optional<color_t> color = std::nullopt
+        );
 
-    // w and h are the width and height of the bounding box where the text will
-    // be centered
-    void drawTextCentered(
-        std::string& text, const int16_t x, const int16_t y,
-        const uint16_t w = -1, const uint16_t h = -1,
-        const bool horizontallyCentered = true,
-        const bool verticallyCentered = true,
-        const std::optional<color_t> color = std::nullopt
-    );
+        // w and h are the width and height of the bounding box where the text will
+        // be centered
+        void drawTextCentered(
+            std::string& text, const int16_t x, const int16_t y, const uint16_t w = -1,
+            const uint16_t h = -1, const bool horizontallyCentered = true,
+            const bool verticallyCentered = true, const std::optional<color_t> color = std::nullopt
+        );
 
-    [[nodiscard]] Surface clone() const;
+        [[nodiscard]] Surface clone() const;
 
-    [[nodiscard]] void* getBuffer() const;
-    void setBuffer(void* buffer, int32_t w = -1, int32_t h = -1);
+        [[nodiscard]] void* getBuffer() const;
+        void setBuffer(void* buffer, int32_t w = -1, int32_t h = -1);
 
-    enum Filter { BLUR, LIGHTEN, DARKEN };
+        enum Filter { BLUR, LIGHTEN, DARKEN };
 
-    void applyFilter(Filter filter, int32_t intensity);
+        void applyFilter(Filter filter, int32_t intensity);
 
-  private:
-    void blur(int32_t radius);
-    void fastBlur(int32_t radius);
-    void lighten(int32_t intensity);
-    void darken(int32_t intensity);
-};
+      private:
+        void blur(int32_t radius);
+        void fastBlur(int32_t radius);
+        void lighten(int32_t intensity);
+        void darken(int32_t intensity);
+    };
 } // namespace graphics
 
 #endif // SURFACE_HPP

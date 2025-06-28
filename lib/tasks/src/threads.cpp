@@ -1,6 +1,5 @@
-#include "threads.hpp"
-
 #include "delay.hpp"
+#include "threads.hpp"
 
 #include <clock.hpp>
 #include <gsm2.hpp>
@@ -19,8 +18,7 @@ EventHandler eventHandlerApp;
 #include <esp_task_wdt.h>
 #endif
 
-#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                \
-    defined(__APPLE__)
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 
 #include <thread>
 

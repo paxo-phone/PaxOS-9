@@ -21,18 +21,10 @@ std::string getFormatedDate() {
     int16_t month = Gsm::Time::getMonth();
     int16_t year = Gsm::Time::getYear();
 
-    if (day_ == -1) {
-        day_ = 1;
-    }
-    if (day == -1) {
-        day = 1;
-    }
-    if (month == -1) {
-        month = 1;
-    }
-    if (year == -1) {
-        year = 1970;
-    }
+    if (day_ == -1) day_ = 1;
+    if (day == -1) day = 1;
+    if (month == -1) month = 1;
+    if (year == -1) year = 1970;
 
     std::string dayName = daysOfWeek
         [(day += month < 3 ? year-- : year - 2,
@@ -40,66 +32,50 @@ std::string getFormatedDate() {
          7];
     std::string monthName = daysOfMonth[month == 0 ? 1 : (month - 1)];
 
-    return dayName + " " + std::to_string(Gsm::Time::getDay()) + " " +
-           monthName;
+    return dayName + " " + std::to_string(Gsm::Time::getDay()) + " " + monthName;
 }
 
 std::string getBatteryIconFilename() {
     const bool isCharging = hardware::isCharging();
-    const double batteryLevel = Gsm::getBatteryLevel(
-    ); // TODO: Replace with actual battery level calculation
+    const double batteryLevel =
+        Gsm::getBatteryLevel(); // TODO: Replace with actual battery level calculation
 
-    if (batteryLevel < 0.2) {
-        return isCharging ? "battery_charging_full" : "battery_0_bar";
-    }
-    if (batteryLevel < 0.3) {
-        return isCharging ? "battery_charging_20" : "battery_1_bar";
-    }
-    if (batteryLevel < 0.5) {
-        return isCharging ? "battery_charging_30" : "battery_2_bar";
-    }
-    if (batteryLevel < 0.6) {
-        return isCharging ? "battery_charging_50" : "battery_3_bar";
-    }
-    if (batteryLevel < 0.7) {
-        return isCharging ? "battery_charging_60" : "battery_4_bar";
-    }
-    if (batteryLevel < 0.8) {
-        return isCharging ? "battery_charging_80" : "battery_5_bar";
-    }
-    if (batteryLevel < 0.9) {
-        return isCharging ? "battery_charging_90" : "battery_6_bar";
-    }
+    if (batteryLevel < 0.2) return isCharging ? "battery_charging_full" : "battery_0_bar";
+    if (batteryLevel < 0.3) return isCharging ? "battery_charging_20" : "battery_1_bar";
+    if (batteryLevel < 0.5) return isCharging ? "battery_charging_30" : "battery_2_bar";
+    if (batteryLevel < 0.6) return isCharging ? "battery_charging_50" : "battery_3_bar";
+    if (batteryLevel < 0.7) return isCharging ? "battery_charging_60" : "battery_4_bar";
+    if (batteryLevel < 0.8) return isCharging ? "battery_charging_80" : "battery_5_bar";
+    if (batteryLevel < 0.9) return isCharging ? "battery_charging_90" : "battery_6_bar";
 
     return "battery_full";
 }
 
 namespace applications::launcher {
-std::shared_ptr<Window> launcherWindow = nullptr;
-std::map<gui::ElementBase*, std::shared_ptr<AppManager::App>>
-    applicationsIconsMap;
-std::shared_ptr<AppManager::App> targetApp = nullptr;
+    std::shared_ptr<Window> launcherWindow = nullptr;
+    std::map<gui::ElementBase*, std::shared_ptr<AppManager::App>> applicationsIconsMap;
+    std::shared_ptr<AppManager::App> targetApp = nullptr;
 
-bool allocated = false;
-bool dirty = true;
+    bool allocated = false;
+    bool dirty = true;
 
-Label* clockLabel = nullptr;
-Label* dateLabel = nullptr;
-Label* batteryLabel = nullptr;
-Image* batteryIcon = nullptr;
-Box* chargingPopupBox = nullptr;
-Box* brightnessSliderBox = nullptr;
-Label* networkLabel = nullptr;
+    Label* clockLabel = nullptr;
+    Label* dateLabel = nullptr;
+    Label* batteryLabel = nullptr;
+    Image* batteryIcon = nullptr;
+    Box* chargingPopupBox = nullptr;
+    Box* brightnessSliderBox = nullptr;
+    Label* networkLabel = nullptr;
 
-Box* flightModeBox = nullptr;
-Label* flightModeText = nullptr;
-Switch* flightModeSwitch = nullptr;
-Button* flightModeButton = nullptr;
+    Box* flightModeBox = nullptr;
+    Label* flightModeText = nullptr;
+    Switch* flightModeSwitch = nullptr;
+    Button* flightModeButton = nullptr;
 
-uint64_t lastClockUpdate = 0;
-uint64_t lastBatteryUpdate = 0;
+    uint64_t lastClockUpdate = 0;
+    uint64_t lastBatteryUpdate = 0;
 
-uint64_t chargingStartTime = 0;
+    uint64_t chargingStartTime = 0;
 } // namespace applications::launcher
 
 void applications::launcher::init() {
@@ -116,8 +92,7 @@ void applications::launcher::update() {
         if (min != Gsm::Time::getMinute()) {
             clockLabel->setText(
                 std::to_string(Gsm::Time::getHour()) + ":" +
-                (Gsm::Time::getMinute() <= 9 ? "0" : "") +
-                std::to_string(Gsm::Time::getMinute())
+                (Gsm::Time::getMinute() <= 9 ? "0" : "") + std::to_string(Gsm::Time::getMinute())
             );
             dateLabel->setText(getFormatedDate());
 
@@ -131,8 +106,7 @@ void applications::launcher::update() {
         static double lastBattery = Gsm::getBatteryLevel();
         if (lastBattery != Gsm::getBatteryLevel()) {
             batteryLabel->setText(
-                std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) +
-                "%"
+                std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%"
             );
 
             lastBattery = Gsm::getBatteryLevel();
@@ -151,23 +125,18 @@ void applications::launcher::update() {
             dateLabel->enable();
         }
 
-        if (flightModeSwitch->isTouched()) {
-            Gsm::setFlightMode(flightModeSwitch->getState());
-        }
+        if (flightModeSwitch->isTouched()) Gsm::setFlightMode(flightModeSwitch->getState());
     }
 
     // std::cout << "launcher::update 3" << std::endl;
 
     if (hardware::isCharging()) {
-        if (chargingStartTime == 0) {
-            chargingStartTime = os_millis();
-        }
+        if (chargingStartTime == 0) chargingStartTime = os_millis();
 
-        if (chargingStartTime + 2000 > os_millis()) {
+        if (chargingStartTime + 2000 > os_millis())
             chargingPopupBox->enable();
-        } else {
+        else
             chargingPopupBox->disable();
-        }
     } else {
         chargingStartTime = 0;
         chargingPopupBox->disable();
@@ -180,10 +149,7 @@ void applications::launcher::update() {
                 networkLabel->setText("X");
             } else {
                 networkLabel->setText(
-                    std::to_string(
-                        (int) Gsm::getNetworkQuality().first * 100 / 31
-                    ) +
-                    "%"
+                    std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) + "%"
                 );
             }
 
@@ -195,9 +161,7 @@ void applications::launcher::update() {
 
     // Update, draw AND update touch events
     // printf("before\n");
-    if (launcherWindow != nullptr) {
-        launcherWindow->updateAll();
-    }
+    if (launcherWindow != nullptr) launcherWindow->updateAll();
     // printf("after\n");
 
     // Check touch events
@@ -205,11 +169,9 @@ void applications::launcher::update() {
     if (brightnessSliderBox->isFocused(true)) {
         libsystem::log("Brightness: " + graphics::getBrightness());
 
-        const int16_t newBrightness = static_cast<int16_t>(std::clamp(
-            (325 - (gui::ElementBase::touchY - 77)) * 255 / 325,
-            3,
-            255
-        ));
+        const int16_t newBrightness = static_cast<int16_t>(
+            std::clamp((325 - (gui::ElementBase::touchY - 77)) * 255 / 325, 3, 255)
+        );
 
         graphics::setBrightness(newBrightness);
     }
@@ -219,8 +181,7 @@ void applications::launcher::update() {
     for (const auto& [icon, app] : applicationsIconsMap) {
         if (icon->isTouched()) {
             targetApp = nullptr;
-            std::cout << "launcher::update - touched: " << app->name
-                      << std::endl;
+            std::cout << "launcher::update - touched: " << app->name << std::endl;
             targetApp = app;
         }
     }
@@ -241,8 +202,7 @@ void applications::launcher::draw() {
     // Clock
     clockLabel = new Label(86, 42, 148, 41);
     clockLabel->setText(
-        std::to_string(Gsm::Time::getHour()) + ":" +
-        (Gsm::Time::getMinute() <= 9 ? "0" : "") +
+        std::to_string(Gsm::Time::getHour()) + ":" + (Gsm::Time::getMinute() <= 9 ? "0" : "") +
         std::to_string(Gsm::Time::getMinute())
     ); // hour
     clockLabel->setVerticalAlignment(Label::Alignement::CENTER);
@@ -263,9 +223,8 @@ void applications::launcher::draw() {
     //    std::cout << "launcher::update 1.3" << std::endl;
 
     // Battery icon
-    const auto batteryIconDarkPath = storage::Path(
-        "system/icons/dark/" + getBatteryIconFilename() + "_64px.png"
-    );
+    const auto batteryIconDarkPath =
+        storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
     batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32);
     batteryIcon->load();
     launcherWindow->addChild(batteryIcon);
@@ -274,9 +233,7 @@ void applications::launcher::draw() {
 
     // Battery label
     batteryLabel = new Label(255, 10, 40, 18);
-    batteryLabel->setText(
-        std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%"
-    );
+    batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
     batteryLabel->setVerticalAlignment(Label::Alignement::CENTER);
     batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
     batteryLabel->setFontSize(18);
@@ -290,10 +247,7 @@ void applications::launcher::draw() {
             networkLabel->setText("X");
         } else {
             networkLabel->setText(
-                std::to_string(
-                    (int) Gsm::getNetworkQuality().first * 100 / 31
-                ) +
-                "%"
+                std::to_string((int) Gsm::getNetworkQuality().first * 100 / 31) + "%"
             );
         }
         networkLabel->setVerticalAlignment(Label::Alignement::CENTER);
@@ -354,12 +308,7 @@ void applications::launcher::draw() {
 
         //        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 *
         //        int(placementIndex/2), 80, 80);
-        auto* box = new Box(
-            119 * (placementIndex % 2),
-            95 * (placementIndex / 2),
-            80,
-            80
-        );
+        auto* box = new Box(119 * (placementIndex % 2), 95 * (placementIndex / 2), 80, 80);
 
         auto* img = new Image(app->path / "../icon.png", 20, 6, 40, 40);
         img->load();
@@ -398,11 +347,9 @@ void applications::launcher::draw() {
     chargingPopupBox->setRadius(7);
     chargingPopupBox->setBackgroundColor(TFT_BLACK);
 
-    const auto batteryIconLightPath = storage::Path(
-        "system/icons/light/" + getBatteryIconFilename() + "_64px.png"
-    );
-    const auto chargingIconImage =
-        new Image(batteryIconLightPath, 16, 16, 64, 64, TFT_BLACK);
+    const auto batteryIconLightPath =
+        storage::Path("system/icons/light/" + getBatteryIconFilename() + "_64px.png");
+    const auto chargingIconImage = new Image(batteryIconLightPath, 16, 16, 64, 64, TFT_BLACK);
     chargingIconImage->load(TFT_BLACK);
     chargingPopupBox->addChild(chargingIconImage);
 
@@ -427,9 +374,7 @@ std::shared_ptr<AppManager::App> applications::launcher::getApp() {
 }
 
 void applications::launcher::free() {
-    if (!allocated) {
-        return;
-    }
+    if (!allocated) return;
 
     if (launcherWindow != nullptr) {
         launcherWindow->free();

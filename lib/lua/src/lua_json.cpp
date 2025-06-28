@@ -1,14 +1,12 @@
 #include "lua_json.hpp"
 
-LuaJson::LuaJson(std::string data) :
-    json(*(new nlohmann::json)), allocated(true) {
+LuaJson::LuaJson(std::string data) : json(*(new nlohmann::json)), allocated(true) {
     // delete &json;   // si quelqu'un arrive a faire mieux :/
 
-    if (nlohmann::json::accept(data)) {
+    if (nlohmann::json::accept(data))
         json = nlohmann::json::parse(data);
-    } else {
+    else
         json = nlohmann::json::parse("{}");
-    }
 }
 
 LuaJson::LuaJson(nlohmann::json& other) : json(other) {}

@@ -11,18 +11,18 @@
 // immédiatement.
 
 namespace AppManager {
-class App;
+    class App;
 }
 
 namespace applications::launcher {
-void init(); // load the launcher
-void free(); // free the launcher
+    void init(); // load the launcher
+    void free(); // free the launcher
 
-void update(); // update the launcher gui and events
-void draw();   // make the gui of the launcher
+    void update(); // update the launcher gui and events
+    void draw();   // make the gui of the launcher
 
-bool iconTouched();                        // check if an app icon is touched
-std::shared_ptr<AppManager::App> getApp(); // get the selected app
+    bool iconTouched();                        // check if an app icon is touched
+    std::shared_ptr<AppManager::App> getApp(); // get the selected app
 } // namespace applications::launcher
 
 #endif

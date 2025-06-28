@@ -5,8 +5,8 @@
 
 namespace i18n {
 
-void setTextDomain(const std::string& domain);
-std::string getText(const std::string& key);
+    void setTextDomain(const std::string& domain);
+    std::string getText(const std::string& key);
 
 } // namespace i18n
 
