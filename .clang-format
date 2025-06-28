@@ -9,22 +9,24 @@ IndentWidth: 4                         # Standard 4-space indentation
 TabWidth: 4                            # Tab width equivalent
 UseTab: Never                          # Always use spaces, never tabs
 ContinuationIndentWidth: 4             # Indentation for wrapped lines
+NamespaceIndentation: All
 
 # LINE FORMATTING
-ColumnLimit: 80                        # Maximum line length (classic 80 chars)
+ColumnLimit: 100                        # Maximum line length
 InsertNewlineAtEOF: true              # Ensure files end with newline (POSIX)
 
 # BRACES & BLOCKS
 BreakBeforeBraces: Attach             # { on same line as statement
 Cpp11BracedListStyle: true            # Modern C++ brace initialization style
-InsertBraces: true                    # Force braces on if/else/for/while single statements
+InsertBraces: false
+RemoveBracesLLVM: true
 
-# Short constructs formatting
-AllowShortIfStatementsOnASingleLine: false     # Force if statements on multiple lines
-AllowShortLoopsOnASingleLine: false           # Force loops on multiple lines
-AllowShortFunctionsOnASingleLine: Empty       # Only empty functions on one line
-AllowShortLambdasOnASingleLine: Empty         # Only empty lambdas on one line
-AllowShortBlocksOnASingleLine: Empty          # Only empty blocks on one line
+# SINGLE LINE CONSTRUCTS - ALLOW COMPACT FORMATTING
+AllowShortIfStatementsOnASingleLine: WithoutElse    # Allow: if (x) return;
+AllowShortLoopsOnASingleLine: true                  # Allow: for (...) stmt;
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Empty
 
 # SPACING & WHITESPACE
 # Parentheses spacing
@@ -50,7 +52,7 @@ AlignAfterOpenBracket: BlockIndent          # Block-style indentation after (
 
 # FUNCTION PARAMETERS & CALLS
 # Function declarations
-AllowAllParametersOfDeclarationOnNextLine: true    # Allow params on next line
+AllowAllParametersOfDeclarationOnNextLine: false    # Allow params on next line
 BinPackParameters: true                            # Pack parameters efficiently
 IndentWrappedFunctionNames: true                   # Indent wrapped function names
 
