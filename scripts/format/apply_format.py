@@ -1,3 +1,4 @@
+import fnmatch
 import os
 import shutil
 import subprocess
@@ -11,6 +12,19 @@ def get_clang_format_path():
     if not clang_format:
         raise EnvironmentError("clang-format not found in PATH. Please install it or add it to your PATH.")
     return clang_format
+
+
+def get_ignore_list():
+    with open(".clang-format-ignore", "r") as f:
+        ignore_list = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+    return ignore_list
+
+
+def is_file_ignored(ignore_list, file):
+    for pattern in ignore_list:
+        if fnmatch.fnmatch(file, pattern):
+            return True
+    return False
 
 
 def is_source_file(file):
@@ -39,5 +53,7 @@ if __name__ == "__main__":
     clang_format_path = get_clang_format_path()
     print("Using clang-format at:", clang_format_path)
     files = get_files()
+    ignore_files = get_ignore_list()
+    files = [file for file in files if not is_file_ignored(ignore_files, file)]
     format_files(clang_format_path, files)
     print(f"Done, formatted {len(files)} files.")
