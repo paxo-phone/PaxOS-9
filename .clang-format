@@ -7,7 +7,7 @@ TabWidth: 4
 UseTab: Never
 
 # Line length
-ColumnLimit: 100
+ColumnLimit: 80
 
 # Braces
 BreakBeforeBraces: Attach
@@ -31,8 +31,19 @@ AlignTrailingComments: true
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortBlocksOnASingleLine: Empty
 InsertNewlineAtEOF: true
+
+# Pretty parameters & arguments
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: false
+BinPackArguments: false
+BinPackParameters: false
+AllowShortLambdasOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Empty
+IndentWrappedFunctionNames: true
+ContinuationIndentWidth: 4
+BreakBeforeBinaryOperators: None
+AlignAfterOpenBracket: BlockIndent
 
 # Pointers & References
 PointerAlignment: Left
