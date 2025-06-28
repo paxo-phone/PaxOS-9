@@ -5,79 +5,79 @@ BasedOnStyle: LLVM
 Standard: c++20
 
 # INDENTATION
-IndentWidth: 4                         # Standard 4-space indentation
-TabWidth: 4                            # Tab width equivalent
-UseTab: Never                          # Always use spaces, never tabs
-ContinuationIndentWidth: 4             # Indentation for wrapped lines
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
 NamespaceIndentation: All
 
 # LINE FORMATTING
-ColumnLimit: 100                        # Maximum line length
-InsertNewlineAtEOF: true              # Ensure files end with newline (POSIX)
+ColumnLimit: 100
+InsertNewlineAtEOF: true
 
 # BRACES & BLOCKS
 BreakBeforeBraces: Allman
-Cpp11BracedListStyle: true            # Modern C++ brace initialization style
+Cpp11BracedListStyle: true
 InsertBraces: false
 RemoveBracesLLVM: true
 
 # SINGLE LINE CONSTRUCTS - ALLOW COMPACT FORMATTING
 AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: true                  # Allow: for (...) stmt;
+AllowShortLoopsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortLambdasOnASingleLine: Empty
 AllowShortBlocksOnASingleLine: Empty
 
 # SPACING & WHITESPACE
 # Parentheses spacing
-SpaceBeforeParens: ControlStatements          # Space before ( in if, for, while
-SpaceInEmptyParentheses: false               # No space in empty ()
-SpacesInParentheses: false                   # No space inside (expr)
-SpacesInSquareBrackets: false                # No space inside [expr]
-SpacesInAngles: false                        # No space inside <template>
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
 
 # Operators spacing
-SpaceBeforeAssignmentOperators: true         # Space around = += -= etc.
-SpaceAfterCStyleCast: true                   # Space after (type)cast
+SpaceBeforeAssignmentOperators: true
+SpaceAfterCStyleCast: true
 
 # ALIGNMENT
 # Consecutive alignment (disabled for cleaner code)
-AlignConsecutiveAssignments: false          # Don't align = operators
-AlignConsecutiveDeclarations: false         # Don't align variable declarations
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
 
 # General alignment
-AlignOperands: true                          # Align wrapped operands
-AlignTrailingComments: true                  # Align end-of-line comments
-AlignAfterOpenBracket: BlockIndent          # Block-style indentation after (
+AlignOperands: true
+AlignTrailingComments: true
+AlignAfterOpenBracket: BlockIndent
 
 # FUNCTION PARAMETERS & CALLS
 # Function declarations
-AllowAllParametersOfDeclarationOnNextLine: false    # Allow params on next line
-BinPackParameters: true                            # Pack parameters efficiently
-IndentWrappedFunctionNames: true                   # Indent wrapped function names
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackParameters: true
+IndentWrappedFunctionNames: true
 
 # Function calls
-AllowAllArgumentsOnNextLine: false                 # Force argument breaking
-BinPackArguments: false                           # Don't pack arguments
+AllowAllArgumentsOnNextLine: false
+BinPackArguments: false
 
 # Binary operators
-BreakBeforeBinaryOperators: None                   # Break after operators, not before
+BreakBeforeBinaryOperators: None
 
 # CONSTRUCTORS & INHERITANCE
-BreakConstructorInitializers: AfterColon          # Break after : in constructors
-ConstructorInitializerIndentWidth: 4              # Indentation for initializer lists
-PackConstructorInitializers: BinPack              # Pack initializers efficiently
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerIndentWidth: 4
+PackConstructorInitializers: BinPack
 
 # POINTERS & REFERENCES
-PointerAlignment: Left                   # int* ptr (not int *ptr)
-ReferenceAlignment: Left                 # int& ref (not int &ref)
+PointerAlignment: Left
+ReferenceAlignment: Left
 
 # INCLUDE HEADERS
-SortIncludes: CaseSensitive             # Sort #include statements (case-sensitive)
-IncludeBlocks: Regroup                  # Group and separate include blocks
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
 
 # COMMENTS
-ReflowComments: true                    # Reformat comments to fit line length
+ReflowComments: true
 
 # C++ FEATURES
-FixNamespaceComments: true              # Add // namespace Name comments automatically
+FixNamespaceComments: true
