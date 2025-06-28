@@ -32,6 +32,7 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortBlocksOnASingleLine: Empty
+InsertNewlineAtEOF: true
 
 # Pointers & References
 PointerAlignment: Left
