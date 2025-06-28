@@ -1305,10 +1305,14 @@ namespace Gsm
         } else if (data.rfind("+HTTPACTION:", 0) == 0) {
             if (currentHttpState != HttpState::ACTION_IN_PROGRESS) return;
 
-            int statusCode = 0, dataLen = 0;
-            sscanf(data.c_str(), "+HTTPACTION: %*d,%d,%d", &statusCode, &dataLen);
+            int method_urc, statusCode = 0, dataLen = 0;
+            sscanf(data.c_str(), "+HTTPACTION: %d,%d,%d", &method_urc, &statusCode, &dataLen);
 
-            if (statusCode >= 200 && statusCode < 300) {
+            if (currentHttpRequestDetails && currentHttpRequestDetails->on_response) {
+                currentHttpRequestDetails->on_response(statusCode);
+            }
+
+            if (statusCode >= 200 && statusCode < 400) { // Handle success and redirects
                 if (dataLen > 0) {
                     httpBytesTotal = dataLen;
                     httpBytesRead = 0;
@@ -1317,8 +1321,6 @@ namespace Gsm
                 } else {
                     _completeHttpRequest(HttpResult::OK);
                 }
-            } else if (statusCode == 404) {
-                _completeHttpRequest(HttpResult::NOT_FOUND);
             } else if (statusCode >= 400) {
                 _completeHttpRequest(HttpResult::SERVER_ERROR);
             } else {
@@ -1776,34 +1778,31 @@ namespace Gsm
         requests.push_back(request);
     }
 
-    void httpGet(const std::string& url, HttpGetCallbacks callbacks) {
+    void httpRequest(HttpRequest request) {
         if (currentHttpState != HttpState::IDLE) {
-            if (callbacks.on_complete) {
-                callbacks.on_complete();
+            if (request.on_complete) {
+                request.on_complete(HttpResult::BUSY);
             }
             return;
         }
 
         currentHttpState = HttpState::INITIALIZING;
-        currentHttpCallbacks = std::move(callbacks);
+        currentHttpRequestDetails = std::make_unique<HttpRequest>(std::move(request));
         httpBytesTotal = 0;
         httpBytesRead = 0;
 
         auto initReq = std::make_shared<Request>();
-        auto setCidReq = std::make_shared<Request>();
-        auto setUrlReq = std::make_shared<Request>();
-        auto actionReq = std::make_shared<Request>();
-
         initReq->command = "AT+HTTPINIT";
         initReq->callback = [](const std::string& response) -> bool {
             if (response.find("OK") == std::string::npos) {
                 _completeHttpRequest(HttpResult::INIT_FAILED);
                 return false;
             }
-            return true;
+            return true; // Proceed to next command
         };
 
-        setUrlReq->command = "AT+HTTPPARA=\"URL\",\"" + url + "\"";
+        auto setUrlReq = std::make_shared<Request>();
+        setUrlReq->command = "AT+HTTPPARA=\"URL\",\"" + currentHttpRequestDetails->url + "\"";
         setUrlReq->callback = [](const std::string& response) -> bool {
             if (response.find("OK") == std::string::npos) {
                 _completeHttpRequest(HttpResult::MODULE_ERROR);
@@ -1812,31 +1811,72 @@ namespace Gsm
             return true;
         };
 
-        actionReq->command = "AT+HTTPACTION=0";
+        initReq->next = setUrlReq;
+        std::shared_ptr<Request> lastHeaderReq = setUrlReq;
+
+        // Chain header requests
+        for (const auto& header : currentHttpRequestDetails->headers) {
+            auto headerReq = std::make_shared<Request>();
+            headerReq->command = "AT+HTTPHEADER=\"" + header.first + "\",\"" + header.second + "\"";
+            headerReq->callback = [](const std::string& response) -> bool {
+                if (response.find("OK") == std::string::npos) {
+                    _completeHttpRequest(HttpResult::MODULE_ERROR);
+                    return false;
+                }
+                return true;
+            };
+            lastHeaderReq->next = headerReq;
+            lastHeaderReq = headerReq;
+        }
+
+        std::shared_ptr<Request> actionReq = std::make_shared<Request>();
+
+        if (currentHttpRequestDetails->method == HttpMethod::POST) {
+            auto setDataReq = std::make_shared<Request>();
+            setDataReq->command = "AT+HTTPDATA=" + std::to_string(currentHttpRequestDetails->body.length()) + ",10000"; // 10s timeout
+            setDataReq->callback = [body = currentHttpRequestDetails->body](const std::string& response) -> bool {
+                if (response.find("DOWNLOAD") != std::string::npos) {
+                    // Module is ready, send the data now.
+                    auto sendDataReq = std::make_shared<Request>();
+                    sendDataReq->command = body;
+                    sendDataReq->callback = [](const std::string& data_resp) -> bool {
+                        if (data_resp.find("OK") == std::string::npos) {
+                            _completeHttpRequest(HttpResult::MODULE_ERROR);
+                            return false;
+                        }
+                        // After data is sent, we can trigger the action
+                        return true; 
+                    };
+                    // This is a bit of a hack: we queue the next part immediately.
+                    std::lock_guard<std::mutex> lock(requestMutex);
+                    requests.insert(requests.begin(), sendDataReq);
+                    return false; // Stop processing this chain, the new one takes over.
+                }
+                _completeHttpRequest(HttpResult::MODULE_ERROR);
+                return false;
+            };
+            lastHeaderReq->next = setDataReq;
+            actionReq->command = "AT+HTTPACTION=1"; // POST action
+            setDataReq->next = actionReq;
+        } else {
+            actionReq->command = "AT+HTTPACTION=0"; // GET action
+            lastHeaderReq->next = actionReq;
+        }
+
         actionReq->callback = [](const std::string& response) -> bool {
             if (response.find("OK") == std::string::npos) {
                 _completeHttpRequest(HttpResult::MODULE_ERROR);
                 return false;
             }
             currentHttpState = HttpState::ACTION_IN_PROGRESS;
-            return false;
+            return false; // URC will handle the rest
         };
-
-        initReq->next = setUrlReq;
-        setUrlReq->next = actionReq;
 
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(initReq);
     }
 
     static bool onHttpReadBlock(const std::string& response) {
-        if(response.find("OK") == std::string::npos) {
-            _completeHttpRequest(HttpResult::READ_ERROR);
-            return false;
-        }
-
-        return false;
-
         size_t header_start = response.find("+HTTPREAD:");
         if (header_start == std::string::npos) {
             _completeHttpRequest(HttpResult::READ_ERROR);
@@ -1860,21 +1900,32 @@ namespace Gsm
                 return false;
             }
 
-            if (currentHttpCallbacks.on_data) {
+            if (currentHttpRequestDetails && currentHttpRequestDetails->on_data) {
                 std::string_view data_chunk(response.data() + data_start, chunk_len);
-                currentHttpCallbacks.on_data(data_chunk);
+                currentHttpRequestDetails->on_data(data_chunk);
             }
             httpBytesRead += chunk_len;
         }
 
-        if (httpBytesRead >= httpBytesTotal) {
-            _completeHttpRequest(HttpResult::OK);
+        if (response.find("OK") != std::string::npos) {
+             if (httpBytesRead >= httpBytesTotal) {
+                _completeHttpRequest(HttpResult::OK);
+            } else {
+                _queueNextHttpRead();
+            }
         } else {
-            _queueNextHttpRead();
+            // If we don't get an OK, but we have read all the data, we can assume it's OK.
+            if (httpBytesRead >= httpBytesTotal) {
+                _completeHttpRequest(HttpResult::OK);
+            } else {
+                 _completeHttpRequest(HttpResult::READ_ERROR);
+            }
         }
 
         return false;
     }
+
+    
 
     static void _queueNextHttpRead() {
         auto readReq = std::make_shared<Request>();
@@ -1885,11 +1936,11 @@ namespace Gsm
     }
 
     static void _completeHttpRequest(HttpResult result) {
-        if (currentHttpCallbacks.on_complete) {
-            currentHttpCallbacks.on_complete();
+        if (currentHttpRequestDetails && currentHttpRequestDetails->on_complete) {
+            currentHttpRequestDetails->on_complete(result);
         }
 
-        currentHttpCallbacks = {};
+        currentHttpRequestDetails.reset();
         currentHttpState = HttpState::TERMINATING;
 
         auto termReq = std::make_shared<Request>();
@@ -1989,45 +2040,40 @@ namespace Gsm
                 continue;
             }
 
-            if(line.find("+HTTPREAD:") != std::string::npos)
-            {
-                size_t datasize = 0;
-                if (sscanf(line.c_str(), "+HTTPREAD: %zu", &datasize) == 1) {
-                } else {
+            size_t datasize = 0;
+            // Parse datasize if this is an HTTPREAD line
+            if (line.rfind("+HTTPREAD:", 0) == 0) {
+                int parsed_size = 0;
+                if (sscanf(line.c_str(), "+HTTPREAD: %d", &parsed_size) == 1 && parsed_size > 0) {
+                    datasize = static_cast<size_t>(parsed_size);
                 }
+            }
 
+            if (currentHttpRequestDetails && currentHttpRequestDetails->on_data)
+            {
                 if (datasize > 0) {
                     std::string data;
-                    data.reserve(datasize);
-
-                    if (!lineBuffer.empty()) {
-                        size_t to_copy = std::min(datasize, lineBuffer.size());
-                        data.append(lineBuffer.substr(0, to_copy));
-                        lineBuffer.erase(0, to_copy);
-                        datasize -= to_copy;
+                    data.resize(datasize);
+                    int bytesRead = 0;
+                    while(bytesRead < datasize && gsm.available()) {
+                        data[bytesRead++] = gsm.read();
                     }
-
-                    while (datasize > 0 && gsm.available()) {
-                        char c = gsm.read();
-                        data.push_back(c);
-                        datasize--;
-                    }
-
-                    if (data.size() == data.capacity()) {
-                        std::string_view dataView(data.data(), data.size());
-                        if (currentHttpCallbacks.on_data)
-                            currentHttpCallbacks.on_data(dataView);
-                        httpBytesRead += data.size();
-
-                        if (httpBytesRead >= httpBytesTotal) {
-                            _completeHttpRequest(HttpResult::OK);
-                        } else {
-                            _queueNextHttpRead();
-                        }
-                    } else {
-                        _completeHttpRequest(HttpResult::READ_ERROR);
+                    if (bytesRead == datasize) {
+                        std::string_view data_chunk(data.data(), bytesRead);
+                        currentHttpRequestDetails->on_data(data_chunk);
+                        httpBytesRead += bytesRead;
                     }
                 }
+            }
+
+            if(line.find("OK") != std::string::npos) {
+                if (httpBytesRead >= httpBytesTotal) {
+                    _completeHttpRequest(HttpResult::OK);
+                } else {
+                    _queueNextHttpRead();
+                }
+            } else if (line.find("ERROR") != std::string::npos) {
+                _completeHttpRequest(HttpResult::READ_ERROR);
             }
 
             if (state == SerialRunState::COMMAND_RUNNING || state == SerialRunState::SENDING_PDU_DATA)
@@ -2078,25 +2124,7 @@ namespace Gsm
         #endif
     }
 
-    void downloadFile(const std::string& url) {
-        Gsm::HttpGetCallbacks my_callbacks;
-        size_t file_data_size = 0;
-
-        my_callbacks.on_init = [](Gsm::HttpResult result) {
-            std::cout << "HTTP GET operation initialized: " << static_cast<int>(result) << std::endl;
-        };
-
-        my_callbacks.on_data = [&](const std::string_view &data) {
-            std::cout << "Received data chunk of size: " << data.size() << " bytes." << std::endl;
-            file_data_size += data.length();
-        };
-
-        my_callbacks.on_complete = [&]() {
-            std::cout << "Download complete! Total size: " << file_data_size << " bytes." << std::endl;
-        };
-
-        Gsm::httpGet(url, my_callbacks);
-    }
+    
 
 
     void loop()

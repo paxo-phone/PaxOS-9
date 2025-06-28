@@ -491,60 +491,50 @@ namespace Network
     // --- Cellular Specific Implementation ---
 
     void NetworkManager::_executeCellularRequest(std::shared_ptr<Request> request) {
-        std::cout << "[" << NETWORK_TAG << "] Executing cellular request (placeholder)." << std::endl;
-        
-        //
-        // *** IMPORTANT ***
-        // The current Gsm::httpGet is not suitable for this generic module.
-        // It's recommended to add a new, more powerful function to gsm2.cpp/hpp.
-        //
-        // PROPOSED ADDITION TO gsm2.hpp:
-        //
-        // struct GsmHttpRequest {
-        //     std::string url;
-        //     Network::HttpMethod method;
-        //     std::map<std::string, std::string> headers;
-        //     std::string post_body;
-        //     std::function<void(int http_code)> on_response;
-        //     std::function<void(const char* data, int len)> on_data;
-        //     std::function<void(Network::NetworkStatus status)> on_complete;
-        // };
-        // void httpGenericRequest(GsmHttpRequest gsm_request);
-        //
-        
-        // Placeholder implementation using the existing, limited Gsm::httpGet
-        // We will adapt our generic callbacks to the ones Gsm::httpGet expects.
-        
-        Gsm::HttpGetCallbacks callbacks;
-        
-        // This is a rough translation. The Gsm module should be updated to handle this better.
-        callbacks.on_data = [this](const std::string_view& data) {
+        Gsm::HttpRequest gsmRequest;
+        gsmRequest.url = request->url;
+        gsmRequest.method = (request->method == HttpMethod::POST) ? Gsm::HttpMethod::POST : Gsm::HttpMethod::GET;
+        gsmRequest.headers = request->headers;
+        gsmRequest.body = request->post_body;
+
+        gsmRequest.on_response = [this](int http_code) {
+            if (m_currentRequest && m_currentRequest->on_response) {
+                m_currentRequest->on_response(http_code);
+            }
+        };
+
+        gsmRequest.on_data = [this](const std::string_view& data) {
             if (m_currentRequest && m_currentRequest->on_data) {
                 m_currentRequest->on_data(data.data(), data.length());
             }
         };
 
-        callbacks.on_complete = [this]() {
-            // NOTE: The Gsm::httpGet doesn't provide a status code on completion.
-            // We assume OK for this placeholder. This should be improved in the Gsm module.
-            this->_completeCurrentRequest(NetworkStatus::OK);
-        };
-        
-        // Gsm::httpGet doesn't support POST or headers. This is a major limitation to address.
-        if (request->method == HttpMethod::POST) {
-            std::cout << "[ERROR:" << NETWORK_TAG << "] Cellular request failed: POST method is not supported by the current GSM implementation." << std::endl;
-            if (!request->post_body.empty()) {
-                std::cout << "[" << NETWORK_TAG << "] POST data was provided but will be ignored." << std::endl;
+        gsmRequest.on_complete = [this](Gsm::HttpResult result) {
+            NetworkStatus status = NetworkStatus::OK;
+            switch (result) {
+                case Gsm::HttpResult::OK:
+                    status = NetworkStatus::OK;
+                    break;
+                case Gsm::HttpResult::TIMEOUT:
+                    status = NetworkStatus::TIMEOUT;
+                    break;
+                case Gsm::HttpResult::CONNECTION_FAILED:
+                    status = NetworkStatus::CONNECTION_FAILED;
+                    break;
+                case Gsm::HttpResult::DNS_ERROR:
+                    status = NetworkStatus::DNS_ERROR;
+                    break;
+                case Gsm::HttpResult::SERVER_ERROR:
+                    status = NetworkStatus::BAD_RESPONSE;
+                    break;
+                default:
+                    status = NetworkStatus::MODULE_ERROR;
+                    break;
             }
-            _completeCurrentRequest(NetworkStatus::MODULE_ERROR);
-            return;
-        }
+            this->_completeCurrentRequest(status);
+        };
 
-        if (!request->headers.empty()) {
-            std::cout << "[" << NETWORK_TAG << "] Cellular request warning: Custom headers are not supported by the current GSM implementation and will be ignored." << std::endl;
-        }
-
-        Gsm::httpGet(request->url, callbacks);
+        Gsm::httpRequest(std::move(gsmRequest));
     }
 
 } // namespace Network

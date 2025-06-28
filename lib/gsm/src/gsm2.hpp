@@ -9,6 +9,7 @@
 #include <string>
 #include <functional>
 #include <memory>
+#include <map>
 
 extern const char *daysOfWeek[7];
 extern const char *daysOfMonth[12];
@@ -67,10 +68,20 @@ namespace Gsm
         READ_ERROR
     };
 
-    struct HttpGetCallbacks {
-        std::function<void(HttpResult result)> on_init;
+    enum class HttpMethod {
+        GET,
+        POST
+    };
+
+    struct HttpRequest {
+        HttpMethod method = HttpMethod::GET;
+        std::string url;
+        std::map<std::string, std::string> headers;
+        std::string body;
+
+        std::function<void(int http_code)> on_response;
         std::function<void(const std::string_view& data)> on_data;
-        std::function<void(void)> on_complete;
+        std::function<void(HttpResult result)> on_complete;
     };
 
     enum class HttpState {
@@ -81,14 +92,14 @@ namespace Gsm
         TERMINATING
     };
     static HttpState currentHttpState = HttpState::IDLE;
-    static HttpGetCallbacks currentHttpCallbacks;
+    static std::unique_ptr<HttpRequest> currentHttpRequestDetails;
     static int httpBytesTotal = 0;
     static int httpBytesRead = 0;
 
     // Forward declarations for our new helper functions
     static void _completeHttpRequest(HttpResult result);
     static void _queueNextHttpRead();
-    void httpGet(const std::string& url, HttpGetCallbacks callbacks);
+    void httpRequest(HttpRequest request);
 
     // --- Public Function Declarations ---
 
