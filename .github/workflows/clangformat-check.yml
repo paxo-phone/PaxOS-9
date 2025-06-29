@@ -14,6 +14,9 @@ jobs:
                 with:
                     python-version: '3.13'
 
+            -   name: Install clang-format
+                run: python3 -m pip install clang-format
+
             -   name: Set format script permissions
                 run: chmod +x format.sh
 
