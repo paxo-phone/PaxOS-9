@@ -9,8 +9,14 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_http_client.h"
+#include <esp_tls.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+
+extern "C" {
+#include "esp_crt_bundle.h"
+}
+
 #else // !ESP_PLATFORM
 #include <curl/curl.h>
 #endif
@@ -142,6 +148,7 @@ namespace Network
     esp_netif_init();
     // Initialize event loop
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+    ESP_ERROR_CHECK(esp_tls_init_global_ca_store());
     // Register Wi-Fi event handlers
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &_wifiEventHandler, this));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &_wifiEventHandler, this));
@@ -344,10 +351,37 @@ namespace Network
 
     void NetworkManager::_executeWifiRequest(std::shared_ptr<Request> request) {
         esp_http_client_config_t config = {};
-        config.url = request->url.c_str();
+        
+        std::string encoded_url = request->url;
+        size_t scheme_end = encoded_url.find("://");
+        if (scheme_end != std::string::npos) {
+            size_t path_start = encoded_url.find('/', scheme_end + 3);
+            if (path_start != std::string::npos) {
+                size_t colon_pos = encoded_url.find(':', path_start);
+                size_t query_start = encoded_url.find('?', path_start);
+                if (colon_pos != std::string::npos && (query_start == std::string::npos || colon_pos < query_start)) {
+                    encoded_url.replace(colon_pos, 1, "%3A");
+                }
+            }
+        }
+        config.url = encoded_url.c_str();
+
         config.event_handler = _httpEventHandler;
         config.user_data = this; // Pass manager instance
         config.disable_auto_redirect = true;
+
+        config.use_global_ca_store = true;
+        //config.crt_bundle_attach = arduino_esp_crt_bundle_attach;
+
+        printf("==================================================\n");
+        printf("Memory before HTTP Perform:\n");
+        printf("Internal RAM Free: %d, Largest Block: %d\n",
+            heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+            heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL));
+        printf("PSRAM Free: %d, Largest Block: %d\n",
+            heap_caps_get_free_size(MALLOC_CAP_SPIRAM),
+            heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM));
+        printf("==================================================\n");
 
         m_httpClient = esp_http_client_init(&config);
         

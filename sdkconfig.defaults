@@ -1,0 +1,5 @@
+# Enable PSRAM support in the mbedTLS library
+CONFIG_MBEDTLS_EXTERNAL_MEM_SUPPORT=y
+CONFIG_MBEDTLS_SSL_CONTEXT_USE_PSRAM=y
+# Set the TLS buffer size. 16KB is a safe value for modern websites.
+CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN=16384

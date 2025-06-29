@@ -2066,14 +2066,37 @@ namespace Gsm
                 }
             }
 
-            if(line.find("OK") != std::string::npos) {
-                if (httpBytesRead >= httpBytesTotal) {
-                    _completeHttpRequest(HttpResult::OK);
-                } else {
-                    _queueNextHttpRead();
+            if(line.find("+HTTPREAD:") != std::string::npos)
+            {
+                size_t datasize = 0; // Declare datasize here
+                sscanf(line.c_str(), "+HTTPREAD: %zu", &datasize);
+
+                if (datasize > 0) {
+                    std::string data;
+                    data.resize(datasize);
+                    int bytesRead = 0;
+                    while(bytesRead < datasize && gsm.available()) {
+                        data[bytesRead++] = gsm.read();
+                    }
+                    if (bytesRead == datasize) {
+                        if (currentHttpRequestDetails && currentHttpRequestDetails->on_data)
+                        {
+                            std::string_view data_chunk(data.data(), bytesRead);
+                            currentHttpRequestDetails->on_data(data_chunk);
+                            httpBytesRead += bytesRead;
+                        }
+                    }
                 }
-            } else if (line.find("ERROR") != std::string::npos) {
-                _completeHttpRequest(HttpResult::READ_ERROR);
+
+                if(line.find("OK") != std::string::npos) {
+                    if (httpBytesRead >= httpBytesTotal) {
+                        _completeHttpRequest(HttpResult::OK);
+                    } else {
+                        _queueNextHttpRead();
+                    }
+                } else if (line.find("ERROR") != std::string::npos) {
+                    _completeHttpRequest(HttpResult::READ_ERROR);
+                }
             }
 
             if (state == SerialRunState::COMMAND_RUNNING || state == SerialRunState::SENDING_PDU_DATA)
