@@ -47,7 +47,7 @@ AlignConsecutiveDeclarations: false
 
 # General alignment
 AlignOperands: true
-AlignTrailingComments: false # Enable this back when ClangFormat stops glitching
+AlignTrailingComments: true
 AlignAfterOpenBracket: BlockIndent
 
 # FUNCTION PARAMETERS & CALLS
