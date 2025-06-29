@@ -4,10 +4,9 @@
 # We could also link statically
 # https://stackoverflow.com/questions/18138635/mingw-exe-requires-a-few-gcc-dlls-regardless-of-the-code
 
-import sys
 import os
 import shutil
-
+import sys
 
 REQUIRED_DLL_LIST = [
     "libgcc_s_seh-1.dll",

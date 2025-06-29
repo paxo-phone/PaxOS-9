@@ -13,7 +13,8 @@ namespace hardware
     bool getHomeButton();
 
     // https://www.arduino.cc/reference/en/language/functions/communication/wire/endtransmission/
-    enum I2CResponse {
+    enum I2CResponse
+    {
         SUCCESS = 0,
         ERROR_DATA_TOO_LONG = 1,
         ERROR_NACK_ADDRESS = 2,
@@ -30,17 +31,21 @@ namespace hardware
     /**
      * Namespace managing every hardware input on the PaxoPhone.
      */
-    namespace input {
-        enum Button {
+    namespace input
+    {
+        enum Button
+        {
             HOME
         };
 
-        enum ButtonState {
+        enum ButtonState
+        {
             PRESSED,
             RELEASED
         };
 
-        struct InputFrame {
+        struct InputFrame
+        {
             ButtonState homeButtonState = RELEASED;
         };
 
@@ -70,7 +75,7 @@ namespace hardware
          * @return True if the button was released this frame.
          */
         bool getButtonUp(Button button);
-    }
-};
+    } // namespace input
+}; // namespace hardware
 
 #endif

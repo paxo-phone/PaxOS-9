@@ -1,7 +1,8 @@
 import os
-import requests
-import zipfile
 import shutil
+import zipfile
+
+import requests
 
 Import("env")
 

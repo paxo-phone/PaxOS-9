@@ -3,7 +3,7 @@
 
 class LuaHardware
 {
-    public:
+  public:
     void flash(bool flash);
 };
 

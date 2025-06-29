@@ -10,7 +10,7 @@ namespace gui::elements
      **/
     class Slider final : public ElementBase
     {
-    public:
+      public:
         /**
          * @brief Construct a new Slider object
          *
@@ -22,7 +22,10 @@ namespace gui::elements
          * @param maxValue
          * @param defaultValue
          */
-        Slider(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t minValue = 0, uint16_t maxValue = 100, uint16_t defaultValue = 0);
+        Slider(
+            uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t minValue = 0,
+            uint16_t maxValue = 100, uint16_t defaultValue = 0
+        );
 
         /**
          * @brief Destroy the Slider object
@@ -113,12 +116,17 @@ namespace gui::elements
          * @brief set the value and redraw the slider based on the position clicked
          *
          */
-        
+
         void slide();
         void widgetUpdate();
-        bool hasChanged() { return m_hasChanged; m_hasChanged = false; }
 
-    private:
+        bool hasChanged()
+        {
+            return m_hasChanged;
+            m_hasChanged = false;
+        }
+
+      private:
         uint16_t m_minValue;
         uint16_t m_maxValue;
         uint16_t m_Value;
@@ -132,6 +140,6 @@ namespace gui::elements
         color_t m_outerTextColor;
         color_t m_valueColor;
     };
-} // gui::elements
+} // namespace gui::elements
 
 #endif

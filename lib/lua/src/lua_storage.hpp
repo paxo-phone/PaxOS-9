@@ -1,18 +1,18 @@
 #ifndef LUA_STORAGE_MODULE
 #define LUA_STORAGE_MODULE
 
-#include <path.hpp>
-#include <filestream.hpp>
-
 #include "lua_storage_file.hpp"
+
+#include <filestream.hpp>
+#include <path.hpp>
 
 class LuaFile;
 
 class LuaStorage
 {
-    public:
+  public:
     LuaStorage(LuaFile* lua);
-    
+
     std::unique_ptr<LuaStorageFile> file(std::string filename, int mode);
     bool newDir(std::string path);
     bool renameFile(std::string oldpath, std::string newpath);
@@ -26,7 +26,7 @@ class LuaStorage
     bool legalPath(storage::Path path);
     storage::Path convertPath(std::string path);
 
-    private:
+  private:
     LuaFile* lua = nullptr;
 };
 

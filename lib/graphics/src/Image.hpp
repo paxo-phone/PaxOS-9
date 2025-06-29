@@ -7,8 +7,8 @@
 
 #include <cstdint>
 #include <memory>
-#include <string>
 #include <path.hpp>
+#include <string>
 
 namespace graphics
 {
@@ -21,7 +21,7 @@ namespace graphics
 
     class SImage
     {
-    private:
+      private:
         ImageType m_type;
         storage::Path m_path;
 
@@ -31,7 +31,7 @@ namespace graphics
         uint32_t m_size;
         std::shared_ptr<uint8_t[]> m_data;
 
-    public:
+      public:
         explicit SImage(storage::Path& filename);
         ~SImage();
 
@@ -41,10 +41,10 @@ namespace graphics
         [[nodiscard]] uint16_t getHeight() const;
 
         [[nodiscard]] uint32_t getSize() const;
-        [[nodiscard]] uint8_t * getData() const;
+        [[nodiscard]] uint8_t* getData() const;
 
         [[nodiscard]] storage::Path getPath() const;
     };
-} // graphics
+} // namespace graphics
 
-#endif //SIMAGE_HPP
+#endif // SIMAGE_HPP

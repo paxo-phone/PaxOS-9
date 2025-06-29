@@ -5,13 +5,13 @@
 #include "FileConfig.hpp"
 
 #include <filestream.hpp>
+#include <iostream>
 #include <libsystem.hpp>
 #include <path.hpp>
-#include <iostream>
 
 namespace libsystem
 {
-    FileConfig::FileConfig(const storage::Path &path)
+    FileConfig::FileConfig(const storage::Path& path)
     {
         m_path = path;
 
@@ -33,9 +33,7 @@ namespace libsystem
             openFileStream(m_path, storage::READ);
 
             if (!checkFormat())
-            {
                 throw exceptions::RuntimeError("File is the wrong format.");
-            }
 
             parse();
 
@@ -57,14 +55,15 @@ namespace libsystem
         closeFileStream();
     }
 
-    bool FileConfig::has(const std::string &key) const
+    bool FileConfig::has(const std::string& key) const
     {
         std::vector<std::string> keySplit = getSplicedNamespacedKey(key);
 
         std::shared_ptr<NamespaceNode> namespaceNode = m_mainNode;
         while (keySplit.size() > 1)
         {
-            if (const std::string namespaceName = keySplit.front(); namespaceNode->hasNamespace(namespaceName))
+            if (const std::string namespaceName = keySplit.front();
+                namespaceNode->hasNamespace(namespaceName))
             {
                 namespaceNode = namespaceNode->getNamespace(namespaceName);
             }
@@ -79,7 +78,7 @@ namespace libsystem
         return namespaceNode->hasValue(keySplit[0]);
     }
 
-    FileConfig::file_config_types_t FileConfig::getRaw(const std::string &key) const
+    FileConfig::file_config_types_t FileConfig::getRaw(const std::string& key) const
     {
         const std::shared_ptr<NamespaceNode> namespaceNode = getNamespaceNodeFromNamespaceKey(key);
 
@@ -91,12 +90,14 @@ namespace libsystem
         return value->getValue();
     }
 
-    void FileConfig::setRaw(const std::string &key, const file_config_types_t &value) const
+    void FileConfig::setRaw(const std::string& key, const file_config_types_t& value) const
     {
-        const std::shared_ptr<NamespaceNode> namespaceNode = getNamespaceNodeFromNamespaceKey(key, true);
+        const std::shared_ptr<NamespaceNode> namespaceNode =
+            getNamespaceNodeFromNamespaceKey(key, true);
 
         // keySuffix: Get only the last part of the key
-        if (const std::string keySuffix = key.substr(key.find_last_of('.') + 1); namespaceNode->hasValue(keySuffix))
+        if (const std::string keySuffix = key.substr(key.find_last_of('.') + 1);
+            namespaceNode->hasValue(keySuffix))
         {
             // Update value
             const std::shared_ptr<ValueNode> valueNode = namespaceNode->getValue(keySuffix);
@@ -176,14 +177,14 @@ namespace libsystem
         case FLOAT:
         {
             uint32_t intValue = readUint32();
-            float floatValue = *reinterpret_cast<float *>(&intValue);
+            float floatValue = *reinterpret_cast<float*>(&intValue);
             value = floatValue;
             break;
         }
         case DOUBLE:
         {
             uint64_t intValue = readUint64();
-            double doubleValue = *reinterpret_cast<double *>(&intValue);
+            double doubleValue = *reinterpret_cast<double*>(&intValue);
 
             value = doubleValue;
 
@@ -229,18 +230,16 @@ namespace libsystem
         m_currentNode = m_currentNode->getParent();
     }
 
-    std::string FileConfig::getNamespacedKey(const std::string &key) const
+    std::string FileConfig::getNamespacedKey(const std::string& key) const
     {
         if (m_currentNode->getParent() == nullptr)
-        {
             return key;
-        }
 
         return m_currentNode->getPath() + "." + key;
     }
 
     // ReSharper disable once CppDFAUnreachableFunctionCall
-    std::vector<std::string> FileConfig::getSplicedNamespacedKey(const std::string &namespacedKey)
+    std::vector<std::string> FileConfig::getSplicedNamespacedKey(const std::string& namespacedKey)
     {
         std::vector<std::string> output;
 
@@ -262,7 +261,8 @@ namespace libsystem
 
     // ReSharper disable once CppDFAUnreachableFunctionCall
     std::shared_ptr<FileConfig::NamespaceNode> FileConfig::getNamespaceNodeFromNamespaceKey(
-        const std::string &namespacedKey, const bool createNewNamespaces) const
+        const std::string& namespacedKey, const bool createNewNamespaces
+    ) const
     {
 
         std::vector<std::string> keySplit = getSplicedNamespacedKey(namespacedKey);
@@ -270,22 +270,20 @@ namespace libsystem
         std::shared_ptr<NamespaceNode> namespaceNode = m_mainNode;
         while (keySplit.size() > 1)
         {
-            if (const std::string namespaceName = keySplit.front(); namespaceNode->hasNamespace(namespaceName))
+            if (const std::string namespaceName = keySplit.front();
+                namespaceNode->hasNamespace(namespaceName))
             {
                 namespaceNode = namespaceNode->getNamespace(namespaceName);
             }
+            else if (createNewNamespaces)
+            {
+                auto newNamespace = std::make_shared<NamespaceNode>(namespaceName);
+                namespaceNode->addNamespaceNode(newNamespace);
+                namespaceNode = newNamespace;
+            }
             else
             {
-                if (createNewNamespaces)
-                {
-                    auto newNamespace = std::make_shared<NamespaceNode>(namespaceName);
-                    namespaceNode->addNamespaceNode(newNamespace);
-                    namespaceNode = newNamespace;
-                }
-                else
-                {
-                    throw exceptions::InvalidArgument("Unknown key: " + namespacedKey + ".");
-                }
+                throw exceptions::InvalidArgument("Unknown key: " + namespacedKey + ".");
             }
 
             keySplit.erase(keySplit.begin());
@@ -294,7 +292,7 @@ namespace libsystem
         return namespaceNode;
     }
 
-    void FileConfig::openFileStream(const storage::Path &path, storage::Mode mode)
+    void FileConfig::openFileStream(const storage::Path& path, storage::Mode mode)
     {
         m_fileStream = std::make_shared<storage::FileStream>(path.str(), mode);
         m_fileStreamSize = m_fileStream->size();
@@ -343,10 +341,11 @@ namespace libsystem
         // #pragma GCC diagnostic push
         // #pragma GCC diagnostic ignored "-Wshift-count-overflow"
 
-        const uint64_t r = static_cast<uint64_t>(read()) << 56 | static_cast<uint64_t>(read()) << 48 |
-                           static_cast<uint64_t>(read()) << 40 | static_cast<uint64_t>(read()) << 32 |
-                           static_cast<uint64_t>(read()) << 24 | static_cast<uint64_t>(read()) << 16 |
-                           static_cast<uint64_t>(read()) << 8 | static_cast<uint64_t>(read());
+        const uint64_t r =
+            static_cast<uint64_t>(read()) << 56 | static_cast<uint64_t>(read()) << 48 |
+            static_cast<uint64_t>(read()) << 40 | static_cast<uint64_t>(read()) << 32 |
+            static_cast<uint64_t>(read()) << 24 | static_cast<uint64_t>(read()) << 16 |
+            static_cast<uint64_t>(read()) << 8 | static_cast<uint64_t>(read());
 
         return r;
 
@@ -360,17 +359,11 @@ namespace libsystem
         if (length == 0)
         {
             char c;
-            while (hasNext() && (c = static_cast<char>(read())) != 0x00)
-            {
-                output += c;
-            }
+            while (hasNext() && (c = static_cast<char>(read())) != 0x00) output += c;
         }
         else
         {
-            for (size_t i = 0; i < length; i++)
-            {
-                output += m_fileStream->readchar();
-            }
+            for (size_t i = 0; i < length; i++) output += m_fileStream->readchar();
         }
 
         return output;
@@ -387,8 +380,7 @@ namespace libsystem
         std::string var;
         char c;
 
-        do
-        {
+        do {
             char c = m_fileStream->readchar();
             if (c == std::string::npos)
             {
@@ -418,7 +410,7 @@ namespace libsystem
         return static_cast<Type>(read());
     }
 
-    FileConfig::ValueNode::ValueNode(const std::string &key, const file_config_types_t &value)
+    FileConfig::ValueNode::ValueNode(const std::string& key, const file_config_types_t& value)
     {
         m_key = key;
         m_value = value;
@@ -444,7 +436,7 @@ namespace libsystem
         return m_value;
     }
 
-    void FileConfig::ValueNode::setValue(const file_config_types_t &value)
+    void FileConfig::ValueNode::setValue(const file_config_types_t& value)
     {
         m_value = value;
     }
@@ -452,14 +444,12 @@ namespace libsystem
     std::string FileConfig::ValueNode::getPath()
     {
         if (getParent() == nullptr)
-        {
             return m_key;
-        }
 
         return getParent()->getPath() + "." + m_key;
     }
 
-    void FileConfig::ValueNode::write(const std::shared_ptr<storage::FileStream> &fileStream) const
+    void FileConfig::ValueNode::write(const std::shared_ptr<storage::FileStream>& fileStream) const
     {
         fileStream->write(PROPERTY);
         fileStream->write(getType());
@@ -511,10 +501,7 @@ namespace libsystem
         {
             const std::string v = std::get<std::string>(m_value);
 
-            for (const char c : v)
-            {
-                fileStream->write(c);
-            }
+            for (const char c : v) fileStream->write(c);
             fileStream->write(0x00);
 
             break;
@@ -534,7 +521,7 @@ namespace libsystem
         case FLOAT:
         {
             const float v = std::get<float>(m_value);
-            const auto v32 = *reinterpret_cast<const uint32_t *>(&v);
+            const auto v32 = *reinterpret_cast<const uint32_t*>(&v);
 
             fileStream->write(static_cast<char>(v32 >> 24));
             fileStream->write(static_cast<char>(v32 >> 16 & 0xFF));
@@ -546,7 +533,7 @@ namespace libsystem
         case DOUBLE:
         {
             const double v = std::get<double>(m_value);
-            const auto v64 = *reinterpret_cast<const uint64_t *>(&v);
+            const auto v64 = *reinterpret_cast<const uint64_t*>(&v);
 
             fileStream->write(static_cast<char>(v64 >> 56));
             fileStream->write(static_cast<char>(v64 >> 48 & 0xFF));
@@ -574,10 +561,7 @@ namespace libsystem
             fileStream->write("[");
             for (const std::string str : v)
             {
-                for (const char c : str)
-                {
-                    fileStream->write(c);
-                }
+                for (const char c : str) fileStream->write(c);
                 fileStream->write(0x00);
                 break;
             }
@@ -589,7 +573,7 @@ namespace libsystem
         }
     }
 
-    FileConfig::NamespaceNode::NamespaceNode(const std::string &name)
+    FileConfig::NamespaceNode::NamespaceNode(const std::string& name)
     {
 
         m_name = name;
@@ -605,54 +589,50 @@ namespace libsystem
         return m_name;
     }
 
-    bool FileConfig::NamespaceNode::hasValue(const std::string &key)
+    bool FileConfig::NamespaceNode::hasValue(const std::string& key)
     {
         const auto it = m_values.find(key);
         return it != m_values.end();
     }
 
-    std::shared_ptr<FileConfig::ValueNode> FileConfig::NamespaceNode::getValue(const std::string &key)
+    std::shared_ptr<FileConfig::ValueNode>
+        FileConfig::NamespaceNode::getValue(const std::string& key)
     {
         const auto it = m_values.find(key);
 
         if (it == m_values.end())
-        {
             throw exceptions::RuntimeError("Cannot find value.");
-        }
 
         return it->second;
     }
 
-    bool FileConfig::NamespaceNode::hasNamespace(const std::string &name)
+    bool FileConfig::NamespaceNode::hasNamespace(const std::string& name)
     {
         const auto it = m_namespaces.find(name);
         return it != m_namespaces.end();
     }
 
-    std::shared_ptr<FileConfig::NamespaceNode> FileConfig::NamespaceNode::getNamespace(const std::string &name)
+    std::shared_ptr<FileConfig::NamespaceNode>
+        FileConfig::NamespaceNode::getNamespace(const std::string& name)
     {
         const auto it = m_namespaces.find(name);
 
         if (it == m_namespaces.end())
-        {
             throw exceptions::RuntimeError("Cannot find namespace.");
-        }
 
         return it->second;
     }
 
-    void FileConfig::NamespaceNode::addValueNode(const std::shared_ptr<ValueNode> &node)
+    void FileConfig::NamespaceNode::addValueNode(const std::shared_ptr<ValueNode>& node)
     {
         node->m_parent = shared_from_this();
-        m_values.insert({node->getKey(),
-                         node});
+        m_values.insert({node->getKey(), node});
     }
 
-    void FileConfig::NamespaceNode::addNamespaceNode(const std::shared_ptr<NamespaceNode> &node)
+    void FileConfig::NamespaceNode::addNamespaceNode(const std::shared_ptr<NamespaceNode>& node)
     {
         node->m_parent = shared_from_this();
-        m_namespaces.insert({node->getName(),
-                             node});
+        m_namespaces.insert({node->getName(), node});
     }
 
     std::string FileConfig::NamespaceNode::getPath()
@@ -669,7 +649,9 @@ namespace libsystem
         return path;
     }
 
-    void FileConfig::NamespaceNode::write(const std::shared_ptr<storage::FileStream> &fileStream) const
+    void FileConfig::NamespaceNode::write(
+        const std::shared_ptr<storage::FileStream>& fileStream
+    ) const
     { // NOLINT(*-no-recursion)
         // Write begin namespace OpCode, if not top-level namespace
         if (getParent() != nullptr)
@@ -680,21 +662,13 @@ namespace libsystem
         }
 
         // Write every namespace recursively
-        for (const auto &[fst, snd] : m_namespaces)
-        {
-            snd->write(fileStream);
-        }
+        for (const auto& [fst, snd] : m_namespaces) snd->write(fileStream);
 
         // Write every values
-        for (const auto &[fst, snd] : m_values)
-        {
-            snd->write(fileStream);
-        }
+        for (const auto& [fst, snd] : m_values) snd->write(fileStream);
 
         // Write end namespace OpCode, if not top-level namespace
         if (getParent() != nullptr)
-        {
             fileStream->write(END_NAMESPACE);
-        }
     }
-} // libsystem
+} // namespace libsystem

@@ -5,12 +5,11 @@
 #ifndef LIBSYSTEM_HPP
 #define LIBSYSTEM_HPP
 
+#include <FileConfig.hpp>
+#include <color.hpp>
 #include <cstdint>
 #include <stdexcept>
 #include <string>
-#include <color.hpp>
-
-#include <FileConfig.hpp>
 
 // Replace this in "platformio.ini" ?
 #define OS_NAME "PaxOS"
@@ -21,8 +20,9 @@
 #define OS_VERSION_BUILD "0"
 #define OS_VERSION_CODENAME "Red Panic"
 
-#define OS_VERSION \
-    OS_VERSION_MAJOR "." OS_VERSION_MINOR "." OS_VERSION_PATCH "-" OS_VERSION_BUILD " (" OS_VERSION_CODENAME ")"
+#define OS_VERSION                                                                                 \
+    OS_VERSION_MAJOR "." OS_VERSION_MINOR "." OS_VERSION_PATCH "-" OS_VERSION_BUILD                \
+                     " (" OS_VERSION_CODENAME ")"
 
 /**
  * @brief System interactions.
@@ -32,7 +32,7 @@
 namespace libsystem
 {
     void init();
-    
+
     /**
      * @brief Delay the current thread.
      *
@@ -46,7 +46,7 @@ namespace libsystem
      * @param message The message to show.
      * @param restart If true, the device will restart safely.
      */
-    void panic(const std::string &message, bool restart = true);
+    void panic(const std::string& message, bool restart = true);
 
     /**
      * @brief Print a message in the console.
@@ -55,7 +55,7 @@ namespace libsystem
      *
      * @todo Save logs.
      */
-    void log(const std::string &message);
+    void log(const std::string& message);
 
     /**
      * @defgroup boot_errors Error management at boot time.
@@ -70,7 +70,7 @@ namespace libsystem
      *
      * @param message The boot error message.
      */
-    void registerBootError(const std::string &message);
+    void registerBootError(const std::string& message);
 
     /**
      * @brief Display boot errors.
@@ -151,20 +151,20 @@ namespace libsystem
          */
         class RuntimeError final : public std::runtime_error
         {
-        public:
+          public:
             /**
              * @brief Throw a new std::runtime_error.
              *
              * @param message The message to display.
              */
-            explicit RuntimeError(const std::string &message);
+            explicit RuntimeError(const std::string& message);
 
             /**
              * @brief Throw a new std::runtime_error.
              *
              * @param message The message to display.
              */
-            explicit RuntimeError(const char *message);
+            explicit RuntimeError(const char* message);
         };
 
         /**
@@ -174,20 +174,20 @@ namespace libsystem
          */
         class OutOfRange final : public std::out_of_range
         {
-        public:
+          public:
             /**
              * @brief Throw a new std::out_of_range.
              *
              * @param message The message to display.
              */
-            explicit OutOfRange(const std::string &message);
+            explicit OutOfRange(const std::string& message);
 
             /**
              * @brief Throw a new std::out_of_range.
              *
              * @param message The message to display.
              */
-            explicit OutOfRange(const char *message);
+            explicit OutOfRange(const char* message);
         };
 
         /**
@@ -197,20 +197,20 @@ namespace libsystem
          */
         class InvalidArgument final : public std::invalid_argument
         {
-        public:
+          public:
             /**
              * @brief Throw a new std::invalid_argument.
              *
              * @param message The message to display.
              */
-            explicit InvalidArgument(const std::string &message);
+            explicit InvalidArgument(const std::string& message);
 
             /**
              * @brief Throw a new std::invalid_argument.
              *
              * @param message The message to display.
              */
-            explicit InvalidArgument(const char *message);
+            explicit InvalidArgument(const char* message);
         };
     } // namespace exceptions
 
@@ -332,7 +332,7 @@ namespace libsystem
          * @param save
          */
         void setBorderColor(color_t color, bool save = false);
-    }
+    } // namespace paxoConfig
 
 } // namespace libsystem
 

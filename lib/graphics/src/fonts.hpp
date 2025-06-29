@@ -19,6 +19,6 @@ namespace graphics
         PT_16 = 16,
         PT_24 = 24
     };
-}
+} // namespace graphics
 
-#endif //FONTS_HPP
+#endif // FONTS_HPP

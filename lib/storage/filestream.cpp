@@ -1,4 +1,5 @@
 #include "filestream.hpp"
+
 #include <sstream>
 
 #ifdef ESP_PLATFORM
@@ -10,8 +11,7 @@ namespace storage
 
     FileStream::FileStream() {}
 
-    FileStream::FileStream(const std::string &path,
-                           Mode mode)
+    FileStream::FileStream(const std::string& path, Mode mode)
     {
         this->open(path, mode);
     }
@@ -21,8 +21,7 @@ namespace storage
         m_stream.close();
     }
 
-    void FileStream::open(const std::string &path,
-                          Mode mode)
+    void FileStream::open(const std::string& path, Mode mode)
     {
         if (mode == READ)
             m_stream.open(path, std::ios::in | std::ios::binary);
@@ -44,20 +43,20 @@ namespace storage
             std::stringstream buffer;
             buffer << m_stream.rdbuf();
             return buffer.str();
-        } else
+        }
+        else
         {
             // Resize the string to accommodate `returnSize` bytes
             std::string buff;
             buff.resize(returnSize);
 
             // Read from the stream into the buffer
-            m_stream.read(&buff[0], returnSize);  // Safe access to underlying data
+            m_stream.read(&buff[0], returnSize); // Safe access to underlying data
 
             // Shrink the string to the actual number of bytes read (gcount())
             buff.resize(m_stream.gcount());
 
             return buff;
-
         }
     }
 
@@ -86,7 +85,7 @@ namespace storage
         return m_stream.get();
     }
 
-    void FileStream::write(const std::string &str)
+    void FileStream::write(const std::string& str)
     {
         m_stream << str;
     }
@@ -113,34 +112,31 @@ namespace storage
         const auto begin = m_stream.tellg();
         m_stream.seekg(0, std::ios::end);
         const auto end = m_stream.tellg();
-        const auto fsize = (end-begin);
+        const auto fsize = (end - begin);
         m_stream.seekg(position);
         return fsize;
-
     }
 
     long FileStream::sizeFromCurrentPosition(void)
     {
         const auto currentPosition = m_stream.tellg();
-        m_stream.seekg (0, std::ios::end);
+        m_stream.seekg(0, std::ios::end);
         const auto end = m_stream.tellg();
-        const auto fsize = (end-currentPosition);
+        const auto fsize = (end - currentPosition);
         m_stream.seekg(currentPosition);
         return fsize;
     }
 
-    FileStream &operator<<(FileStream &stream,
-                           const std::string &text)
+    FileStream& operator<<(FileStream& stream, const std::string& text)
     {
         stream.write(text);
         return stream;
     }
 
-    FileStream &operator>>(FileStream &stream,
-                           std::string &buff)
+    FileStream& operator>>(FileStream& stream, std::string& buff)
     {
         buff = stream.readword();
         return stream;
     }
 
-}
+} // namespace storage

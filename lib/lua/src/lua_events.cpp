@@ -1,12 +1,12 @@
 #include "lua_events.hpp"
 
 #include "SOL2/sol.hpp"
+#include "lua_file.hpp"
 
+#include <gsm2.hpp>
+#include <hardware.hpp>
 #include <tasks.hpp>
 #include <threads.hpp>
-#include <hardware.hpp>
-#include <gsm2.hpp>
-#include "lua_file.hpp"
 
 LuaTime::LuaTime(LuaFile* lua)
 {
@@ -19,13 +19,12 @@ uint32_t LuaTime::monotonic()
     return os_millis() - timerFromStart;
 }
 
-int findIndex(const std::vector<std::string>& vec, const std::string& target) {
-    for (std::size_t i = 0; i < vec.size(); ++i) {
-        if (vec[i] == target) {
+int findIndex(const std::vector<std::string>& vec, const std::string& target)
+{
+    for (std::size_t i = 0; i < vec.size(); ++i)
+        if (vec[i] == target)
             return static_cast<int>(i); // Convertir en int si nécessaire
-        }
-    }
-    return -1; // Retourner -1 si la chaîne n'est pas trouvée
+    return -1;                          // Retourner -1 si la chaîne n'est pas trouvée
 }
 
 sol::table LuaTime::get(std::string format)
@@ -36,7 +35,8 @@ sol::table LuaTime::get(std::string format)
     std::string::size_type start = 0;
     std::string::size_type end = format.find(delimiter);
 
-    while (end != std::string::npos) {
+    while (end != std::string::npos)
+    {
         result.push_back(format.substr(start, end - start));
         start = end + 1;
         end = format.find(delimiter, start);
@@ -44,19 +44,27 @@ sol::table LuaTime::get(std::string format)
 
     result.push_back(format.substr(start));
 
-    std::vector<std::string> identifiers = {"s","mi","h","d","mo","y"};
+    std::vector<std::string> identifiers = {"s", "mi", "h", "d", "mo", "y"};
 
-    std::vector<int> date = {Gsm::Time::getSecond(),Gsm::Time::getMinute(),Gsm::Time::getHour(),Gsm::Time::getDay(),Gsm::Time::getMonth(),Gsm::Time::getYear()};
-    
+    std::vector<int> date = {
+        Gsm::Time::getSecond(),
+        Gsm::Time::getMinute(),
+        Gsm::Time::getHour(),
+        Gsm::Time::getDay(),
+        Gsm::Time::getMonth(),
+        Gsm::Time::getYear()
+    };
+
     // ajouter les valeurs aux index des identifiers
 
     sol::table array = lua->lua.create_table();
 
     // Remplir le tableau avec des nombres
-    for (int i = 0; i < result.size(); i++) {
+    for (int i = 0; i < result.size(); i++)
+    {
         int index = findIndex(identifiers, result[i]);
-        if(index!=-1)
-            array[i+1] = date[index];
+        if (index != -1)
+            array[i + 1] = date[index];
         else
             return lua->lua.create_table();
     }
@@ -70,20 +78,26 @@ LuaTimeInterval::LuaTimeInterval(LuaFile* lua, sol::protected_function func, uin
     this->lua = lua;
     this->func = func;
     this->interval = interval;
-    this->id = lua->eventHandler.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)), interval);
+    this->id = lua->eventHandler.setInterval(
+        std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)),
+        interval
+    );
 }
 
-
-uint32_t LuaTimeEvent::addEventListener(LuaFile* lua, sol::protected_function condition, sol::protected_function callback) {
-//    this->lua = lua;
+uint32_t LuaTimeEvent::addEventListener(
+    LuaFile* lua, sol::protected_function condition, sol::protected_function callback
+)
+{
+    //    this->lua = lua;
     this->condition = condition;
     this->callback = callback;
-//    this->interval = interval;
-    // this->id = eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call, this)),);
-    return  0; //eventHandlerApp.addEventListener( (Function *) condition, (Function *) callback);
+    //    this->interval = interval;
+    // this->id =
+    // eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call,
+    // this)),);
+    return 0; // eventHandlerApp.addEventListener( (Function *) condition,
+              // (Function *) callback);
 }
-
-
 
 int LuaTimeInterval::getId()
 {
@@ -92,16 +106,23 @@ int LuaTimeInterval::getId()
 
 void LuaTimeInterval::call()
 {
-    try {
-        if(func)
-        func();
-    } catch (const sol::error& e) {
+    try
+    {
+        if (func)
+            func();
+    }
+    catch (const sol::error& e)
+    {
         // Handle Solidity specific errors
         std::cerr << "Sol error: " << e.what() << std::endl;
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e)
+    {
         // Handle other standard exceptions
         std::cerr << "Standard error: " << e.what() << std::endl;
-    } catch (...) {
+    }
+    catch (...)
+    {
         // Handle any other unknown exceptions
         std::cerr << "Unknown error" << std::endl;
     }
@@ -117,7 +138,10 @@ LuaTimeTimeout::LuaTimeTimeout(LuaFile* lua, sol::protected_function func, uint3
     this->lua = lua;
     this->func = func;
     this->timeout = timeout;
-    this->id = lua->eventHandler.setTimeout(new Callback<>(std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))), timeout);
+    this->id = lua->eventHandler.setTimeout(
+        new Callback<>(std::function<void(void)>(std::bind(&LuaTimeTimeout::call, this))),
+        timeout
+    );
 }
 
 int LuaTimeTimeout::getId()
@@ -127,12 +151,13 @@ int LuaTimeTimeout::getId()
 
 void LuaTimeTimeout::call()
 {
-    if(func)
+    if (func)
     {
         sol::protected_function_result result = func();
 
         // Check for errors
-        if (!result.valid()) {
+        if (!result.valid())
+        {
             sol::error err = result;
             std::cerr << "Lua Error: " << err.what() << std::endl;
         }
@@ -143,7 +168,7 @@ void LuaTimeTimeout::call()
 
 LuaTimeTimeout::~LuaTimeTimeout()
 {
-    if(!done)
+    if (!done)
         lua->eventHandler.removeTimeout(id);
 }
 
@@ -151,7 +176,7 @@ void LuaTime::update()
 {
     running = true;
     lua->eventHandler.update();
-    
+
     for (int it = 0; it < timeouts.size(); it++)
     {
         if (timeouts[it]->done)
@@ -208,8 +233,6 @@ void LuaTime::removeTimeout(int id)
 
 LuaTime::~LuaTime()
 {
-    for (int i = 0; i < intervals.size(); i++)
-        delete intervals[i];
-    for (int i = 0; i < timeouts.size(); i++)
-        delete timeouts[i];
+    for (int i = 0; i < intervals.size(); i++) delete intervals[i];
+    for (int i = 0; i < timeouts.size(); i++) delete timeouts[i];
 }

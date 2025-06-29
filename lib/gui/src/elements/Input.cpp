@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-namespace gui::elements {
+namespace gui::elements
+{
     Input::Input(uint16_t x, uint16_t y)
     {
         m_x = x;
@@ -30,18 +31,18 @@ namespace gui::elements {
     void Input::render()
     {
         m_surface->clear(COLOR_WHITE);
-        m_surface->fillRect(0, getHeight()-2, getWidth(), 2, COLOR_DARK);
+        m_surface->fillRect(0, getHeight() - 2, getWidth(), 2, COLOR_DARK);
     }
 
     void Input::widgetUpdate()
     {
-        if(m_clear->isTouched())
+        if (m_clear->isTouched())
             setText("");
     }
 
     void Input::setText(const std::string& text)
     {
-        if(text.length() != 0)
+        if (text.length() != 0)
         {
             m_hasText = true;
             m_text->setText(text);
@@ -60,9 +61,9 @@ namespace gui::elements {
     void Input::setPlaceHolder(const std::string& text)
     {
         this->m_placeHolder = text;
-        if(m_text->getText().length() == 0)
+        if (m_text->getText().length() == 0)
             m_text->setText(m_placeHolder);
-        
+
         localGraphicalUpdate();
     }
 
@@ -72,10 +73,10 @@ namespace gui::elements {
 
         localGraphicalUpdate();
     }
-    
+
     std::string Input::getText()
     {
-        if(m_hasText)
+        if (m_hasText)
             return m_text->getText();
         else
             return "";
@@ -90,4 +91,4 @@ namespace gui::elements {
     {
         return m_title->getText();
     }
-}
+} // namespace gui::elements

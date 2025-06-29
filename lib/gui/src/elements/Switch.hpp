@@ -7,7 +7,7 @@ namespace gui::elements
 {
     class Switch final : public ElementBase
     {
-    public:
+      public:
         Switch(uint16_t x, uint16_t y);
         ~Switch() override;
 
@@ -16,9 +16,9 @@ namespace gui::elements
         void setState(bool state);
         bool getState();
 
-    private:
+      private:
         bool m_state = false;
     };
-} // gui::elements
+} // namespace gui::elements
 
 #endif

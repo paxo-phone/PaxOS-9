@@ -5,11 +5,11 @@
 
 #include "Surface.hpp"
 
-#include <path.hpp>
 #include <filestream.hpp>
-//#include <JPEGENC.h>
-#include <iostream>
+#include <path.hpp>
+// #include <JPEGENC.h>
 #include <algorithm>
+#include <iostream>
 
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
@@ -24,18 +24,16 @@
 #define JPEG_SUBSAMPLE_444 0
 #endif
 
+#include "Encoder/decodeutf8.hpp"
 #include "color.hpp"
 #include "fonts/Arial-12.h"
 #include "fonts/Arial-16.h"
 #include "fonts/Arial-24.h"
 #include "fonts/Arial-8.h"
-
 #include "fonts/ArialBold-12.h"
 #include "fonts/ArialBold-16.h"
 #include "fonts/ArialBold-24.h"
 #include "fonts/ArialBold-8.h"
-
-#include "Encoder/decodeutf8.hpp"
 
 /*void print_memory_info() {
     // Get total and free heap size
@@ -43,7 +41,8 @@
     uint32_t total_heap = 270000;
 
     // Get largest free block
-    uint32_t largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
+    uint32_t largest_free_block =
+heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
 
     // Get PSRAM info (if available)
     uint32_t psram_free = 0;
@@ -53,16 +52,17 @@
     if (esp_spiram_is_initialized()) {
         psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
         psram_size = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
-        psram_largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+        psram_largest_free_block =
+heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
     }
 
     // Print memory info
     printf("Memory Info:\n");
-    printf("Internal RAM - Total: %u, Free: %u, Largest Free Block: %u\n", 
+    printf("Internal RAM - Total: %u, Free: %u, Largest Free Block: %u\n",
            total_heap, free_heap, largest_free_block);
-    
+
     if (esp_spiram_is_initialized()) {
-        printf("PSRAM - Total: %u, Free: %u, Largest Free Block: %u\n", 
+        printf("PSRAM - Total: %u, Free: %u, Largest Free Block: %u\n",
                psram_size, psram_free, psram_largest_free_block);
     } else {
         printf("PSRAM not initialized or not available\n");
@@ -75,20 +75,18 @@
 
 namespace graphics
 {
-    Surface::Surface(const uint16_t width, const uint16_t height, const uint8_t color_depth) : m_color(0xFFFF),
-                                                                    m_transparent(false),
-                                                                    m_transparent_color(0xFFFF),
-                                                                    m_font(ARIAL),
-                                                                    m_fontSize(PT_12),
-                                                                    m_color_depth(color_depth)
+    Surface::Surface(const uint16_t width, const uint16_t height, const uint8_t color_depth) :
+        m_color(0xFFFF), m_transparent(false), m_transparent_color(0xFFFF), m_font(ARIAL),
+        m_fontSize(PT_12), m_color_depth(color_depth)
     {
         m_sprite.setColorDepth(m_color_depth);
         m_sprite.setPsram(true);
 
         m_sprite.createSprite(width, height);
-        if(m_sprite.getBuffer() == nullptr)
+        if (m_sprite.getBuffer() == nullptr)
         {
-            std::cerr << "[Error] Unable to allocate a new surface: " << width * height * 2 << " bytes" << std::endl;
+            std::cerr << "[Error] Unable to allocate a new surface: " << width * height * 2
+                      << " bytes" << std::endl;
         }
         else
         {
@@ -98,15 +96,18 @@ namespace graphics
 
             // if(size < k)
             // {
-            //     std::cout << "[Debug] New surface: " << size << " bytes" << std::endl;
+            //     std::cout << "[Debug] New surface: " << size << " bytes" <<
+            //     std::endl;
             // }
             // else if(size < m)
             // {
-            //     std::cout << "[Debug] New surface: " << size / k << " Ko" << std::endl;
+            //     std::cout << "[Debug] New surface: " << size / k << " Ko" <<
+            //     std::endl;
             // }
             // else
             // {
-            //     std::cout << "[Debug] New surface: " << size / m << " Mo" << std::endl;
+            //     std::cout << "[Debug] New surface: " << size / m << " Mo" <<
+            //     std::endl;
             // }
         }
     }
@@ -136,29 +137,20 @@ namespace graphics
         m_sprite.writePixel(x, y, value);
     }
 
-    void Surface::pushSurface(Surface *surface, const int16_t x, const int16_t y)
+    void Surface::pushSurface(Surface* surface, const int16_t x, const int16_t y)
     {
-        if(surface == nullptr)
+        if (surface == nullptr)
             return;
-            
+
         if (surface->m_transparent)
-        {
-            surface->m_sprite.pushSprite(
-                &m_sprite,
-                x,
-                y,
-                surface->m_transparent_color);
-        }
+            surface->m_sprite.pushSprite(&m_sprite, x, y, surface->m_transparent_color);
         else
-        {
-            surface->m_sprite.pushSprite(
-                &m_sprite,
-                x,
-                y);
-        }
+            surface->m_sprite.pushSprite(&m_sprite, x, y);
     }
 
-    void Surface::pushSurfaceWithScale(Surface *surface, const int16_t x, const int16_t y, const float scale)
+    void Surface::pushSurfaceWithScale(
+        Surface* surface, const int16_t x, const int16_t y, const float scale
+    )
     {
         // LovyanGFX is very weird...
         // When pushing with "pushRotateZoomWithAA",
@@ -175,7 +167,8 @@ namespace graphics
                 0,
                 scale,
                 scale,
-                surface->m_transparent_color);
+                surface->m_transparent_color
+            );
         }
         else
         {
@@ -185,7 +178,8 @@ namespace graphics
                 static_cast<float>(y) + static_cast<float>(surface->getHeight()) * scale * 0.5f,
                 0,
                 scale,
-                scale);
+                scale
+            );
         }
     }
 
@@ -214,12 +208,16 @@ namespace graphics
         m_transparent_color = color;
     }
 
-    void Surface::drawRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color)
+    void Surface::drawRect(
+        const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color
+    )
     {
         m_sprite.drawRect(x, y, w, h, color);
     }
 
-    void Surface::fillRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color)
+    void Surface::fillRect(
+        const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const color_t color
+    )
     {
         m_sprite.fillRect(x, y, w, h, color);
     }
@@ -234,101 +232,141 @@ namespace graphics
         this->m_sprite.fillCircle(x, y, r, color);
     }
 
-    void Surface::fillRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r, const color_t color)
+    void Surface::fillRoundRect(
+        const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r,
+        const color_t color
+    )
     {
         m_sprite.fillSmoothRoundRect(x, y, w, h, r, color);
     }
 
-    void Surface::fillRoundRectWithBorder(int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs, uint16_t Backcolor, uint16_t Bordercolor)
+    void Surface::fillRoundRectWithBorder(
+        int16_t x, int16_t y, int16_t w, int16_t h, int16_t r, int16_t bs, uint16_t Backcolor,
+        uint16_t Bordercolor
+    )
     {
         m_sprite.fillSmoothRoundRect(x, y, w, h, r, Bordercolor);
         m_sprite.fillSmoothRoundRect(x + bs, y + bs, w - 2 * bs, h - 2 * bs, r, Backcolor);
     }
 
-    void Surface::drawRoundRect(const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r, const color_t color)
+    void Surface::drawRoundRect(
+        const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const uint16_t r,
+        const color_t color
+    )
     {
         m_sprite.drawRoundRect(x, y, w, h, r, color);
     }
 
-    void Surface::drawLine(const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2, const color_t color)
+    void Surface::drawLine(
+        const int16_t x1, const int16_t y1, const int16_t x2, const int16_t y2, const color_t color
+    )
     {
-        m_sprite.drawLine(
-            x1,
-            y1,
-            x2,
-            y2,
-            color);
+        m_sprite.drawLine(x1, y1, x2, y2, color);
     }
 
-    void Surface::drawImage(const SImage &image, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h)
+    void Surface::drawImage(
+        const SImage& image, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h
+    )
     {
-        //printf("IMG--3-drawImage-1\n");
+        // printf("IMG--3-drawImage-1\n");
         float scaleX = static_cast<float>(w) / static_cast<float>(image.getWidth());
         float scaleY = static_cast<float>(h) / static_cast<float>(image.getHeight());
 
-        if(m_sprite.getBuffer() == nullptr)
+        if (m_sprite.getBuffer() == nullptr)
         {
-            std::cerr << "[Error] Unable to write on an invalid sprite: " << w * h * 2 << " bytes" << std::endl;
+            std::cerr << "[Error] Unable to write on an invalid sprite: " << w * h * 2 << " bytes"
+                      << std::endl;
             return;
         }
 
-        #ifdef ESP_PLATFORM
-            if(image.getType() == PNG)
-            {
-                storage::FileStream stream(image.getPath().str(), storage::Mode::READ);
-                size_t size = stream.size();
+#ifdef ESP_PLATFORM
+        if (image.getType() == PNG)
+        {
+            storage::FileStream stream(image.getPath().str(), storage::Mode::READ);
+            size_t size = stream.size();
 
-                if(!stream.isopen() || size == 0)
-                {
-                    return;
-                }
-
-                std::cout << "Reading PNG...: " << size << std::endl;
-                char* buffer = new char[size];
-                stream.read(buffer, size);
-                stream.close();
-                std::cout << "End Reading PNG...: " << size << std::endl;
-
-                m_sprite.drawPng((uint8_t*) buffer, size, x, y, 0, 0, 0, 0, scaleX, scaleY);
-                m_sprite.releasePngMemory();
-                // here is the place to code the decompression
-                
-                delete[] buffer;
-                std::cout << "End Reading PNG...: " << size << std::endl;
-
+            if (!stream.isopen() || size == 0)
                 return;
-            }
-            switch (image.getType()) // image size with right format
-            {
-                case BMP:
-                    m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                break;
-                case PNG:
-                    //printf("IMG--3-drawImage-2\n");
-                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                    //printf("IMG--3-drawImage-3\n");
-                break;
-                case JPG:
-                    m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                break;
-            };
-            
-        #else
-            lgfx::FileWrapper file;
 
-            switch (image.getType())
-            {
-                case BMP:
-                    m_sprite.drawBmpFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                break;
-                case PNG:
-                    m_sprite.drawPngFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                break;
-                case JPG:
-                    m_sprite.drawJpgFile(&file, image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                break;
-            };
-        #endif
+            std::cout << "Reading PNG...: " << size << std::endl;
+            char* buffer = new char[size];
+            stream.read(buffer, size);
+            stream.close();
+            std::cout << "End Reading PNG...: " << size << std::endl;
+
+            m_sprite.drawPng((uint8_t*) buffer, size, x, y, 0, 0, 0, 0, scaleX, scaleY);
+            m_sprite.releasePngMemory();
+            // here is the place to code the decompression
+
+            delete[] buffer;
+            std::cout << "End Reading PNG...: " << size << std::endl;
+
+            return;
+        }
+        switch (image.getType()) // image size with right format
+        {
+        case BMP:
+            m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+            break;
+        case PNG:
+            // printf("IMG--3-drawImage-2\n");
+            m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+            // printf("IMG--3-drawImage-3\n");
+            break;
+        case JPG:
+            m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+            break;
+        };
+
+#else
+        lgfx::FileWrapper file;
+
+        switch (image.getType())
+        {
+        case BMP:
+            m_sprite.drawBmpFile(
+                &file,
+                image.getPath().str().c_str(),
+                x,
+                y,
+                0,
+                0,
+                0,
+                0,
+                scaleX,
+                scaleY
+            );
+            break;
+        case PNG:
+            m_sprite.drawPngFile(
+                &file,
+                image.getPath().str().c_str(),
+                x,
+                y,
+                0,
+                0,
+                0,
+                0,
+                scaleX,
+                scaleY
+            );
+            break;
+        case JPG:
+            m_sprite.drawJpgFile(
+                &file,
+                image.getPath().str().c_str(),
+                x,
+                y,
+                0,
+                0,
+                0,
+                0,
+                scaleX,
+                scaleY
+            );
+            break;
+        };
+#endif
     }
 
     bool Surface::saveAsJpg(const storage::Path filename)
@@ -357,11 +395,9 @@ namespace graphics
         JPEGENCODE jpe;
 
         // Start the JPEG encoding process
-        int rc = jpg.encodeBegin(&jpe, width, height, JPEG_PIXEL_RGB565, JPEG_SUBSAMPLE_444, quality);
-        if (rc != 0) {
-            Serial.println("Failed to start JPEG encoding");
-            outFile.close();
-            return false;
+        int rc = jpg.encodeBegin(&jpe, width, height, JPEG_PIXEL_RGB565,
+        JPEG_SUBSAMPLE_444, quality); if (rc != 0) { Serial.println("Failed to start
+        JPEG encoding"); outFile.close(); return false;
         }
 
         // Calculate MCU dimensions
@@ -438,7 +474,7 @@ namespace graphics
         this->m_text_color = color;
     }
 
-    const lgfx::GFXfont *getFont(const EFont font, const EFontSize fontSize)
+    const lgfx::GFXfont* getFont(const EFont font, const EFontSize fontSize)
     {
         if (font == ARIAL)
         {
@@ -468,7 +504,8 @@ namespace graphics
         else
             fontSize = PT_24;
 
-        const float scale = m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
+        const float scale =
+            m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
         this->m_sprite.setFont(getFont(m_font, fontSize));
 
@@ -488,12 +525,13 @@ namespace graphics
         else
             fontSize = PT_24;
 
-        const float scale = m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
+        const float scale =
+            m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
         return (float) scale * m_sprite.fontHeight(getFont(m_font, fontSize));
     }
 
-    void Surface::drawText(std::string &otext, int16_t x, int16_t y, std::optional<color_t> color)
+    void Surface::drawText(std::string& otext, int16_t x, int16_t y, std::optional<color_t> color)
     {
         std::string text = decodeString(otext);
         // Get the correct font size
@@ -509,7 +547,8 @@ namespace graphics
             fontSize = PT_24;
 
         // Get the correct scale
-        const float scale = m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
+        const float scale =
+            m_fontSize / static_cast<float>(m_sprite.fontHeight(getFont(m_font, fontSize)));
 
         // Get buffer size
         const uint16_t bufferHeight = m_sprite.fontHeight(getFont(m_font, fontSize));
@@ -517,18 +556,14 @@ namespace graphics
 
         // Create buffer
         // FIXME : Probably can optimize it with a LovyanGFX direct sprite
-        auto *buffer = new Surface(bufferWidth, bufferHeight);
+        auto* buffer = new Surface(bufferWidth, bufferHeight);
 
         // Init the buffer
         buffer->m_sprite.setFont(getFont(m_font, fontSize));
         if (color.has_value())
-        {
             buffer->m_sprite.setTextColor(color.value());
-        }
         else
-        {
             buffer->m_sprite.setTextColor(m_text_color);
-        }
 
         // Set the background as transparent
         // FIXME : Using "m_color" as the transparency color can cause issues
@@ -547,13 +582,18 @@ namespace graphics
 
             // Get char
             const char c = text[i];
-            const char *str = std::string(1, c).c_str(); // Bad trick I think
+            const char* str = std::string(1, c).c_str(); // Bad trick I think
 
             // Draw the char
             buffer->m_sprite.drawString(str, 0, 0);
 
             // Push the buffer
-            pushSurfaceWithScale(buffer, static_cast<int16_t>(static_cast<float>(x) + ox), y, scale);
+            pushSurfaceWithScale(
+                buffer,
+                static_cast<int16_t>(static_cast<float>(x) + ox),
+                y,
+                scale
+            );
 
             // Update the offset
             const uint16_t charWidth = m_sprite.textWidth(str, getFont(m_font, fontSize));
@@ -563,40 +603,38 @@ namespace graphics
         delete buffer;
     }
 
-    void Surface::drawTextCentered(std::string &text, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h, const bool horizontallyCentered, const bool verticallyCentered, const std::optional<color_t> color)
+    void Surface::drawTextCentered(
+        std::string& text, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
+        const bool horizontallyCentered, const bool verticallyCentered,
+        const std::optional<color_t> color
+    )
     {
         const uint16_t textWidth = m_sprite.textWidth(text.c_str());
         int16_t textPositionX;
         if (horizontallyCentered)
-        {
-            if (w == (uint16_t)-1)
-                textPositionX = x + (double)this->getWidth() * 0.5 - (double)textWidth * 0.5;
+            if (w == (uint16_t) -1)
+                textPositionX = x + (double) this->getWidth() * 0.5 - (double) textWidth * 0.5;
             else
-                textPositionX = x + (double)w * 0.5 - (double)textWidth * 0.5;
-        }
+                textPositionX = x + (double) w * 0.5 - (double) textWidth * 0.5;
         else
-        {
             textPositionX = x;
-        }
 
-        const uint16_t textHeight = this->getTextHeight(); // maybe it should take in account the bounding box height
+        const uint16_t textHeight =
+            this->getTextHeight(); // maybe it should take in account the bounding box height
         int16_t textPositionY;
         if (verticallyCentered)
-        {
-            if(h == (uint16_t)-1)
-                textPositionY = y + (double)this->getHeight() * 0.5 - (double)textHeight * 0.5;
+            if (h == (uint16_t) -1)
+                textPositionY = y + (double) this->getHeight() * 0.5 - (double) textHeight * 0.5;
             else
-                textPositionY = y + (double)h * 0.5 - (double)textHeight * 0.5;
-        }
+                textPositionY = y + (double) h * 0.5 - (double) textHeight * 0.5;
         else
-        {
             textPositionY = y;
-        }
-        
+
         drawText(text, textPositionX, textPositionY, color);
     }
 
-    Surface Surface::clone() const {
+    Surface Surface::clone() const
+    {
         auto output = Surface(getWidth(), getHeight());
 
         output.m_sprite.setBuffer(m_sprite.getBuffer(), m_sprite.width(), m_sprite.height());
@@ -604,33 +642,35 @@ namespace graphics
         return output;
     }
 
-    void * Surface::getBuffer() const {
+    void* Surface::getBuffer() const
+    {
         return m_sprite.getBuffer();
     }
 
-    void Surface::setBuffer(void *buffer, int32_t w, int32_t h) {
-        if (w == -1) {
+    void Surface::setBuffer(void* buffer, int32_t w, int32_t h)
+    {
+        if (w == -1)
             w = getWidth();
-        }
-        if (h == -1) {
+        if (h == -1)
             h = getHeight();
-        }
 
         m_sprite.setBuffer(buffer, w, h, m_sprite.getColorDepth());
     }
 
-    void Surface::applyFilter(const Filter filter, const int32_t intensity) {
-        switch (filter) {
-            case BLUR:
-                blur(intensity);
-                break;
-            case LIGHTEN:
-                lighten(intensity);
-                break;
-            case DARKEN:
-                darken(intensity);
-                break;
-            default:;
+    void Surface::applyFilter(const Filter filter, const int32_t intensity)
+    {
+        switch (filter)
+        {
+        case BLUR:
+            blur(intensity);
+            break;
+        case LIGHTEN:
+            lighten(intensity);
+            break;
+        case DARKEN:
+            darken(intensity);
+            break;
+        default:;
         }
     }
 
@@ -682,13 +722,17 @@ namespace graphics
         copy.pushSprite(&m_sprite, 0, 0);
     }
 
-    void Surface::fastBlur(int32_t radius) {
+    void Surface::fastBlur(int32_t radius)
+    {
         // TODO
     }
 
-    void Surface::lighten(const int32_t intensity) {
-        for (int32_t x = 0; x < getWidth(); x++) {
-            for (int32_t y = 0; y < getHeight(); y++) {
+    void Surface::lighten(const int32_t intensity)
+    {
+        for (int32_t x = 0; x < getWidth(); x++)
+        {
+            for (int32_t y = 0; y < getHeight(); y++)
+            {
                 uint8_t r, g, b;
                 unpackRGB565(m_sprite.readPixel(x, y), &r, &g, &b);
 
@@ -701,7 +745,8 @@ namespace graphics
         }
     }
 
-    void Surface::darken(const int32_t intensity) {
+    void Surface::darken(const int32_t intensity)
+    {
         lighten(-intensity);
     }
-} // graphics
+} // namespace graphics

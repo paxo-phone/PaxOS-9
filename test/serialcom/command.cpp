@@ -1,14 +1,14 @@
-#include <gtest/gtest.h>
-#include <Command.hpp>
 #include <Command.cpp>
-#include <CommandsManager.hpp>
+#include <Command.hpp>
 #include <CommandsManager.cpp>
-#include <config.h>
-#include <iostream>
+#include <CommandsManager.hpp>
 #include <bitset>
+#include <config.h>
+#include <gtest/gtest.h>
+#include <iostream>
 
-//#include "Commands/Command.hpp"
-//#include "Commands/InfoCommandTests.hpp"
-//#include "Commands/FileCommandTests.hpp"
-//#include "Commands/ShellModeCommandTests.hpp"
+// #include "Commands/Command.hpp"
+// #include "Commands/InfoCommandTests.hpp"
+// #include "Commands/FileCommandTests.hpp"
+// #include "Commands/ShellModeCommandTests.hpp"
 #include "Commands/ConsoleCommandTests.hpp"

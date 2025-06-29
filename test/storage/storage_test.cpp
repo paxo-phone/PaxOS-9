@@ -2,10 +2,9 @@
 // Created by Charles on 28/01/2024.
 //
 
-#include <path.hpp>
 #include <filestream.hpp>
-
 #include <gtest/gtest.h>
+#include <path.hpp>
 
 TEST(StorageTest, PathTest)
 {
