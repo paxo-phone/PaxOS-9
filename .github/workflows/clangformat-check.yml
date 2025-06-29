@@ -14,5 +14,8 @@ jobs:
                 with:
                     python-version: '3.13'
 
+            -   name: Set format script permissions
+                run: chmod +x format.sh
+
             -   name: Run clang-format style check
                 run: "./format.sh --check"
