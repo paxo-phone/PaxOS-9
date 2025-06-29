@@ -25,7 +25,7 @@ def get_clang_format_path():
     if version_result.returncode != 0:
         raise RuntimeError("Failed to get clang-format version. Ensure clang-format is installed correctly.")
     version_string = version_result.stdout.strip()
-    version = version_string[len("clang-format version "):].strip()
+    version = version_string.split("version ")[1]
     major_version = version.split(".")[0]
     if int(major_version) < 20:
         raise EnvironmentError("clang-format version 20 or higher is required. Please update clang-format.")
