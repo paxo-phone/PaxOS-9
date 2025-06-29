@@ -107,12 +107,12 @@ void imgdec::encodeJpg(
     // start JPEG compression
     // note: myOutput is the function defined in line 18, it saves the output in
     // example.jpg optional parameters:
-    const bool isRGB = true;       // true = RGB image, else false = grayscale
-    const auto quality = 90;       // compression quality: 0 = worst, 100 = best, 80
-                                   // to 90 are most often used
+    const bool isRGB = true; // true = RGB image, else false = grayscale
+    const auto quality = 90; // compression quality: 0 = worst, 100 = best, 80
+                             // to 90 are most often used
     const bool downsample = false; // false = save as YCbCr444 JPEG (better
                                    // quality), true = YCbCr420 (smaller file)
-    const char* comment = "mms";   // arbitrary JPEG comment
+    const char* comment = "mms"; // arbitrary JPEG comment
 
     std::cout << "ready to write: " << path << std::endl;
 

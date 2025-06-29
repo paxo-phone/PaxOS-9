@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <atomic> // For thread-safe flags if needed
 #include <chrono>
-#include <cmath>     // For ceil
-#include <cstdio>    // For sscanf
+#include <cmath> // For ceil
+#include <cstdio> // For sscanf
 #include <delay.hpp> // Assumes PaxOS_Delay
 #include <functional>
 #include <iomanip> // For std::setw, std::setfill
@@ -13,7 +13,7 @@
 #include <mutex> // For thread safety
 #include <sstream>
 #include <standby.hpp> // Assumes StandbyMode
-#include <stdexcept>   // For exceptions in helpers (optional)
+#include <stdexcept> // For exceptions in helpers (optional)
 #include <string>
 #include <threads.hpp> // Assumes eventHandlerBack
 #include <vector>
@@ -262,7 +262,7 @@ namespace Gsm
         std::string senderNumber;
         std::string messageContent;
         std::string serviceCenterTimestamp; // Format: "YYMMDDHHMMSS+/-ZZ"
-        std::string mmsUrl;                 // If MMS_NOTIFICATION and URL is found
+        std::string mmsUrl; // If MMS_NOTIFICATION and URL is found
         bool hasUserDataHeader = false;
     };
 

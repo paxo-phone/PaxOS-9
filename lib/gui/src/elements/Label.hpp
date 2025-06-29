@@ -54,7 +54,7 @@ namespace gui::elements
             std::vector<std::string> m_lines;
 
             uint16_t m_cursorIndex; // X
-            uint16_t m_cursorLine;  // Y
+            uint16_t m_cursorLine; // Y
         };
 
         ParseDataOutput parse(void);

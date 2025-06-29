@@ -115,7 +115,7 @@ namespace gui::elements
         uint16_t charIndex = 0; // Global text index
 
         uint16_t lineCharIndex = 0; // X position
-        uint16_t lineIndex = 0;     // Y position
+        uint16_t lineIndex = 0; // Y position
 
         for (char c : m_text)
         {

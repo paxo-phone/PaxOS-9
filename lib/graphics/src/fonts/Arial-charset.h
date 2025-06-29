@@ -50,5 +50,5 @@ const CharsetTable FRCharset[40] PROGMEM = {
     {0x0152, 0xa3}, // 'LATIN CAPITAL LIGATURE OE'
     {0x0153, 0xa4}, // 'LATIN SMALL LIGATURE OE'
     {0x0178, 0xa5}, // 'LATIN CAPITAL LETTER Y WITH DIAERESIS'
-    {0x20ac, 0xa6}  // 'EURO SIGN'
+    {0x20ac, 0xa6} // 'EURO SIGN'
 };
