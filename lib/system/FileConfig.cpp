@@ -649,7 +649,8 @@ namespace libsystem
         return path;
     }
 
-    void FileConfig::NamespaceNode::write(const std::shared_ptr<storage::FileStream>& fileStream
+    void FileConfig::NamespaceNode::write(
+        const std::shared_ptr<storage::FileStream>& fileStream
     ) const
     { // NOLINT(*-no-recursion)
         // Write begin namespace OpCode, if not top-level namespace

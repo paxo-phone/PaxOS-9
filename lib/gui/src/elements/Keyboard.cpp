@@ -608,7 +608,8 @@ namespace gui::elements
                 {
                     for (int i = 0; i < toMove; i++)
                     {
-                        m_label->setCursorIndex(static_cast<int16_t>(m_label->getCursorIndex() + 1)
+                        m_label->setCursorIndex(
+                            static_cast<int16_t>(m_label->getCursorIndex() + 1)
                         );
                     }
                 }
@@ -616,7 +617,8 @@ namespace gui::elements
                 {
                     for (int i = 0; i < -toMove; i++)
                     {
-                        m_label->setCursorIndex(static_cast<int16_t>(m_label->getCursorIndex() - 1)
+                        m_label->setCursorIndex(
+                            static_cast<int16_t>(m_label->getCursorIndex() - 1)
                         );
                     }
                 }

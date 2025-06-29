@@ -91,13 +91,17 @@ void libsystem::panic(const std::string& message, const bool restart)
     lcd->setTextColor(graphics::packRGB565(255, 255, 255));
 
     // Show instructions
-    lcd->printf("This is not an expected behavior, please report this to the "
-                "Paxo / PaxOS team.\n\n");
+    lcd->printf(
+        "This is not an expected behavior, please report this to the "
+        "Paxo / PaxOS team.\n\n"
+    );
     lcd->printf("Contact us :\n- https://paxo.fr/\n\n");
     lcd->printf("What you should do:\n");
-    lcd->printf("- Report this issue with every possible detail (what you "
-                "done, installed "
-                "applications...).\n");
+    lcd->printf(
+        "- Report this issue with every possible detail (what you "
+        "done, installed "
+        "applications...).\n"
+    );
     lcd->printf("- Check and clean the SD Card.\n");
     lcd->printf("- Re-flash this device.\n\n");
 

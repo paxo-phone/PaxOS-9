@@ -160,7 +160,8 @@ namespace serialcom
         {
             if (this->shellMode)
             {
-                SerialManager::sharedInstance->commandLog(DIRECTORY_CREATION_SUCCESS(firstArgument)
+                SerialManager::sharedInstance->commandLog(
+                    DIRECTORY_CREATION_SUCCESS(firstArgument)
                 );
             }
             else
@@ -241,7 +242,8 @@ namespace serialcom
             }
             else if (this->shellMode)
             {
-                SerialManager::sharedInstance->commandLog(COPY_FAILED(firstArgument, secondArgument)
+                SerialManager::sharedInstance->commandLog(
+                    COPY_FAILED(firstArgument, secondArgument)
                 );
             }
             else
@@ -293,7 +295,8 @@ namespace serialcom
             }
             else if (this->shellMode)
             {
-                SerialManager::sharedInstance->commandLog(MOVE_FAILED(firstArgument, secondArgument)
+                SerialManager::sharedInstance->commandLog(
+                    MOVE_FAILED(firstArgument, secondArgument)
                 );
             }
             else
@@ -524,7 +527,8 @@ namespace serialcom
                 uint16_t askAgainTries = 0;
 
                 std::string tempBuffer;
-                tempBuffer.reserve(4096
+                tempBuffer.reserve(
+                    4096
                 ); // Pre-reserve memory to avoid reallocations while reading.
 
                 while (receivedSize < fileSize)

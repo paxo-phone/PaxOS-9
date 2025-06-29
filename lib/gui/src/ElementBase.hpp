@@ -59,8 +59,8 @@ namespace gui
         color_t getBackgroundColor() const;
         color_t getBorderColor() const;
 
-        bool isTouched(); // retourne si le widget a été pressé puis relaché (nb,
-                          // l'appel de la fonction annule m'état précédent)
+        bool isTouched();                    // retourne si le widget a été pressé puis relaché (nb,
+                                             // l'appel de la fonction annule m'état précédent)
         bool isFocused(bool forced = false); // retourne si le doigt est sur le widget
 
         virtual void onClick() {}
@@ -137,7 +137,7 @@ namespace gui
         bool m_hasEvents; // si l'objet est réactif aux events tactiles
 
         bool m_isRendered; // si le buffer est a jour
-        bool m_isDrawn; // si le widget est bien a jour sur l'écran
+        bool m_isDrawn;    // si le widget est bien a jour sur l'écran
         static ElementBase* masterOfRender;
         static ElementBase* mainWindow;
 
@@ -175,7 +175,7 @@ namespace gui
         virtual void onScrollRight() {};
         virtual void onScroll(int16_t x, int16_t y) {};
 
-        std::shared_ptr<graphics::Surface> m_surface; // Surface to render the widget
+        std::shared_ptr<graphics::Surface> m_surface;         // Surface to render the widget
         std::shared_ptr<graphics::Surface> m_surface_for_dma; // double buffer for DMA transfer
         bool do_use_double_buffering = false;
         std::shared_ptr<graphics::Surface>

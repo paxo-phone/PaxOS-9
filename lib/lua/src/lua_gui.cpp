@@ -213,10 +213,12 @@ void LuaGui::keyboard_async(
 {
     printf("Calling keyboard_async\n");
     // Store a REFERENCE to the callback, NOT a copy of the sol::function.
-    callback_memory.push_back(std::make_unique<KeyboardCallbackData>(
-        lua->lua.lua_state(),
-        sol::reference(lua->lua.lua_state(), callback)
-    ));
+    callback_memory.push_back(
+        std::make_unique<KeyboardCallbackData>(
+            lua->lua.lua_state(),
+            sol::reference(lua->lua.lua_state(), callback)
+        )
+    );
 
     AppManager::Keyboard_manager::open(
         this->lua->app,

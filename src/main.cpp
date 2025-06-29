@@ -44,7 +44,7 @@ void mainLoop(void* data)
     if (!backtrace_saver::isBacktraceEmpty())
         backtrace_saver::backtraceMessageGUI();
 
-        // libsystem::setDeviceMode(libsystem::NORMAL);
+    // libsystem::setDeviceMode(libsystem::NORMAL);
 #endif
 
     GuiManager& guiManager = GuiManager::getInstance();

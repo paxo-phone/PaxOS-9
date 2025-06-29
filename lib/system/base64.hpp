@@ -61,14 +61,14 @@ namespace base64
     defined(__MIBSEB__) || defined(_M_PPC)
 #define __BIG_ENDIAN__
 #elif (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || /* gcc */          \
-    (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) /* linux header */                  \
+    (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN)                  /* linux header */ \
     || (defined(_BYTE_ORDER) && _BYTE_ORDER == _LITTLE_ENDIAN) ||                                  \
     (defined(BYTE_ORDER) && BYTE_ORDER == LITTLE_ENDIAN) /* mingw header */ ||                     \
     (defined(__sun) && defined(__SVR4) && defined(_LITTLE_ENDIAN)) || /* solaris */                \
     defined(__ARMEL__) || defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) ||    \
     defined(__MIPSEL) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) ||             \
     defined(_M_IA64) || /* msvc for intel processors */                                            \
-    defined(_M_ARM) /* msvc code on arm executes in little endian mode */
+    defined(_M_ARM)     /* msvc code on arm executes in little endian mode */
 #define __LITTLE_ENDIAN__
 #endif
 #endif
@@ -458,9 +458,19 @@ namespace base64
     inline OutputBuffer encode_into(InputIterator begin, InputIterator end)
     {
         typedef std::decay_t<decltype(*begin)> input_value_type;
-        static_assert(std::is_same_v<input_value_type, char> || std::is_same_v<input_value_type, signed char> || std::is_same_v<input_value_type, unsigned char> || std::is_same_v<input_value_type, std::byte>);
+        static_assert(
+            std::is_same_v<input_value_type, char> ||
+            std::is_same_v<input_value_type, signed char> ||
+            std::is_same_v<input_value_type, unsigned char> ||
+            std::is_same_v<input_value_type, std::byte>
+        );
         typedef typename OutputBuffer::value_type output_value_type;
-        static_assert(std::is_same_v<output_value_type, char> || std::is_same_v<output_value_type, signed char> || std::is_same_v<output_value_type, unsigned char> || std::is_same_v<output_value_type, std::byte>);
+        static_assert(
+            std::is_same_v<output_value_type, char> ||
+            std::is_same_v<output_value_type, signed char> ||
+            std::is_same_v<output_value_type, unsigned char> ||
+            std::is_same_v<output_value_type, std::byte>
+        );
         const size_t binarytextsize = end - begin;
         const size_t encodedsize = (binarytextsize / 3 + (binarytextsize % 3 > 0)) << 2;
         OutputBuffer encoded(encodedsize, detail::padding_char);
@@ -526,7 +536,12 @@ namespace base64
     template <class OutputBuffer> inline OutputBuffer decode_into(std::string_view base64Text)
     {
         typedef typename OutputBuffer::value_type output_value_type;
-        static_assert(std::is_same_v<output_value_type, char> || std::is_same_v<output_value_type, signed char> || std::is_same_v<output_value_type, unsigned char> || std::is_same_v<output_value_type, std::byte>);
+        static_assert(
+            std::is_same_v<output_value_type, char> ||
+            std::is_same_v<output_value_type, signed char> ||
+            std::is_same_v<output_value_type, unsigned char> ||
+            std::is_same_v<output_value_type, std::byte>
+        );
         if (base64Text.empty())
             return OutputBuffer();
 
@@ -536,7 +551,8 @@ namespace base64
         const size_t numPadding = std::count(base64Text.rbegin(), base64Text.rbegin() + 4, '=');
         if (numPadding > 2)
         {
-            throw std::runtime_error{"Invalid base64 encoded data - Found more than 2 padding signs"
+            throw std::runtime_error{
+                "Invalid base64 encoded data - Found more than 2 padding signs"
             };
         }
 
@@ -635,7 +651,12 @@ namespace base64
     inline OutputBuffer decode_into(InputIterator begin, InputIterator end)
     {
         typedef std::decay_t<decltype(*begin)> input_value_type;
-        static_assert(std::is_same_v<input_value_type, char> || std::is_same_v<input_value_type, signed char> || std::is_same_v<input_value_type, unsigned char> || std::is_same_v<input_value_type, std::byte>);
+        static_assert(
+            std::is_same_v<input_value_type, char> ||
+            std::is_same_v<input_value_type, signed char> ||
+            std::is_same_v<input_value_type, unsigned char> ||
+            std::is_same_v<input_value_type, std::byte>
+        );
         std::string_view data(reinterpret_cast<const char*>(&*begin), end - begin);
         return decode_into<OutputBuffer>(data);
     }

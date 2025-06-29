@@ -13,7 +13,7 @@
 #else
 #include <Arduino.h>
 #include <SD.h>
-#include <dirent.h> // for Dir and Files
+#include <dirent.h>   // for Dir and Files
 #include <sys/stat.h> // to check files
 #endif
 

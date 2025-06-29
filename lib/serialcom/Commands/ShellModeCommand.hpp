@@ -28,8 +28,9 @@ namespace serialcom
         }
         else if (this->shellMode)
         {
-            SerialManager::sharedInstance->commandLog(SHELL_MODE_OPTION_NOT_RECOGNIZED(firstArgument
-            ));
+            SerialManager::sharedInstance->commandLog(
+                SHELL_MODE_OPTION_NOT_RECOGNIZED(firstArgument)
+            );
         }
         else
         {

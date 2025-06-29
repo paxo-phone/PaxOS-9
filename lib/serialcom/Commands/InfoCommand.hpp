@@ -48,7 +48,8 @@ namespace serialcom
     {
         if (this->shellMode)
         {
-            SerialManager::sharedInstance->commandLog(BLUETOOTH_MAC_MESSAGE
+            SerialManager::sharedInstance->commandLog(
+                BLUETOOTH_MAC_MESSAGE
             ); // format it in a fancy way
         }
         else

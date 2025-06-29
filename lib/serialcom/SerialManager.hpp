@@ -53,7 +53,8 @@ namespace serialcom
         ArrayedStreamBuffer<MAX_OUTPUT_SIZE> coutBuffer;
         ArrayedStreamBuffer<MAX_OUTPUT_SIZE> cerrBuffer;
 
-        std::array<char, MAX_OUTPUT_SIZE> commandLogBuffer = {'\0'
+        std::array<char, MAX_OUTPUT_SIZE> commandLogBuffer = {
+            '\0'
         }; // value-initialize buffer commandLogBuffer;
         uint16_t commandLogBufferIndex = 0;
         uint64_t commandLogBufferHash = 0;

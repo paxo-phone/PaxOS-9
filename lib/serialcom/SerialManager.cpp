@@ -51,7 +51,8 @@ namespace serialcom
         this->commandLogBufferHash = 0;
     }
 
-    void SerialManager::commandLog(const std::string& message
+    void SerialManager::commandLog(
+        const std::string& message
     ) // should only be called in the serialLoop thread
     {
         // put in the commandLogBuffer

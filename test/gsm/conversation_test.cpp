@@ -37,7 +37,8 @@ TEST(ConversationTest, SaveLoadConversation)
 
     for (const auto& msg : conv.messages)
     {
-        json["messages"].push_back({{"message", msg.message}, {"who", msg.who}, {"date", msg.date}}
+        json["messages"].push_back(
+            {{"message", msg.message}, {"who", msg.who}, {"date", msg.date}}
         );
     }
     writeStream.write(json.dump(4));

@@ -51,7 +51,7 @@ UTF-8, a transformation format of ISO 10646
 */
 
 uint8_t decoderState = 0; // UTF-8 decoder state
-uint16_t decoderBuffer; // Unicode code-point buffer
+uint16_t decoderBuffer;   // Unicode code-point buffer
 
 void resetUTF8decoder(void)
 {
@@ -76,12 +76,12 @@ uint16_t decodeUTF8(uint8_t c)
     {
 
         if ((c & 0xE0) == 0xC0)
-        { // 11 bit Unicode Code Point
+        {                                      // 11 bit Unicode Code Point
             decoderBuffer = ((c & 0x1F) << 6); // Save first 5 bits
             decoderState = 1;
         }
         else if ((c & 0xF0) == 0xE0)
-        { // 16 bit Unicode Code Point      {
+        {                                       // 16 bit Unicode Code Point      {
             decoderBuffer = ((c & 0x0F) << 12); // Save first 4 bits
             decoderState = 2;
         }

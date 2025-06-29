@@ -237,8 +237,10 @@ namespace serialcom
                         {
                             SerialManager::sharedInstance->commandLog(
                                 NON_SHELL_MODE_ERROR_CODE +
-                                std::string("ERROR: UNEXPECTED QUOTE CHARACTER "
-                                            "AT POSITION ") +
+                                std::string(
+                                    "ERROR: UNEXPECTED QUOTE CHARACTER "
+                                    "AT POSITION "
+                                ) +
                                 std::to_string(i)
                             );
                         }
