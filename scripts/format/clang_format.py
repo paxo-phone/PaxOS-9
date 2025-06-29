@@ -1,3 +1,4 @@
+import argparse
 import fnmatch
 import os
 import shutil
@@ -27,8 +28,16 @@ def get_clang_format_path():
     version_string = version_result.stdout.strip()
     version = version_string.split("version ")[1]
     major_version = version.split(".")[0]
+    minor_version = version.split(".")[1]
+    patch_version = version.split(".")[2]
     if int(major_version) < 20:
-        raise EnvironmentError("clang-format version 20 or higher is required. Please update clang-format.")
+        raise EnvironmentError("clang-format version 20.1.5 or higher is required. Please update clang-format.")
+    if int(major_version) == 20:
+        if int(minor_version) < 1:
+            raise EnvironmentError("clang-format version 20.1.5 or higher is required. Please update clang-format.")
+        if int(minor_version) == 1:
+            if int(patch_version) < 5:
+                raise EnvironmentError("clang-format version 20.1.5 or higher is required. Please update clang-format.")
     if not os.path.isfile(CLANG_FORMAT_FILE):
         raise FileNotFoundError(f".clang-format file not found at {CLANG_FORMAT_FILE}. Please create one.")
     return clang_format
@@ -77,12 +86,54 @@ def format_files(formatter_path, paths):
         print(f"✓ {file}")
 
 
+def check_files(formatter_path, paths):
+    is_format_correct = True
+    for file in paths:
+        full_path = os.path.join(PROJECT_DIR, file).replace("\\", "/")
+        result = subprocess.run(
+            [
+                formatter_path,
+                f"--style=file:{CLANG_FORMAT_FILE}",
+                "--dry-run",
+                "--Werror",
+                full_path
+            ],
+            check=False,
+            capture_output=True,
+            text=True
+        )
+        if result.returncode != 0:
+            is_format_correct = False
+            print(f"✗ {file} - Formatting issues found:")
+            print(result.stderr)
+        else:
+            print(f"✓ {file}")
+    return is_format_correct
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog='CLang Format Script',
+        description='Apply or check formatting of source files using clang-format.'
+    )
+    parser.add_argument("--check", action="store_true", help="Check formatting without applying changes.")
+    args = parser.parse_args()
     os.chdir(PROJECT_DIR)
     clang_format_path = get_clang_format_path()
     print("Using clang-format at:", clang_format_path)
     target_files = get_files()
     ignore_files = get_ignore_list()
     target_files = [file for file in target_files if not is_file_ignored(ignore_files, file)]
-    format_files(clang_format_path, target_files)
-    print(f"Done, formatted {len(target_files)} files.")
+    if args.check:
+        print("Checking formatting of files...")
+        error = check_files(clang_format_path, target_files)
+        print(f"Done, checked {len(target_files)} files.")
+        if error:
+            print("Some files are not formatted correctly. Please fix them.")
+            exit(1)
+        else:
+            print("All files are formatted correctly.")
+    else:
+        print("Formatting files...")
+        format_files(clang_format_path, target_files)
+        print(f"Done, formatted {len(target_files)} files.")
