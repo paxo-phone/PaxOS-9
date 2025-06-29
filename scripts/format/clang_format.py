@@ -126,13 +126,13 @@ if __name__ == "__main__":
     target_files = [file for file in target_files if not is_file_ignored(ignore_files, file)]
     if args.check:
         print("Checking formatting of files...")
-        error = check_files(clang_format_path, target_files)
+        formatting_valid = check_files(clang_format_path, target_files)
         print(f"Done, checked {len(target_files)} files.")
-        if error:
+        if formatting_valid:
+            print("All files are formatted correctly.")
+        else:
             print("Some files are not formatted correctly. Please fix them.")
             exit(1)
-        else:
-            print("All files are formatted correctly.")
     else:
         print("Formatting files...")
         format_files(clang_format_path, target_files)
