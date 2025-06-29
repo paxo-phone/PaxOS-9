@@ -5,18 +5,14 @@ jobs:
     format-check:
         name: Check Code Formatting
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                path:
-                    - src
-                    - include
-                    - lib
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
 
-            -   name: Run clang-format style check
-                uses: jidicula/clang-format-action@v4.15.0
+            -   name: Setup Python
+                uses: actions/setup-python@v5
                 with:
-                    clang-format-version: '20'
-                    check-path: ${{ matrix.path }}
+                    python-version: '3.13'
+
+            -   name: Run clang-format style check
+                run: "./format.sh --check"
