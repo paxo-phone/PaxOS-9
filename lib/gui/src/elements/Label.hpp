@@ -13,21 +13,22 @@ namespace gui::elements
 {
     /**
      * @brief Widget label displays text
-    **/
+     **/
     class Label final : public ElementBase
     {
-    public:
+      public:
         Label(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~Label() override;
 
-        enum Alignement {
+        enum Alignement
+        {
             CENTER,
             LEFT,
             RIGHT,
             UP,
             DOWN
         };
-        
+
         void render() override;
 
         void setText(const std::string& text);
@@ -47,16 +48,18 @@ namespace gui::elements
         [[nodiscard]] uint16_t getCursorIndex() const;
         void setCursorIndex(int16_t cursorIndex);
 
-    private:
-        struct ParseDataOutput {
+      private:
+        struct ParseDataOutput
+        {
             std::vector<std::string> m_lines;
 
             uint16_t m_cursorIndex; // X
-            uint16_t m_cursorLine; // Y
+            uint16_t m_cursorLine;  // Y
         };
 
         ParseDataOutput parse(void);
-        uint16_t getUsableWidth(void); // retourne la largeur réelle maximale utilisée par le texte (sans les bordure etc...)
+        uint16_t getUsableWidth(void); // retourne la largeur réelle maximale utilisée par le texte
+                                       // (sans les bordure etc...)
         uint16_t getUsableHeight(void);
 
         uint16_t m_fontSize;
@@ -68,6 +71,6 @@ namespace gui::elements
         bool m_hasCursor;
         int16_t m_cursorIndex;
     };
-} // gui::elements
+} // namespace gui::elements
 
-#endif //LABEL_HPP
+#endif // LABEL_HPP

@@ -1,11 +1,10 @@
 #ifndef CONVERSATION_HPP
 #define CONVERSATION_HPP
 
-#include <vector>
-#include <string>
 #include <json.hpp>
-
 #include <path.hpp>
+#include <string>
+#include <vector>
 
 #define MESSAGES_LOCATION "apps/messages/data"
 #define MESSAGES_IMAGES_LOCATION "apps/messages/images"
@@ -32,13 +31,13 @@ namespace Conversations
      * @param filePath The file path containing the conversation to load
      * @param conv The conversation to load into
      */
-    void loadConversation(const storage::Path &filePath, Conversation &conv);
+    void loadConversation(const storage::Path& filePath, Conversation& conv);
     /**
      * @brief Save a conversation to a file
      * @param filePath The file path to save the conversation to
      * @param conv The conversation to save
      */
-    void saveConversation(const storage::Path &filePath, const Conversation &conv);
-}
+    void saveConversation(const storage::Path& filePath, const Conversation& conv);
+} // namespace Conversations
 
 #endif // CONVERSATION_HPP

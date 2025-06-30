@@ -6,11 +6,12 @@
 namespace gui::elements
 {
     /**
-     * @brief Can contain a list of elements and is scrollable and is memory efficient
-    **/
+     * @brief Can contain a list of elements and is scrollable and is memory
+     *efficient
+     **/
     class VerticalList final : public ElementBase
     {
-    public:
+      public:
         VerticalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~VerticalList() override;
 
@@ -39,7 +40,7 @@ namespace gui::elements
         void setIsSelected(bool autoSelect);
         bool getIsSelected();
 
-    private:
+      private:
         int16_t m_focusedIndex = 0;
         int16_t m_oldFocusedIndex = 0;
         ElementBase* m_focusedElement = nullptr;
@@ -53,7 +54,7 @@ namespace gui::elements
 
     class HorizontalList final : public ElementBase
     {
-    public:
+      public:
         HorizontalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~HorizontalList() override;
 
@@ -81,7 +82,7 @@ namespace gui::elements
         void setIsSelected(bool autoSelect);
         bool getIsSelected();
 
-    private:
+      private:
         int16_t m_focusedIndex = 0;
         int16_t m_oldFocusedIndex = 0;
         ElementBase* m_focusedElement = nullptr;
@@ -92,6 +93,6 @@ namespace gui::elements
         bool m_autoSelect;
         bool isSelected = false;
     };
-} // gui::elements
+} // namespace gui::elements
 
-#endif //LIST_HPP
+#endif // LIST_HPP

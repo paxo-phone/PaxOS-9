@@ -1,13 +1,13 @@
 #ifndef STANDBY_HPP
 #define STANDBY_HPP
 
-#include <stdint.h>
 #include <mutex>
+#include <stdint.h>
 
 namespace StandbyMode
 {
     void trigger();
-    void triggerPower();    // when a process needs power
+    void triggerPower(); // when a process needs power
     void update();
 
     void wait();
@@ -15,7 +15,7 @@ namespace StandbyMode
     void setSleepTime(uint64_t sleepTime);
 
     bool state();
-    bool expired();    // check if it's time to sleep
+    bool expired(); // check if it's time to sleep
     void reset();
 
     void enable();
@@ -26,6 +26,6 @@ namespace StandbyMode
     void sleepCycle();
 
     extern std::mutex buisy_io;
-}
+} // namespace StandbyMode
 
 #endif

@@ -1,5 +1,6 @@
-#include <gtest/gtest.h>
 #include "contacts.hpp"
+
+#include <gtest/gtest.h>
 
 // Test pour ajouter des contacts
 TEST(ContactsTest, AddContacts)

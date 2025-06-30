@@ -11,9 +11,8 @@ namespace gui::elements
 {
     class Window final : public ElementBase
     {
-    private:
-
-    public:
+      private:
+      public:
         Window();
         ~Window() override;
 
@@ -21,6 +20,6 @@ namespace gui::elements
 
         void render() override;
     };
-} // gui::elements
+} // namespace gui::elements
 
-#endif //WINDOW_HPP
+#endif // WINDOW_HPP

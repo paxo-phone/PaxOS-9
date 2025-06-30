@@ -1,9 +1,8 @@
-#include <gtest/gtest.h>
-
-#include <iostream>
-#include <cassert>
-
 #include "i18n.hpp"
+
+#include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
 
 TEST(I18NTest, Translations1)
 {
@@ -12,7 +11,11 @@ TEST(I18NTest, Translations1)
 
     EXPECT_EQ(i18n::getText("animal"), "chien");
     EXPECT_EQ(i18n::getText("drink"), "café");
-    EXPECT_EQ(i18n::getText("quote"), "Nous sommes ce que nous pensons.\nTout ce que nous sommes naît\navec nos pensées.\nAvec nos pensées, nous\ncréons le monde.");
+    EXPECT_EQ(
+        i18n::getText("quote"),
+        "Nous sommes ce que nous pensons.\nTout ce que nous sommes naît\navec "
+        "nos pensées.\nAvec nos pensées, nous\ncréons le monde."
+    );
     EXPECT_EQ(i18n::getText("hello"), "Bonjour monde !");
 
     EXPECT_EQ(i18n::getLang(), i18n::FR);
@@ -22,7 +25,11 @@ TEST(I18NTest, Translations1)
 
     EXPECT_EQ(i18n::getText("animal"), "dog");
     EXPECT_EQ(i18n::getText("drink"), "coffee");
-    EXPECT_EQ(i18n::getText("quote"), "We are what we think.\nAll that we are arises\nwith our thoughts.\nWith our thoughts, we\nmake the world.");
+    EXPECT_EQ(
+        i18n::getText("quote"),
+        "We are what we think.\nAll that we are arises\nwith our "
+        "thoughts.\nWith our thoughts, we\nmake the world."
+    );
     EXPECT_EQ(i18n::getText("hello"), "Hello, world !");
 
     EXPECT_EQ(i18n::getLang(), i18n::EN);

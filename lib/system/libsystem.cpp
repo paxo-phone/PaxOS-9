@@ -10,18 +10,18 @@
 
 #ifdef ESP_PLATFORM
 
-#include <esp_debug_helpers.h>
 #include <FT6236G.h>
+#include <esp_debug_helpers.h>
 
 #endif
 
-#include <standby.hpp>
-#include <delay.hpp>
-#include <color.hpp>
-#include <graphics.hpp>
-#include <app.hpp>
-
 #include "base64.hpp"
+
+#include <app.hpp>
+#include <color.hpp>
+#include <delay.hpp>
+#include <graphics.hpp>
+#include <standby.hpp>
 
 std::vector<std::string> bootErrors;
 libsystem::DeviceMode deviceMode = libsystem::NORMAL;
@@ -29,7 +29,7 @@ std::shared_ptr<libsystem::FileConfig> systemConfig = nullptr;
 
 class Restart final : public std::exception
 {
-public:
+  public:
     Restart() = default;
 };
 
@@ -50,7 +50,7 @@ std::string hexToString(const uint32_t hex)
     return stringStream.str();
 }
 
-void libsystem::panic(const std::string &message, const bool restart)
+void libsystem::panic(const std::string& message, const bool restart)
 {
     setScreenOrientation(graphics::PORTRAIT);
 
@@ -59,9 +59,9 @@ void libsystem::panic(const std::string &message, const bool restart)
     const uint16_t screenHeight = graphics::getScreenHeight();
 #endif
 
-    LGFX *lcd = graphics::getLCD();
+    LGFX* lcd = graphics::getLCD();
 #ifdef ESP_PLATFORM
-    FT6236G *touchController = graphics::getTouchController();
+    FT6236G* touchController = graphics::getTouchController();
 #endif
 
     std::cerr << "System panicked !" << std::endl;
@@ -91,10 +91,17 @@ void libsystem::panic(const std::string &message, const bool restart)
     lcd->setTextColor(graphics::packRGB565(255, 255, 255));
 
     // Show instructions
-    lcd->printf("This is not an expected behavior, please report this to the Paxo / PaxOS team.\n\n");
+    lcd->printf(
+        "This is not an expected behavior, please report this to the "
+        "Paxo / PaxOS team.\n\n"
+    );
     lcd->printf("Contact us :\n- https://paxo.fr/\n\n");
     lcd->printf("What you should do:\n");
-    lcd->printf("- Report this issue with every possible detail (what you done, installed applications...).\n");
+    lcd->printf(
+        "- Report this issue with every possible detail (what you "
+        "done, installed "
+        "applications...).\n"
+    );
     lcd->printf("- Check and clean the SD Card.\n");
     lcd->printf("- Re-flash this device.\n\n");
 
@@ -102,7 +109,8 @@ void libsystem::panic(const std::string &message, const bool restart)
 
     // Backtrace
 
-    // backtrace_saver::re_restart_debug_t backtraceData = backtrace_saver::getCurrentBacktrace();
+    // backtrace_saver::re_restart_debug_t backtraceData =
+    // backtrace_saver::getCurrentBacktrace();
     std::string fullBacktraceData;
 
     std::cerr << "Backtrace:" << std::endl;
@@ -111,9 +119,9 @@ void libsystem::panic(const std::string &message, const bool restart)
     esp_backtrace_frame_t frame;
     esp_backtrace_get_start(&frame.pc, &frame.sp, &frame.next_pc);
 
-    do
-    {
-        const std::string frameString = "0x" + hexToString(esp_cpu_process_stack_pc(frame.pc)) + ":0x" + hexToString(frame.sp);
+    do {
+        const std::string frameString =
+            "0x" + hexToString(esp_cpu_process_stack_pc(frame.pc)) + ":0x" + hexToString(frame.sp);
 
         fullBacktraceData += frameString + ";";
 
@@ -158,7 +166,12 @@ void libsystem::panic(const std::string &message, const bool restart)
 
         if (!isQRShown && touchInfo.count > 0)
         {
-            lcd->qrcode(qrCodeData.c_str(), screenWidth - qrCodeWidth - 30, screenHeight - qrCodeWidth - 30, qrCodeWidth);
+            lcd->qrcode(
+                qrCodeData.c_str(),
+                screenWidth - qrCodeWidth - 30,
+                screenHeight - qrCodeWidth - 30,
+                qrCodeWidth
+            );
 
             isQRShown = true;
         }
@@ -172,17 +185,15 @@ void libsystem::panic(const std::string &message, const bool restart)
 #endif
 
     if (restart)
-    {
         libsystem::restart(true, 0, true);
-    }
 }
 
-void libsystem::log(const std::string &message)
+void libsystem::log(const std::string& message)
 {
     std::cout << "[LOG] " << message << std::endl;
 }
 
-void libsystem::registerBootError(const std::string &message)
+void libsystem::registerBootError(const std::string& message)
 {
     bootErrors.emplace_back(message);
 
@@ -196,7 +207,7 @@ bool libsystem::hasBootErrors()
 
 void libsystem::displayBootErrors()
 {
-    LGFX *lcd = graphics::getLCD();
+    LGFX* lcd = graphics::getLCD();
 
     lcd->setFont(&DejaVu18);
     lcd->setTextColor(graphics::packRGB565(255, 100, 100));
@@ -209,11 +220,14 @@ void libsystem::displayBootErrors()
     // Draw every boot errors
     for (int32_t i = 0; i < bootErrors.size(); i++)
     {
-        const std::string &message = bootErrors[i];
+        const std::string& message = bootErrors[i];
 
         lcd->setCursor(
-            static_cast<int32_t>(0.5 * static_cast<double>(screenWidth - lcd->textWidth(message.c_str()))),
-            screenHeight - static_cast<int32_t>(bootErrors.size() - i + 1) * fontHeight);
+            static_cast<int32_t>(
+                0.5 * static_cast<double>(screenWidth - lcd->textWidth(message.c_str()))
+            ),
+            screenHeight - static_cast<int32_t>(bootErrors.size() - i + 1) * fontHeight
+        );
 
         lcd->print(message.c_str());
     }
@@ -222,15 +236,11 @@ void libsystem::displayBootErrors()
 void libsystem::restart(bool silent, const uint64_t timeout, const bool saveBacktrace)
 {
     if (timeout > 0)
-    {
         delay(timeout);
-    }
 
 #ifdef ESP_PLATFORM
     if (saveBacktrace)
-    {
         throw Restart();
-    }
 
     esp_restart();
 #endif
@@ -267,32 +277,35 @@ libsystem::FileConfig libsystem::getSystemConfig()
     return *systemConfig;
 }
 
-libsystem::exceptions::RuntimeError::RuntimeError(const std::string &message) : runtime_error(message)
+libsystem::exceptions::RuntimeError::RuntimeError(const std::string& message) :
+    runtime_error(message)
 {
     panic(message, false);
 }
 
-libsystem::exceptions::RuntimeError::RuntimeError(const char *message) : runtime_error(message)
+libsystem::exceptions::RuntimeError::RuntimeError(const char* message) : runtime_error(message)
 {
     panic(message, false);
 }
 
-libsystem::exceptions::OutOfRange::OutOfRange(const std::string &message) : out_of_range(message)
+libsystem::exceptions::OutOfRange::OutOfRange(const std::string& message) : out_of_range(message)
 {
     panic(message, false);
 }
 
-libsystem::exceptions::OutOfRange::OutOfRange(const char *message) : out_of_range(message)
+libsystem::exceptions::OutOfRange::OutOfRange(const char* message) : out_of_range(message)
 {
     panic(message, false);
 }
 
-libsystem::exceptions::InvalidArgument::InvalidArgument(const std::string &message) : invalid_argument(message)
+libsystem::exceptions::InvalidArgument::InvalidArgument(const std::string& message) :
+    invalid_argument(message)
 {
     panic(message, false);
 }
 
-libsystem::exceptions::InvalidArgument::InvalidArgument(const char *message) : invalid_argument(message)
+libsystem::exceptions::InvalidArgument::InvalidArgument(const char* message) :
+    invalid_argument(message)
 {
     panic(message, false);
 }
@@ -391,7 +404,10 @@ void libsystem::paxoConfig::setBackgroundColor(color_t color, bool save)
     std::cout << COLOR_WHITE << std::endl;
     if (save)
     {
-        systemConfig.get()->set<uint16_t>("settings.color.background", static_cast<uint16_t>(color));
+        systemConfig.get()->set<uint16_t>(
+            "settings.color.background",
+            static_cast<uint16_t>(color)
+        );
         systemConfig.get()->write();
     }
 }

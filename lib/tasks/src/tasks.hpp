@@ -1,31 +1,31 @@
 #ifndef TASKS_HPP
 #define TASKS_HPP
 
-#include <functional>
-#include <vector>
-#include <tuple>
 #include "../../hardware/hardware.hpp"
 #include "invoke.hpp"
 
+#include <functional>
+#include <tuple>
+#include <vector>
+
 class Function
 {
-public:
+  public:
     virtual bool call() = 0;
 };
 
-template<typename... ArgsCo>
-class Condition : public Function
+template <typename... ArgsCo> class Condition : public Function
 {
-public:
+  public:
     std::function<bool(ArgsCo...)> condition;
     std::tuple<ArgsCo...> argsCo;
 
-    Condition(std::function<bool(ArgsCo...)> condition, ArgsCo... args)
-        : condition(condition), argsCo(std::make_tuple(args...)) {}
-    
-    ~Condition() 
+    Condition(std::function<bool(ArgsCo...)> condition, ArgsCo... args) :
+        condition(condition), argsCo(std::make_tuple(args...))
     {
     }
+
+    ~Condition() {}
 
     bool call() override
     {
@@ -33,19 +33,18 @@ public:
     }
 };
 
-template<typename... ArgsCa>
-class Callback : public Function
+template <typename... ArgsCa> class Callback : public Function
 {
-public:
+  public:
     std::function<void(ArgsCa...)> callback;
     std::tuple<ArgsCa...> argsCa;
 
-    Callback(std::function<void(ArgsCa...)> callback, ArgsCa... args)
-        : callback(callback), argsCa(std::make_tuple(args...)) {}
-
-    ~Callback()
+    Callback(std::function<void(ArgsCa...)> callback, ArgsCa... args) :
+        callback(callback), argsCa(std::make_tuple(args...))
     {
     }
+
+    ~Callback() {}
 
     bool call() override
     {
@@ -54,13 +53,13 @@ public:
     }
 };
 
-
-class Event {
-public:
+class Event
+{
+  public:
     Function* condition;
     Function* callback;
     uint64_t id;
-    
+
     Event(Function* co, Function* ca, uint64_t id)
     {
         this->condition = co;
@@ -75,14 +74,15 @@ public:
     }
 };
 
-class Interval {
-public:
-    std::function<void ()> callback;
+class Interval
+{
+  public:
+    std::function<void()> callback;
     uint64_t interval;
     uint64_t lastTrigger;
     uint64_t id;
 
-    Interval(std::function<void ()> ca, uint64_t interval, uint64_t id)
+    Interval(std::function<void()> ca, uint64_t interval, uint64_t id)
     {
         this->callback = ca;
         this->interval = interval;
@@ -90,13 +90,12 @@ public:
         this->id = id;
     }
 
-    ~Interval()
-    {
-    }
+    ~Interval() {}
 };
 
-class Timeout {
-public:
+class Timeout
+{
+  public:
     Function* callback;
     uint64_t timeout;
     uint64_t id;
@@ -114,26 +113,30 @@ public:
     }
 };
 
-
 class EventHandler
 {
-    public:
+  public:
     std::vector<Event*> events;
     std::vector<Timeout*> timeouts;
     std::vector<Interval> intervals;
 
     ~EventHandler();
 
-    void update(std::function<bool ()> forced_exit = []() -> bool { return false; });
+    void update(
+        std::function<bool()> forced_exit = []() -> bool
+        {
+            return false;
+        }
+    );
 
     uint32_t addEventListener(Function* condition, Function* callback);
     void removeEventListener(uint32_t id);
     uint32_t setTimeout(Function* callback, uint64_t timeout);
     void removeTimeout(uint32_t id);
-    uint32_t setInterval(std::function<void ()> callback, uint64_t interval);
+    uint32_t setInterval(std::function<void()> callback, uint64_t interval);
     void removeInterval(uint32_t id);
 
-private:    
+  private:
     uint32_t findAvailableId();
 };
 

@@ -72,11 +72,10 @@ imgdec::IMGData imgdec::decodeHeader(const uint8_t* rawData)
             i++;
         }
 
-        // If we reach the end of the loop without finding the SOF0 marker, it's an error
+        // If we reach the end of the loop without finding the SOF0 marker, it's
+        // an error
         if (i >= 2000)
-        {
             std::cerr << "Invalid JPEG file: SOF0 marker not found." << std::endl;
-        }
     }
     /*else
     {
@@ -94,7 +93,9 @@ void myOutput(unsigned char byte)
     myFile << byte;
 }
 
-void imgdec::encodeJpg(const uint8_t *rawData, uint32_t width, uint32_t height, storage::Path filename)
+void imgdec::encodeJpg(
+    const uint8_t* rawData, uint32_t width, uint32_t height, storage::Path filename
+)
 {
     std::string path = filename.str();
 
@@ -104,16 +105,19 @@ void imgdec::encodeJpg(const uint8_t *rawData, uint32_t width, uint32_t height, 
     const auto bytesPerPixel = 3;
 
     // start JPEG compression
-    // note: myOutput is the function defined in line 18, it saves the output in example.jpg
-    // optional parameters:
+    // note: myOutput is the function defined in line 18, it saves the output in
+    // example.jpg optional parameters:
     const bool isRGB = true;       // true = RGB image, else false = grayscale
-    const auto quality = 90;       // compression quality: 0 = worst, 100 = best, 80 to 90 are most often used
-    const bool downsample = false; // false = save as YCbCr444 JPEG (better quality), true = YCbCr420 (smaller file)
-    const char *comment = "mms";   // arbitrary JPEG comment
-    
+    const auto quality = 90;       // compression quality: 0 = worst, 100 = best, 80
+                                   // to 90 are most often used
+    const bool downsample = false; // false = save as YCbCr444 JPEG (better
+                                   // quality), true = YCbCr420 (smaller file)
+    const char* comment = "mms";   // arbitrary JPEG comment
+
     std::cout << "ready to write: " << path << std::endl;
-    
-    auto ok = TooJpeg::writeJpeg(myOutput, rawData, width, height, isRGB, quality, downsample, comment);
+
+    auto ok =
+        TooJpeg::writeJpeg(myOutput, rawData, width, height, isRGB, quality, downsample, comment);
 
     myFile.close();
 }

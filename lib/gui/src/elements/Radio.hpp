@@ -8,7 +8,7 @@ namespace gui::elements
 {
     class Radio final : public ElementBase
     {
-    public:
+      public:
         Radio(uint16_t x, uint16_t y);
         ~Radio() override;
 
@@ -17,9 +17,9 @@ namespace gui::elements
         void setState(bool state);
         bool getState();
 
-    private:
+      private:
         bool m_state = false;
     };
-} // gui::elements
+} // namespace gui::elements
 
 #endif

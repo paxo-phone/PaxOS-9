@@ -1,9 +1,9 @@
 #include "contacts.hpp"
 
 #include <filestream.hpp>
-#include <path.hpp>
-#include <json.hpp>
 #include <iostream>
+#include <json.hpp>
+#include <path.hpp>
 
 using namespace storage;
 
@@ -24,7 +24,7 @@ namespace Contacts
             try
             {
                 json = nlohmann::json::parse(file);
-                for (const auto &contact : json)
+                for (const auto& contact : json)
                 {
                     Contacts::contact newContact;
                     newContact.name = contact["name"];
@@ -33,7 +33,7 @@ namespace Contacts
                     contactList.push_back(newContact);
                 }
             }
-            catch (const nlohmann::json::exception &e)
+            catch (const nlohmann::json::exception& e)
             {
                 std::cerr << "Error parsing contacts: " << e.what() << std::endl;
             }
@@ -44,7 +44,7 @@ namespace Contacts
     {
         nlohmann::json json;
 
-        for (const auto &contact : contactList)
+        for (const auto& contact : contactList)
         {
             nlohmann::json contactJson;
             contactJson["name"] = contact.name;
@@ -77,14 +77,18 @@ namespace Contacts
             std::remove_if(
                 contactList.begin(),
                 contactList.end(),
-                [name](const contact &c)
-                { return c.name == name; }),
-            contactList.end());
+                [name](const contact& c)
+                {
+                    return c.name == name;
+                }
+            ),
+            contactList.end()
+        );
     }
 
     void editContact(std::string name, contact c)
     {
-        for (auto &contact : contactList)
+        for (auto& contact : contactList)
         {
             if (contact.name == name)
             {
@@ -96,29 +100,21 @@ namespace Contacts
 
     contact getContact(std::string name)
     {
-        for (const auto &contact : contactList)
-        {
+        for (const auto& contact : contactList)
             if (contact.name == name)
-            {
                 return contact;
-            }
-        }
 
         // Return an empty contact if no match is found
-        return {"",""};
+        return {"", ""};
     }
 
     contact getByNumber(std::string number)
     {
-        for (const auto &contact : contactList)
-        {
+        for (const auto& contact : contactList)
             if (contact.phone == number)
-            {
                 return contact;
-            }
-        }
 
         // Return an empty contact if no match is found
-        return {"",""};
+        return {"", ""};
     }
-};
+}; // namespace Contacts

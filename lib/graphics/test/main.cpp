@@ -1,9 +1,10 @@
-#include <iostream>
-#include "graphics.hpp"
-#include "color.hpp"
 #include "Surface.hpp"
+#include "color.hpp"
+#include "graphics.hpp"
 
-int main(int argc, char **argv)
+#include <iostream>
+
+int main(int argc, char** argv)
 {
     graphics::init();
 

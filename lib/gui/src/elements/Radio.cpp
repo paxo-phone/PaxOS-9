@@ -1,11 +1,13 @@
 #include "Radio.hpp"
+
 #include "Image.hpp"
 
+#include <Surface.hpp>
 #include <cstdio>
 #include <graphics.hpp>
-#include <Surface.hpp>
 
-namespace gui::elements {
+namespace gui::elements
+{
 
     Radio::Radio(const uint16_t x, const uint16_t y)
     {
@@ -24,20 +26,23 @@ namespace gui::elements {
 
         m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, 10, 2, COLOR_WHITE, COLOR_DARK);
 
-        if(m_state)
+        if (m_state)
             m_surface->fillRoundRect(4, 4, m_width - 8, m_height - 8, 10, COLOR_DARK);
     }
 
-    void Radio::onReleased() {
+    void Radio::onReleased()
+    {
         setState(!m_state);
     }
 
-    void Radio::setState(bool state) {
+    void Radio::setState(bool state)
+    {
         this->m_state = state;
         localGraphicalUpdate();
     }
 
-    bool Radio::getState() {
+    bool Radio::getState()
+    {
         return m_state;
     }
-} // gui::elements
+} // namespace gui::elements

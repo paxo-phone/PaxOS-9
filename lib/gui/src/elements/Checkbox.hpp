@@ -8,10 +8,10 @@ namespace gui::elements
 {
     /**
      * @brief Simply a checkbox widget
-    **/
+     **/
     class Checkbox final : public ElementBase
     {
-    public:
+      public:
         Checkbox(uint16_t x, uint16_t y);
         ~Checkbox() override;
 
@@ -20,10 +20,10 @@ namespace gui::elements
         void setState(bool state);
         bool getState();
 
-    private:
+      private:
         bool m_state = false;
         Image* m_tickIcon = nullptr;
     };
-} // gui::elements
+} // namespace gui::elements
 
 #endif

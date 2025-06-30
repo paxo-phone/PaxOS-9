@@ -8,10 +8,12 @@
 #include <Arduino.h>
 #endif
 
-namespace serialcom {
+namespace serialcom
+{
 
-    /// Adapted from https://en.cppreference.com/w/cpp/io/basic_streambuf/overflow's example
-    template<std::size_t size, class CharT = char>
+    /// Adapted from https://en.cppreference.com/w/cpp/io/basic_streambuf/overflow's
+    /// example
+    template <std::size_t size, class CharT = char>
     struct ArrayedStreamBuffer : std::basic_streambuf<CharT>
     {
         using Base = std::basic_streambuf<CharT>;
@@ -19,7 +21,7 @@ namespace serialcom {
         using int_type = typename Base::int_type;
 
         bool canFlushOnOverflow = true;
-    
+
         ArrayedStreamBuffer()
         {
             // put area pointers to work with 'buffer'
@@ -28,7 +30,7 @@ namespace serialcom {
 
         ~ArrayedStreamBuffer()
         {
-            if (this->stream && this->originalBuffer)  
+            if (this->stream && this->originalBuffer)
                 this->stream->rdbuf(originalBuffer);
         }
 
@@ -38,7 +40,7 @@ namespace serialcom {
             this->originalBuffer = this->stream->rdbuf();
             this->stream->rdbuf(this);
         }
-        
+
         void flushBuffer()
         {
             if (!this->stream || !this->originalBuffer)
@@ -50,7 +52,7 @@ namespace serialcom {
             buffer.fill(0);
             Base::setp(buffer.data(), buffer.data() + size);
         }
-        
+
         void log(const std::string& log)
         {
             this->buffer->write(log);
@@ -58,20 +60,20 @@ namespace serialcom {
 
         void directLog(const std::string& log, bool newLine)
         {
-            #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
             Serial.write(log.c_str(), log.size());
             if (newLine)
             {
                 Serial.write("\r\n");
                 Serial.flush();
             }
-            #else
+#else
             if (!this->stream || !this->originalBuffer)
                 return;
             this->stream->rdbuf(originalBuffer);
             std::cout.write(log.c_str(), log.size());
             this->stream->rdbuf(this);
-            #endif
+#endif
         }
 
         std::streambuf* changeDefaultBuffer(std::streambuf* buffer)
@@ -86,21 +88,26 @@ namespace serialcom {
             buffer.fill(0);
             Base::setp(buffer.data(), buffer.data() + size);
         }
-    private:
+
+      private:
         int_type overflow(int_type ch) override
         {
             if (!this->stream)
                 return Base::overflow(ch);
-            
-            // TODO: find a way to force flush on overflow without compromising an eventual command log.
-            if (canFlushOnOverflow) {
+
+            // TODO: find a way to force flush on overflow without compromising an
+            // eventual command log.
+            if (canFlushOnOverflow)
+            {
                 flushBuffer();
-                *(this->stream) << (char)ch;
-            } else {
+                *(this->stream) << (char) ch;
+            }
+            else
+            {
                 this->buffer.fill(0);
                 Base::setp(buffer.data(), buffer.data() + size);
             }
-                
+
             return 1; // overflow management succeeded
         }
 
@@ -108,4 +115,4 @@ namespace serialcom {
         std::streambuf* originalBuffer;
         std::ostream* stream;
     };
-}
+} // namespace serialcom

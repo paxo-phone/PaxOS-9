@@ -10,11 +10,11 @@ LuaStorageFile::LuaStorageFile(storage::Path filename, uint8_t mode)
 
 void LuaStorageFile::open()
 {
-    if(mode == 0)
+    if (mode == 0)
         file.open(filename.str(), storage::READ);
-    else if(mode == 1)
+    else if (mode == 1)
         file.open(filename.str(), storage::WRITE);
-    else if(mode == 2)
+    else if (mode == 2)
         file.open(filename.str(), storage::APPEND);
 }
 
@@ -32,7 +32,6 @@ char LuaStorageFile::readChar()
 {
     return file.readchar();
 }
-
 
 std::string LuaStorageFile::readLine()
 {
