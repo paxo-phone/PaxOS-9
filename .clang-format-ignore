@@ -1,4 +1,5 @@
 .pio/**
+extern/**
 lib/imgdec/src/toojpeg.cpp
 lib/imgdec/src/toojpeg.h
 lib/json/src/**
