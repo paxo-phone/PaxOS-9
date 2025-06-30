@@ -1,6 +1,7 @@
 #include "hardware.hpp"
 
 #include "gpio.hpp"
+#include "libsystem_exceptions.hpp"
 
 #include <libsystem.hpp>
 

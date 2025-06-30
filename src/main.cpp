@@ -1,3 +1,4 @@
+#include "libsystem_exceptions.hpp"
 #ifdef ESP_PLATFORM
 
 #include <Arduino.h>

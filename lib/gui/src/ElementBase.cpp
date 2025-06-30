@@ -1,6 +1,7 @@
 #include "ElementBase.hpp"
 
 #include "gui.hpp"
+#include "libsystem_exceptions.hpp"
 
 #include <graphics.hpp>
 #include <iostream>

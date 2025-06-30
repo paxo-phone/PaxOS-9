@@ -7,8 +7,6 @@
 
 #include <FileConfig.hpp>
 #include <color.hpp>
-#include <cstdint>
-#include <stdexcept>
 #include <string>
 
 // Replace this in "platformio.ini" ?
@@ -136,83 +134,6 @@ namespace libsystem
      * @return The system FileConfig.
      */
     FileConfig getSystemConfig();
-
-    /**
-     * @brief Wrapper for handled exceptions.
-     *
-     * Please use these exception instead of standard ones.
-     */
-    namespace exceptions
-    {
-        /**
-         * @brief Wrapper for std::runtime_error.
-         *
-         * Standard exception, but calls an OS panic.
-         */
-        class RuntimeError final : public std::runtime_error
-        {
-          public:
-            /**
-             * @brief Throw a new std::runtime_error.
-             *
-             * @param message The message to display.
-             */
-            explicit RuntimeError(const std::string& message);
-
-            /**
-             * @brief Throw a new std::runtime_error.
-             *
-             * @param message The message to display.
-             */
-            explicit RuntimeError(const char* message);
-        };
-
-        /**
-         * @brief Wrapper for std::out_of_range.
-         *
-         * Standard exception, but calls an OS panic.
-         */
-        class OutOfRange final : public std::out_of_range
-        {
-          public:
-            /**
-             * @brief Throw a new std::out_of_range.
-             *
-             * @param message The message to display.
-             */
-            explicit OutOfRange(const std::string& message);
-
-            /**
-             * @brief Throw a new std::out_of_range.
-             *
-             * @param message The message to display.
-             */
-            explicit OutOfRange(const char* message);
-        };
-
-        /**
-         * @brief Wrapper for std::invalid_argument.
-         *
-         * Standard exception, but calls an OS panic.
-         */
-        class InvalidArgument final : public std::invalid_argument
-        {
-          public:
-            /**
-             * @brief Throw a new std::invalid_argument.
-             *
-             * @param message The message to display.
-             */
-            explicit InvalidArgument(const std::string& message);
-
-            /**
-             * @brief Throw a new std::invalid_argument.
-             *
-             * @param message The message to display.
-             */
-            explicit InvalidArgument(const char* message);
-        };
-    } // namespace exceptions
 
     /**
      * @brief inner class to managa ethe setting of the paxo

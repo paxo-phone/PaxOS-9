@@ -4,6 +4,8 @@
 
 #include "FileConfig.hpp"
 
+#include "libsystem_exceptions.hpp"
+
 #include <filestream.hpp>
 #include <iostream>
 #include <libsystem.hpp>

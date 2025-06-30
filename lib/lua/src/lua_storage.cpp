@@ -1,5 +1,6 @@
 #include "lua_storage.hpp"
 
+#include "libsystem_exceptions.hpp"
 #include "lua_file.hpp"
 
 #include <libsystem.hpp>

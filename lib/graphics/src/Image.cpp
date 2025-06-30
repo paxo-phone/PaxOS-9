@@ -5,6 +5,7 @@
 #include "Image.hpp"
 
 #include "imgdec.hpp"
+#include "libsystem_exceptions.hpp"
 
 #include <filestream.hpp>
 #include <fstream>

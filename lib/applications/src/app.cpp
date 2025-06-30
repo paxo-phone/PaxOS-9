@@ -1,5 +1,7 @@
 #include "app.hpp"
 
+#include "libsystem_exceptions.hpp"
+
 #include <graphics.hpp>
 #include <libsystem.hpp>
 #include <standby.hpp>

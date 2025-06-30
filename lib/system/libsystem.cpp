@@ -277,39 +277,6 @@ libsystem::FileConfig libsystem::getSystemConfig()
     return *systemConfig;
 }
 
-libsystem::exceptions::RuntimeError::RuntimeError(const std::string& message) :
-    runtime_error(message)
-{
-    panic(message, false);
-}
-
-libsystem::exceptions::RuntimeError::RuntimeError(const char* message) : runtime_error(message)
-{
-    panic(message, false);
-}
-
-libsystem::exceptions::OutOfRange::OutOfRange(const std::string& message) : out_of_range(message)
-{
-    panic(message, false);
-}
-
-libsystem::exceptions::OutOfRange::OutOfRange(const char* message) : out_of_range(message)
-{
-    panic(message, false);
-}
-
-libsystem::exceptions::InvalidArgument::InvalidArgument(const std::string& message) :
-    invalid_argument(message)
-{
-    panic(message, false);
-}
-
-libsystem::exceptions::InvalidArgument::InvalidArgument(const char* message) :
-    invalid_argument(message)
-{
-    panic(message, false);
-}
-
 void libsystem::paxoConfig::setBrightness(int16_t brightness, bool save)
 {
     graphics::setBrightness(brightness);
