@@ -17,7 +17,7 @@
 #include <string>
 #include <threads.hpp> // Assumes eventHandlerBack
 #include <vector>
-
+#include <ctime>
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
 
@@ -137,6 +137,7 @@ namespace Gsm
         // Enqueues a request to check AT+CCLK?
         static void updateTimeInternal()
         {
+            bool parsed_ok = false;
             auto request = std::make_shared<Request>();
             request->command = "AT+CCLK?";
             request->callback = [](const std::string& response) -> bool
@@ -144,7 +145,7 @@ namespace Gsm
                 int l_yy, l_MM, l_dd, l_hh, l_mm, l_ss, l_zz;
                 char sign;
                 bool parsed_ok = false;
-
+        
                 size_t start_pos = response.find("+CCLK:");
                 if (start_pos != std::string::npos)
                 {
@@ -152,7 +153,7 @@ namespace Gsm
                     size_t quote_end = std::string::npos;
                     if (quote_start != std::string::npos)
                         quote_end = response.find('"', quote_start + 1);
-
+        
                     if (quote_start != std::string::npos && quote_end != std::string::npos)
                     {
                         std::string time_str =
@@ -169,7 +170,7 @@ namespace Gsm
                             &sign,
                             &l_zz
                         );
-
+        
                         if (fields_read == 8)
                         {
                             if (l_yy >= 0 && l_yy <= 99 && l_MM >= 1 && l_MM <= 12 && l_dd >= 1 &&
@@ -190,12 +191,30 @@ namespace Gsm
                         }
                     }
                 }
-
+        
+                // Si parsing échoué, fallback sur l'heure système pour PC/Mac/Linux/Windows
                 if (!parsed_ok)
                 {
+        #if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
+                    std::time_t t = std::time(nullptr);
+                    std::tm* now = std::localtime(&t);
+                    if (now)
+                    {
+                        year   = now->tm_year + 1900;
+                        month  = now->tm_mon + 1;
+                        day    = now->tm_mday;
+                        hour   = now->tm_hour;
+                        minute = now->tm_min;
+                        second = now->tm_sec;
+                        timezoneOffsetQuarterHours = 0;
+                        timeValid = true;
+                        lastTimeUpdateTime = std::chrono::steady_clock::now();
+                    }
+        #endif
                 }
                 return false;
             };
+        
             std::lock_guard<std::mutex> lock(requestMutex);
             requests.push_back(request);
         }
@@ -205,39 +224,79 @@ namespace Gsm
             updateTimeInternal();
         }
 
-        int getYear()
+                int getYear()
         {
-            return timeValid ? year : -1;
+            #ifdef ESP_PLATFORM
+                return timeValid ? year : -1;
+            #else
+                std::time_t t = std::time(nullptr);
+                std::tm* now = std::localtime(&t);
+                return now ? now->tm_year + 1900 : -1;
+            #endif
         }
-
+        
         int getMonth()
         {
-            return timeValid ? month : -1;
+            #ifdef ESP_PLATFORM
+                return timeValid ? month : -1;
+            #else
+                std::time_t t = std::time(nullptr);
+                std::tm* now = std::localtime(&t);
+                return now ? now->tm_mon + 1 : -1;
+            #endif
         }
-
+        
         int getDay()
         {
-            return timeValid ? day : -1;
+            #ifdef ESP_PLATFORM
+                return timeValid ? day : -1;
+            #else
+                std::time_t t = std::time(nullptr);
+                std::tm* now = std::localtime(&t);
+                return now ? now->tm_mday : -1;
+            #endif
         }
-
+        
         int getHour()
         {
-            return timeValid ? hour : -1;
+            #ifdef ESP_PLATFORM
+                return timeValid ? hour : -1;
+            #else
+                std::time_t t = std::time(nullptr);
+                std::tm* now = std::localtime(&t);
+                return now ? now->tm_hour : -1;
+            #endif
         }
-
+        
         int getMinute()
         {
-            return timeValid ? minute : -1;
+            #ifdef ESP_PLATFORM
+                return timeValid ? minute : -1;
+            #else
+                std::time_t t = std::time(nullptr);
+                std::tm* now = std::localtime(&t);
+                return now ? now->tm_min : -1;
+            #endif
         }
-
+        
         int getSecond()
         {
-            return timeValid ? second : -1;
+            #ifdef ESP_PLATFORM
+                return timeValid ? second : -1;
+            #else
+                std::time_t t = std::time(nullptr);
+                std::tm* now = std::localtime(&t);
+                return now ? now->tm_sec : -1;
+            #endif
         }
-
+        
         int getTimezoneOffsetQuarterHours()
         {
-            return timeValid ? timezoneOffsetQuarterHours : 0;
+            #ifdef ESP_PLATFORM
+                return timeValid ? timezoneOffsetQuarterHours : 0;
+            #else
+                return 0;
+            #endif
         }
 
         bool isTimeValid()
