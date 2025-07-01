@@ -1,3 +1,4 @@
+#include "Notifications.hpp"
 #include "libsystem_exceptions.hpp"
 #ifdef ESP_PLATFORM
 
@@ -76,12 +77,15 @@ void mainLoop(void* data)
         }
     }
 
+    Notifications::init();
+
     bool launcher = false;
     while (true) // manage the running apps, the launcher and the sleep mode
     {
         hardware::input::update();
         AppManager::loop();
         eventHandlerApp.update();
+        Notifications::update();
 
         if (AppManager::isAnyVisibleApp() && launcher) // free the launcher is an app is running and
                                                        // the launcher is active
