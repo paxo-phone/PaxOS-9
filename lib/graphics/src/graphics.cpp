@@ -242,7 +242,10 @@ void graphics::showSurface(const Surface* surface, int x, int y)
     lgfx::LGFX_Sprite sprite = surface->m_sprite; // we are friends !
 
 #ifdef ESP_PLATFORM
-    sprite.pushSprite(lcd.get(), x, y);
+    if (surface->m_transparent)
+        sprite.pushSprite(lcd.get(), x, y, surface->m_transparent_color);
+    else
+        sprite.pushSprite(lcd.get(), x, y);
     // lcd.get()->waitDMA();
     // while(lcd.get()->dmaBusy());
     // lcd.get()->initDMA();
@@ -254,6 +257,7 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 #else
     if (screenOrientation == LANDSCAPE)
     {
+        // TODO: Support transparency in landscape mode for non-ESP platforms.
         landscapeBuffer->pushSurface(
             const_cast<Surface*>(surface),
             static_cast<int16_t>(x),
@@ -263,7 +267,10 @@ void graphics::showSurface(const Surface* surface, int x, int y)
     }
     else
     {
-        sprite.pushSprite(lcd.get(), x, y);
+        if (surface->m_transparent)
+            sprite.pushSprite(lcd.get(), x, y, surface->m_transparent_color);
+        else
+            sprite.pushSprite(lcd.get(), x, y);
     }
 #endif
 }
