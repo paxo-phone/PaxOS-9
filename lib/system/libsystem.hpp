@@ -126,6 +126,12 @@ namespace libsystem
     [[nodiscard]] DeviceMode getDeviceMode();
 
     /**
+     * @brief Get the number of milliseconds elapsed since an arbitrary point in time.
+     * @return The number of milliseconds elapsed.
+     */
+    unsigned long long getMillis();
+
+    /**
      * @brief Get the system FileConfig.
      *
      * Use this FileConfig to store system related preferences, like settings.

@@ -272,6 +272,18 @@ libsystem::DeviceMode libsystem::getDeviceMode()
     return deviceMode;
 }
 
+unsigned long long libsystem::getMillis()
+{
+#ifdef ESP_PLATFORM
+    return millis();
+#else
+    return static_cast<unsigned long long>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                                               std::chrono::steady_clock::now().time_since_epoch()
+    )
+                                               .count());
+#endif
+}
+
 libsystem::FileConfig libsystem::getSystemConfig()
 {
     return *systemConfig;
