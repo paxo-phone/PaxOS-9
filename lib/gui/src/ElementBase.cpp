@@ -161,7 +161,7 @@ void gui::ElementBase::renderAll(bool onScreen)
             }
 
 #else
-            graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
+            graphics::showSurface(surface_.get(), getAbsoluteX(), getAbsoluteY());
 #endif
 
             setChildrenDrawn();
