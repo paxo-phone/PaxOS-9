@@ -15,10 +15,10 @@ namespace gui::elements
         ElementBase(), m_text(""), m_fontSize(18), m_textColor(COLOR_DARK),
         m_textVerticalAlignment(UP), m_textHorizontalAlignment(LEFT)
     {
-        m_x = x;
-        m_y = y;
-        m_width = width;
-        m_height = height;
+        x_ = x;
+        y_ = y;
+        width_ = width;
+        height_ = height;
 
         m_hasCursor = false;
         m_cursorIndex = 0;
@@ -28,21 +28,21 @@ namespace gui::elements
 
     void Label::render()
     {
-        m_surface->clear(m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor());
-        m_surface->fillRoundRectWithBorder(
+        surface_->clear(parent_ == nullptr ? COLOR_WHITE : parent_->getBackgroundColor());
+        surface_->fillRoundRectWithBorder(
             0,
             0,
-            m_width,
-            m_height,
-            m_borderRadius,
-            m_borderSize,
-            m_backgroundColor,
-            m_borderColor
+            width_,
+            height_,
+            borderRadius_,
+            borderSize_,
+            backgroundColor_,
+            borderColor_
         );
 
-        m_surface->setTextColor((this->m_textColor == 0) ? (1) : (this->m_textColor));
-        m_surface->setColor(this->m_backgroundColor);
-        m_surface->setFontSize(this->m_fontSize);
+        surface_->setTextColor((this->m_textColor == 0) ? (1) : (this->m_textColor));
+        surface_->setColor(this->backgroundColor_);
+        surface_->setFontSize(this->m_fontSize);
 
         auto [lines, m_cursorIndex, m_cursorLine] = parse();
 
@@ -56,11 +56,11 @@ namespace gui::elements
                 break;
             case Alignement::CENTER:
                 x = getRadius() / 2 + getBorderSize() + getUsableWidth() / 2 -
-                    m_surface->getTextWidth(lines[i]) / 2;
+                    surface_->getTextWidth(lines[i]) / 2;
                 break;
             case Alignement::RIGHT:
                 x = getRadius() / 2 + getBorderSize() + getUsableWidth() -
-                    m_surface->getTextWidth(lines[i]);
+                    surface_->getTextWidth(lines[i]);
                 break;
             };
 
@@ -69,21 +69,21 @@ namespace gui::elements
             {
             case Alignement::UP:
                 y = getRadius() / 2 + getBorderSize() +
-                    (m_surface->getTextHeight() + LINE_SPACING) * i;
+                    (surface_->getTextHeight() + LINE_SPACING) * i;
                 break;
             case Alignement::CENTER:
                 y = getRadius() / 2 + getBorderSize() + getUsableHeight() / 2 -
-                    ((m_surface->getTextHeight() + LINE_SPACING) * lines.size()) / 2 +
-                    (m_surface->getTextHeight() + LINE_SPACING) * i;
+                    ((surface_->getTextHeight() + LINE_SPACING) * lines.size()) / 2 +
+                    (surface_->getTextHeight() + LINE_SPACING) * i;
                 break;
             case Alignement::DOWN:
                 y = getRadius() / 2 + getBorderSize() + getUsableHeight() -
-                    ((m_surface->getTextHeight() + LINE_SPACING) * lines.size()) +
-                    (m_surface->getTextHeight() + LINE_SPACING) * i;
+                    ((surface_->getTextHeight() + LINE_SPACING) * lines.size()) +
+                    (surface_->getTextHeight() + LINE_SPACING) * i;
                 break;
             };
 
-            m_surface->drawText(lines[i], x, y);
+            surface_->drawText(lines[i], x, y);
         }
     }
 
@@ -144,7 +144,7 @@ namespace gui::elements
                 lineIndex++;
                 lineCharIndex = 0;
             }
-            else if (m_surface->getTextWidth(currentLine + c) <= getUsableWidth())
+            else if (surface_->getTextWidth(currentLine + c) <= getUsableWidth())
             {
                 currentLine += c;
 
@@ -240,29 +240,29 @@ namespace gui::elements
 
     uint16_t Label::getTextWidth()
     {
-        if (m_surface == nullptr)
-            m_surface = std::make_shared<graphics::Surface>(m_width, m_height);
-        m_surface->setFontSize(this->m_fontSize);
-        return m_surface->getTextWidth(m_text);
+        if (surface_ == nullptr)
+            surface_ = std::make_shared<graphics::Surface>(width_, height_);
+        surface_->setFontSize(this->m_fontSize);
+        return surface_->getTextWidth(m_text);
     }
 
     uint16_t Label::getTextHeight()
     {
         bool allocatedSprite = false;
-        if (m_surface == nullptr)
+        if (surface_ == nullptr)
         {
-            m_surface = std::make_shared<graphics::Surface>(1, 1);
+            surface_ = std::make_shared<graphics::Surface>(1, 1);
             allocatedSprite = true;
         }
 
-        m_surface->setFontSize(this->m_fontSize);
+        surface_->setFontSize(this->m_fontSize);
 
         const auto [lines, cursorIndex, cursorLine] = parse();
         uint16_t out = getRadius() + getBorderSize() * 2 +
-                       (m_surface->getTextHeight() + LINE_SPACING) * lines.size();
+                       (surface_->getTextHeight() + LINE_SPACING) * lines.size();
 
         if (allocatedSprite)
-            m_surface = nullptr;
+            surface_ = nullptr;
 
         return out;
     }

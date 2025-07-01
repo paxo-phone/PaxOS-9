@@ -9,19 +9,19 @@ namespace gui::elements
 {
     Filter::Filter(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
     {
-        this->m_x = x;
-        this->m_y = y;
-        this->m_width = width;
-        this->m_height = height;
+        this->x_ = x;
+        this->y_ = y;
+        this->width_ = width;
+        this->height_ = height;
 
-        m_screenSurface = std::make_shared<graphics::Surface>(m_width, m_height);
+        m_screenSurface = std::make_shared<graphics::Surface>(width_, height_);
     }
 
     void Filter::render()
     {
         std::cout << "RENDER FILTER" << std::endl;
 
-        m_surface->pushSurface(m_screenSurface.get(), 0, 0);
+        surface_->pushSurface(m_screenSurface.get(), 0, 0);
     }
 
     void Filter::apply() const
@@ -35,10 +35,10 @@ namespace gui::elements
 
         // Copy screen zone to buffer
         lcd->readRect(
-            m_x,
-            m_y,
-            m_width,
-            m_height,
+            x_,
+            y_,
+            width_,
+            height_,
             static_cast<uint16_t*>(m_screenSurface->getBuffer())
         );
 

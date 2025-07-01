@@ -13,10 +13,10 @@ namespace gui::elements
 {
     Box::Box(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
     {
-        m_x = x;
-        m_y = y;
-        m_width = width;
-        m_height = height;
+        x_ = x;
+        y_ = y;
+        width_ = width;
+        height_ = height;
         pressed = false;
     }
 
@@ -24,20 +24,20 @@ namespace gui::elements
 
     void Box::render()
     {
-        if (m_borderRadius > m_width / 2 || m_borderRadius > m_height / 2)
-            m_borderRadius = std::min(m_width / 2, m_height / 2);
-        m_surface->fillRect(0, 0, m_width, m_height, COLOR_WHITE);
-        if (m_borderSize || m_borderRadius || m_backgroundColor != COLOR_WHITE)
+        if (borderRadius_ > width_ / 2 || borderRadius_ > height_ / 2)
+            borderRadius_ = std::min(width_ / 2, height_ / 2);
+        surface_->fillRect(0, 0, width_, height_, COLOR_WHITE);
+        if (borderSize_ || borderRadius_ || backgroundColor_ != COLOR_WHITE)
         {
-            m_surface->fillRoundRectWithBorder(
+            surface_->fillRoundRectWithBorder(
                 0,
                 0,
-                m_width,
-                m_height,
-                m_borderRadius,
-                m_borderSize,
-                m_backgroundColor,
-                m_borderColor
+                width_,
+                height_,
+                borderRadius_,
+                borderSize_,
+                backgroundColor_,
+                borderColor_
             );
         }
     }
@@ -45,7 +45,7 @@ namespace gui::elements
     void Box::postRender()
     {
         if (pressed)
-            m_surface->drawRoundRect(0, 0, m_width, m_height, 3, COLOR_GREY);
+            surface_->drawRoundRect(0, 0, width_, height_, 3, COLOR_GREY);
     }
 
     void Box::onClick()

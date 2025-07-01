@@ -20,28 +20,28 @@ namespace gui::elements
         uint16_t maxValue, uint16_t defaultValue
     )
     {
-        m_x = x;
-        m_y = y;
-        m_width = width;
-        m_height = height;
+        x_ = x;
+        y_ = y;
+        width_ = width;
+        height_ = height;
         m_minValue = minValue;
         m_maxValue = maxValue;
-        m_borderSize = 2;
-        m_borderRadius = m_height / 2;
+        borderSize_ = 2;
+        borderRadius_ = height_ / 2;
         if (defaultValue >= minValue && defaultValue <= maxValue)
             m_Value = defaultValue;
         else
             m_Value = minValue;
-        m_borderColor = graphics::constPackRGB565(217, 217, 217);
+        borderColor_ = graphics::constPackRGB565(217, 217, 217);
         ;
-        m_backgroundColor = m_borderColor;
+        backgroundColor_ = borderColor_;
         m_valueColor = COLOR_BLACK;
         m_positionValue = 0;
         m_displayValue = false;
         m_innerTextColor = graphics::constPackRGB565(250, 250, 250); // COLOR_LIGHT_GREY;
         m_outerTextColor = COLOR_BLACK;
         m_isPercentage = false;
-        m_hasEvents = true;
+        hasEvents_ = true;
     }
 
     Slider::~Slider() = default;
@@ -108,7 +108,7 @@ namespace gui::elements
         // m_positionValue = (touchX - getAbsoluteX());
         // m_Value = (m_positionValue * (m_maxValue - m_minValue)) / m_width +
         // m_minValue;
-        float value = (touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width + m_minValue;
+        float value = (touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / width_ + m_minValue;
         value = value < m_minValue ? m_minValue : value > m_maxValue ? m_maxValue : value;
 
         if (m_Value != value)
@@ -122,7 +122,7 @@ namespace gui::elements
     {
         if (widgetPressed == this &&
             (globalPressedState == PressedState::PRESSED ||
-             globalPressedState == PressedState::SCROLLX) &&
+             globalPressedState == PressedState::SCROLL_X) &&
             touchX >= 0 && touchY >= 0)
         {
             slide();
@@ -133,22 +133,22 @@ namespace gui::elements
     {
 
         this->getAndSetSurface()->clear(
-            m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor()
+            parent_ == nullptr ? COLOR_WHITE : parent_->getBackgroundColor()
         );
 
         // render the of the widget
-        int valueSize = ((m_Value - m_minValue) * m_width) / (m_maxValue - m_minValue);
-        m_positionValue = valueSize + m_x;
+        int valueSize = ((m_Value - m_minValue) * width_) / (m_maxValue - m_minValue);
+        m_positionValue = valueSize + x_;
 
         this->getAndSetSurface()->fillRoundRectWithBorder(
             0,
             0,
-            m_width,
-            m_height,
-            m_borderRadius,
-            m_borderSize,
-            m_backgroundColor,
-            m_borderColor
+            width_,
+            height_,
+            borderRadius_,
+            borderSize_,
+            backgroundColor_,
+            borderColor_
         );
 
         // render the "0 -> value" part
@@ -156,11 +156,11 @@ namespace gui::elements
             0,
             0,
             valueSize,
-            m_height,
-            m_borderRadius,
-            m_borderSize,
+            height_,
+            borderRadius_,
+            borderSize_,
             m_valueColor,
-            m_borderColor
+            borderColor_
         );
 
         if (m_displayValue)
@@ -177,7 +177,7 @@ namespace gui::elements
                 this->getAndSetSurface()->drawText(
                     str,
                     valueSize - textWidth - 5,
-                    floor((m_height - textHeight) / 2),
+                    floor((height_ - textHeight) / 2),
                     m_innerTextColor
                 );
             }
@@ -187,7 +187,7 @@ namespace gui::elements
                 this->getAndSetSurface()->drawText(
                     str,
                     valueSize + 5,
-                    floor((m_height - textHeight) / 2),
+                    floor((height_ - textHeight) / 2),
                     m_outerTextColor
                 );
             }

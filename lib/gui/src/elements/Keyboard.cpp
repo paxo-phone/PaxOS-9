@@ -50,8 +50,8 @@ namespace gui::elements
 
         if (graphics::getScreenOrientation() == graphics::LANDSCAPE)
         {
-            m_width = graphics::getScreenWidth();
-            m_height = graphics::getScreenHeight();
+            width_ = graphics::getScreenWidth();
+            height_ = graphics::getScreenHeight();
         }
         else
         {
@@ -59,16 +59,16 @@ namespace gui::elements
                          "element in potrait mode."
                       << std::endl;
 
-            m_width = graphics::getScreenHeight();
-            m_height = graphics::getScreenWidth();
+            width_ = graphics::getScreenHeight();
+            height_ = graphics::getScreenWidth();
         }
 
-        m_x = 0;
-        m_y = 0;
+        x_ = 0;
+        y_ = 0;
 
-        m_backgroundColor = COLOR_WHITE;
+        backgroundColor_ = COLOR_WHITE;
 
-        m_hasEvents = true;
+        hasEvents_ = true;
 
         m_caps = CAPS_NONE;
 
@@ -179,7 +179,7 @@ namespace gui::elements
 
     void Keyboard::render()
     {
-        m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
+        surface_->fillRect(0, 0, width_, height_, backgroundColor_);
 
         // Input box
         drawInputBox();

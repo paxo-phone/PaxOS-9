@@ -7,7 +7,7 @@ LuaLabel::LuaLabel(LuaWidget* parent, int x, int y, int width, int height)
     widget = new Label(x, y, width, height);
     init(widget, parent);
     widget->setBackgroundColor(
-        widget->m_parent == nullptr ? COLOR_WHITE : widget->m_parent->getBackgroundColor()
+        widget->parent_ == nullptr ? COLOR_WHITE : widget->parent_->getBackgroundColor()
     );
 }
 

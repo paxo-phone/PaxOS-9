@@ -34,11 +34,11 @@ LuaWidget::~LuaWidget()
             }
         }
 
-        for (uint16_t i = 0; i < reParent->m_children.size(); i++)
+        for (uint16_t i = 0; i < reParent->children_.size(); i++)
         {
-            if (reParent->m_children[i] == reWidget)
+            if (reParent->children_[i] == reWidget)
             {
-                reParent->m_children.erase(reParent->m_children.begin() + i);
+                reParent->children_.erase(reParent->children_.begin() + i);
                 break;
             }
         }

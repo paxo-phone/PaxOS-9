@@ -13,11 +13,11 @@ namespace gui::elements
 {
     Window::Window()
     {
-        m_x = 0;
-        m_y = 0;
-        m_width = graphics::getScreenWidth();
-        m_height = graphics::getScreenHeight();
-        m_backgroundColor = COLOR_WHITE;
+        x_ = 0;
+        y_ = 0;
+        width_ = graphics::getScreenWidth();
+        height_ = graphics::getScreenHeight();
+        backgroundColor_ = COLOR_WHITE;
 
         windows.push_back(this);
     }
@@ -29,7 +29,7 @@ namespace gui::elements
 
     void Window::render()
     {
-        m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
+        surface_->fillRect(0, 0, width_, height_, backgroundColor_);
     }
 
     std::vector<Window*> Window::windows;

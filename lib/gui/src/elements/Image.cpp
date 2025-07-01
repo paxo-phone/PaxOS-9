@@ -79,10 +79,10 @@ namespace gui::elements
     )
     {
         this->m_path = path;
-        this->m_x = x;
-        this->m_y = y;
-        this->m_width = width;
-        this->m_height = height;
+        this->x_ = x;
+        this->y_ = y;
+        this->width_ = width;
+        this->height_ = height;
 
         this->m_backgroundColor = backgroundColor;
     }
@@ -94,25 +94,25 @@ namespace gui::elements
 
     void Image::render()
     {
-        if (m_isRendered == false)
+        if (isRendered_ == false)
             load(m_backgroundColor);
     }
 
     void Image::setTransparentColor(color_t color)
     {
-        if (!m_surface)
+        if (!surface_)
         {
             // std::cout << "[Image] m_surface is null";
             load(color);
         }
-        m_surface->setTransparentColor(color);
-        m_surface->setTransparency(true);
+        surface_->setTransparentColor(color);
+        surface_->setTransparency(true);
     }
 
     void Image::load(color_t background)
     {
-        m_surface =
-            gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
+        surface_ =
+            gui::ImagesList::loadImage(this->m_path, this->width_, this->height_, background);
         localGraphicalUpdate();
     }
 } // namespace gui::elements

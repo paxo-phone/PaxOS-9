@@ -6,10 +6,10 @@ namespace gui::elements
 {
     Input::Input(uint16_t x, uint16_t y)
     {
-        m_x = x;
-        m_y = y;
-        m_width = INPUT_WIDTH;
-        m_height = INPUT_HEIGHT;
+        x_ = x;
+        y_ = y;
+        width_ = INPUT_WIDTH;
+        height_ = INPUT_HEIGHT;
 
         m_title = new Label(0, 0, 250, 18);
         m_title->setFontSize(16);
@@ -30,8 +30,8 @@ namespace gui::elements
 
     void Input::render()
     {
-        m_surface->clear(COLOR_WHITE);
-        m_surface->fillRect(0, getHeight() - 2, getWidth(), 2, COLOR_DARK);
+        surface_->clear(COLOR_WHITE);
+        surface_->fillRect(0, getHeight() - 2, getWidth(), 2, COLOR_DARK);
     }
 
     void Input::widgetUpdate()

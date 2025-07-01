@@ -8,10 +8,10 @@ namespace gui::elements
 {
     Canvas::Canvas(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
     {
-        this->m_x = x;
-        this->m_y = y;
-        this->m_width = width;
-        this->m_height = height;
+        this->x_ = x;
+        this->y_ = y;
+        this->width_ = width;
+        this->height_ = height;
     }
 
     void Canvas::render() {}
@@ -136,7 +136,7 @@ namespace gui::elements
         // for each line in the polygon, from the top to the bottom
         for (int16_t y = topVertex.second; y < bottomVertex.second; y++)
         {
-            const int16_t k_minimumXIntersection = this->m_width - 1;
+            const int16_t k_minimumXIntersection = this->width_ - 1;
             const int16_t k_maximumXIntersection = 0;
 
             int16_t minimumXIntersection = k_minimumXIntersection;

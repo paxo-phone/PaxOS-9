@@ -8,27 +8,27 @@ namespace gui::elements
 {
     Switch::Switch(const uint16_t x, const uint16_t y)
     {
-        m_x = x;
-        m_y = y;
-        m_width = 40;
-        m_height = 20;
-        m_hasEvents = true;
+        x_ = x;
+        y_ = y;
+        width_ = 40;
+        height_ = 20;
+        hasEvents_ = true;
     }
 
     Switch::~Switch() = default;
 
     void Switch::render()
     {
-        m_surface->clear(m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor());
+        surface_->clear(parent_ == nullptr ? COLOR_WHITE : parent_->getBackgroundColor());
         if (!m_state)
         {
-            m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_GREY);
-            m_surface->fillRoundRect(4, 3, 14, 14, 7, COLOR_WHITE);
+            surface_->fillRoundRect(0, 0, width_, height_, 10, COLOR_GREY);
+            surface_->fillRoundRect(4, 3, 14, 14, 7, COLOR_WHITE);
         }
         else
         {
-            m_surface->fillRoundRect(0, 0, m_width, m_height, 10, COLOR_BLACK);
-            m_surface->fillRoundRect(22, 3, 14, 14, 7, COLOR_WHITE);
+            surface_->fillRoundRect(0, 0, width_, height_, 10, COLOR_BLACK);
+            surface_->fillRoundRect(22, 3, 14, 14, 7, COLOR_WHITE);
         }
     }
 

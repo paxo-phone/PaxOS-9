@@ -7,19 +7,19 @@ namespace gui::elements
 {
     Button::Button(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
     {
-        this->m_x = x;
-        this->m_y = y;
-        this->m_width = width;
-        this->m_height = height;
+        this->x_ = x;
+        this->y_ = y;
+        this->width_ = width;
+        this->height_ = height;
 
         this->m_label = nullptr;
         this->m_image = nullptr;
 
-        this->m_borderColor = COLOR_DARK;
-        this->m_borderSize = 2;
-        this->m_backgroundColor = COLOR_WHITE;
-        this->m_borderRadius = 17;
-        this->m_backgroundColorSave = m_borderSize;
+        this->borderColor_ = COLOR_DARK;
+        this->borderSize_ = 2;
+        this->backgroundColor_ = COLOR_WHITE;
+        this->borderRadius_ = 17;
+        this->m_backgroundColorSave = borderSize_;
 
         m_theme = BUTTON_WHITE;
 
@@ -31,23 +31,23 @@ namespace gui::elements
 
     void Button::render()
     {
-        m_surface->clear(m_parent == nullptr ? COLOR_WHITE : m_parent->getBackgroundColor());
-        m_surface->fillRoundRectWithBorder(
+        surface_->clear(parent_ == nullptr ? COLOR_WHITE : parent_->getBackgroundColor());
+        surface_->fillRoundRectWithBorder(
             0,
             0,
-            this->m_width,
-            this->m_height,
-            this->m_borderRadius,
-            this->m_borderSize,
-            this->m_backgroundColor,
-            this->m_borderColor
+            this->width_,
+            this->height_,
+            this->borderRadius_,
+            this->borderSize_,
+            this->backgroundColor_,
+            this->borderColor_
         );
     }
 
     void Button::onClick() //
     {
-        m_backgroundColorSave = this->m_borderSize;
-        this->m_borderSize += 2;
+        m_backgroundColorSave = this->borderSize_;
+        this->borderSize_ += 2;
 
         // m_surface->applyFilter(graphics::Surface::Filter::DARKEN, 100);
 
@@ -69,7 +69,7 @@ namespace gui::elements
     void Button::onNotClicked()
     {
         // this->m_backgroundColor = this->m_backgroundColorSave;
-        m_borderSize = m_backgroundColorSave;
+        borderSize_ = m_backgroundColorSave;
         localGraphicalUpdate();
     }
 

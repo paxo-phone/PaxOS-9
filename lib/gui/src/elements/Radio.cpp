@@ -11,23 +11,23 @@ namespace gui::elements
 
     Radio::Radio(const uint16_t x, const uint16_t y)
     {
-        m_x = x;
-        m_y = y;
-        m_width = 20;
-        m_height = 20;
-        m_hasEvents = true;
+        x_ = x;
+        y_ = y;
+        width_ = 20;
+        height_ = 20;
+        hasEvents_ = true;
     }
 
     Radio::~Radio() = default;
 
     void Radio::render()
     {
-        m_surface->clear(COLOR_WHITE);
+        surface_->clear(COLOR_WHITE);
 
-        m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, 10, 2, COLOR_WHITE, COLOR_DARK);
+        surface_->fillRoundRectWithBorder(0, 0, width_, height_, 10, 2, COLOR_WHITE, COLOR_DARK);
 
         if (m_state)
-            m_surface->fillRoundRect(4, 4, m_width - 8, m_height - 8, 10, COLOR_DARK);
+            surface_->fillRoundRect(4, 4, width_ - 8, height_ - 8, 10, COLOR_DARK);
     }
 
     void Radio::onReleased()
