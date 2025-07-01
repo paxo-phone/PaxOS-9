@@ -3,6 +3,7 @@
 #include "elements/Button.hpp"
 #include "elements/Canvas.hpp"
 #include "elements/Label.hpp"
+#include "libsystem.hpp"
 
 #include <hardware.hpp>
 
@@ -22,6 +23,22 @@ gui::elements::Window& GuiManager::getWindow() noexcept
 int GuiManager::showErrorMessage(const std::string& msg)
 {
     return showMessage(ERROR, msg);
+}
+
+void GuiManager::onWindowUpdate(gui::elements::Window* window)
+{
+    const gui::elements::Window* lastUpdatedWindow = lastUpdatedWindow_;
+
+    lastUpdatedWindow_ = window;
+    if (lastUpdatedWindow != lastUpdatedWindow_)
+        for (auto& callback : windowChangedCallbacks_) callback(window);
+}
+
+void GuiManager::addWindowChangedCallback(
+    const std::function<void(gui::elements::Window*)>& callback
+)
+{
+    windowChangedCallbacks_.push_back(callback);
 }
 
 int GuiManager::showWarningMessage(const std::string& msg)

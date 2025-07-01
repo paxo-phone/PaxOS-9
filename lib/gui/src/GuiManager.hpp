@@ -12,8 +12,10 @@ enum WINDOW_TYPE
 
 class GuiManager final
 {
-  private:
     gui::elements::Window win;
+    gui::elements::Window* lastUpdatedWindow_;
+    std::vector<std::function<void(gui::elements::Window*)>> windowChangedCallbacks_;
+
     GuiManager();
     int showMessage(WINDOW_TYPE type, const std::string& msg);
 
@@ -27,6 +29,10 @@ class GuiManager final
     int showInfoMessage(const std::string& msg);
     int showWarningMessage(const std::string& msg);
     int showErrorMessage(const std::string& msg);
+
+    void onWindowUpdate(gui::elements::Window* window);
+
+    void addWindowChangedCallback(const std::function<void(gui::elements::Window*)>& callback);
 };
 
 #endif

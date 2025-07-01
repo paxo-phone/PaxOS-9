@@ -32,5 +32,13 @@ namespace gui::elements
         m_surface->fillRect(0, 0, m_width, m_height, m_backgroundColor);
     }
 
+    void Window::widgetUpdate()
+    {
+        GuiManager& guiManager = GuiManager::getInstance();
+
+        ElementBase::widgetUpdate();
+        guiManager.onWindowUpdate(this);
+    }
+
     std::vector<Window*> Window::windows;
 } // namespace gui::elements
