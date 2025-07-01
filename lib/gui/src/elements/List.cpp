@@ -32,7 +32,7 @@ namespace gui::elements
     {
         // No scrollbar needed if list fits in view
         if (children_.empty() ||
-            (children_.back()->y_ + children_.back()->getHeight()) < getHeight())
+            (children_.back()->getY() + children_.back()->getHeight()) < getHeight())
         {
             return;
         }
@@ -49,19 +49,19 @@ namespace gui::elements
         // Draw scrollbar for UP or DOWN focus
         if (!children_.empty() && m_focusedIndex < children_.size())
         {
-            uint16_t maxHeight = children_.back()->y_ + children_.back()->getHeight();
+            uint16_t maxHeight = children_.back()->getY() + children_.back()->getHeight();
             int16_t barLen = (float) getHeight() * getHeight() / maxHeight;
             int16_t barY = 0;
 
             if (m_selectionFocus == SelectionFocus::UP)
             {
                 // Bar position based on focused element's top
-                barY = (float) children_[m_focusedIndex]->y_ * getHeight() / maxHeight;
+                barY = (float) children_[m_focusedIndex]->getY() * getHeight() / maxHeight;
             }
             else if (m_selectionFocus == SelectionFocus::DOWN)
             {
                 // Bar position based on focused element's bottom minus view height
-                barY = (float) (children_[m_focusedIndex]->y_ +
+                barY = (float) (children_[m_focusedIndex]->getY() +
                                 children_[m_focusedIndex]->getHeight() - getHeight()) *
                        getHeight() / maxHeight;
                 if (barY < 0)
@@ -78,7 +78,7 @@ namespace gui::elements
         verticalScrollEnabled_ = true;
         widget->setY(
             (children_.size() != 0)
-                ? (children_.back()->y_ + children_.back()->getHeight() + m_lineSpace)
+                ? (children_.back()->getY() + children_.back()->getHeight() + m_lineSpace)
                 : (0)
         );
         this->addChild(widget);
@@ -151,7 +151,7 @@ namespace gui::elements
                         return;
                     }
 
-                    verticalScroll_ = children_[m_focusedIndex]->y_;
+                    verticalScroll_ = children_[m_focusedIndex]->getY();
 
                     switch (m_selectionFocus)
                     {
@@ -160,7 +160,7 @@ namespace gui::elements
                         break;
                     case SelectionFocus::CENTER:
                         verticalScroll_ = verticalScroll_ - getHeight() / 2 +
-                                           children_[m_focusedIndex]->getHeight() / 2;
+                                          children_[m_focusedIndex]->getHeight() / 2;
                         break;
                     case SelectionFocus::DOWN:
                         verticalScroll_ = verticalScroll_ - getHeight() +
@@ -186,7 +186,7 @@ namespace gui::elements
                 verticalScroll_ = 0;
                 return;
             }
-            if (children_[children_.size() - 1]->y_ +
+            if (children_[children_.size() - 1]->getY() +
                     children_[children_.size() - 1]->getHeight() <
                 getHeight())
             {
@@ -195,7 +195,7 @@ namespace gui::elements
             }
 
             int16_t maxScroll =
-                children_.back()->y_ + children_.back()->getHeight() - getHeight();
+                children_.back()->getY() + children_.back()->getHeight() - getHeight();
 
             if (verticalScroll_ - y < 0)
                 verticalScroll_ = 0;
@@ -208,13 +208,13 @@ namespace gui::elements
         {
             int16_t minScroll = 0;
             int16_t maxScroll =
-                children_.back()->y_ + children_.back()->getHeight() - getHeight();
+                children_.back()->getY() + children_.back()->getHeight() - getHeight();
 
             if (m_selectionFocus == SelectionFocus::CENTER)
             {
                 minScroll = -children_.front()->getHeight() / 2 - getHeight() / 2;
                 maxScroll =
-                    children_.back()->y_ + children_.back()->getHeight() / 2 - getHeight() / 2;
+                    children_.back()->getY() + children_.back()->getHeight() / 2 - getHeight() / 2;
                 if (maxScroll < 0)
                     maxScroll = 0;
             }
@@ -232,11 +232,11 @@ namespace gui::elements
 
         for (int i = 0; i < children_.size(); i++)
         {
-            if ((m_selectionFocus == SelectionFocus::UP && children_[i]->getY() >= 0) ||
+            if ((m_selectionFocus == SelectionFocus::UP && children_[i]->getScrolledY() >= 0) ||
                 (m_selectionFocus == SelectionFocus::CENTER &&
-                 children_[i]->getY() + children_[i]->getHeight() >= getHeight() / 2) ||
+                 children_[i]->getScrolledY() + children_[i]->getHeight() >= getHeight() / 2) ||
                 (m_selectionFocus == SelectionFocus::DOWN &&
-                 children_[i]->getY() + children_[i]->getHeight() >= getHeight()))
+                 children_[i]->getScrolledY() + children_[i]->getHeight() >= getHeight()))
             {
                 element = children_[i];
                 focusedIndex = i;
@@ -265,12 +265,12 @@ namespace gui::elements
         {
             if (m_selectionFocus == SelectionFocus::UP)
             {
-                verticalScroll_ = m_focusedElement->y_;
+                verticalScroll_ = m_focusedElement->getY();
             }
             else if (m_selectionFocus == SelectionFocus::CENTER)
             {
                 verticalScroll_ =
-                    m_focusedElement->y_ - getHeight() / 2 + m_focusedElement->getHeight() / 2;
+                    m_focusedElement->getY() - getHeight() / 2 + m_focusedElement->getHeight() / 2;
             }
 
             localGraphicalUpdate();
@@ -323,10 +323,10 @@ namespace gui::elements
         }
         else if (children_.size() && children_.size() > m_focusedIndex)
         {
-            uint16_t maxWidth = children_.back()->x_ + children_.back()->getWidth();
+            uint16_t maxWidth = children_.back()->getX() + children_.back()->getWidth();
             int16_t cursor_size = (float) this->getWidth() * this->getWidth() / maxWidth;
             int16_t cursor_x =
-                (float) children_[m_focusedIndex]->x_ * this->getWidth() / maxWidth;
+                (float) children_[m_focusedIndex]->getX() * this->getWidth() / maxWidth;
 
             surface_->fillRoundRect(cursor_x, getHeight() - 3, cursor_size, 3, 1, COLOR_GREY);
         }
@@ -336,7 +336,7 @@ namespace gui::elements
     {
         widget->setX(
             (children_.size() != 0)
-                ? (children_.back()->x_ + children_.back()->getWidth() + m_lineSpace)
+                ? (children_.back()->getX() + children_.back()->getWidth() + m_lineSpace)
                 : (0)
         );
         this->addChild(widget);
@@ -416,7 +416,7 @@ namespace gui::elements
                         return;
                     }
 
-                    horizontalScroll_ = children_[m_focusedIndex]->x_;
+                    horizontalScroll_ = children_[m_focusedIndex]->getX();
                     if (m_selectionFocus == SelectionFocus::CENTER)
                     {
                         horizontalScroll_ = horizontalScroll_ - getWidth() / 2 +
@@ -434,7 +434,7 @@ namespace gui::elements
     {
         if (!m_autoSelect)
         {
-            int16_t maxScroll = children_.back()->x_ + children_.back()->getWidth() - getWidth();
+            int16_t maxScroll = children_.back()->getX() + children_.back()->getWidth() - getWidth();
 
             if (horizontalScroll_ - x < 0)
                 horizontalScroll_ = 0;
@@ -446,13 +446,13 @@ namespace gui::elements
         else
         {
             int16_t minScroll = 0;
-            int16_t maxScroll = children_.back()->x_ + children_.back()->getWidth() - getWidth();
+            int16_t maxScroll = children_.back()->getX() + children_.back()->getWidth() - getWidth();
 
             if (m_selectionFocus == SelectionFocus::CENTER)
             {
                 minScroll = -children_.front()->getWidth() / 2 - getWidth() / 2;
                 maxScroll =
-                    children_.back()->x_ + children_.back()->getWidth() / 2 - getWidth() / 2;
+                    children_.back()->getX() + children_.back()->getWidth() / 2 - getWidth() / 2;
                 if (maxScroll < 0)
                     maxScroll = 0;
             }
@@ -470,14 +470,14 @@ namespace gui::elements
 
         for (int i = 0; i < children_.size(); i++)
         {
-            if (m_selectionFocus == SelectionFocus::LEFT && children_[i]->getX() >= 0)
+            if (m_selectionFocus == SelectionFocus::LEFT && children_[i]->getScrolledX() >= 0)
             {
                 element = children_[i];
                 focusedIndex = i;
                 break;
             }
             else if (m_selectionFocus == SelectionFocus::CENTER &&
-                     children_[i]->getX() + children_[i]->getWidth() >= getWidth() / 2)
+                     children_[i]->getScrolledX() + children_[i]->getWidth() >= getWidth() / 2)
             {
                 element = children_[i];
                 focusedIndex = i;
@@ -506,12 +506,12 @@ namespace gui::elements
         {
             if (m_selectionFocus == SelectionFocus::LEFT)
             {
-                horizontalScroll_ = m_focusedElement->x_;
+                horizontalScroll_ = m_focusedElement->getX();
             }
             else if (m_selectionFocus == SelectionFocus::CENTER)
             {
                 horizontalScroll_ =
-                    m_focusedElement->x_ - getWidth() / 2 + m_focusedElement->getWidth() / 2;
+                    m_focusedElement->getX() - getWidth() / 2 + m_focusedElement->getWidth() / 2;
             }
 
             localGraphicalUpdate();

@@ -36,11 +36,10 @@ void gui::ElementBase::resetStates()
 }
 
 gui::ElementBase::ElementBase() :
-    x_(0), y_(0), width_(0), height_(0), backgroundColor_(COLOR_WHITE),
-    borderColor_(COLOR_WHITE), borderSize_(0), borderRadius_(0), parent_(nullptr),
-    verticalScrollEnabled_(false), horizontalScrollEnabled_(false), verticalScroll_(0),
-    horizontalScroll_(0), isEnabled_(true), isRendered_(false), isDrawn_(false),
-    pressedState_(NOT_PRESSED), hasEvents_(false)
+    x_(0), y_(0), width_(0), height_(0), backgroundColor_(COLOR_WHITE), borderColor_(COLOR_WHITE),
+    borderSize_(0), borderRadius_(0), parent_(nullptr), verticalScrollEnabled_(false),
+    horizontalScrollEnabled_(false), verticalScroll_(0), horizontalScroll_(0), isEnabled_(true),
+    isRendered_(false), isDrawn_(false), pressedState_(NOT_PRESSED), hasEvents_(false)
 {
     // Initialiser d'autres membres si nécessaire dans le constructeur
 }
@@ -81,7 +80,7 @@ void gui::ElementBase::renderAll(bool onScreen)
 
         // initialiser le buffer ou le clear
         if (surface_ != nullptr && (surface_->getWidth() != this->getWidth() ||
-                                     surface_->getHeight() != this->getHeight()))
+                                    surface_->getHeight() != this->getHeight()))
         {
             surface_ = nullptr;
         }
@@ -109,7 +108,7 @@ void gui::ElementBase::renderAll(bool onScreen)
 
         if (!onScreen) // le parent demande le rendu
         {
-            parent_->surface_->pushSurface(surface_.get(), getX(), getY());
+            parent_->surface_->pushSurface(surface_.get(), getScrolledX(), getScrolledY());
         }
         else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
@@ -412,32 +411,14 @@ void gui::ElementBase::setHeight(uint16_t height)
     globalGraphicalUpdate();
 }
 
-int16_t gui::ElementBase::getAbsoluteX() const
-{
-    if (parent_ == nullptr)
-        return getX();
-
-    return parent_->getAbsoluteX() + getX();
-}
-
-int16_t gui::ElementBase::getAbsoluteY() const
-{
-    if (parent_ == nullptr)
-        return getY();
-
-    return parent_->getAbsoluteY() + getY();
-}
-
 int16_t gui::ElementBase::getX() const
 {
-    return (int) x_ /* + (m_parent!=nullptr)?(m_parent->m_horizontalScroll):(0)*/;
+    return static_cast<int16_t>(x_);
 }
 
 int16_t gui::ElementBase::getY() const
 {
-    if (parent_ != nullptr)
-        return y_ - parent_->verticalScroll_;
-    return y_;
+    return static_cast<int16_t>(y_);
 }
 
 uint16_t gui::ElementBase::getWidth() const
@@ -448,6 +429,34 @@ uint16_t gui::ElementBase::getWidth() const
 uint16_t gui::ElementBase::getHeight() const
 {
     return height_;
+}
+
+int16_t gui::ElementBase::getAbsoluteX() const
+{
+    if (parent_ == nullptr)
+        return getScrolledX();
+    return static_cast<int16_t>(parent_->getAbsoluteX() + getScrolledX());
+}
+
+int16_t gui::ElementBase::getAbsoluteY() const
+{
+    if (parent_ == nullptr)
+        return getScrolledY();
+    return static_cast<int16_t>(parent_->getAbsoluteY() + getScrolledY());
+}
+
+int16_t gui::ElementBase::getScrolledX() const
+{
+    if (parent_ == nullptr)
+        return getX();
+    return static_cast<int16_t>(x_ - parent_->horizontalScroll_);
+}
+
+int16_t gui::ElementBase::getScrolledY() const
+{
+    if (parent_ == nullptr)
+        return getY();
+    return static_cast<int16_t>(y_ - parent_->verticalScroll_);
 }
 
 void gui::ElementBase::setBackgroundColor(const color_t color)
@@ -619,8 +628,7 @@ void gui::ElementBase::setChildrenDrawn()
 {
     isDrawn_ = true;
 
-    for (int i = 0; i < children_.size();
-         i++) // dire aux enfants qu'il sont actualisés sur l'écran
+    for (int i = 0; i < children_.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
         if (children_[i] != nullptr)
             children_[i]->setChildrenDrawn();
 }
@@ -629,8 +637,7 @@ void gui::ElementBase::setChildrenNotDrawn()
 {
     isDrawn_ = false;
 
-    for (int i = 0; i < children_.size();
-         i++) // dire aux enfants qu'il sont actualisés sur l'écran
+    for (int i = 0; i < children_.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
         if (children_[i] != nullptr)
             children_[i]->isDrawn_ = false;
 }
@@ -676,13 +683,13 @@ bool gui::ElementBase::isInside()
     if (parent_ == nullptr)
         return true;
 
-    if (getX() + getWidth() < 0)
+    if (getScrolledX() + getWidth() < 0)
         return false;
-    if (getY() + getHeight() < 0)
+    if (getScrolledY() + getHeight() < 0)
         return false;
-    if (getX() > parent_->getWidth())
+    if (getScrolledX() > parent_->getWidth())
         return false;
-    if (getY() > parent_->getHeight())
+    if (getScrolledY() > parent_->getHeight())
         return false;
 
     return true;

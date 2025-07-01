@@ -76,6 +76,9 @@ namespace gui
         [[nodiscard]] uint16_t getWidth() const;
         [[nodiscard]] uint16_t getHeight() const;
 
+        [[nodiscard]] int16_t getScrolledX() const;
+        [[nodiscard]] int16_t getScrolledY() const;
+
         [[nodiscard]] int16_t getAbsoluteX() const;
         [[nodiscard]] int16_t getAbsoluteY() const;
 
@@ -157,13 +160,12 @@ namespace gui
 
         void forceUpdate();
 
-        uint16_t x_;
-        uint16_t y_;
-
       protected:
         void freeRamFor(uint32_t size, ElementBase* window);
 
         // Position and size.
+        uint16_t x_;
+        uint16_t y_;
         uint16_t width_;
         uint16_t height_;
 
@@ -210,7 +212,8 @@ namespace gui
         PressedState pressedState_;
 
         static PressedState globalPressedState;
-        static ElementBase* widgetPressed; // The widget that is currently pressed (or nullptr if none).
+        static ElementBase*
+            widgetPressed; // The widget that is currently pressed (or nullptr if none).
         static int16_t originTouchX;
         static int16_t originTouchY;
 
@@ -237,7 +240,7 @@ namespace gui
         virtual void onScrollRight() {};
         virtual void onScroll(int16_t x, int16_t y) {};
 
-        std::shared_ptr<graphics::Surface> surface_;         // Surface to render the widget
+        std::shared_ptr<graphics::Surface> surface_;    // Surface to render the widget
         std::shared_ptr<graphics::Surface> dmaSurface_; // double buffer for DMA transfer
 
         bool useDoubleBuffering_ = false;

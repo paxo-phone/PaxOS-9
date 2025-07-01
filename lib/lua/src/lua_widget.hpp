@@ -42,12 +42,12 @@ class LuaWidget
 
     int getX()
     {
-        return this->widget->getX();
+        return this->widget->getScrolledX();
     }
 
     int getY()
     {
-        return this->widget->getY();
+        return this->widget->getScrolledY();
     }
 
     int getWidth()

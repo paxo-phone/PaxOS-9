@@ -89,7 +89,7 @@ namespace gui::elements
         if (m_label != nullptr)
         {
             m_label->setX(
-                space + ((m_image != nullptr) ? (m_image->getX() + m_image->getWidth())
+                space + ((m_image != nullptr) ? (m_image->getScrolledX() + m_image->getWidth())
                                               : getWidth() / 2 - w / 2)
             );
             m_label->setY(10);
