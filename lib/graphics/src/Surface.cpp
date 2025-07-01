@@ -531,6 +531,7 @@ namespace graphics
         return (float) scale * m_sprite.fontHeight(getFont(m_font, fontSize));
     }
 
+    // FIXME: Use const std::string& instead of std::string&............
     void Surface::drawText(std::string& otext, int16_t x, int16_t y, std::optional<color_t> color)
     {
         std::string text = decodeString(otext);
@@ -603,6 +604,7 @@ namespace graphics
         delete buffer;
     }
 
+    // FIXME: Use const std::string& instead of std::string&............
     void Surface::drawTextCentered(
         std::string& text, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h,
         const bool horizontallyCentered, const bool verticallyCentered,
