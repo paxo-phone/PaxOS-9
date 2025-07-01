@@ -4,6 +4,9 @@
 
 #include "Window.hpp"
 
+#include "GuiManager.hpp"
+#include "libsystem.hpp"
+
 #include <Surface.hpp>
 #include <algorithm>
 #include <cstdio>
@@ -38,6 +41,16 @@ namespace gui::elements
 
         ElementBase::widgetUpdate();
         guiManager.onWindowUpdate(this);
+    }
+
+    std::any Window::getMetadata(const std::string& key)
+    {
+        return metadata_.count(key) ? metadata_[key] : std::any();
+    }
+
+    void Window::setMetadata(const std::string& key, const std::any& value)
+    {
+        metadata_[key] = value;
     }
 
     std::vector<Window*> Window::windows;

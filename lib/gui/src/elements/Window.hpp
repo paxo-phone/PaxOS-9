@@ -7,11 +7,16 @@
 
 #include "../ElementBase.hpp"
 
+#include <any>
+#include <map>
+
 namespace gui::elements
 {
     class Window final : public ElementBase
     {
-      private:
+        // Use the metadate to store information about the window.
+        std::map<std::string, std::any> metadata_;
+
       public:
         Window();
         ~Window() override;
@@ -21,6 +26,9 @@ namespace gui::elements
         void render() override;
 
         void widgetUpdate() override;
+
+        std::any getMetadata(const std::string& key);
+        void setMetadata(const std::string& key, const std::any& value);
     };
 } // namespace gui::elements
 
