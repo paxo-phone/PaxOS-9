@@ -163,8 +163,8 @@ namespace gui::elements
                                           children_[m_focusedIndex]->getHeight() / 2;
                         break;
                     case SelectionFocus::DOWN:
-                        verticalScroll_ = verticalScroll_ - getHeight() +
-                                           children_[m_focusedIndex]->getHeight();
+                        verticalScroll_ =
+                            verticalScroll_ - getHeight() + children_[m_focusedIndex]->getHeight();
                         break;
                     }
 
@@ -420,7 +420,7 @@ namespace gui::elements
                     if (m_selectionFocus == SelectionFocus::CENTER)
                     {
                         horizontalScroll_ = horizontalScroll_ - getWidth() / 2 +
-                                             children_[m_focusedIndex]->getWidth() / 2;
+                                            children_[m_focusedIndex]->getWidth() / 2;
                     }
 
                     localGraphicalUpdate();
@@ -434,7 +434,8 @@ namespace gui::elements
     {
         if (!m_autoSelect)
         {
-            int16_t maxScroll = children_.back()->getX() + children_.back()->getWidth() - getWidth();
+            int16_t maxScroll =
+                children_.back()->getX() + children_.back()->getWidth() - getWidth();
 
             if (horizontalScroll_ - x < 0)
                 horizontalScroll_ = 0;
@@ -446,7 +447,8 @@ namespace gui::elements
         else
         {
             int16_t minScroll = 0;
-            int16_t maxScroll = children_.back()->getX() + children_.back()->getWidth() - getWidth();
+            int16_t maxScroll =
+                children_.back()->getX() + children_.back()->getWidth() - getWidth();
 
             if (m_selectionFocus == SelectionFocus::CENTER)
             {

@@ -38,8 +38,7 @@ namespace gui::elements
         }
         else
         {
-            surface_
-                ->fillRoundRectWithBorder(0, 0, width_, height_, 4, 2, COLOR_WHITE, COLOR_DARK);
+            surface_->fillRoundRectWithBorder(0, 0, width_, height_, 4, 2, COLOR_WHITE, COLOR_DARK);
             m_tickIcon->disable();
         }
     }
