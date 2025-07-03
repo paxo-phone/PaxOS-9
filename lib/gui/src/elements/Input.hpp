@@ -18,7 +18,7 @@ namespace gui::elements
     {
     public:
         Input(uint16_t x, uint16_t y);
-        ~Input() override;
+        ~Input();
 
         enum Alignement {
             CENTER,

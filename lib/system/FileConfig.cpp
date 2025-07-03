@@ -389,8 +389,8 @@ namespace libsystem
 
         do
         {
-            char c = m_fileStream->readchar();
-            if (c == std::string::npos)
+            c = m_fileStream->readchar();
+            if (c == EOF)
             {
                 std::cerr << "[FileConfig] invalid List format" << std::endl;
                 break;

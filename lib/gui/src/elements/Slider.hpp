@@ -28,7 +28,7 @@ namespace gui::elements
          * @brief Destroy the Slider object
          *
          */
-        ~Slider() override;
+        ~Slider();
 
         /**
          * @brief render the slider widget

@@ -940,9 +940,9 @@ namespace Gsm
                         double sum = 0;
                         for (auto v : battery_voltage_history)
                             sum += v;
-                            currentVoltage_mV = sum / battery_voltage_history.size();
+                        currentVoltage_mV = sum / battery_voltage_history.size();
                     }
-                } catch (std::exception) { }
+                } catch (const std::exception& e) { }
 
                 voltageValid = true;
                 lastVoltageUpdateTime = std::chrono::steady_clock::now();

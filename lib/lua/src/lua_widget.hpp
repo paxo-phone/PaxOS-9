@@ -12,7 +12,7 @@ class LuaWidget
     public:
         void init(gui::ElementBase* obj, LuaWidget* parent);
         void init(gui::ElementBase* obj) {widget = obj;}
-        ~LuaWidget();
+        virtual ~LuaWidget();
 
         void setX(int x){this->widget->setX(x);}
         void setY(int y){this->widget->setY(y);}

@@ -15,7 +15,7 @@ namespace gui::elements
         typedef std::pair<int16_t, int16_t> point_t;
 
         Canvas(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-        ~Canvas() override;
+        ~Canvas();
 
         void render() override;
 

@@ -59,7 +59,7 @@ void mainLoop(void* data) {
     if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe")) {
         // Launch OOBE app
         try {
-            const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+        const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
 
             oobeApp->run();
         } catch (std::runtime_error& e) {
@@ -213,10 +213,10 @@ void perform_google_request() {
 // Example: Connect to Wi-Fi first
 void setup_and_run_request() {
     // Set policy to Wi-Fi only
-    Network::setRoutingPolicy(Network::RoutingPolicy::CELLULAR_ONLY);
+    Network::setRoutingPolicy(Network::RoutingPolicy::WIFI_ONLY);
 
     // Connect to Wi-Fi
-    if (Network::connectWifi("Cecile et Jerome", "19751973")) {
+    if (Network::connectWifi("EAP302", "KleidosPA!")) {
         std::cout << "Connection initiated..." << std::endl;
         // The connection happens asynchronously. In a real app, you'd wait for
         // Network::isWifiConnected() to become true before sending requests.
@@ -331,7 +331,7 @@ void init(void* data)
 
     Network::init(); // Add this line to initialize the network manager
     libsystem::log("[STARTUP]: Network initialized");
-    eventHandlerApp.setTimeout(new Callback<>(setup_and_run_request), 15000);
+    //eventHandlerApp.setTimeout(new Callback<>(setup_and_run_request), 15000);
 
     /**
      * Gestion des eventHandlers pour les evenements
@@ -382,14 +382,26 @@ void init(void* data)
     mainLoop(NULL);
 }
 
-void setup()
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void app_main(void)
 {
     #ifdef ESP_PLATFORM
     esp_task_wdt_init(5000, true);
     #endif
     
     init(NULL);
+
+    // An app_main function running as a FreeRTOS task should not return.
+    // If init() creates other tasks and this one is done, it should delete itself.
+    // For example: vTaskDelete(NULL);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 void loop(){}
 
