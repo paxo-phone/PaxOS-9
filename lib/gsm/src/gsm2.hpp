@@ -126,6 +126,8 @@ namespace Gsm
     bool isPinRequired();
     bool isPinStatusValid(); // Check if PIN status has been read
 
+    bool isSimInserted();
+
     // Returns true if PDU mode (CMGF=0) is active
     bool isPduModeEnabled();
     bool isPduModeStateValid(); // Check if PDU mode has been read

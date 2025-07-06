@@ -64,6 +64,12 @@ std::string getBatteryIconFilename()
     return "battery_full";
 }
 
+std::string getSimIconFilename()
+{
+    const bool isInserted = Gsm::isSimInserted();
+    return isInserted ? "sim_inserted" : "sim_not_inserted";
+}
+
 namespace applications::launcher
 {
     std::shared_ptr<Window> launcherWindow = nullptr;
@@ -77,6 +83,7 @@ namespace applications::launcher
     Label* dateLabel = nullptr;
     Label* batteryLabel = nullptr;
     Image* batteryIcon = nullptr;
+    Image* simIcon = nullptr;
     Box* chargingPopupBox = nullptr;
     Box* brightnessSliderBox = nullptr;
     Label* networkLabel = nullptr;
@@ -256,6 +263,13 @@ void applications::launcher::draw()
     launcherWindow->addChild(dateLabel);
 
     //    std::cout << "launcher::update 1.3" << std::endl;
+
+    // Sim icon
+    const auto simIconDarkPath =
+        storage::Path("system/icons/dark/" + getSimIconFilename() + "_64px.png");
+    simIcon = new Image(simIconDarkPath, 220, 2, 32, 32);
+    simIcon->load();
+    launcherWindow->addChild(simIcon);
 
     // Battery icon
     const auto batteryIconDarkPath =
