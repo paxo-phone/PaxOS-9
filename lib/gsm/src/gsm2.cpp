@@ -1071,7 +1071,12 @@ namespace Gsm
         {
         }
     }
-
+    bool isSimInserted()
+    {
+        if (!pinStatusValid)
+            return false;
+        return !pinRequiresPin;
+    }
     // Forward declarations for helper functions
     bool isEndIdentifier(const std::string& data);
     bool isURC(const std::string& data);
