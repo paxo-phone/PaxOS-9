@@ -1,5 +1,5 @@
 garg = nil
-win = nil
+local win = nil
 win2 = nil
 
 function hangOn()
