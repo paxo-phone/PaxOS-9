@@ -12,6 +12,8 @@
 #include <esp_tls.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include "esp_sntp.h"
+#include "nvs_flash.h" // Added for NVS initialization
 
 extern "C" {
 #include "esp_crt_bundle.h"
@@ -140,26 +142,65 @@ namespace Network
     }
 
     // --- NetworkManager Method Implementations ---
+    
+    #ifdef ESP_PLATFORM
+    // SNTP initialization for time sync
+    void initialize_sntp(void)
+    {
+        std::cout << "Initializing SNTP" << std::endl;
+        esp_sntp_setoperatingmode((esp_sntp_operatingmode_t) SNTP_OPMODE_POLL);
+        esp_sntp_setservername(0, "pool.ntp.org");
+        esp_sntp_init();
+
+        int retry = 0;
+        const int retry_count = 10;
+        while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count) {
+            std::cout << "Waiting for system time to be set... (" << retry << "/" << retry_count << ")" << std::endl;
+            vTaskDelay(2000 / portTICK_PERIOD_MS);
+        }
+
+        if (retry == retry_count) {
+            std::cout << "Failed to update system time" << std::endl;
+        } else {
+            time_t now;
+            struct tm timeinfo;
+            time(&now);
+            localtime_r(&now, &timeinfo);
+            char buf[64];
+            strftime(buf, sizeof(buf), "%c", &timeinfo);
+            std::cout << "The current date/time is: " << buf << std::endl;
+        }
+    }
+    #endif
 
     void NetworkManager::init() {
-    #ifdef ESP_PLATFORM
-    ESP_LOGI(NETWORK_TAG, "Initializing Network Manager...");
-    // Initialize TCP/IP adapter
-    esp_netif_init();
-    // Initialize event loop
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ESP_ERROR_CHECK(esp_tls_init_global_ca_store());
-    // Register Wi-Fi event handlers
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &_wifiEventHandler, this));
-    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &_wifiEventHandler, this));
-    #else
-    std::cout << "[" << NETWORK_TAG << "] Initializing Network Manager for PC..." << std::endl;
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    // On PC, we can assume "Wi-Fi" is always "connected" if we have a network interface.
-    m_isWifiEnabled = true;
-    m_isWifiConnected = true;
-    #endif
-}
+        #ifdef ESP_PLATFORM
+        ESP_LOGI(NETWORK_TAG, "Initializing Network Manager...");
+        // Initialize NVS
+        esp_err_t nvs_ret = nvs_flash_init();
+        if (nvs_ret == ESP_ERR_NVS_NO_FREE_PAGES || nvs_ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+            ESP_ERROR_CHECK(nvs_flash_erase());
+            ESP_ERROR_CHECK(nvs_flash_init());
+        } else {
+            ESP_ERROR_CHECK(nvs_ret);
+        }
+        // Initialize TCP/IP adapter
+        esp_netif_init();
+        // Initialize event loop
+        ESP_ERROR_CHECK(esp_event_loop_create_default());
+        ESP_ERROR_CHECK(esp_tls_init_global_ca_store());
+        // Register Wi-Fi event handlers
+        ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &_wifiEventHandler, this));
+        ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &_wifiEventHandler, this));
+        #else
+        std::cout << "[" << NETWORK_TAG << "] Initializing Network Manager for PC..." << std::endl;
+        curl_global_init(CURL_GLOBAL_DEFAULT);
+        // On PC, we can assume "Wi-Fi" is always "connected" if we have a network interface.
+        m_isWifiEnabled = true;
+        m_isWifiConnected = true;
+        #endif
+
+    }
     
     void NetworkManager::submitRequest(std::shared_ptr<Request> request) {
         std::lock_guard<std::mutex> lock(m_mutex);
@@ -299,6 +340,7 @@ namespace Network
             ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
             std::cout << "[" << NETWORK_TAG << "] Got IP:" << ip4addr_ntoa((const ip4_addr_t*)&event->ip_info.ip) << std::endl;
             self->m_isWifiConnected = true;
+            initialize_sntp(); // Sync time after Wi-Fi connects
         }
     }
     
@@ -352,26 +394,30 @@ namespace Network
     void NetworkManager::_executeWifiRequest(std::shared_ptr<Request> request) {
         esp_http_client_config_t config = {};
         
-        std::string encoded_url = request->url;
-        size_t scheme_end = encoded_url.find("://");
-        if (scheme_end != std::string::npos) {
-            size_t path_start = encoded_url.find('/', scheme_end + 3);
-            if (path_start != std::string::npos) {
-                size_t colon_pos = encoded_url.find(':', path_start);
-                size_t query_start = encoded_url.find('?', path_start);
-                if (colon_pos != std::string::npos && (query_start == std::string::npos || colon_pos < query_start)) {
-                    encoded_url.replace(colon_pos, 1, "%3A");
-                }
-            }
-        }
-        config.url = encoded_url.c_str();
+        // Use the URL directly - don't do custom encoding as it may cause issues
+        config.url = request->url.c_str();
 
         config.event_handler = _httpEventHandler;
         config.user_data = this; // Pass manager instance
         config.disable_auto_redirect = true;
 
+        // FIX: Properly configure SSL/TLS certificate bundle
         config.use_global_ca_store = true;
-        //config.crt_bundle_attach = arduino_esp_crt_bundle_attach;
+        config.crt_bundle_attach = esp_crt_bundle_attach;
+        
+        // Additional SSL/TLS configuration for better compatibility
+        config.skip_cert_common_name_check = false;
+        config.timeout_ms = 30000;  // 30 second timeout
+        config.buffer_size = 4096;
+        config.buffer_size_tx = 1024;
+        
+        // IMPORTANT: Enable SNI and configure TLS properly
+        //config.use_secure_element = false;
+        config.transport_type = HTTP_TRANSPORT_OVER_SSL;
+        config.is_async = false;
+        
+        // Set user agent to avoid potential blocking
+        config.user_agent = "ESP32-HTTPClient/1.0";
 
         printf("==================================================\n");
         printf("Memory before HTTP Perform:\n");
@@ -401,7 +447,7 @@ namespace Network
         esp_err_t err = esp_http_client_perform(m_httpClient);
 
         if (err != ESP_OK) {
-            std::cout << "[ERROR:" << NETWORK_TAG << "] HTTP GET request failed: " << esp_err_to_name(err) << std::endl;
+            std::cout << "[ERROR:" << NETWORK_TAG << "] HTTP request failed: " << esp_err_to_name(err) << std::endl;
             _completeCurrentRequest(NetworkStatus::REQUEST_FAILED);
         }
 

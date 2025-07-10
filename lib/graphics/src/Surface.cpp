@@ -639,6 +639,7 @@ namespace graphics
         // Copy
         auto copy = lgfx::LGFX_Sprite();
         copy.setColorDepth(m_color_depth);
+        copy.setPsram(true);
         copy.createSprite(getWidth(), getHeight());
 
         // Apply blur effect

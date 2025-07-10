@@ -176,7 +176,8 @@ void perform_google_request() {
     // 1. Create a request object
     Network::setRoutingPolicy(Network::RoutingPolicy::WIFI_ONLY);
     auto request = std::make_shared<Network::Request>();
-    request->url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=YOUR_API_KEY";
+    //request->url = "https://httpbin.org/get";
+    request->url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=...";
     request->method = Network::HttpMethod::POST;
     request->headers["Content-Type"] = "application/json";
     request->post_body = R"({
@@ -227,7 +228,7 @@ void setup_and_run_request() {
         }
         std::cout << "Wi-Fi connected!" << std::endl;
         // Now perform the request
-        perform_google_request();
+        eventHandlerApp.setTimeout(new Callback<>([](){perform_google_request();}), 15000);
     }
 }
 
@@ -330,6 +331,7 @@ void init(void* data)
     }
 
     Network::init(); // Add this line to initialize the network manager
+    setup_and_run_request();
     libsystem::log("[STARTUP]: Network initialized");
     //eventHandlerApp.setTimeout(new Callback<>(setup_and_run_request), 15000);
 
