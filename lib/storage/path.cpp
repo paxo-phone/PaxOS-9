@@ -40,7 +40,7 @@ bool storage::init() {
 
     delay(100);
     for (int i = 0; i < sdBeginTryCount; i++) {
-        if (SD.begin(4, SPI, 8000000)) {
+        if (SD.begin(4, SPI, 5000000)) {
             libsystem::log("SD card initialized.");
             return true;
         }

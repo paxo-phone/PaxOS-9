@@ -211,20 +211,38 @@ namespace Network
 
     NetworkInterface NetworkManager::getBestAvailableInterface() {
         std::lock_guard<std::mutex> lock(m_mutex);
+        std::cout << "[" << NETWORK_TAG << "] Determining best available interface based on current policy and connection states." << std::endl;
         switch (m_policy) {
             case RoutingPolicy::WIFI_PREFERRED:
-                if (m_isWifiConnected) return NetworkInterface::WIFI;
-                if (Gsm::isConnected()) return NetworkInterface::CELLULAR;
+                std::cout << "[" << NETWORK_TAG << "] Current policy: WIFI_PREFERRED." << std::endl;
+                if (m_isWifiConnected) {
+                    std::cout << "[" << NETWORK_TAG << "] Wi-Fi is connected. Selecting Wi-Fi interface." << std::endl;
+                    return NetworkInterface::WIFI;
+                }
+                if (Gsm::isConnected()) {
+                    std::cout << "[" << NETWORK_TAG << "] Cellular is connected. Selecting Cellular interface." << std::endl;
+                    return NetworkInterface::CELLULAR;
+                }
                 break;
             case RoutingPolicy::WIFI_ONLY:
-                if (m_isWifiConnected) return NetworkInterface::WIFI;
+                std::cout << "[" << NETWORK_TAG << "] Current policy: WIFI_ONLY." << std::endl;
+                if (m_isWifiConnected) {
+                    std::cout << "[" << NETWORK_TAG << "] Wi-Fi is connected. Selecting Wi-Fi interface." << std::endl;
+                    return NetworkInterface::WIFI;
+                }
                 break;
             case RoutingPolicy::CELLULAR_ONLY:
-                if (Gsm::isConnected()) return NetworkInterface::CELLULAR;
+                std::cout << "[" << NETWORK_TAG << "] Current policy: CELLULAR_ONLY." << std::endl;
+                if (Gsm::isConnected()) {
+                    std::cout << "[" << NETWORK_TAG << "] Cellular is connected. Selecting Cellular interface." << std::endl;
+                    return NetworkInterface::CELLULAR;
+                }
                 break;
             case RoutingPolicy::NONE:
+                std::cout << "[" << NETWORK_TAG << "] Current policy: NONE. No network requests allowed." << std::endl;
                 return NetworkInterface::NONE;
         }
+        std::cout << "[" << NETWORK_TAG << "] No available interfaces based on current policy and connection states." << std::endl;
         return NetworkInterface::NONE;
     }
 
@@ -605,8 +623,13 @@ namespace Network
                     status = NetworkStatus::DNS_ERROR;
                     break;
                 case Gsm::HttpResult::SERVER_ERROR:
+                case Gsm::HttpResult::NOT_FOUND: // Treat 404 as a bad response
                     status = NetworkStatus::BAD_RESPONSE;
                     break;
+                case Gsm::HttpResult::BUSY:
+                case Gsm::HttpResult::INIT_FAILED:
+                case Gsm::HttpResult::MODULE_ERROR:
+                case Gsm::HttpResult::READ_ERROR:
                 default:
                     status = NetworkStatus::MODULE_ERROR;
                     break;
