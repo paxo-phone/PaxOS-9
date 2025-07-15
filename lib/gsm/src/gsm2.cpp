@@ -2118,11 +2118,20 @@ namespace Gsm
                         lineBuffer.erase(0, toCopy);
                     }
 
-                    // Then, read from serial until we have enough bytes
+                    // Then, read from serial until we have enough bytes or timeout occurs
+                    auto start_time = std::chrono::steady_clock::now();
+                    const auto timeout_duration = std::chrono::seconds(5);
+
                     while (bytesRead < datasize) {
                         if (gsm.available()) {
                             char c = gsm.read();
                             data[bytesRead++] = c;
+                        }
+
+                        auto now = std::chrono::steady_clock::now();
+                        if (std::chrono::duration_cast<std::chrono::seconds>(now - start_time) > timeout_duration) {
+                            std::cout << "[ERROR] Timeout while reading data from serial" << std::endl;
+                            break;
                         }
                     }
                     
