@@ -16,6 +16,7 @@
 #include "lua_storage.hpp"
 #include "lua_gsm.hpp"
 #include "lua_json.hpp"
+#include "lua_network.hpp"
 
 
 namespace AppManager {
@@ -94,6 +95,7 @@ public:
     LuaGui lua_gui;
     LuaStorage lua_storage;
     LuaTime lua_time;
+    LuaNetwork lua_network;
     //LuaNetwork lua_network;
 
     AppManager::App* app; // using raw pointer, because this class will NEVER call the deleter

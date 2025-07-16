@@ -53,8 +53,8 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
 LuaFile::LuaFile(storage::Path filename, storage::Path manifest)
     : lua_gui(this),
       lua_storage(this),
-      lua_time(this) /*,
-       lua_network(this)*/
+      lua_time(this),
+      lua_network(this)
 {
     this->filename = filename;
     this->manifest = manifest;
@@ -647,6 +647,18 @@ void LuaFile::load()
 
                     return true;
                 }));
+    }
+
+    if (perms.acces_web)
+    {
+        lua.new_usertype<LuaHttpClient>("HttpClient",
+            "get", &LuaHttpClient::get,
+            "post", &LuaHttpClient::post);
+
+        lua.new_usertype<LuaNetwork>("Network",
+            "createHttpClient", &LuaNetwork::createHttpClient);
+
+        lua["network"] = &lua_network;
     }
 
     if (perms.acces_time)
