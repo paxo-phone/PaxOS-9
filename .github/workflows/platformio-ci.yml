@@ -200,24 +200,34 @@ jobs:
         - name: Install PlatformIO Core
           run: pip install --upgrade platformio
 
-        # ──────────────────────────────────────────────────────────────
-        # Download & extract a working libcurl dev package for Win64:
+        # ───────────────────────────────────────────────────────────
+        # 1) Get libcurl headers + libs:
         - name: Download and extract libcurl for Windows
           shell: bash
           run: |
             curl -L -o curl.zip https://curl.se/windows/latest.cgi?p=win64-mingw.zip
             unzip curl.zip -d curl
             mkdir -p curl-install
-            # use wildcard to match the extracted directory name (e.g. curl-8.15.0_1-win64-mingw)
             cp -r curl/curl-*-win64-mingw/include curl-install/
             cp -r curl/curl-*-win64-mingw/lib     curl-install/
 
-        # If you also need the CLI tool at runtime:
+        # 2) (optional) Install curl CLI tool:
         - name: Install curl CLI
           run: choco install curl
 
+        # 3) Install MinGW‑w64 GCC toolchain so PlatformIO's native env will work:
+        - name: Setup MSYS2 + install MinGW‑w64 GCC
+          uses: msys2/setup-msys2@v2
+          with:
+            update: true
+            install: >
+              mingw-w64-x86_64-toolchain
+
+        # ───────────────────────────────────────────────────────────
         - name: Run tests for Windows
-          run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
+          run: pio test -e windows \
+                --json-output-path windows-test-report.json \
+                --junit-output-path windows-test-report.xml
 
         - name: Upload test reports
           if: success() || failure()
