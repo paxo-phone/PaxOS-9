@@ -370,7 +370,6 @@ namespace serialcom
         while (true) 
         {
             char buffer[CHUNK_SIZE];         
-            memcpy(buffer, "\0", CHUNK_SIZE);  
 
             std::streamsize readSize = fileStream.read(buffer, CHUNK_SIZE);
 

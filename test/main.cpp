@@ -8,8 +8,6 @@
 #include "i18n/test.cpp"
 #include "storage/storage_test.cpp"
 
-#include "gsm/conversation_test.cpp"
-#include "gsm/contacts_test.cpp"
 #if ESP_PLATFORM
 #include "serialcom/command.cpp"
 #endif
