@@ -366,7 +366,7 @@ void LuaFile::load()
                                                  "set_int", &LuaJson::set_int,
                                                  "set_double", &LuaJson::set_double,
                                                  "set_bool", &LuaJson::set_bool,
-                                                 "__index", sol::overload(static_cast<LuaJson (LuaJson::*)(std::string)>(&LuaJson::op), static_cast<int (LuaJson::*)(std::string)>(&LuaJson::get_int), static_cast<double (LuaJson::*)(std::string)>(&LuaJson::get_double), static_cast<bool (LuaJson::*)(std::string)>(&LuaJson::get_bool)),
+                                                 "__index", sol::overload(static_cast<LuaJson (LuaJson::*)(std::string)>(&LuaJson::op), static_cast<LuaJson (LuaJson::*)(int)>(&LuaJson::op), static_cast<int (LuaJson::*)(std::string)>(&LuaJson::get_int), static_cast<double (LuaJson::*)(std::string)>(&LuaJson::get_double), static_cast<bool (LuaJson::*)(std::string)>(&LuaJson::get_bool)),
                                                  "__newindex", sol::overload(static_cast<void (LuaJson::*)(std::string, int)>(&LuaJson::set_int), static_cast<void (LuaJson::*)(std::string, double)>(&LuaJson::set_double), static_cast<void (LuaJson::*)(std::string, bool)>(&LuaJson::set_bool), static_cast<void (LuaJson::*)(std::string, std::string)>(&LuaJson::set)));
 
         lua["Json"] = json_ud;

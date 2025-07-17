@@ -1,0 +1,4 @@
+{
+    "access": ["gui", "web", "time", "files"],
+    "name": "Gemini"
+}

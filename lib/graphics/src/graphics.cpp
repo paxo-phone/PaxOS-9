@@ -362,9 +362,9 @@ void graphics::touchUpdate()
         isTouchRead = false;
     }
 
-    if(liveTouchX != touchX || liveTouchY != touchY)
+    if(touchState)
     {
-        if(StandbyMode::state() == false)
+        if(libsystem::getDeviceMode() != libsystem::SLEEP)
             StandbyMode::trigger();
     }
 }

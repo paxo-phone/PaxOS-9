@@ -13,7 +13,7 @@ public:
     ~LuaHttpClient();
 
     void get(const std::string& url, sol::table callbacks);
-    void post(const std::string& url, const std::string& body, sol::table callbacks);
+    void post(const std::string& url, const std::string& body, sol::table options);
 
 private:
     LuaFile* m_lua;

@@ -2149,12 +2149,16 @@ namespace Gsm
                         std::cout << "[DEBUG] Incomplete data read, expected: " << datasize << ", got: " << bytesRead << std::endl;
                     }
                 }
+                else    // No more data to read, call completion
+                {
+                    _completeHttpRequest(HttpResult::OK);
+                }
 
                 if(line.find("OK") != std::string::npos) {
                     std::cout << "[HTTP] HTTPREAD completed, total bytes read: " << httpBytesRead << std::endl;
                     
                     if (httpBytesRead >= httpBytesTotal) {
-                        _completeHttpRequest(HttpResult::OK);
+                        //_completeHttpRequest(HttpResult::OK);
                     } else {
                         _queueNextHttpRead();
                     }
