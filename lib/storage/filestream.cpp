@@ -1,4 +1,5 @@
 #include "filestream.hpp"
+
 #include <sstream>
 
 #ifdef ESP_PLATFORM
@@ -10,8 +11,7 @@ namespace storage
 
     FileStream::FileStream() {}
 
-    FileStream::FileStream(const std::string &path,
-                           Mode mode)
+    FileStream::FileStream(const std::string& path, Mode mode)
     {
         this->open(path, mode);
     }
@@ -21,8 +21,7 @@ namespace storage
         m_stream.close();
     }
 
-    void FileStream::open(const std::string &path,
-                          Mode mode)
+    void FileStream::open(const std::string& path, Mode mode)
     {
         if (mode == READ)
             m_stream.open(path, std::ios::in | std::ios::binary);
@@ -69,7 +68,7 @@ namespace storage
         return m_stream.get();
     }
 
-    void FileStream::write(const std::string &str)
+    void FileStream::write(const std::string& str)
     {
         m_stream << str;
     }
@@ -99,18 +98,16 @@ namespace storage
         return fsize;
     }
 
-    FileStream &operator<<(FileStream &stream,
-                           const std::string &text)
+    FileStream& operator<<(FileStream& stream, const std::string& text)
     {
         stream.write(text);
         return stream;
     }
 
-    FileStream &operator>>(FileStream &stream,
-                           std::string &buff)
+    FileStream& operator>>(FileStream& stream, std::string& buff)
     {
         buff = stream.readword();
         return stream;
     }
 
-}
+} // namespace storage

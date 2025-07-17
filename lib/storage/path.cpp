@@ -1,10 +1,10 @@
 #include "path.hpp"
 
-#include <string>
 #include <cstdint>
-#include <vector>
 #include <iostream>
 #include <libsystem.hpp>
+#include <string>
+#include <vector>
 
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 #include <filesystem>
@@ -31,22 +31,28 @@
 #define VSPI_MOSI 23
 #define VSPI_MISO 19
 #define VSPI_SCLK 18
-#define VSPI_CS   4
+#define VSPI_CS 4
 
-bool storage::init() {
+bool storage::init()
+{
 #ifdef ESP_PLATFORM
 
     constexpr uint8_t sdBeginTryCount = 4;
 
     delay(100);
-    for (int i = 0; i < sdBeginTryCount; i++) {
-        if (SD.begin(4, SPI, 5000000)) {
+    for (int i = 0; i < sdBeginTryCount; i++)
+    {
+        if (SD.begin(4, SPI, 5000000))
+        {
             libsystem::log("SD card initialized.");
             return true;
         }
 
         delay(500);
-        libsystem::log("SD card initialization failed, try " + std::to_string(i + 1) + " of " + std::to_string(sdBeginTryCount) + ".");
+        libsystem::log(
+            "SD card initialization failed, try " + std::to_string(i + 1) + " of " +
+            std::to_string(sdBeginTryCount) + "."
+        );
     }
 
     // esp_restart();
@@ -69,27 +75,24 @@ namespace storage
 
     Path::Path(void) {}
 
-    Path::Path(const std::string &raw)
+    Path::Path(const std::string& raw)
     {
         parse(raw);
     }
 
-    Path::Path(const Path &other)
+    Path::Path(const Path& other)
     {
         this->assign(other);
     }
 
-    void Path::join(const Path &other)
+    void Path::join(const Path& other)
     {
-        for (uint16_t i = 0; i < other.m_steps.size(); i++)
-        {
-            m_steps.push_back(other.m_steps[i]);
-        }
+        for (uint16_t i = 0; i < other.m_steps.size(); i++) m_steps.push_back(other.m_steps[i]);
 
         simplify();
     }
 
-    void Path::join(const std::string &other)
+    void Path::join(const std::string& other)
     {
         this->join(Path(other));
     }
@@ -110,71 +113,65 @@ namespace storage
             o += m_steps[i];
             if (i != m_steps.size() - 1)
                 o += "/";
-                // o += SYSTEM_PATH_SEPARATOR;
+            // o += SYSTEM_PATH_SEPARATOR;
         }
 
         return o;
     }
 
-    Path Path::operator/(const Path &other) const
+    Path Path::operator/(const Path& other) const
     {
         Path o;
 
-        for (uint16_t i = 0; i < m_steps.size(); i++)
-            o.m_steps.push_back(m_steps[i]);
+        for (uint16_t i = 0; i < m_steps.size(); i++) o.m_steps.push_back(m_steps[i]);
 
-        for (uint16_t i = 0; i < other.m_steps.size(); i++)
-            o.m_steps.push_back(other.m_steps[i]);
+        for (uint16_t i = 0; i < other.m_steps.size(); i++) o.m_steps.push_back(other.m_steps[i]);
 
         o.simplify();
 
         return o;
     }
 
-    Path Path::operator/(const std::string &other) const
+    Path Path::operator/(const std::string& other) const
     {
         return ((*this) / Path(other));
     }
 
-    Path &Path::operator/=(const Path &other)
+    Path& Path::operator/=(const Path& other)
     {
-        for (uint16_t i = 0; i < other.m_steps.size(); i++)
-        {
-            m_steps.push_back(other.m_steps[i]);
-        }
+        for (uint16_t i = 0; i < other.m_steps.size(); i++) m_steps.push_back(other.m_steps[i]);
 
         simplify();
         return (*this);
     }
 
-    Path &Path::operator/=(const std::string &other)
+    Path& Path::operator/=(const std::string& other)
     {
         return ((*this) /= Path(other));
     }
 
-    Path &Path::operator=(const Path &other)
+    Path& Path::operator=(const Path& other)
     {
         this->assign(other);
         return (*this);
     }
 
-    Path &Path::operator=(const std::string &other)
+    Path& Path::operator=(const std::string& other)
     {
         return ((*this) = Path(other));
     }
 
-    
-    bool Path::operator==(const Path &other) const
+    bool Path::operator==(const Path& other) const
     {
         return this->str() == other.str();
     }
 
-    void Path::assign(const Path &other)
+    void Path::assign(const Path& other)
     {
         m_steps = other.m_steps;
     }
 
-    void Path::assign(const std::string &other)
+    void Path::assign(const std::string& other)
     {
         this->assign(Path(other));
     }
@@ -210,8 +207,7 @@ namespace storage
         m_steps = std::move(simplified_steps);
     }
 
-
-    void Path::parse(const std::string &raw)
+    void Path::parse(const std::string& raw)
     {
 
         uint16_t pos = 0;
@@ -248,11 +244,12 @@ namespace storage
 
         if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath))
         {
-            std::cerr << "Error: The directory does not exist or is not a valid directory." << std::endl;
+            std::cerr << "Error: The directory does not exist or is not a valid directory."
+                      << std::endl;
             return {};
         }
 
-        for (const auto &entry : std::filesystem::directory_iterator(dirPath))
+        for (const auto& entry : std::filesystem::directory_iterator(dirPath))
         {
             if (onlyDirs && !entry.is_directory())
                 continue;
@@ -262,15 +259,12 @@ namespace storage
 
 #endif
 #ifdef ESP_PLATFORM
-        DIR *dir = opendir(this->str().c_str());
+        DIR* dir = opendir(this->str().c_str());
 
         if (dir != NULL)
         {
-            struct dirent *entry;
-            while ((entry = readdir(dir)) != NULL)
-            {
-                list.push_back(entry->d_name);
-            }
+            struct dirent* entry;
+            while ((entry = readdir(dir)) != NULL) list.push_back(entry->d_name);
 
             closedir(dir);
         }
@@ -303,13 +297,9 @@ namespace storage
 #ifdef ESP_PLATFORM
         struct stat st;
         if (stat(this->str().c_str(), &st) == 0)
-        {
             return S_ISREG(st.st_mode);
-        }
         else
-        {
             return false;
-        }
 #endif
     }
 
@@ -322,13 +312,9 @@ namespace storage
 #ifdef ESP_PLATFORM
         struct stat st;
         if (stat(this->str().c_str(), &st) == 0)
-        {
             return S_ISDIR(st.st_mode);
-        }
         else
-        {
             return false;
-        }
 #endif
 
         return false;
@@ -363,7 +349,7 @@ namespace storage
 #endif
 
 #ifdef ESP_PLATFORM
-        FILE *file = fopen(this->str().c_str(), "w");
+        FILE* file = fopen(this->str().c_str(), "w");
         if (file != NULL)
         {
             fclose(file);
@@ -389,7 +375,7 @@ namespace storage
 #endif
     }
 
-    bool Path::rename(const Path &to)
+    bool Path::rename(const Path& to)
     {
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
         std::filesystem::rename(this->str(), to.str());
@@ -402,43 +388,53 @@ namespace storage
 #endif
     }
 
-    bool Path::copy(const Path &to)
+    bool Path::copy(const Path& to)
     {
-    #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
-        try {
-            if (this->isfile()) {
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+        try
+        {
+            if (this->isfile())
+            {
                 // Copy single file
-                std::filesystem::copy_file(this->str(), to.str(), 
-                    std::filesystem::copy_options::overwrite_existing);
+                std::filesystem::copy_file(
+                    this->str(),
+                    to.str(),
+                    std::filesystem::copy_options::overwrite_existing
+                );
             }
-            else if (this->isdir()) {
+            else if (this->isdir())
+            {
                 // Copy directory and its contents recursively
-                std::filesystem::copy(this->str(), to.str(),
+                std::filesystem::copy(
+                    this->str(),
+                    to.str(),
                     std::filesystem::copy_options::recursive |
-                    std::filesystem::copy_options::overwrite_existing);
+                        std::filesystem::copy_options::overwrite_existing
+                );
             }
             return true;
         }
-        catch (const std::filesystem::filesystem_error& e) {
+        catch (const std::filesystem::filesystem_error& e)
+        {
             std::cerr << "Copy failed: " << e.what() << std::endl;
             return false;
         }
-    #endif
+#endif
 
-    #ifdef ESP_PLATFORM
-        if (!this->exists()) {
+#ifdef ESP_PLATFORM
+        if (!this->exists())
             return false;
-        }
 
-        if (this->isfile()) {
+        if (this->isfile())
+        {
             // Copy single file
             FILE* source = fopen(this->str().c_str(), "rb");
-            if (!source) {
+            if (!source)
                 return false;
-            }
 
             FILE* dest = fopen(to.str().c_str(), "wb");
-            if (!dest) {
+            if (!dest)
+            {
                 fclose(source);
                 return false;
             }
@@ -447,8 +443,10 @@ namespace storage
             uint8_t buffer[bufferSize];
             size_t bytesRead;
 
-            while ((bytesRead = fread(buffer, 1, bufferSize, source)) > 0) {
-                if (fwrite(buffer, 1, bytesRead, dest) != bytesRead) {
+            while ((bytesRead = fread(buffer, 1, bufferSize, source)) > 0)
+            {
+                if (fwrite(buffer, 1, bytesRead, dest) != bytesRead)
+                {
                     fclose(source);
                     fclose(dest);
                     return false;
@@ -459,25 +457,29 @@ namespace storage
             fclose(dest);
             return true;
         }
-        else if (this->isdir()) {
+        else if (this->isdir())
+        {
             // Create destination directory
-            if (!to.exists() && !to.newdir()) {
+            if (!to.exists() && !to.newdir())
                 return false;
-            }
 
             // Copy directory contents recursively
             std::vector<std::string> entries = this->listdir(false);
             bool success = true;
 
-            for (const auto& entry : entries) {
+            for (const auto& entry : entries)
+            {
                 Path sourcePath = *this / entry;
                 Path destPath = to / entry;
 
-                if (sourcePath.isfile()) {
+                if (sourcePath.isfile())
+                {
                     success &= sourcePath.copy(destPath);
                 }
-                else if (sourcePath.isdir()) {
-                    if (!destPath.exists() && !destPath.newdir()) {
+                else if (sourcePath.isdir())
+                {
+                    if (!destPath.exists() && !destPath.newdir())
+                    {
                         success = false;
                         break;
                     }
@@ -487,10 +489,10 @@ namespace storage
 
             return success;
         }
-        
+
         return false;
-    #endif
+#endif
 
         return false;
     }
-}
+} // namespace storage

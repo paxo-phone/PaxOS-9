@@ -4,18 +4,18 @@
 //
 
 #include "graphics.hpp"
+
 #include "standby.hpp"
 
+#include <Surface.hpp>
 #include <iostream>
 #include <libsystem.hpp>
-#include <Surface.hpp>
 #include <threads.hpp>
 
 #ifdef ESP_PLATFORM
 
-#include <Wire.h>
-
 #include <FT6236G.h>
+#include <Wire.h>
 FT6236G ct;
 
 #endif
@@ -31,41 +31,38 @@ namespace
 
     int16_t touchX = 0, touchY = 0;
 
-    bool liveTouchState = false;    // is screen touched (brute and fast)
+    bool liveTouchState = false; // is screen touched (brute and fast)
     int16_t newTouchX = 0, newTouchY = 0;
 
     bool isTouchRead = false;
 
     uint16_t brightness = 0xFF / 3;
-}
+} // namespace
 
 void graphics::touchIsRead()
 {
     isTouchRead = true;
 }
 
-uint16_t graphics::getBrightness() {
+uint16_t graphics::getBrightness()
+{
     return brightness;
 }
 
 void graphics::setBrightness(uint16_t value, const bool temp)
 {
     static bool running = false;
-    if(running)
+    if (running)
         return;
     running = true;
 
-
-    if (!temp) {
+    if (!temp)
         brightness = value;
-    }
 
-
-
-    #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
     static uint16_t oldValue = 0;
 
-    if(oldValue == value)
+    if (oldValue == value)
     {
         running = false;
         return;
@@ -73,26 +70,27 @@ void graphics::setBrightness(uint16_t value, const bool temp)
 
     libsystem::log("Brightness: " + std::to_string(value));
 
-    while (value < oldValue) {
+    while (value < oldValue)
+    {
         oldValue--;
         lcd->setBrightness(oldValue);
         delay(1);
     }
 
-    while (value > oldValue) {
+    while (value > oldValue)
+    {
         oldValue++;
         lcd->setBrightness(oldValue);
         delay(1);
     }
 
-    #else
+#else
 
     // Simulate a switched off display
-    if (value == 0) {
+    if (value == 0)
         lcd->fillScreen(0x0000);
-    }
 
-    #endif
+#endif
 
     running = false;
 }
@@ -126,8 +124,11 @@ graphics::GraphicsInitCode graphics::init()
     lcd->setFont(&DejaVu40);
     lcd->setTextColor(packRGB565(58, 186, 153));
     lcd->setCursor(
-        static_cast<int32_t>(0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))),
-        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight())));
+        static_cast<int32_t>(
+            0.5 * static_cast<double>(getScreenWidth() - lcd->textWidth(initText.c_str()))
+        ),
+        static_cast<int32_t>(0.5 * static_cast<double>(getScreenHeight() - lcd->fontHeight()))
+    );
     lcd->printf("%s", initText.c_str());
 
 #ifdef ESP_PLATFORM
@@ -194,9 +195,9 @@ struct SDLUpdateData
     void (*appMain)();
 };
 
-static int SDLUpdate(void *data)
+static int SDLUpdate(void* data)
 {
-    const auto *updateData = static_cast<SDLUpdateData *>(data);
+    const auto* updateData = static_cast<SDLUpdateData*>(data);
 
     updateData->appMain();
 
@@ -208,15 +209,12 @@ void graphics::SDLInit(void (*appMain)())
     lgfx::Panel_sdl::setup();
     // lgfx::Panel_sdl::loop(); // Ensure to create the window before creating a new thread
 
-    SDLUpdateData updateData
-    {
-        appMain
-    };
+    SDLUpdateData updateData{appMain};
 
     running = true;
 
     // Multithreading can be an issue, be careful
-    SDL_Thread *thread = SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
+    SDL_Thread* thread = SDL_CreateThread(SDLUpdate, "graphics_update", &updateData);
     if (thread == nullptr)
     {
         printf("Unable to create thread : %s\n", SDL_GetError());
@@ -224,7 +222,8 @@ void graphics::SDLInit(void (*appMain)())
     }
 
     while (lgfx::Panel_sdl::loop() == 0)
-    {};
+    {
+    };
 
     running = false;
 
@@ -246,13 +245,18 @@ void graphics::showSurface(const Surface* surface, int x, int y)
     // while(lcd.get()->dmaBusy());
     // lcd.get()->initDMA();
     // lcd.get()->setWindow(x, y, sprite.width(), sprite.height());
-    // lcd.get()->pushImageDMA(x, y, sprite.width(), sprite.height(), sprite.getBuffer(), lgfx::color_depth_t::rgb565_2Byte, sprite.getPalette());
-    //lcd.get()->waitDMA();
+    // lcd.get()->pushImageDMA(x, y, sprite.width(), sprite.height(), sprite.getBuffer(),
+    // lgfx::color_depth_t::rgb565_2Byte, sprite.getPalette());
+    // lcd.get()->waitDMA();
 
 #else
     if (screenOrientation == LANDSCAPE)
     {
-        landscapeBuffer->pushSurface(const_cast<Surface *>(surface), static_cast<int16_t>(x), static_cast<int16_t>(y));
+        landscapeBuffer->pushSurface(
+            const_cast<Surface*>(surface),
+            static_cast<int16_t>(x),
+            static_cast<int16_t>(y)
+        );
         landscapeBuffer->m_sprite.pushSprite(lcd.get(), 0, 0);
     }
     else
@@ -262,7 +266,9 @@ void graphics::showSurface(const Surface* surface, int x, int y)
 #endif
 }
 
-void graphics::setWindow(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height)
+void graphics::setWindow(
+    const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height
+)
 {
     lcd->setWindow(x, y, width, height);
 }
@@ -284,61 +290,63 @@ void graphics::getTouchPos(int16_t* x, int16_t* y)
 }
 
 #ifdef ESP_PLATFORM
-int getTouch(uint16_t *pPoints)
+int getTouch(uint16_t* pPoints)
 {
-  TOUCHINFO ti;
-  if (ct.getSamples(&ti) != FT_SUCCESS)
-     return 0; // something went wrong
-    if (pPoints) {
-      // swap X/Y since the display is used 90 degrees rotated
-      pPoints[0] = ti.x[0];
-      pPoints[1] = ti.y[0]; 
-      pPoints[2] = ti.x[1];
-      pPoints[3] = ti.y[1];
+    TOUCHINFO ti;
+    if (ct.getSamples(&ti) != FT_SUCCESS)
+        return 0; // something went wrong
+    if (pPoints)
+    {
+        // swap X/Y since the display is used 90 degrees rotated
+        pPoints[0] = ti.x[0];
+        pPoints[1] = ti.y[0];
+        pPoints[2] = ti.x[1];
+        pPoints[3] = ti.y[1];
     }
-  return ti.count;
+    return ti.count;
 }
 #endif
 
 void graphics::touchUpdate()
 {
-    if(StandbyMode::state() == true)
+    if (StandbyMode::state() == true)
         return;
     bool touchState = true;
     int16_t liveTouchX = 0, liveTouchY = 0;
 
-    #ifdef ESP_PLATFORM
-        uint16_t points[4];
-        int i = getTouch(points);
-        if(i == 1)
+#ifdef ESP_PLATFORM
+    uint16_t points[4];
+    int i = getTouch(points);
+    if (i == 1)
+    {
+        if (screenOrientation == PORTRAIT)
         {
-            if(screenOrientation == PORTRAIT)
-            {
-                liveTouchX = (points[0]-16) * 320 / 303;
-                liveTouchY = (points[1]-23) * 480 / 442;
-            }
-            else
-            {
-                liveTouchX = (points[1]-23) * 480 / 442;
-                liveTouchY = 320 - (points[0]-16) * 320 / 303 -10;
-            }
+            liveTouchX = (points[0] - 16) * 320 / 303;
+            liveTouchY = (points[1] - 23) * 480 / 442;
         }
         else
         {
-            liveTouchX = -1;
-            liveTouchY = -1;
+            liveTouchX = (points[1] - 23) * 480 / 442;
+            liveTouchY = 320 - (points[0] - 16) * 320 / 303 - 10;
         }
-    #else
-        bool state = lcd->getTouch(&liveTouchX, &liveTouchY);
+    }
+    else
+    {
+        liveTouchX = -1;
+        liveTouchY = -1;
+    }
+#else
+    bool state = lcd->getTouch(&liveTouchX, &liveTouchY);
 
-        if(!state)
-        {
-            liveTouchX = -1;
-            liveTouchY = -1;
-        }
-    #endif
+    if (!state)
+    {
+        liveTouchX = -1;
+        liveTouchY = -1;
+    }
+#endif
 
-    if (liveTouchX <= 0 || liveTouchY <= 0 || liveTouchX > graphics::getScreenWidth() || liveTouchY > graphics::getScreenHeight())
+    if (liveTouchX <= 0 || liveTouchY <= 0 || liveTouchX > graphics::getScreenWidth() ||
+        liveTouchY > graphics::getScreenHeight())
     {
         // Be sure to be offscreen
         liveTouchX = -1;
@@ -347,13 +355,13 @@ void graphics::touchUpdate()
         touchState = false;
     }
 
-    if(touchState == true) // si il vient d'être touché -> sauvegarder
+    if (touchState == true) // si il vient d'être touché -> sauvegarder
     {
         newTouchX = liveTouchX;
         newTouchY = liveTouchY;
     }
 
-    if(isTouchRead) // envoyer la nouvelle valeur
+    if (isTouchRead) // envoyer la nouvelle valeur
     {
         touchX = newTouchX;
         touchY = newTouchY;
@@ -362,9 +370,9 @@ void graphics::touchUpdate()
         isTouchRead = false;
     }
 
-    if(touchState)
+    if (touchState)
     {
-        if(libsystem::getDeviceMode() != libsystem::SLEEP)
+        if (libsystem::getDeviceMode() != libsystem::SLEEP)
             StandbyMode::trigger();
     }
 }
@@ -397,13 +405,15 @@ void graphics::setScreenOrientation(const EScreenOrientation screenOrientation)
     }
 }
 
-LGFX* graphics::getLCD() {
+LGFX* graphics::getLCD()
+{
     return lcd.get();
 }
 
 #ifdef ESP_PLATFORM
 
-FT6236G* graphics::getTouchController() {
+FT6236G* graphics::getTouchController()
+{
     return &ct;
 }
 

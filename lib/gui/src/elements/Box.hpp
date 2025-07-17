@@ -5,7 +5,6 @@
 #ifndef BOX_HPP
 #define BOX_HPP
 
-
 #include "../ElementBase.hpp"
 
 namespace gui::elements
@@ -15,12 +14,12 @@ namespace gui::elements
      */
     class Box final : public ElementBase
     {
-    public:
+      public:
         Box(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~Box();
 
         void render() override;
     };
-} // gui::elements
+} // namespace gui::elements
 
-#endif //BOX_HPP
+#endif // BOX_HPP

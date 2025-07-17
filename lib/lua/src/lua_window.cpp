@@ -2,13 +2,14 @@
 
 #include <iostream>
 
-LuaWindow::LuaWindow()  
+LuaWindow::LuaWindow()
 {
     widget = new gui::elements::Window();
     init(widget);
 }
 
-int LuaWindow::delete_LuaWindow(LuaWindow* window) {
+int LuaWindow::delete_LuaWindow(LuaWindow* window)
+{
     delete window;
     return 0;
 }

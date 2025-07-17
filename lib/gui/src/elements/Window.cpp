@@ -4,12 +4,13 @@
 
 #include "Window.hpp"
 
-#include <cstdio>
-#include <graphics.hpp>
 #include <Surface.hpp>
 #include <algorithm>
+#include <cstdio>
+#include <graphics.hpp>
 
-namespace gui::elements {
+namespace gui::elements
+{
     Window::Window()
     {
         m_x = 0;
@@ -32,4 +33,4 @@ namespace gui::elements {
     }
 
     std::vector<Window*> Window::windows;
-} // gui::elements
+} // namespace gui::elements

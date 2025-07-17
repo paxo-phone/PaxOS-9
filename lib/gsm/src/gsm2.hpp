@@ -5,14 +5,14 @@
 #define gsm Serial2
 #endif
 
-#include <vector>
-#include <string>
 #include <functional>
-#include <memory>
 #include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
-extern const char *daysOfWeek[7];
-extern const char *daysOfMonth[12];
+extern const char* daysOfWeek[7];
+extern const char* daysOfMonth[12];
 
 #define f_Date(annee, mois) (((mois) <= 2) ? ((annee) - 1) : (annee))
 #define g_Date(mois) (((mois) <= 2) ? ((mois) + 13) : ((mois) + 1))
@@ -32,14 +32,16 @@ inline long long getCurrentTimestamp();
 namespace Gsm
 {
     // --- Request Structure (Internal Use) ---
-    struct Request {
+    struct Request
+    {
         std::string command;
         std::function<bool(const std::string& response)> callback;
         std::shared_ptr<Request> next = nullptr;
     };
 
     // --- Public Enums ---
-    enum class CallState {
+    enum class CallState
+    {
         IDLE,
         DIALING,
         RINGING,
@@ -52,10 +54,11 @@ namespace Gsm
         extern std::function<void(void)> onIncommingCall;
         extern std::function<void(void)> onNewMessage;
         extern std::function<void(void)> onNewMessageError;
-    }
+    } // namespace ExternalEvents
 
     // --- HTTP Request Structure ---
-    enum class HttpResult {
+    enum class HttpResult
+    {
         OK,
         TIMEOUT,
         BUSY,
@@ -68,12 +71,14 @@ namespace Gsm
         READ_ERROR
     };
 
-    enum class HttpMethod {
+    enum class HttpMethod
+    {
         GET,
         POST
     };
 
-    struct HttpRequest {
+    struct HttpRequest
+    {
         HttpMethod method = HttpMethod::GET;
         std::string url;
         std::map<std::string, std::string> headers;
@@ -84,7 +89,8 @@ namespace Gsm
         std::function<void(HttpResult result)> on_complete;
     };
 
-    enum class HttpState {
+    enum class HttpState
+    {
         IDLE,
         INITIALIZING,
         ACTION_IN_PROGRESS,
@@ -105,10 +111,10 @@ namespace Gsm
 
     // Initialization and Core Loop
     void init();
-    void reboot(); // Reboot the GSM module
-    void run(); // The main processing loop (handles internal updates)
+    void reboot();         // Reboot the GSM module
+    void run();            // The main processing loop (handles internal updates)
     void uploadSettings(); // For configuring the module (e.g., enable URCs)
-    void loop(); // The function containing the main run loop and periodic tasks
+    void loop();           // The function containing the main run loop and periodic tasks
 
     // --- Public State Accessors (Getters) ---
 
@@ -143,30 +149,39 @@ namespace Gsm
     // Returns the last caller ID received via +CLIP URC
     std::string getLastIncomingNumber();
 
-
     // --- Public Action Functions ---
     // Optional callbacks can be provided to know if the command was *accepted* (OK/ERROR)
 
     // Set the SIM PIN
-    void setPin(const std::string& pin, std::function<void(bool success)> completionCallback = nullptr);
+    void setPin(
+        const std::string& pin, std::function<void(bool success)> completionCallback = nullptr
+    );
 
     // Enable/disable flight mode (true = RF OFF)
-    void setFlightMode(bool enableFlightMode, std::function<void(bool success)> completionCallback = nullptr);
+    void setFlightMode(
+        bool enableFlightMode, std::function<void(bool success)> completionCallback = nullptr
+    );
 
     // Set SMS mode (true = PDU mode (CMGF=0))
     void setPduMode(bool enablePdu, std::function<void(bool success)> completionCallback = nullptr);
 
     // Send SMS in PDU format (assumes PDU mode is set)
     // Callback provides command success and message reference number (-1 on failure)
-    void sendMessagePDU(const std::string& pdu, int length, std::function<void(bool success, int messageRef)> completionCallback = nullptr);
+    void sendMessagePDU(
+        const std::string& pdu, int length,
+        std::function<void(bool success, int messageRef)> completionCallback = nullptr
+    );
     void sendMySms(const std::string& recipient, const std::string& text);
     void checkForMessages();
 
     // --- PDU Encoding ---
-    std::pair<std::string, int> encodePduSubmit(const std::string& recipientNumber, const std::string& message);
+    std::pair<std::string, int>
+        encodePduSubmit(const std::string& recipientNumber, const std::string& message);
 
     // Initiate a voice call
-    void call(const std::string& number, std::function<void(bool success)> completionCallback = nullptr);
+    void call(
+        const std::string& number, std::function<void(bool success)> completionCallback = nullptr
+    );
 
     // Accept incoming call
     void acceptCall(std::function<void(bool success)> completionCallback = nullptr);
@@ -183,8 +198,8 @@ namespace Gsm
     void refreshVoltage();
     void refreshPinStatus();
     void refreshPduModeStatus();
-    // Call state is primarily updated via URCs and call actions
 
+    // Call state is primarily updated via URCs and call actions
 
     // --- Time Sub-Namespace ---
     namespace Time
@@ -204,8 +219,6 @@ namespace Gsm
         bool isTimeValid(); // Check if time has been successfully read at least once
     } // namespace Time
 
-
 } // namespace Gsm
-
 
 #endif

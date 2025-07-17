@@ -5,11 +5,18 @@
 
 class LuaRadio : public LuaWidget
 {
-    public:
+  public:
     LuaRadio(LuaWidget* parent, int x, int y);
-    
-    void setState(bool state) { widget->setState(state); }
-    bool getState() { return widget->getState(); }
+
+    void setState(bool state)
+    {
+        widget->setState(state);
+    }
+
+    bool getState()
+    {
+        return widget->getState();
+    }
 
     Radio* widget = nullptr;
 };

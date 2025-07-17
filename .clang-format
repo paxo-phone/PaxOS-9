@@ -1,0 +1,84 @@
+# PaxOS-9 ClangFormat Configuration
+
+# Base style configuration
+BasedOnStyle: LLVM
+Standard: c++20
+
+# INDENTATION
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+NamespaceIndentation: All
+
+# LINE FORMATTING
+ColumnLimit: 100
+InsertNewlineAtEOF: true
+
+# BRACES & BLOCKS
+BreakBeforeBraces: Allman
+Cpp11BracedListStyle: true
+InsertBraces: false
+RemoveBracesLLVM: true
+
+# SINGLE LINE CONSTRUCTS - ALLOW COMPACT FORMATTING
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Empty
+
+# SPACING & WHITESPACE
+# Parentheses spacing
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+
+# Operators spacing
+SpaceBeforeAssignmentOperators: true
+SpaceAfterCStyleCast: true
+
+# ALIGNMENT
+# Consecutive alignment (disabled for cleaner code)
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+
+# General alignment
+AlignOperands: true
+AlignTrailingComments: true
+AlignAfterOpenBracket: BlockIndent
+
+# FUNCTION PARAMETERS & CALLS
+# Function declarations
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackParameters: true
+IndentWrappedFunctionNames: true
+
+# Function calls
+AllowAllArgumentsOnNextLine: false
+BinPackArguments: false
+
+# Binary operators
+BreakBeforeBinaryOperators: None
+
+# CONSTRUCTORS & INHERITANCE
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerIndentWidth: 4
+PackConstructorInitializers: BinPack
+
+# POINTERS & REFERENCES
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# INCLUDE HEADERS
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+SeparateDefinitionBlocks: Always
+
+# COMMENTS
+ReflowComments: true
+
+# C++ FEATURES
+FixNamespaceComments: true

@@ -1,12 +1,12 @@
 #ifndef NETWORK_HPP
 #define NETWORK_HPP
 
-#include <string>
-#include <vector>
 #include <functional>
+#include <map>
 #include <memory>
 #include <mutex>
-#include <map>
+#include <string>
+#include <vector>
 
 // Forward declare to avoid including heavy headers here
 struct esp_http_client;
@@ -15,30 +15,34 @@ namespace Network
 {
     // --- Public Enums and Typedefs ---
 
-    enum class HttpMethod {
+    enum class HttpMethod
+    {
         GET,
         POST
     };
 
-    enum class RoutingPolicy {
+    enum class RoutingPolicy
+    {
         WIFI_PREFERRED, // Use Wi-Fi if available, otherwise fall back to Cellular
         WIFI_ONLY,      // Only use Wi-Fi
         CELLULAR_ONLY,  // Only use 4G/Cellular
         NONE            // Disable all network requests
     };
 
-    enum class NetworkStatus {
+    enum class NetworkStatus
+    {
         OK,
         TIMEOUT,
-        NO_ROUTE,           // No available network interface based on policy
+        NO_ROUTE, // No available network interface based on policy
         CONNECTION_FAILED,
         DNS_ERROR,
-        REQUEST_FAILED,     // General failure during request
-        BAD_RESPONSE,       // Server returned an error code (4xx, 5xx)
-        MODULE_ERROR        // Error within the underlying Wi-Fi or GSM module
+        REQUEST_FAILED, // General failure during request
+        BAD_RESPONSE,   // Server returned an error code (4xx, 5xx)
+        MODULE_ERROR    // Error within the underlying Wi-Fi or GSM module
     };
-    
-    enum class NetworkInterface {
+
+    enum class NetworkInterface
+    {
         NONE,
         WIFI,
         CELLULAR
@@ -53,7 +57,8 @@ namespace Network
     using OnCompleteCallback = std::function<void(NetworkStatus status)>;
 
     // --- Request Structure ---
-    struct Request {
+    struct Request
+    {
         uint32_t id;
         std::string url;
         HttpMethod method = HttpMethod::GET;
@@ -79,7 +84,7 @@ namespace Network
     /**
      * @brief Submits a new network request to the queue.
      * This function is thread-safe and can be called from anywhere.
-     * 
+     *
      * @param request A shared pointer to a Request object.
      */
     void submitRequest(std::shared_ptr<Request> request);
@@ -98,7 +103,7 @@ namespace Network
 
     /**
      * @brief Connects to a Wi-Fi access point.
-     * 
+     *
      * @param ssid The SSID of the network.
      * @param password The password for the network.
      * @return True if the connection process was initiated.
@@ -109,7 +114,7 @@ namespace Network
      * @brief Disconnects from the current Wi-Fi network.
      */
     void disconnectWifi();
-    
+
     /**
      * @brief Checks if the device is currently connected to a Wi-Fi network.
      * @return True if connected, false otherwise.
@@ -120,7 +125,7 @@ namespace Network
 
     /**
      * @brief Sets the routing policy for network requests.
-     * 
+     *
      * @param policy The desired routing policy.
      */
     void setRoutingPolicy(RoutingPolicy policy);
@@ -132,11 +137,11 @@ namespace Network
     RoutingPolicy getRoutingPolicy();
 
     /**
-     * @brief Determines the best available network interface based on the current policy and connection states.
+     * @brief Determines the best available network interface based on the current policy and
+     * connection states.
      * @return The determined NetworkInterface.
      */
     NetworkInterface getBestAvailableInterface();
-
 
     // --- Internal processing thread ---
     // This function is public to be accessible by ThreadManager, but should not be called directly.

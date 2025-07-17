@@ -2,20 +2,20 @@
 // Created by Charles on 20/01/2024.
 //
 
-#include <imgdec.hpp>
 #include <gtest/gtest.h>
+#include <imgdec.hpp>
 
 TEST(IMGDECTestJPG, GetFilesize)
 {
     const size_t fileSize = getFileSize("resources/images/logo.jpg");
 
     EXPECT_NE(fileSize, -1); // Check if no error occurred
-    EXPECT_GT(fileSize, 0); // Check if the file is not empty
+    EXPECT_GT(fileSize, 0);  // Check if the file is not empty
 }
 
 TEST(IMGDECTestJPG, FileSignature)
 {
-    const uint8_t *fileData = getFileData("resources/images/logo.jpg");
+    const uint8_t* fileData = getFileData("resources/images/logo.jpg");
 
     EXPECT_EQ(fileData[0x00], 0xFF);
     EXPECT_EQ(fileData[0x01], 0xD8);
@@ -26,7 +26,7 @@ TEST(IMGDECTestJPG, FileSignature)
 
 TEST(IMGDECTestJPG, ImageType)
 {
-    const uint8_t *fileData = getFileData("resources/images/logo.jpg");
+    const uint8_t* fileData = getFileData("resources/images/logo.jpg");
 
     const imgdec::IMGData imgData = imgdec::decodeHeader(fileData);
 
@@ -35,10 +35,9 @@ TEST(IMGDECTestJPG, ImageType)
     delete fileData;
 }
 
-
 TEST(IMGDECTestJPG, ImageWidthHeight)
 {
-    const uint8_t *fileData = getFileData("resources/images/logo.jpg");
+    const uint8_t* fileData = getFileData("resources/images/logo.jpg");
 
     const imgdec::IMGData imgData = imgdec::decodeHeader(fileData);
 

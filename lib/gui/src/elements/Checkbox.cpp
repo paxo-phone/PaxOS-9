@@ -1,11 +1,13 @@
 #include "Checkbox.hpp"
+
 #include "Image.hpp"
 
+#include <Surface.hpp>
 #include <cstdio>
 #include <graphics.hpp>
-#include <Surface.hpp>
 
-namespace gui::elements {
+namespace gui::elements
+{
 
     Checkbox::Checkbox(const uint16_t x, const uint16_t y)
     {
@@ -20,7 +22,7 @@ namespace gui::elements {
         this->addChild(m_tickIcon);
         m_tickIcon->disable();
 
-        // relier le released du tickicon au released de la checkbox 
+        // relier le released du tickicon au released de la checkbox
     }
 
     Checkbox::~Checkbox() = default;
@@ -29,12 +31,15 @@ namespace gui::elements {
     {
         m_surface->clear(COLOR_WHITE);
 
-        if(m_state) {
+        if (m_state)
+        {
             m_surface->fillRoundRect(0, 0, m_width, m_height, 4, COLOR_DARK);
             m_tickIcon->enable();
         }
-        else {
-            m_surface->fillRoundRectWithBorder(0, 0, m_width, m_height, 4, 2, COLOR_WHITE, COLOR_DARK);
+        else
+        {
+            m_surface
+                ->fillRoundRectWithBorder(0, 0, m_width, m_height, 4, 2, COLOR_WHITE, COLOR_DARK);
             m_tickIcon->disable();
         }
     }
@@ -54,4 +59,4 @@ namespace gui::elements {
     {
         return m_state;
     }
-} // gui::elements
+} // namespace gui::elements

@@ -1,6 +1,7 @@
 #include "delay.hpp"
-#include <standby.hpp>
+
 #include <iostream>
+#include <standby.hpp>
 
 #ifdef ESP_PLATFORM
 #include <LovyanGFX.hpp>
@@ -12,18 +13,20 @@
 #endif
 #endif
 
-void PaxOS_Delay(int64_t ms) {
-  #ifdef ESP_PLATFORM
-    //vTaskDelay(pdMS_TO_TICKS(ms));
+void PaxOS_Delay(int64_t ms)
+{
+#ifdef ESP_PLATFORM
+    // vTaskDelay(pdMS_TO_TICKS(ms));
 
     uint64_t start = esp_timer_get_time();
     uint64_t end = start + (ms * 1000); // Convert ms to us
-    
-    while (esp_timer_get_time() < end) {
+
+    while (esp_timer_get_time() < end)
+    {
         // Yield to other tasks
         vTaskDelay(1); // Delay for 1 tick, allowing other tasks to run
     }
-  #else
+#else
     SDL_Delay(ms);
-  #endif
+#endif
 }

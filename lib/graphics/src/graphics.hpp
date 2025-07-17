@@ -13,8 +13,8 @@
 #ifdef ESP_PLATFORM
 #include "platforms/LGFX_ESP32_PAXO5.hpp"
 #else
-#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
 #include "LGFX_AUTODETECT.hpp"
+#include "lgfx/v1/platforms/sdl/Panel_sdl.hpp"
 #endif
 
 class FT6236G;
@@ -29,7 +29,8 @@ namespace graphics
         LANDSCAPE
     };
 
-    enum GraphicsInitCode {
+    enum GraphicsInitCode
+    {
         SUCCESS,
         ERROR_NO_TOUCHSCREEN,
         ERROR_FAULTY_TOUCHSCREEN
@@ -53,7 +54,8 @@ namespace graphics
     /**
      * Set the current screen brightness with a smooth animation (abs(newValue - oldValue) ms).
      * @param value The new brightness of the screen.
-     * @param temp If true, the brightness value will not be saved (getBrightness() will still return the old value).
+     * @param temp If true, the brightness value will not be saved (getBrightness() will still
+     * return the old value).
      */
     void setBrightness(uint16_t value, bool temp = false);
 
@@ -61,8 +63,7 @@ namespace graphics
      * @return The current running status.
      * @deprecated Please do not use graphics as your main logic.
      */
-    [[deprecated("Please do not use graphics as your main logic.")]]
-    [[nodiscard]]
+    [[deprecated("Please do not use graphics as your main logic.")]] [[nodiscard]]
     bool isRunning();
 
     /**
@@ -73,7 +74,7 @@ namespace graphics
      * @param x The x position of the surface, default is 0.
      * @param y The y position of the surface, default is 0.
      */
-    void showSurface(const Surface *surface, int x = 0, int y = 0);
+    void showSurface(const Surface* surface, int x = 0, int y = 0);
 
     /**
      * Set a clip rect for the screen, only the provided zone will be sent to the LCD.
@@ -97,7 +98,7 @@ namespace graphics
     [[deprecated("Useless.")]]
     void flip();
 
-    void getTouchPos(int16_t *x, int16_t *y);
+    void getTouchPos(int16_t* x, int16_t* y);
     void touchIsRead();
     void touchUpdate();
     [[nodiscard]] bool isTouched();
@@ -110,13 +111,13 @@ namespace graphics
      * @return The LGFX screen instance.
      */
     [[nodiscard]] LGFX* getLCD();
-    #ifdef ESP_PLATFORM
+#ifdef ESP_PLATFORM
     [[nodiscard]] FT6236G* getTouchController();
 #endif
 
 #ifndef ESP_PLATFORM
     void SDLInit(void (*appMain)());
 #endif
-}
+} // namespace graphics
 
-#endif //GRAPHICS_HPP
+#endif // GRAPHICS_HPP

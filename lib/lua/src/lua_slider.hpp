@@ -5,8 +5,11 @@
 
 class LuaSlider : public LuaWidget
 {
-public:
-    LuaSlider(LuaWidget *parent, int x, int y, int width, int height, int minValue, int maxValue, int defaultValue);
+  public:
+    LuaSlider(
+        LuaWidget* parent, int x, int y, int width, int height, int minValue, int maxValue,
+        int defaultValue
+    );
 
     void setValue(int value);
     void displayValue(bool display);
@@ -23,8 +26,8 @@ public:
     void onChange(sol::protected_function func);
     void specificUpdate();
 
-private:
-    Slider *widget = nullptr;
+  private:
+    Slider* widget = nullptr;
     sol::protected_function onChangeFunc;
 };
 

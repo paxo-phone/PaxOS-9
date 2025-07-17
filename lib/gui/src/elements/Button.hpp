@@ -2,10 +2,10 @@
 #define BUTTON_HPP
 
 #include "../ElementBase.hpp"
-#include <filestream.hpp>
-
-#include "Label.hpp"
 #include "Image.hpp"
+#include "Label.hpp"
+
+#include <filestream.hpp>
 
 #define BUTTON_BLACK 0
 #define BUTTON_WHITE 1
@@ -22,7 +22,7 @@ namespace gui::elements
      */
     class Button final : public ElementBase
     {
-    public:
+      public:
         Button(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         ~Button();
 
@@ -32,61 +32,63 @@ namespace gui::elements
         void setText(std::string text);
         void setIcon(storage::Path path);
 
-        void setBorderColor(color_t color) {
-            if (m_label == nullptr) {
+        void setBorderColor(color_t color)
+        {
+            if (m_label == nullptr)
                 return;
-            }
 
             m_label->setBorderColor(color);
         }
-        void setFontSize(uint16_t r) {
-            if (m_label == nullptr) {
+
+        void setFontSize(uint16_t r)
+        {
+            if (m_label == nullptr)
                 return;
-            }
 
             m_label->setFontSize(r);
         }
-    
-        void setBackgroundColor(color_t color) {
-            if (m_label == nullptr) {
+
+        void setBackgroundColor(color_t color)
+        {
+            if (m_label == nullptr)
                 return;
-            }
 
             m_label->setBackgroundColor(color);
         }
 
-        void setVerticalAlignment(Label::Alignement alignment) {
-            if (m_label == nullptr) {
+        void setVerticalAlignment(Label::Alignement alignment)
+        {
+            if (m_label == nullptr)
                 return;
-            }
 
             m_label->setVerticalAlignment(alignment);
         }
-        void setHorizontalAlignment(Label::Alignement alignment) {
-            if (m_label == nullptr) {
+
+        void setHorizontalAlignment(Label::Alignement alignment)
+        {
+            if (m_label == nullptr)
                 return;
-            }
 
             m_label->setHorizontalAlignment(alignment);
         }
-        void setTextColor(color_t color) {
-            if (m_label == nullptr) {
+
+        void setTextColor(color_t color)
+        {
+            if (m_label == nullptr)
                 return;
-            }
 
             m_label->setTextColor(color);
         }
-
 
         std::string getText();
 
         void setTheme(bool value);
 
-    private:
+      private:
         Label* m_label;
         Image* m_image;
         bool m_theme;
     };
-} // gui::elements
+} // namespace gui::elements
 
-#endif //BUTTON_HPP
+#endif // BUTTON_HPP

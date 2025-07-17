@@ -1,6 +1,9 @@
 #include "lua_slider.hpp"
 
-LuaSlider::LuaSlider(LuaWidget *parent, int x, int y, int width, int height, int minValue, int maxValue, int defaultValue)
+LuaSlider::LuaSlider(
+    LuaWidget* parent, int x, int y, int width, int height, int minValue, int maxValue,
+    int defaultValue
+)
 {
     widget = new Slider(x, y, width, height, minValue, maxValue, defaultValue);
     init(widget, parent);
@@ -69,7 +72,5 @@ void LuaSlider::onChange(sol::protected_function func)
 void LuaSlider::specificUpdate()
 {
     if (onChangeFunc && widget->hasChanged())
-    {
         onChangeFunc();
-    }
 }

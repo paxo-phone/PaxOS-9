@@ -1,4 +1,5 @@
 #include "List.hpp"
+
 #include <iostream>
 #include <threads.hpp>
 
@@ -27,63 +28,74 @@ namespace gui::elements
 
     void VerticalList::postRender()
     {
-        if(m_selectionFocus == SelectionFocus::CENTER && m_children.size())
+        if (m_selectionFocus == SelectionFocus::CENTER && m_children.size())
         {
-            m_surface->fillRect(0, getHeight()/2 - m_children[m_focusedIndex]->getHeight()/2, 1, m_children[m_focusedIndex]->getHeight(), COLOR_BLACK);
+            m_surface->fillRect(
+                0,
+                getHeight() / 2 - m_children[m_focusedIndex]->getHeight() / 2,
+                1,
+                m_children[m_focusedIndex]->getHeight(),
+                COLOR_BLACK
+            );
         }
-        else
+        else if (m_children.size())
         {
-            if(m_children.size())
-            {
-                uint16_t maxHeight = m_children.back()->m_y + m_children.back()->getHeight();
-                int16_t cursor_size = (float) this->getHeight() * this->getHeight() / maxHeight;
-                int16_t cursor_y = (float) m_children[m_focusedIndex]->m_y * this->getHeight() / maxHeight;
+            uint16_t maxHeight = m_children.back()->m_y + m_children.back()->getHeight();
+            int16_t cursor_size = (float) this->getHeight() * this->getHeight() / maxHeight;
+            int16_t cursor_y =
+                (float) m_children[m_focusedIndex]->m_y * this->getHeight() / maxHeight;
 
-                m_surface->fillRoundRect(getWidth()-3,cursor_y,3,cursor_size,1,COLOR_GREY);
-            }
+            m_surface->fillRoundRect(getWidth() - 3, cursor_y, 3, cursor_size, 1, COLOR_GREY);
         }
     }
 
     void VerticalList::add(ElementBase* widget)
     {
         m_verticalScrollEnabled = true;
-        widget->setY( (m_children.size() != 0) ? (m_children.back()->m_y + m_children.back()->getHeight() + m_lineSpace) : (0));
+        widget->setY(
+            (m_children.size() != 0)
+                ? (m_children.back()->m_y + m_children.back()->getHeight() + m_lineSpace)
+                : (0)
+        );
         this->addChild(widget);
     }
 
     void VerticalList::setIndex(int index)
     {
-        if(m_focusedIndex >= 0 && m_focusedIndex < m_children.size())
+        if (m_focusedIndex >= 0 && m_focusedIndex < m_children.size())
         {
-            if (m_autoSelect) {
-               select(index);
+            if (m_autoSelect)
+            {
+                select(index);
             }
-            else {
-               m_focusedIndex = index;
-               updateFocusedIndex();
+            else
+            {
+                m_focusedIndex = index;
+                updateFocusedIndex();
             }
         }
     }
 
-    void VerticalList::setIsSelected(bool selected) {
+    void VerticalList::setIsSelected(bool selected)
+    {
         isSelected = selected;
     }
 
-    bool VerticalList::getIsSelected() {
+    bool VerticalList::getIsSelected()
+    {
         return isSelected;
     }
 
-
     void VerticalList::select(int index)
     {
-        if(index >= 0 && index < m_children.size())
+        if (index >= 0 && index < m_children.size())
         {
             m_focusedIndex = index;
-            ElementBase *oldSelection = this->getElementAt(m_oldFocusedIndex);
+            ElementBase* oldSelection = this->getElementAt(m_oldFocusedIndex);
             if (oldSelection != nullptr)
                 oldSelection->setBackgroundColor(m_backgroundColor);
 
-            ElementBase *selection = this->getElementAt(index);
+            ElementBase* selection = this->getElementAt(index);
             if (selection != nullptr)
                 selection->setBackgroundColor(m_selectionColor);
 
@@ -93,8 +105,9 @@ namespace gui::elements
             updateFocusedIndex();
         }
     }
-    
-    void VerticalList::setSelectionColor(color_t color){
+
+    void VerticalList::setSelectionColor(color_t color)
+    {
         m_selectionColor = color;
     }
 
@@ -103,60 +116,72 @@ namespace gui::elements
         m_lineSpace = y;
     }
 
-    void VerticalList::setAutoSelect(bool autoSelect)  {
+    void VerticalList::setAutoSelect(bool autoSelect)
+    {
         m_autoSelect = autoSelect;
     }
 
-
     void VerticalList::updateFocusedIndex()
     {
-        eventHandlerApp.setTimeout(new Callback<>([&](){
-            //std::cout << "updateFocusedIndex" << std::endl;
-            if(m_children.size() == 0)
-            {
-                m_focusedIndex = 0;
-                return;
-            }
-            
-            m_verticalScroll = m_children[m_focusedIndex]->m_y;
-            if(m_selectionFocus == SelectionFocus::CENTER)
-                m_verticalScroll = m_verticalScroll - getHeight() / 2 + m_children[m_focusedIndex]->getHeight() / 2;
-            
-            localGraphicalUpdate();
-            //std::cout << "updateFocusedIndex end: " << m_selectionFocus << std::endl;
+        eventHandlerApp.setTimeout(
+            new Callback<>(
+                [&]()
+                {
+                    // std::cout << "updateFocusedIndex" << std::endl;
+                    if (m_children.size() == 0)
+                    {
+                        m_focusedIndex = 0;
+                        return;
+                    }
 
-            // for (int i = 0; i < m_children.size(); i++)
-            // {
-            //     if (m_children[i]->getY() + m_children[i]->getHeight() < 0 || m_children[i]->getY() > m_height)
-            //     {
-            //         m_children[i]->free();
-            //     }
-            // }
-        }), 0);
+                    m_verticalScroll = m_children[m_focusedIndex]->m_y;
+                    if (m_selectionFocus == SelectionFocus::CENTER)
+                        m_verticalScroll = m_verticalScroll - getHeight() / 2 +
+                                           m_children[m_focusedIndex]->getHeight() / 2;
+
+                    localGraphicalUpdate();
+                    // std::cout << "updateFocusedIndex end: " << m_selectionFocus << std::endl;
+
+                    // for (int i = 0; i < m_children.size(); i++)
+                    // {
+                    //     if (m_children[i]->getY() + m_children[i]->getHeight() < 0 ||
+                    //     m_children[i]->getY() > m_height)
+                    //     {
+                    //         m_children[i]->free();
+                    //     }
+                    // }
+                }
+            ),
+            0
+        );
     }
 
     void VerticalList::onScrollUp()
     {
-        if(m_focusedIndex != 0)
+        if (m_focusedIndex != 0)
         {
-            if (m_autoSelect) {
+            if (m_autoSelect)
+            {
                 select(m_focusedIndex - 1);
             }
-            else {
+            else
+            {
                 m_focusedIndex--;
                 updateFocusedIndex();
             }
         }
     }
-    
+
     void VerticalList::onScrollDown()
     {
-        if(m_focusedIndex+1 != m_children.size())
+        if (m_focusedIndex + 1 != m_children.size())
         {
-            if (m_autoSelect) {
+            if (m_autoSelect)
+            {
                 select(m_focusedIndex + 1);
             }
-            else {
+            else
+            {
                 m_focusedIndex++;
                 updateFocusedIndex();
             }
@@ -179,7 +204,6 @@ namespace gui::elements
     {
         return m_focusedIndex;
     }
-    
 
     HorizontalList::HorizontalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
     {
@@ -199,13 +223,17 @@ namespace gui::elements
 
     void HorizontalList::add(ElementBase* widget)
     {
-        widget->setX((m_children.size() != 0) ? (m_children[m_children.size()-1]->getX() + m_children[m_children.size()-1]->getWidth() + m_lineSpace) : (0));
+        widget->setX(
+            (m_children.size() != 0) ? (m_children[m_children.size() - 1]->getX() +
+                                        m_children[m_children.size() - 1]->getWidth() + m_lineSpace)
+                                     : (0)
+        );
         this->addChild(widget);
-        this->setWidth(widget->getX()+widget->getWidth());
+        this->setWidth(widget->getX() + widget->getWidth());
     }
 
     void HorizontalList::setSpaceLine(uint16_t y)
     {
         m_lineSpace = y;
     }
-}
+} // namespace gui::elements

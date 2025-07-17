@@ -1,39 +1,56 @@
-#include <string>
-#include <fstream>
-#include <algorithm>
-#include <unordered_map>
-#include <filesystem>
-#include <iostream>
-
 #include "i18n_translate.hpp"
+
 #include "i18n_config.hpp"
+
+#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <unordered_map>
 
 namespace i18n
 {
 
     std::unordered_map<std::string, std::string> gTranslations = {};
 
-    inline void ltrim(std::string &str)
+    inline void ltrim(std::string& str)
     {
-        str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](char c)
-                                            { return !std::isspace(c); }));
+        str.erase(
+            str.begin(),
+            std::find_if(
+                str.begin(),
+                str.end(),
+                [](char c)
+                {
+                    return !std::isspace(c);
+                }
+            )
+        );
     }
 
-    inline void rtrim(std::string &str)
+    inline void rtrim(std::string& str)
     {
-        str.erase(std::find_if(str.rbegin(), str.rend(), [](char c)
-                               { return !std::isspace(c); })
-                      .base(),
-                  str.end());
+        str.erase(
+            std::find_if(
+                str.rbegin(),
+                str.rend(),
+                [](char c)
+                {
+                    return !std::isspace(c);
+                }
+            ).base(),
+            str.end()
+        );
     }
 
-    inline void trim(std::string &str)
+    inline void trim(std::string& str)
     {
         rtrim(str);
         ltrim(str);
     }
 
-    std::string normalizeNewlines(const std::string &str)
+    std::string normalizeNewlines(const std::string& str)
     {
         std::string result = str;
         size_t pos = 0;
@@ -45,7 +62,7 @@ namespace i18n
         return result;
     }
 
-    void setTextDomain(const std::string &domain)
+    void setTextDomain(const std::string& domain)
     {
         gTranslations.clear();
 
@@ -108,7 +125,7 @@ namespace i18n
         }
     }
 
-    std::string getText(const std::string &key)
+    std::string getText(const std::string& key)
     {
         auto it = gTranslations.find(key);
         if (it != gTranslations.end())
@@ -122,4 +139,4 @@ namespace i18n
         }
     }
 
-}
+} // namespace i18n

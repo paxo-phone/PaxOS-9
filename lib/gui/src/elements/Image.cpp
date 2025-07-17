@@ -1,10 +1,9 @@
 #include "Image.hpp"
 
-#include <imgdec.hpp>
 #include <filestream.hpp>
-#include <path.hpp>
-
+#include <imgdec.hpp>
 #include <iostream>
+#include <path.hpp>
 
 namespace gui::ImagesList
 {
@@ -19,11 +18,16 @@ namespace gui::ImagesList
 
     std::vector<ImageLoaded> images;
 
-   std::shared_ptr<graphics::Surface> loadImage(storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF) {
+    std::shared_ptr<graphics::Surface> loadImage(
+        storage::Path path, uint16_t width, uint16_t height, const color_t backgroundColor = 0xFFFF
+    )
+    {
         printf("IMG--1\n");
         // ReSharper disable once CppUseStructuredBinding
-        for (const auto& image : images) {
-            if (image.path.str() == path.str() && image.width == width && image.height == height) {
+        for (const auto& image : images)
+        {
+            if (image.path.str() == path.str() && image.width == width && image.height == height)
+            {
                 printf("IMG--2\n");
                 return image.surface;
             }
@@ -31,19 +35,14 @@ namespace gui::ImagesList
 
         const auto i = graphics::SImage(path);
 
-        ImageLoaded img = {
-            path,
-            i.getWidth(),
-            i.getHeight(),
-            std::make_shared<graphics::Surface>(width, height)
-        };
+        ImageLoaded img =
+            {path, i.getWidth(), i.getHeight(), std::make_shared<graphics::Surface>(width, height)};
 
         // Clear the background if it's a transparent image ?
         // I guess so ?
 
-        if(i.getType() != graphics::ImageType::BMP) {
+        if (i.getType() != graphics::ImageType::BMP)
             img.surface->clear(backgroundColor);
-        }
 
         printf("IMG--3-1\n");
         img.surface->drawImage(i, 0, 0, width, height);
@@ -62,7 +61,7 @@ namespace gui::ImagesList
             if (img->surface.unique())
             {
                 img = images.erase(img);
-                //std::cout << "[Image] image deleted" << std::endl;
+                // std::cout << "[Image] image deleted" << std::endl;
             }
             else
             {
@@ -70,11 +69,14 @@ namespace gui::ImagesList
             }
         }
     }
-}
+} // namespace gui::ImagesList
 
 namespace gui::elements
 {
-    Image::Image(storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height, color_t backgroundColor)
+    Image::Image(
+        storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+        color_t backgroundColor
+    )
     {
         this->m_path = path;
         this->m_x = x;
@@ -92,23 +94,25 @@ namespace gui::elements
 
     void Image::render()
     {
-        if(m_isRendered == false)
+        if (m_isRendered == false)
             load(m_backgroundColor);
     }
 
-    void Image::setTransparentColor(color_t color){
-        if ( ! m_surface) {
-            //std::cout << "[Image] m_surface is null";
+    void Image::setTransparentColor(color_t color)
+    {
+        if (!m_surface)
+        {
+            // std::cout << "[Image] m_surface is null";
             load(color);
         }
         m_surface->setTransparentColor(color);
         m_surface->setTransparency(true);
     }
 
-
     void Image::load(color_t background)
     {
-        m_surface = gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
+        m_surface =
+            gui::ImagesList::loadImage(this->m_path, this->m_width, this->m_height, background);
         localGraphicalUpdate();
     }
-}
+} // namespace gui::elements
