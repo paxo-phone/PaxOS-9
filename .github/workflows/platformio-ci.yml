@@ -203,6 +203,13 @@ jobs:
             - name: Install curl
               run: choco install curl
 
+            - name: Find curl
+              shell: pwsh
+              run: |
+                $CURL_PATH = (choco find curl --exact --limit-output --get-install-location).Split('|')[1]
+                echo "CURL_INCLUDE_DIR=$CURL_PATH\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+                echo "CURL_LIB_DIR=$CURL_PATH\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
