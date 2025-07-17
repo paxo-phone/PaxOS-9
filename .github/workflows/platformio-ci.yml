@@ -200,9 +200,12 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
-            - name: Install dependencies
-              shell: msys2 {0}
-              run: pacman -S --noconfirm mingw-w64-x86_64-curl
+            - name: Setup MSYS2 and install dependencies
+              uses: msys2/setup-msys2@v2
+              with:
+                msystem: MINGW64
+                update: true
+                install: mingw-w64-x86_64-curl
 
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
