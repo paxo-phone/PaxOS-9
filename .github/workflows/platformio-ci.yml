@@ -206,7 +206,7 @@ jobs:
             - name: Download and extract libcurl for Windows
               shell: bash
               run: |
-                curl -L -o curl.zip https://curl.se/windows/dl-8.8.0_6/curl-8.8.0_6-win64-mingw.zip
+                curl -L -o curl.zip https://curl.se/windows/latest.cgi?p=win64-mingw.zip
                 unzip curl.zip -d curl
                 mkdir -p curl-install
                 cp -r curl/curl-8.8.0_6-win64-mingw/include curl-install/
