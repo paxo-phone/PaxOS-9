@@ -176,72 +176,73 @@ jobs:
                   build/
 
     windows_build_test_upload:
-      runs-on: windows-latest
+        runs-on: windows-latest
 
-      steps:
-          - name: Checkout repository
-            uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-          - name: Setup vcpkg
-            uses: lukka/run-vcpkg@v11
-            with:
-              vcpkgGitCommitId: '1b4934410155221c78c834166c62a8979343d62d'
+            - name: Setup vcpkg
+              uses: lukka/run-vcpkg@v11
+              # No vcpkgGitCommitId is specified to use the latest stable version
 
-          - name: Install curl using vcpkg
-            run: vcpkg install curl:x64-windows
+            - name: Install curl using vcpkg
+              run: vcpkg install curl:x64-windows
 
-          - name: Cache dependencies
-            uses: actions/cache@v4
-            with:
-              path: |
-                ~/.cache/pip
-                ~/.platformio/.cache
-                .pio/build_cache
-                .pio/libdeps
-              key: ${{ runner.os }}-platformio-ci-windows
+            - name: Cache dependencies
+              uses: actions/cache@v4
+              with:
+                path: |
+                  ~/.cache/pip
+                  ~/.platformio/.cache
+                  .pio/build_cache
+                  .pio/libdeps
+                key: ${{ runner.os }}-platformio-ci-windows
 
-          - name: Setup Python
-            uses: actions/setup-python@v5
-            with:
-              python-version: '3.13'
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                python-version: '3.13'
 
-          - name: Install PlatformIO Core
-            run: pip install --upgrade platformio
+            - name: Install PlatformIO Core
+              run: pip install --upgrade platformio
 
-          - name: Run tests for Windows
-            run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
-            env:
-              VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+            - name: Run tests for Windows
+              # Pass VCPKG_ROOT to the test command
+              env:
+                VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
+              run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
-          - name: Upload test reports
-            if: success() || failure()
-            uses: actions/upload-artifact@v4
-            with:
-              name: windows-test-reports
-              path: |
-                windows-test-report.json
-                windows-test-report.xml
+            - name: Upload test reports
+              if: success() || failure()
+              uses: actions/upload-artifact@v4
+              with:
+                name: windows-test-reports
+                path: |
+                  windows-test-report.json
+                  windows-test-report.xml
 
-          - name: Build PlatformIO Project for Windows
-            run: pio run -e windows
-            env:
-              VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+            - name: Build PlatformIO Project for Windows
+              # Pass VCPKG_ROOT to the build command
+              env:
+                VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
+              run: pio run -e windows
 
-          - name: Move files into artifact directory
-            shell: bash
-            run: |
-              mkdir build
-              cp -r .pio/build/windows/program.exe build
-              cp -r .pio/build/windows/*.dll build
-              cp -r storage build
+            - name: Move files into artifact directory
+              shell: bash
+              run: |
+                mkdir build
+                cp -r .pio/build/windows/program.exe build
+                cp -r .pio/build/windows/*.dll build
+                cp -r storage build
 
-          - name: Copy required DLLs into artifact directory
-            run: python scripts/github_actions/windows/get_dll.py build
+            - name: Copy required DLLs into artifact directory
+              run: python scripts/github_actions/windows/get_dll.py build
 
-          - name: Upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-              name: windows-build
-              include-hidden-files: true
-              path: |
-                build/
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: windows-build
+                include-hidden-files: true
+                path: |
+                  build/
