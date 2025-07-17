@@ -32,6 +32,9 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
 #endif
+#include "unistd.h"
+#include <SerialManager.hpp>
+#include "../lib/tasks/src/delay.hpp"
 
 using namespace gui::elements;
 
@@ -59,6 +62,10 @@ void mainLoop(void* data)
         try
         {
             const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
+
+            if (oobeApp == nullptr) {
+                throw std::runtime_error("OOBE app not found.");
+            }
 
             oobeApp->run();
         }
@@ -185,6 +192,9 @@ void init(void* data)
     /**
      * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
      */
+    #ifdef ESP_PLATFORM
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
+    #endif
     hardware::init();
     libsystem::log("[STARTUP]: Hardware initialized");
     hardware::setScreenPower(true);

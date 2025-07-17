@@ -749,6 +749,7 @@ void LuaFile::load()
 
         lua.set("SELECTION_UP", VerticalList::SelectionFocus::UP);
         lua.set("SELECTION_CENTER", VerticalList::SelectionFocus::CENTER);
+        lua.set("SELECTION_DOWN", VerticalList::SelectionFocus::DOWN);
 
         lua.set("LEFT_ALIGNMENT", Label::Alignement::LEFT);
         lua.set("RIGHT_ALIGNMENT", Label::Alignement::RIGHT);

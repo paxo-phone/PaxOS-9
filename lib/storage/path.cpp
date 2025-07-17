@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <filestream.hpp>
+
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 #include <filesystem>
 #include <fstream>
@@ -335,6 +337,78 @@ namespace storage
 #endif
     }
 
+    bool Path::copyTo(const Path& destinationPath) const
+    {
+#if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
+
+        if (std::filesystem::exists(this->str()))
+        {
+            /*
+                enum class copy_options : unsigned short {
+                    none = 0,
+                    skip_existing = 1, overwrite_existing = 2, update_existing = 4,
+                    recursive = 8,
+                    copy_symlinks = 16, skip_symlinks = 32,
+                    directories_only = 64, create_symlinks = 128, create_hard_links = 256
+                };
+            */
+            if (std::filesystem::is_directory(this->str()))
+                std::filesystem::copy(this->str(), destinationPath.str(), std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing);
+            else
+                std::filesystem::copy_file(this->str(), destinationPath.str(), std::filesystem::copy_options::skip_existing);
+            return true;
+        }
+        return false;
+
+#endif
+
+#ifdef ESP_PLATFORM
+        if (destinationPath.exists())
+            return false;
+
+        if (this->isdir())
+        {
+            for (const std::string& entry : this->listdir())
+            {
+                Path newPath = destinationPath / entry;
+                Path oldPath = *this / entry;
+
+                if (!oldPath.copyTo(newPath))
+                    return false;
+            }
+            return true;
+        }
+        else
+        {
+            destinationPath.newfile();
+
+            storage::FileStream source(this->str(), storage::Mode::READ); 
+            storage::FileStream destination(destinationPath.str(), storage::Mode::WRITE);
+
+            if (!source.isopen() || !destination.isopen())
+            {
+                source.close();
+                destination.close();
+                return false;
+            }
+
+            char nextChar = source.readchar();
+            while (!nextChar)
+            {
+                std::string chunk = source.read(2047) + nextChar;
+                destination.write(chunk);
+
+                nextChar = source.readchar();
+            }
+
+            source.close();
+            destination.close();
+
+            return true;
+        }
+#endif
+    }
+
     bool Path::newfile(void) const
     {
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
@@ -366,12 +440,36 @@ namespace storage
 
     bool Path::remove(void) const
     {
+        std::cout << "Remove action" << std::endl;
+        if (!this->exists())
+            return false;
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
         return std::filesystem::remove(this->str());
 #endif
 
 #ifdef ESP_PLATFORM
-        return ::remove(this->str().c_str()) == 0;
+        if (this->isdir())
+        {
+            //serialcom::SerialManager::sharedInstance->commandLog("Remove dir");
+            std::cout << "Remove dir" << std::endl;
+            std::vector<std::string> children = this->listdir();
+            if (!children.empty())
+            {
+                //serialcom::SerialManager::sharedInstance->commandLog("Remove children");
+                std::cout << "Remove children" << std::endl;
+                for (std::string child : children)
+                {
+                    Path childPath = *this / child;
+                    if (!childPath.remove())
+                        return false;
+                    //serialcom::SerialManager::sharedInstance->commandLog("Removing child " + child);
+                    std::cout << "Removing child " << childPath.str() << std::endl;
+                }
+            }
+            return ::rmdir(this->str().c_str()) == 0;
+        }
+        else
+            return ::remove(this->str().c_str()) == 0;
 #endif
     }
 

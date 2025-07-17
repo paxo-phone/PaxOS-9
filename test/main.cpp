@@ -8,7 +8,26 @@
 #include "i18n/test.cpp"
 #include "storage/storage_test.cpp"
 
-#include <gtest/gtest.h>
+#include "gsm/conversation_test.cpp"
+#include "gsm/contacts_test.cpp"
+#if ESP_PLATFORM
+#include "serialcom/command.cpp"
+#endif
+
+#if ESP_PLATFORM
+
+void setup() {
+    ::testing::InitGoogleTest();
+    
+    if (RUN_ALL_TESTS())
+    {}
+    
+    return;
+}
+
+void loop() {}
+
+#else
 
 int main(int argc, char** argv)
 {
@@ -20,3 +39,5 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+#endif

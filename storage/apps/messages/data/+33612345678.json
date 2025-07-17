@@ -19,6 +19,16 @@
             "date": "0024-06-20 21:39:13",
             "message": "another message with variable length, longer than the previous one",
             "who": false
+        },
+        {
+            "date": "0024-06-20 21:39:13",
+            "message": "another message with variable length, longer than the previous one",
+            "who": false
+        },
+        {
+            "date": "0024-06-20 21:39:13",
+            "message": "another message with variable length, longer than the previous one",
+            "who": false
         }
     ],
     "number": "+33612345678"

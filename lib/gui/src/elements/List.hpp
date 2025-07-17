@@ -19,18 +19,16 @@ namespace gui::elements
 
         void add(ElementBase* widget);
         void setIndex(int index);
-
         void setSpaceLine(uint16_t y);
-
         void updateFocusedIndex();
-        void onScrollUp();
-        void onScrollDown();
         void onScroll(int16_t x, int16_t y);
+        void onNotClicked();
 
         enum SelectionFocus
         {
             UP,
-            CENTER
+            CENTER,
+            DOWN
         };
 
         void setSelectionFocus(SelectionFocus focus);
@@ -41,11 +39,10 @@ namespace gui::elements
         void setIsSelected(bool autoSelect);
         bool getIsSelected();
 
-        // virtual void onSelect() {}
-
       private:
         int16_t m_focusedIndex = 0;
         int16_t m_oldFocusedIndex = 0;
+        ElementBase* m_focusedElement = nullptr;
 
         uint16_t m_lineSpace = 0;
         SelectionFocus m_selectionFocus = SelectionFocus::UP;
@@ -61,13 +58,39 @@ namespace gui::elements
         ~HorizontalList();
 
         void render() override;
+        void postRender();
 
         void add(ElementBase* widget);
-
+        void setIndex(int index);
         void setSpaceLine(uint16_t y);
+        void updateFocusedIndex();
+        void onScroll(int16_t x, int16_t y);
+        void onNotClicked();
 
-      private:
+        enum SelectionFocus
+        {
+            LEFT,
+            CENTER
+        };
+
+        void setSelectionFocus(SelectionFocus focus);
+        int getFocusedElement();
+        void select(int index);
+        void setSelectionColor(color_t color);
+        void setAutoSelect(bool autoSelect);
+        void setIsSelected(bool autoSelect);
+        bool getIsSelected();
+
+    private:
+        int16_t m_focusedIndex = 0;
+        int16_t m_oldFocusedIndex = 0;
+        ElementBase* m_focusedElement = nullptr;
+
         uint16_t m_lineSpace = 0;
+        SelectionFocus m_selectionFocus = SelectionFocus::LEFT;
+        color_t m_selectionColor;
+        bool m_autoSelect;
+        bool isSelected = false;
     };
 } // namespace gui::elements
 

@@ -10,7 +10,7 @@ on:
 
 jobs:
     paxo_v5_build_test_upload:
-        runs-on: ubuntu-latest
+        runs-on: macos-latest
 
         steps:
           - name: Checkout repository

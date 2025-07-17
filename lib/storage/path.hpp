@@ -40,15 +40,16 @@ namespace storage
 
         std::vector<std::string> listdir(bool onlyDirs = false) const;
 
-        bool exists(void) const;
-        bool isfile(void) const;
-        bool isdir(void) const;
-        bool newfile(void) const;
-        bool newdir(void) const;
-        bool remove(void) const;
-
-        bool rename(const Path& to);
-        bool copy(const Path& to);
+            bool exists  (void) const;
+            bool isfile  (void) const;
+            bool isdir   (void) const;
+            bool newfile (void) const;
+            bool newdir  (void) const;
+            bool copyTo  (const Path& destinationPath) const;
+            bool remove  (void) const;
+            
+            bool rename (const Path& to);
+            bool copy   (const Path& to);
 
         std::vector<std::string> m_steps;
 

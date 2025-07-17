@@ -76,6 +76,7 @@ function converation(number)
     end
 
     list = gui:vlist(win2, 20, 76, 280, 320)
+    list:setSelectionFocus(SELECTION_DOWN)
     
     messages = gsm.getMessages(number)
     --print("getMessages returned " .. tostring(messages))

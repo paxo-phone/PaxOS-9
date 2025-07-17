@@ -537,13 +537,13 @@ namespace AppManager
         {
             printf("---- 1\n");
             graphics::setScreenOrientation(graphics::LANDSCAPE);
-            printf("---- 2\n");
+            //printf("---- 2\n");
             Keyboard_manager::app = app;
             Keyboard_manager::callback = callback;
             keyboard = std::make_unique<Keyboard>(defaultText);
-            printf("---- 3\n");
+            //printf("---- 3\n");
             keyboard->setPlaceholder(placeholder);
-            printf("---- 4\n");
+            //printf("---- 4\n");
         }
 
         void update()
