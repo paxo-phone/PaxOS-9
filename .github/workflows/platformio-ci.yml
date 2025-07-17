@@ -176,73 +176,76 @@ jobs:
                   build/
 
     windows_build_test_upload:
-        runs-on: windows-latest
+      runs-on: windows-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-            - name: Cache dependencies
-              uses: actions/cache@v4
-              with:
-                path: |
-                  ~/.cache/pip
-                  ~/.platformio/.cache
-                  .pio/build_cache
-                  .pio/libdeps
-                key: ${{ runner.os }}-platformio-ci-windows
+        - name: Cache dependencies
+          uses: actions/cache@v4
+          with:
+            path: |
+              ~/.cache/pip
+              ~/.platformio/.cache
+              .pio/build_cache
+              .pio/libdeps
+            key: ${{ runner.os }}-platformio-ci-windows
 
-            - name: Setup Python
-              uses: actions/setup-python@v5
-              with:
-                python-version: '3.13'
+        - name: Setup Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: '3.13'
 
-            - name: Install PlatformIO Core
-              run: pip install --upgrade platformio
+        - name: Install PlatformIO Core
+          run: pip install --upgrade platformio
 
-            - name: Install curl
-              run: choco install curl
+        # ──────────────────────────────────────────────────────────────
+        # Download & extract a working libcurl dev package for Win64:
+        - name: Download and extract libcurl for Windows
+          shell: bash
+          run: |
+            curl -L -o curl.zip https://curl.se/windows/latest.cgi?p=win64-mingw.zip
+            unzip curl.zip -d curl
+            mkdir -p curl-install
+            # use wildcard to match the extracted directory name (e.g. curl-8.15.0_1-win64-mingw)
+            cp -r curl/curl-*-win64-mingw/include curl-install/
+            cp -r curl/curl-*-win64-mingw/lib     curl-install/
 
-            - name: Download and extract libcurl for Windows
-              shell: bash
-              run: |
-                curl -L -o curl.zip https://curl.se/windows/latest.cgi?p=win64-mingw.zip
-                unzip curl.zip -d curl
-                mkdir -p curl-install
-                cp -r curl/curl-8.8.0_6-win64-mingw/include curl-install/
-                cp -r curl/curl-8.8.0_6-win64-mingw/lib curl-install/
+        # If you also need the CLI tool at runtime:
+        - name: Install curl CLI
+          run: choco install curl
 
+        - name: Run tests for Windows
+          run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
-            - name: Run tests for Windows
-              run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
+        - name: Upload test reports
+          if: success() || failure()
+          uses: actions/upload-artifact@v4
+          with:
+            name: windows-test-reports
+            path: |
+              windows-test-report.json
+              windows-test-report.xml
 
-            - name: Upload test reports
-              if: success() || failure()
-              uses: actions/upload-artifact@v4
-              with:
-                name: windows-test-reports
-                path: |
-                  windows-test-report.json
-                  windows-test-report.xml
+        - name: Build PlatformIO Project for Windows
+          run: pio run -e windows
 
-            - name: Build PlatformIO Project for Windows
-              run: pio run -e windows
+        - name: Move files into artifact directory
+          shell: bash
+          run: |
+            mkdir build
+            cp -r .pio/build/windows/program.exe build
+            cp -r .pio/build/windows/*.dll   build
+            cp -r storage                     build
 
-            - name: Move files into artifact directory
-              shell: bash
-              run: |
-                mkdir build
-                cp -r .pio/build/windows/program.exe build
-                cp -r .pio/build/windows/*.dll build
-                cp -r storage build
+        - name: Copy required DLLs into artifact directory
+          run: python scripts/github_actions/windows/get_dll.py build
 
-            - name: Copy required DLLs into artifact directory
-              run: python scripts/github_actions/windows/get_dll.py build
-
-            - name: Upload artifact
-              uses: actions/upload-artifact@v4
-              with:
-                name: windows-build
-                include-hidden-files: true
-                path: |
-                  build/
+        - name: Upload artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: windows-build
+            include-hidden-files: true
+            path: |
+              build/
