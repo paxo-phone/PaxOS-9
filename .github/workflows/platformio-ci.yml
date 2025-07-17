@@ -205,11 +205,11 @@ jobs:
               with:
                 msystem: MINGW64
                 update: true
-                install: mingw-w64-x86_64-curl
+                install: mingw-w64-x86_64-curl mingw-w64-x86_64-pkg-config
 
-            - name: Set build flags
-              shell: bash
-              run: echo "PLATFORMIO_BUILD_FLAGS=-I$MSYS2_ROOT/mingw64/include -L$MSYS2_ROOT/mingw64/lib" >> $GITHUB_ENV
+            - name: Set build flags using pkg-config
+              shell: msys2 {0}
+              run: echo "PLATFORMIO_BUILD_FLAGS=$(pkg-config --cflags --libs libcurl)" >> $GITHUB_ENV
 
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml

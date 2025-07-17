@@ -24,7 +24,11 @@ extern "C"
 }
 
 #else // !ESP_PLATFORM
+#ifdef _WIN32
+#include <curl.h>
+#else
 #include <curl/curl.h>
+#endif
 #endif
 
 #include <deque>
