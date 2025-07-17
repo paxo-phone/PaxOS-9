@@ -197,15 +197,7 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
-            - name: Set build flags
-              id: build_flags
-              shell: msys2 {0}
-              run: |
-                echo "flags=-I${MSYS2_ROOT}/mingw64/include -L${MSYS2_ROOT}/mingw64/lib -lcurl" >> $GITHUB_OUTPUT
-
             - name: Run tests for Windows
-              env:
-                PLATFORMIO_BUILD_FLAGS: ${{ steps.build_flags.outputs.flags }}
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
             - name: Upload test reports
@@ -218,8 +210,6 @@ jobs:
                   windows-test-report.xml
 
             - name: Build PlatformIO Project for Windows
-              env:
-                PLATFORMIO_BUILD_FLAGS: ${{ steps.build_flags.outputs.flags }}
               run: pio run -e windows
 
             - name: Move files into artifact directory
