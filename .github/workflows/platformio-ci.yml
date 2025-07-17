@@ -201,7 +201,7 @@ jobs:
               id: build_flags
               shell: msys2 {0}
               run: |
-                echo "flags=$(pkg-config --cflags --libs libcurl)" >> $GITHUB_OUTPUT
+                echo "flags=-I${MSYS2_ROOT}/mingw64/include -L${MSYS2_ROOT}/mingw64/lib -lcurl" >> $GITHUB_OUTPUT
                 echo "Debug: pkg-config output: $(pkg-config --cflags --libs libcurl)"
                 echo "Debug: Listing MSYS2 curl include directory:"
                 ls -R $MSYS2_ROOT/mingw64/include/curl
