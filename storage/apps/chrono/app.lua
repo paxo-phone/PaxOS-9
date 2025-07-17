@@ -6,16 +6,22 @@ function run()
     timeLabel:setFontSize(30)
     timeLabel:setText("00:00.00")
 
-    local startBtn = gui:button(win, 70, 400, 60, 40)
+    local lapsList = gui:vlist(win, 70, 130, 260, 240)
+
+    local startBtn = gui:button(win, 40, 400, 60, 40)
     startBtn:setText("Start")
 
-    local resetBtn = gui:button(win, 170, 400, 60, 40)
+    local resetBtn = gui:button(win, 130, 400, 60, 40)
     resetBtn:setText("Reset")
 
+    local lapBtn = gui:button(win, 220, 400, 60, 40)
+    lapBtn:setText("Lap")
+    
     local running = false
     local start_ts = 0
     local elapsed = 0
     local interval_id
+    local lap_count = 0
 
     local function formatTime(ms)
         local totalHundredths = math.floor(ms / 10)
@@ -63,8 +69,21 @@ function run()
         elapsed = 0
         timeLabel:setText("00:00.00")
         startBtn:setText("Start")
+        lap_count = 0
+        gui:del(lapsList)
+        lapsList = gui:vlist(win, 70, 130, 260, 240)
         if interval_id then
             time:removeInterval(interval_id)
+        end
+    end)
+
+    lapBtn:onClick(function()
+        if running then
+            lap_count = lap_count + 1
+            local now = elapsed + (time:monotonic() - start_ts)
+            local label = gui:label(lapsList, 0, 0, 240, 17)
+            label:setText(string.format("%d. %s", lap_count, formatTime(now)))
+            label:setFontSize(20)
         end
     end)
 end
