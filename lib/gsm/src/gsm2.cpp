@@ -3174,11 +3174,6 @@ namespace Gsm
             Time::syncNetworkTime();
         }, 5000);
 
-        // eventHandlerGsm.setTimeout(new Callback<>([](){ downloadFile("https://www.google.com");
-        // }), 10000);
-
-        eventHandlerGsm.setTimeout(new Callback<>([](){ downloadFile("https://www.google.com"); }), 10000);
-
         while (true)
         {
             StandbyMode::buisy_io.lock();
