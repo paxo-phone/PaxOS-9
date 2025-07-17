@@ -207,6 +207,10 @@ jobs:
                 update: true
                 install: mingw-w64-x86_64-curl
 
+            - name: Set build flags
+              shell: bash
+              run: echo "PLATFORMIO_BUILD_FLAGS=-I$MSYS2_ROOT/mingw64/include -L$MSYS2_ROOT/mingw64/lib" >> $GITHUB_ENV
+
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
