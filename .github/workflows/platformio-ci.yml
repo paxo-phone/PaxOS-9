@@ -36,8 +36,15 @@ jobs:
 
           # We are unable to run tests on ESP32
 
-          - name: Build PlatformIO Project for Paxo ESP32
-            run: pio run -e paxo-v5
+          - name: Install curl via vcpkg
+        if: runner.os == 'Windows'
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgArguments: 'curl'
+          vcpkgTriplet: 'x64-windows'
+
+      - name: Build PlatformIO Project
+        run: pio run -e ${{ matrix.env }}
 
           - name: Move files into artifact directory
             shell: bash
