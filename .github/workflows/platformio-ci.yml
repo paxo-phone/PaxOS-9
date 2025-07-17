@@ -182,15 +182,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Cache dependencies
-              uses: actions/cache@v4
+            - name: Setup MSYS2 and install dependencies
+              uses: msys2/setup-msys2@v2
               with:
-                path: |
-                  ~/.cache/pip
-                  ~/.platformio/.cache
-                  .pio/build_cache
-                  .pio/libdeps
-                key: ${{ runner.os }}-platformio-ci-windows
+                msystem: MINGW64
+                update: true
+                install: mingw-w64-x86_64-curl mingw-w64-x86_64-pkg-config
 
             - name: Setup Python
               uses: actions/setup-python@v5
@@ -200,19 +197,11 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
-            - name: Setup MSYS2 and install dependencies
-              uses: msys2/setup-msys2@v2
-              with:
-                msystem: MINGW64
-                update: true
-                install: mingw-w64-x86_64-curl mingw-w64-x86_64-pkg-config
-
-            - name: Set build flags using pkg-config
-              shell: msys2 {0}
-              run: echo "PLATFORMIO_BUILD_FLAGS=$(pkg-config --cflags --libs libcurl)" >> $GITHUB_ENV
-
             - name: Run tests for Windows
-              run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
+              shell: msys2 {0}
+              run: |
+                export PLATFORMIO_BUILD_FLAGS="$(pkg-config --cflags --libs libcurl)"
+                pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
             - name: Upload test reports
               if: success() || failure()
@@ -224,7 +213,10 @@ jobs:
                   windows-test-report.xml
 
             - name: Build PlatformIO Project for Windows
-              run: pio run -e windows
+              shell: msys2 {0}
+              run: |
+                export PLATFORMIO_BUILD_FLAGS="$(pkg-config --cflags --libs libcurl)"
+                pio run -e windows
 
             - name: Move files into artifact directory
               shell: bash

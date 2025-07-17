@@ -12,8 +12,7 @@ import shutil
 REQUIRED_DLL_LIST = [
     "libgcc_s_seh-1.dll",
     "libstdc++-6.dll",
-    "libwinpthread-1.dll",
-    "libcurl.dll"
+    "libwinpthread-1.dll"
 ]
 
 
@@ -27,20 +26,13 @@ def get_compiler_bin_path():
 
 def get_dll_paths(compiler_bin_path):
     paths = []
-    search_paths = [compiler_bin_path]
-    if 'MSYS2_ROOT' in os.environ:
-        search_paths.append(os.path.join(os.environ['MSYS2_ROOT'], 'mingw64', 'bin'))
 
     for dll_filename in REQUIRED_DLL_LIST:
-        found = False
-        for path_dir in search_paths:
-            path = os.path.join(path_dir, dll_filename)
-            if os.path.exists(path):
-                paths.append(path)
-                print("Found DLL:", dll_filename, "at", path)
-                found = True
-                break
-        if not found:
+        path = compiler_bin_path + os.sep + dll_filename
+        if os.path.exists(path):
+            paths.append(path)
+            print("Found DLL:", dll_filename)
+        else:
             print("Missing DLL:", dll_filename)
 
     return paths
