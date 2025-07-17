@@ -201,7 +201,8 @@ jobs:
               run: pip install --upgrade platformio
 
             - name: Install dependencies
-              run: msys2-pacman -S --noconfirm mingw-w64-x86_64-curl
+              shell: msys2 {0}
+              run: pacman -S --noconfirm mingw-w64-x86_64-curl
 
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
