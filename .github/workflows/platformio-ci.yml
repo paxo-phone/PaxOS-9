@@ -182,13 +182,6 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Setup vcpkg
-              uses: lukka/run-vcpkg@v11
-              # No vcpkgGitCommitId is specified to use the latest stable version
-
-            - name: Install curl using vcpkg
-              run: vcpkg install curl:x64-windows
-
             - name: Cache dependencies
               uses: actions/cache@v4
               with:
@@ -207,10 +200,20 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
+            - name: Install curl
+              run: choco install curl
+
+            - name: Download and extract libcurl for Windows
+              shell: bash
+              run: |
+                curl -L -o curl.zip https://curl.se/windows/dl-8.8.0_6/curl-8.8.0_6-win64-mingw.zip
+                unzip curl.zip -d curl
+                mkdir -p curl-install
+                cp -r curl/curl-8.8.0_6-win64-mingw/include curl-install/
+                cp -r curl/curl-8.8.0_6-win64-mingw/lib curl-install/
+
+
             - name: Run tests for Windows
-              # Pass VCPKG_ROOT to the test command
-              env:
-                VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
             - name: Upload test reports
@@ -223,9 +226,6 @@ jobs:
                   windows-test-report.xml
 
             - name: Build PlatformIO Project for Windows
-              # Pass VCPKG_ROOT to the build command
-              env:
-                VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
               run: pio run -e windows
 
             - name: Move files into artifact directory
