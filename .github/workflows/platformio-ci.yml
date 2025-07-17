@@ -200,7 +200,11 @@ jobs:
             - name: Set build flags
               id: build_flags
               shell: msys2 {0}
-              run: echo "flags=$(pkg-config --cflags --libs libcurl)" >> $GITHUB_OUTPUT
+              run: |
+                echo "flags=$(pkg-config --cflags --libs libcurl)" >> $GITHUB_OUTPUT
+                echo "Debug: pkg-config output: $(pkg-config --cflags --libs libcurl)"
+                echo "Debug: Listing MSYS2 curl include directory:"
+                ls -R $MSYS2_ROOT/mingw64/include/curl
 
             - name: Run tests for Windows
               env:
