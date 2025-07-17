@@ -197,6 +197,9 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
+            - name: Install curl
+              run: choco install curl libcurl
+
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
