@@ -197,11 +197,15 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
-            - name: Run tests for Windows
+            - name: Set build flags
+              id: build_flags
               shell: msys2 {0}
-              run: |
-                export PLATFORMIO_BUILD_FLAGS="$(pkg-config --cflags --libs libcurl)"
-                pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
+              run: echo "flags=$(pkg-config --cflags --libs libcurl)" >> $GITHUB_OUTPUT
+
+            - name: Run tests for Windows
+              env:
+                PLATFORMIO_BUILD_FLAGS: ${{ steps.build_flags.outputs.flags }}
+              run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
             - name: Upload test reports
               if: success() || failure()
@@ -213,18 +217,19 @@ jobs:
                   windows-test-report.xml
 
             - name: Build PlatformIO Project for Windows
-              shell: msys2 {0}
-              run: |
-                export PLATFORMIO_BUILD_FLAGS="$(pkg-config --cflags --libs libcurl)"
-                pio run -e windows
+              env:
+                PLATFORMIO_BUILD_FLAGS: ${{ steps.build_flags.outputs.flags }}
+              run: pio run -e windows
 
             - name: Move files into artifact directory
               shell: bash
               run: |
                 mkdir build
-                cp -r .pio/build/windows/program.exe build
-                cp -r .pio/build/windows/*.dll build
-                cp -r storage build
+                cp .pio/build/windows/program.exe build/
+                if ls .pio/build/windows/*.dll 1> /dev/null 2>&1; then
+                  cp .pio/build/windows/*.dll build/
+                fi
+                cp -r storage build/
 
             - name: Copy required DLLs into artifact directory
               run: python scripts/github_actions/windows/get_dll.py build
