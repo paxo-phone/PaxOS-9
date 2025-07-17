@@ -200,17 +200,8 @@ jobs:
             - name: Install PlatformIO Core
               run: pip install --upgrade platformio
 
-            - name: Install curl
-              run: choco install curl
-
-            - name: Find curl and set env vars
-              shell: pwsh
-              run: |
-                $CURL_INSTALL_PATH = (choco list --local-only --exact curl --limit-output --get-install-location).Split('|')[1]
-                $CURL_INCLUDE_DIR = (Get-ChildItem -Path $CURL_INSTALL_PATH -Recurse -Filter "curl.h").Directory.FullName
-                $CURL_LIB_DIR = (Get-ChildItem -Path $CURL_INSTALL_PATH -Recurse -Filter "libcurl.a").Directory.FullName
-                echo "CURL_INCLUDE_DIR=$CURL_INCLUDE_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-                echo "CURL_LIB_DIR=$CURL_LIB_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            - name: Install dependencies
+              run: msys2-pacman -S --noconfirm mingw-w64-x86_64-curl
 
             - name: Run tests for Windows
               run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
