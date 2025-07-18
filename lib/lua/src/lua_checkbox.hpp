@@ -18,7 +18,7 @@ class LuaCheckbox : public LuaWidget
         return widget->getState();
     }
 
-    Checkbox* widget = nullptr;
+    std::shared_ptr<Checkbox> widget = nullptr;
 };
 
 #endif

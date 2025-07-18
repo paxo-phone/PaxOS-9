@@ -11,7 +11,7 @@ class LuaImage : public LuaWidget
         color_t background = COLOR_WHITE
     );
     void setTransparentColor(color_t color);
-    Image* widget = nullptr;
+    std::shared_ptr<Image> widget = nullptr;
 };
 
 #endif

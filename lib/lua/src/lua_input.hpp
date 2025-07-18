@@ -33,7 +33,7 @@ class LuaInput : public LuaWidget
         onChangeFunc = func;
     }
 
-    Input* widget = nullptr;
+    std::shared_ptr<Input> widget = nullptr;
     sol::protected_function onChangeFunc;
 };
 

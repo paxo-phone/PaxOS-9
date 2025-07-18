@@ -11,17 +11,17 @@ namespace gui::elements
         width_ = INPUT_WIDTH;
         height_ = INPUT_HEIGHT;
 
-        m_title = new Label(0, 0, 250, 18);
+        m_title = std::make_shared<Label>(0, 0, 250, 18);
         m_title->setFontSize(16);
         m_title->setTextColor(COLOR_GREY);
         this->addChild(m_title);
 
-        m_text = new Label(0, 20, 231, 18);
+        m_text = std::make_shared<Label>(0, 20, 231, 18);
         m_text->setFontSize(18);
         m_text->setTextColor(COLOR_GREY);
         this->addChild(m_text);
 
-        m_clear = new Image(storage::Path("/icon.png"), 231, 20, 18, 18);
+        m_clear = std::make_shared<Image>(storage::Path("/icon.png"), 231, 20, 18, 18);
         m_clear->load();
         this->addChild(m_clear);
     }

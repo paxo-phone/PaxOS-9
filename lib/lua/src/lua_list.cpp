@@ -5,7 +5,7 @@
  */
 LuaVerticalList::LuaVerticalList(LuaWidget* parent, int x, int y, int width, int height)
 {
-    widget = new VerticalList(x, y, width, height);
+    widget = std::make_shared<VerticalList>(x, y, width, height);
     init(widget, parent);
     widget->setBackgroundColor(
         widget->parent_ == nullptr ? COLOR_WHITE : widget->parent_->getBackgroundColor()
@@ -79,7 +79,7 @@ void LuaVerticalList::specificUpdate()
 
 LuaHorizontalList::LuaHorizontalList(LuaWidget* parent, int x, int y, int width, int height)
 {
-    widget = new HorizontalList(x, y, width, height);
+    widget = std::make_shared<HorizontalList>(x, y, width, height);
     init(widget, parent);
 }
 

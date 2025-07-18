@@ -87,8 +87,8 @@ namespace gui::elements
         void setTheme(bool value);
 
       private:
-        Label* m_label;
-        Image* m_image;
+        std::shared_ptr<Label> m_label;
+        std::shared_ptr<Image> m_image;
         bool m_theme;
         color_t m_backgroundColorSave;
     };

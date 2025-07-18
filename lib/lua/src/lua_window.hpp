@@ -9,7 +9,7 @@ class LuaWindow : public LuaWidget
     LuaWindow();
     static int delete_LuaWindow(LuaWindow* window);
 
-    gui::elements::Window* widget = nullptr;
+    std::shared_ptr<Window> widget = nullptr;
 };
 
 #endif

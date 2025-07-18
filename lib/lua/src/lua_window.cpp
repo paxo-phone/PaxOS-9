@@ -4,7 +4,7 @@
 
 LuaWindow::LuaWindow()
 {
-    widget = new gui::elements::Window();
+    widget = std::make_shared<Window>();
     init(widget);
 }
 

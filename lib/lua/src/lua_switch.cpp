@@ -5,7 +5,7 @@
 
 LuaSwitch::LuaSwitch(LuaWidget* parent, int x, int y, LuaGui* gui)
 {
-    widget = new Switch(x, y);
+    widget = std::make_shared<Switch>(x, y);
     init(widget, parent);
 
     auto my_lambda = [](int x, int y) -> int

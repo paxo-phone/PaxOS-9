@@ -2,6 +2,6 @@
 
 LuaRadio::LuaRadio(LuaWidget* parent, int x, int y)
 {
-    widget = new Radio(x, y);
+    widget = std::make_shared<Radio>(x, y);
     init(widget, parent);
 }

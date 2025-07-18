@@ -73,7 +73,7 @@ namespace gui::elements
         }
     }
 
-    void VerticalList::add(ElementBase* widget)
+    void VerticalList::add(const std::shared_ptr<ElementBase>& widget)
     {
         verticalScrollEnabled_ = true;
         widget->setY(
@@ -108,11 +108,11 @@ namespace gui::elements
         if (index >= 0 && index < children_.size())
         {
             m_focusedIndex = index;
-            ElementBase* oldSelection = this->getElementAt(m_oldFocusedIndex);
+            std::shared_ptr<ElementBase> oldSelection = this->getElementAt(m_oldFocusedIndex);
             if (oldSelection != nullptr)
                 oldSelection->setBackgroundColor(backgroundColor_);
 
-            ElementBase* selection = this->getElementAt(index);
+            std::shared_ptr<ElementBase> selection = this->getElementAt(index);
             if (selection != nullptr)
             {
                 selection->setRadius(5);
@@ -227,7 +227,7 @@ namespace gui::elements
                 verticalScroll_ -= y;
         }
 
-        ElementBase* element = nullptr;
+        std::shared_ptr<ElementBase> element = nullptr;
         int focusedIndex = -1;
 
         for (int i = 0; i < children_.size(); i++)
@@ -332,7 +332,7 @@ namespace gui::elements
         }
     }
 
-    void HorizontalList::add(ElementBase* widget)
+    void HorizontalList::add(const std::shared_ptr<ElementBase>& widget)
     {
         widget->setX(
             (children_.size() != 0)
@@ -373,11 +373,11 @@ namespace gui::elements
         if (index >= 0 && index < children_.size())
         {
             m_focusedIndex = index;
-            ElementBase* oldSelection = this->getElementAt(m_oldFocusedIndex);
+            std::shared_ptr<ElementBase> oldSelection = this->getElementAt(m_oldFocusedIndex);
             if (oldSelection != nullptr)
                 oldSelection->setBackgroundColor(backgroundColor_);
 
-            ElementBase* selection = this->getElementAt(index);
+            std::shared_ptr<ElementBase> selection = this->getElementAt(index);
             if (selection != nullptr)
             {
                 selection->setRadius(5);
@@ -467,7 +467,7 @@ namespace gui::elements
                 horizontalScroll_ -= x;
         }
 
-        ElementBase* element = nullptr;
+        std::shared_ptr<ElementBase> element = nullptr;
         int focusedIndex = -1;
 
         for (int i = 0; i < children_.size(); i++)

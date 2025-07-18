@@ -42,9 +42,9 @@ namespace gui::elements
         std::string getTitle();
 
       private:
-        Label* m_text = nullptr;
-        Label* m_title = nullptr;
-        Image* m_clear = nullptr;
+        std::shared_ptr<Label> m_text = nullptr;
+        std::shared_ptr<Label> m_title = nullptr;
+        std::shared_ptr<Image> m_clear = nullptr;
         bool m_hasText = false;
 
         std::string m_placeHolder = "";

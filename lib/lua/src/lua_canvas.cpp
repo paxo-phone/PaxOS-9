@@ -6,7 +6,7 @@
 
 LuaCanvas::LuaCanvas(LuaWidget* parent, int x, int y, int width, int height, LuaFile* lua)
 {
-    widget = new Canvas(x, y, width, height);
+    widget = std::make_shared<Canvas>(x, y, width, height);
     this->lua = lua;
     init(widget, parent);
 }

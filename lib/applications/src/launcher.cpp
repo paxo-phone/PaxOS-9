@@ -67,24 +67,25 @@ std::string getBatteryIconFilename()
 namespace applications::launcher
 {
     std::shared_ptr<Window> launcherWindow = nullptr;
-    std::map<gui::ElementBase*, std::shared_ptr<AppManager::App>> applicationsIconsMap;
+    std::map<std::shared_ptr<gui::ElementBase>, std::shared_ptr<AppManager::App>>
+        applicationsIconsMap;
     std::shared_ptr<AppManager::App> targetApp = nullptr;
 
     bool allocated = false;
     bool dirty = true;
 
-    Label* clockLabel = nullptr;
-    Label* dateLabel = nullptr;
-    Label* batteryLabel = nullptr;
-    Image* batteryIcon = nullptr;
-    Box* chargingPopupBox = nullptr;
-    Box* brightnessSliderBox = nullptr;
-    Label* networkLabel = nullptr;
+    std::shared_ptr<Label> clockLabel = nullptr;
+    std::shared_ptr<Label> dateLabel = nullptr;
+    std::shared_ptr<Label> batteryLabel = nullptr;
+    std::shared_ptr<Image> batteryIcon = nullptr;
+    std::shared_ptr<Box> chargingPopupBox = nullptr;
+    std::shared_ptr<Box> brightnessSliderBox = nullptr;
+    std::shared_ptr<Label> networkLabel = nullptr;
 
-    Box* flightModeBox = nullptr;
-    Label* flightModeText = nullptr;
-    Switch* flightModeSwitch = nullptr;
-    Button* flightModeButton = nullptr;
+    std::shared_ptr<Box> flightModeBox = nullptr;
+    std::shared_ptr<Label> flightModeText = nullptr;
+    std::shared_ptr<Switch> flightModeSwitch = nullptr;
+    std::shared_ptr<Button> flightModeButton = nullptr;
 
     uint64_t lastClockUpdate = 0;
     uint64_t lastBatteryUpdate = 0;
@@ -235,7 +236,7 @@ void applications::launcher::draw()
     StandbyMode::triggerPower();
 
     // Clock
-    clockLabel = new Label(86, 42, 148, 41);
+    clockLabel = std::make_shared<Label>(86, 42, 148, 41);
     clockLabel->setText(
         std::to_string(Gsm::Time::getHour()) + ":" + (Gsm::Time::getMinute() <= 9 ? "0" : "") +
         std::to_string(Gsm::Time::getMinute())
@@ -248,7 +249,7 @@ void applications::launcher::draw()
     // std::cout << "launcher::update 1.2" << std::endl;
 
     // Date
-    dateLabel = new Label(55, 89, 210, 18);
+    dateLabel = std::make_shared<Label>(55, 89, 210, 18);
     dateLabel->setText(getFormatedDate());
     dateLabel->setVerticalAlignment(Label::Alignement::CENTER);
     dateLabel->setHorizontalAlignment(Label::Alignement::CENTER);
@@ -260,14 +261,14 @@ void applications::launcher::draw()
     // Battery icon
     const auto batteryIconDarkPath =
         storage::Path("system/icons/dark/" + getBatteryIconFilename() + "_64px.png");
-    batteryIcon = new Image(batteryIconDarkPath, 290, 2, 32, 32);
+    batteryIcon = std::make_shared<Image>(batteryIconDarkPath, 290, 2, 32, 32);
     batteryIcon->load();
     launcherWindow->addChild(batteryIcon);
 
     // std::cout << "launcher::update 1.4" << std::endl;
 
     // Battery label
-    batteryLabel = new Label(255, 10, 40, 18);
+    batteryLabel = std::make_shared<Label>(255, 10, 40, 18);
     batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
     batteryLabel->setVerticalAlignment(Label::Alignement::CENTER);
     batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
@@ -277,7 +278,7 @@ void applications::launcher::draw()
     // std::cout << "launcher::update 1.5" << std::endl;
 
     { // Network
-        networkLabel = new Label(2, 2, 30, 18);
+        networkLabel = std::make_shared<Label>(2, 2, 30, 18);
         if (Gsm::getNetworkQuality().first == 99)
         {
             networkLabel->setText("X");
@@ -295,24 +296,24 @@ void applications::launcher::draw()
     }
 
     { // Flight mode
-        flightModeBox = new Box(50, 25, 220, 59);
+        flightModeBox = std::make_shared<Box>(50, 25, 220, 59);
         flightModeBox->setBorderColor(0xCF3D);
         flightModeBox->setBorderSize(1);
         flightModeBox->setRadius(17);
         flightModeBox->disable();
         launcherWindow->addChild(flightModeBox);
 
-        flightModeText = new Label(14, 8, 46, 39);
+        flightModeText = std::make_shared<Label>(14, 8, 46, 39);
         flightModeText->setText("Mode\nAvion");
         flightModeText->setVerticalAlignment(Label::Alignement::CENTER);
         flightModeText->setFontSize(14);
         flightModeBox->addChild(flightModeText);
 
-        flightModeSwitch = new Switch(89, 19);
+        flightModeSwitch = std::make_shared<Switch>(89, 19);
         flightModeSwitch->setState(Gsm::isFlightModeActive());
         flightModeBox->addChild(flightModeSwitch);
 
-        flightModeButton = new Button(169, 10, 38, 38);
+        flightModeButton = std::make_shared<Button>(169, 10, 38, 38);
         flightModeButton->setText("OK");
         flightModeBox->addChild(flightModeButton);
     }
@@ -320,7 +321,7 @@ void applications::launcher::draw()
     // std::cout << "launcher::update 1.6" << std::endl;
 
     // Brightness slider
-    brightnessSliderBox = new Box(0, 77, 40, 325);
+    brightnessSliderBox = std::make_shared<Box>(0, 77, 40, 325);
     launcherWindow->addChild(brightnessSliderBox);
 
     /**
@@ -329,7 +330,7 @@ void applications::launcher::draw()
     std::vector<gui::ElementBase*> apps;
 
     // List contenant les app
-    VerticalList* winListApps = new VerticalList(60, 164, 320 - 60 * 2, 316);
+    const auto winListApps = std::make_shared<VerticalList>(60, 164, 320 - 60 * 2, 316);
     // winListApps->setBackgroundColor(COLOR_GREY);
     launcherWindow->addChild(winListApps);
 
@@ -348,13 +349,14 @@ void applications::launcher::draw()
 
         //        Box* box = new Box(60 + 119 * (placementIndex%2), 164 + 95 *
         //        int(placementIndex/2), 80, 80);
-        auto* box = new Box(119 * (placementIndex % 2), 95 * (placementIndex / 2), 80, 80);
+        const auto box =
+            std::make_shared<Box>(119 * (placementIndex % 2), 95 * (placementIndex / 2), 80, 80);
 
-        auto* img = new Image(app->path / "../icon.png", 20, 6, 40, 40);
+        const auto img = std::make_shared<Image>(app->path / "../icon.png", 20, 6, 40, 40);
         img->load();
         box->addChild(img);
 
-        auto* text = new Label(0, 46, 80, 34);
+        const auto text = std::make_shared<Label>(0, 46, 80, 34);
         text->setText(app->name);
         text->setVerticalAlignment(Label::Alignement::CENTER);
         text->setHorizontalAlignment(Label::Alignement::CENTER);
@@ -383,13 +385,14 @@ void applications::launcher::draw()
     }
 
     // "Overlay"
-    chargingPopupBox = new Box(112, 192, 96, 96);
+    chargingPopupBox = std::make_shared<Box>(112, 192, 96, 96);
     chargingPopupBox->setRadius(7);
     chargingPopupBox->setBackgroundColor(TFT_BLACK);
 
     const auto batteryIconLightPath =
         storage::Path("system/icons/light/" + getBatteryIconFilename() + "_64px.png");
-    const auto chargingIconImage = new Image(batteryIconLightPath, 16, 16, 64, 64, TFT_BLACK);
+    const auto chargingIconImage =
+        std::make_shared<Image>(batteryIconLightPath, 16, 16, 64, 64, TFT_BLACK);
     chargingIconImage->load(TFT_BLACK);
     chargingPopupBox->addChild(chargingIconImage);
 

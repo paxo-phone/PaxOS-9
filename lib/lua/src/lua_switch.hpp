@@ -23,7 +23,7 @@ class LuaSwitch : public LuaWidget
         onChangeFunc = func;
     }
 
-    Switch* widget = nullptr;
+    std::shared_ptr<Switch> widget = nullptr;
     sol::protected_function onChangeFunc;
 };
 

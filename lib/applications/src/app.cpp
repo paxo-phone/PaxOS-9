@@ -98,7 +98,7 @@ namespace AppManager
         didRequestAuth = true; // will be turned off in the main loop
         Window win;
 
-        auto* label = new Label(0, 0, 320, 400);
+        const auto label = std::make_shared<Label>(0, 0, 320, 400);
 
         storage::FileStream stream(manifest.str(), storage::READ);
         std::string data = stream.read();
@@ -110,7 +110,7 @@ namespace AppManager
         );
         win.addChild(label);
 
-        auto* btn = new Button(35, 420, 250, 38);
+        const auto btn = std::make_shared<Button>(35, 420, 250, 38);
         btn->setText("Accepter");
         win.addChild(btn);
 
@@ -185,14 +185,14 @@ namespace AppManager
 
         Window win;
 
-        const auto label = new Label(0, 0, 320, 400);
+        const auto label = std::make_shared<Label>(0, 0, 320, 400);
 
         label->setText(
             "The App " + erroredApp->name + " encountered an error:\n" + erroredApp->errors
         );
         win.addChild(label);
 
-        auto* btn = new Button(35, 420, 250, 38);
+        const auto btn = std::make_shared<Button>(35, 420, 250, 38);
         btn->setText("Quitter");
         win.addChild(btn);
 

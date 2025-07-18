@@ -8,9 +8,9 @@
 #include <standby.hpp>
 
 // TODO : Remove this, the user need to define its widget for the screen itself.
-gui::ElementBase* gui::ElementBase::widgetPressed = nullptr;
-gui::ElementBase* gui::ElementBase::masterOfRender = nullptr;
-gui::ElementBase* gui::ElementBase::mainWindow = nullptr;
+std::shared_ptr<gui::ElementBase> gui::ElementBase::widgetPressed = nullptr;
+std::shared_ptr<gui::ElementBase> gui::ElementBase::masterOfRender = nullptr;
+std::shared_ptr<gui::ElementBase> gui::ElementBase::mainWindow = nullptr;
 int16_t gui::ElementBase::touchX, gui::ElementBase::touchY = -1;
 int16_t gui::ElementBase::originTouchX, gui::ElementBase::originTouchY = -1;
 int16_t gui::ElementBase::lastTouchX, gui::ElementBase::lastTouchY;
@@ -52,11 +52,9 @@ gui::ElementBase::~ElementBase()
         parent_->localGraphicalUpdate();
 
     // Libération de la mémoire allouée pour les enfants de l'objet
-    for (int i = 0; i < children_.size(); i++)
-        if (children_[i] != nullptr)
-            delete children_[i];
+    for (int i = 0; i < children_.size(); i++) children_[i] = nullptr;
 
-    if (widgetPressed == this)
+    if (widgetPressed.get() == this)
     {
         widgetPressed = nullptr;
         globalPressedState = PressedState::NOT_PRESSED;
@@ -184,9 +182,9 @@ bool gui::ElementBase::updateAll()
     if (parent_ == nullptr)
     {
         // StandbyMode::wait();
-        if (mainWindow != this)
+        if (mainWindow.get() != this)
         {
-            mainWindow = this;
+            mainWindow = shared_from_this();
             this->isDrawn_ = false;
         }
 
@@ -218,24 +216,22 @@ bool gui::ElementBase::updateAll()
     return returnV;
 }
 
-gui::ElementBase* gui::ElementBase::getHighestXScrollableParent()
+std::shared_ptr<gui::ElementBase> gui::ElementBase::getHighestXScrollableParent()
 {
     if (horizontalScrollEnabled_)
-        return this;
-    else if (parent_ != nullptr)
+        return shared_from_this();
+    if (parent_ != nullptr)
         return parent_->getHighestXScrollableParent();
-    else
-        return nullptr;
+    return nullptr;
 }
 
-gui::ElementBase* gui::ElementBase::getHighestYScrollableParent()
+std::shared_ptr<gui::ElementBase> gui::ElementBase::getHighestYScrollableParent()
 {
     if (verticalScrollEnabled_)
-        return this;
-    else if (parent_ != nullptr)
+        return shared_from_this();
+    if (parent_ != nullptr)
         return parent_->getHighestYScrollableParent();
-    else
-        return nullptr;
+    return nullptr;
 }
 
 bool gui::ElementBase::update()
@@ -247,10 +243,10 @@ bool gui::ElementBase::update()
 
     widgetUpdate();
 
-    if (!hasEvents_ && widgetPressed != this)
+    if (!hasEvents_ && widgetPressed.get() != this)
         return false;
 
-    if (widgetPressed != nullptr && widgetPressed != this)
+    if (widgetPressed != nullptr && widgetPressed.get() != this)
         return false;
 
     bool isScreenTouched = graphics::isTouched();
@@ -275,7 +271,7 @@ bool gui::ElementBase::update()
         if (isWidgetTouched && globalPressedState == NOT_PRESSED)
         {
             globalPressedState = PRESSED;
-            widgetPressed = this;
+            widgetPressed = shared_from_this();
 
             originTouchX = touchX;
             originTouchY = touchY;
@@ -287,7 +283,7 @@ bool gui::ElementBase::update()
 
             returnValue = true;
         }
-        else if (widgetPressed == this)
+        else if (widgetPressed.get() == this)
         {
             bool isScrollingX = abs(lastTouchX - touchX) > SCROLL_STEP;
             bool isScrollingY = abs(lastTouchY - touchY) > SCROLL_STEP;
@@ -295,10 +291,11 @@ bool gui::ElementBase::update()
 
             if (isScrollingX)
             {
-                gui::ElementBase* nearScrollableObject = getHighestXScrollableParent();
+                const std::shared_ptr<ElementBase> nearScrollableObject =
+                    getHighestXScrollableParent();
                 globalPressedState = SCROLL_X;
 
-                if (nearScrollableObject == this)
+                if (nearScrollableObject.get() == this)
                 {
                     while (lastTouchX + SCROLL_STEP < touchX)
                     {
@@ -328,10 +325,11 @@ bool gui::ElementBase::update()
 
             if (isScrollingY)
             {
-                gui::ElementBase* nearScrollableObject = getHighestYScrollableParent();
+                std::shared_ptr<gui::ElementBase> nearScrollableObject =
+                    getHighestYScrollableParent();
                 globalPressedState = SCROLL_Y;
 
-                if (nearScrollableObject == this)
+                if (nearScrollableObject.get() == this)
                 {
                     onScroll(touchX - lastTouchX, touchY - lastTouchY);
 
@@ -553,18 +551,17 @@ bool gui::ElementBase::isEnabled() const
     return isEnabled_;
 }
 
-gui::ElementBase* gui::ElementBase::getMaster()
+std::shared_ptr<gui::ElementBase> gui::ElementBase::getMaster()
 {
-    // We shoud probably remove this function.
+    // We should probably remove this function.
     // Because the "Master" widget (and rename it to "main" please)
     // Is for almost every cases the "Screen" widget.
     // So the user already have a reference to it.
 
-    ElementBase* master = this;
+    std::shared_ptr<ElementBase> master = shared_from_this();
 
     if (this->parent_ != nullptr)
         master = parent_->getMaster();
-
     return master;
 }
 
@@ -573,7 +570,7 @@ gui::ElementBase* gui::ElementBase::getParent() const
     return parent_;
 }
 
-void gui::ElementBase::addChild(gui::ElementBase* child)
+void gui::ElementBase::addChild(const std::shared_ptr<ElementBase>& child)
 {
     if (child == nullptr)
         throw libsystem::exceptions::RuntimeError("Child can't be null.");
@@ -593,7 +590,6 @@ void gui::ElementBase::localGraphicalUpdate()
 {
     this->isDrawn_ = false;
     this->isRendered_ = false;
-
     if (parent_ != nullptr)
         setParentNotRendered();
 }
@@ -602,7 +598,6 @@ void gui::ElementBase::globalGraphicalUpdate()
 {
     this->isDrawn_ = false;
     this->isRendered_ = false;
-
     if (this->parent_ != nullptr)
         setParentNotDrawn();
 }
@@ -611,7 +606,6 @@ void gui::ElementBase::setParentNotRendered()
 {
     if (parent_ != nullptr)
         parent_->setParentNotRendered();
-
     this->isRendered_ = false;
 }
 
@@ -619,7 +613,6 @@ void gui::ElementBase::setParentNotDrawn()
 {
     if (parent_ != nullptr)
         parent_->setParentNotDrawn();
-
     this->isDrawn_ = false;
     this->isRendered_ = false;
 }
@@ -627,19 +620,17 @@ void gui::ElementBase::setParentNotDrawn()
 void gui::ElementBase::setChildrenDrawn()
 {
     isDrawn_ = true;
-
-    for (int i = 0; i < children_.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
-        if (children_[i] != nullptr)
-            children_[i]->setChildrenDrawn();
+    for (auto& i : children_) // dire aux enfants qu'il sont actualisés sur l'écran
+        if (i != nullptr)
+            i->setChildrenDrawn();
 }
 
 void gui::ElementBase::setChildrenNotDrawn()
 {
     isDrawn_ = false;
-
-    for (int i = 0; i < children_.size(); i++) // dire aux enfants qu'il sont actualisés sur l'écran
-        if (children_[i] != nullptr)
-            children_[i]->isDrawn_ = false;
+    for (auto& i : children_) // dire aux enfants qu'il sont actualisés sur l'écran
+        if (i != nullptr)
+            i->isDrawn_ = false;
 }
 
 /**
@@ -691,7 +682,6 @@ bool gui::ElementBase::isInside()
         return false;
     if (getScrolledY() > parent_->getHeight())
         return false;
-
     return true;
 }
 
@@ -705,7 +695,7 @@ void gui::ElementBase::forceUpdate()
     localGraphicalUpdate();
 }
 
-gui::ElementBase* gui::ElementBase::getElementAt(int index)
+std::shared_ptr<gui::ElementBase> gui::ElementBase::getElementAt(const int index)
 {
 
     if (index >= 0 && index < children_.size())
@@ -715,18 +705,18 @@ gui::ElementBase* gui::ElementBase::getElementAt(int index)
 
 #include "elements/Window.hpp"
 
-void gui::ElementBase::freeRamFor(uint32_t size, ElementBase* window)
+void gui::ElementBase::freeRamFor(const uint32_t size, const std::shared_ptr<ElementBase>& window)
 {
-#ifdef ESP_PLATFORM
-    size_t free = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
-
-    if (free < size + 1000000)
-    {
-        std::cout << "Not enough RAM, free : " << free << " need : " << size
-                  << "\n     -> will free other windows" << std::endl;
-        for (auto i : gui::elements::Window::windows)
-            if (i != window)
-                i->free();
-    }
-#endif
+    // #ifdef ESP_PLATFORM
+    //     size_t free = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    //
+    //     if (free < size + 1000000)
+    //     {
+    //         std::cout << "Not enough RAM, free : " << free << " need : " << size
+    //                   << "\n     -> will free other windows" << std::endl;
+    //         for (const auto& i : Window::windows)
+    //             if (i.get() != window.get())
+    //                 i->free();
+    //     }
+    // #endif
 }

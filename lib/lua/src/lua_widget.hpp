@@ -11,9 +11,9 @@ class LuaGui;
 class LuaWidget
 {
   public:
-    void init(gui::ElementBase* obj, LuaWidget* parent);
+    void init(std::shared_ptr<gui::ElementBase> obj, LuaWidget* parent);
 
-    void init(gui::ElementBase* obj)
+    void init(std::shared_ptr<gui::ElementBase> obj)
     {
         widget = obj;
     }
@@ -135,7 +135,7 @@ class LuaWidget
     void update();
     virtual void specificUpdate() {};
 
-    gui::ElementBase* widget = nullptr;
+    std::shared_ptr<gui::ElementBase> widget = nullptr;
     LuaWidget* parent = nullptr;
     std::vector<LuaWidget*> children;
 

@@ -18,7 +18,7 @@ class LuaRadio : public LuaWidget
         return widget->getState();
     }
 
-    Radio* widget = nullptr;
+    std::shared_ptr<Radio> widget = nullptr;
 };
 
 #endif

@@ -4,7 +4,7 @@ LuaImage::LuaImage(
     LuaWidget* parent, storage::Path path, int x, int y, int width, int height, color_t background
 )
 {
-    widget = new Image(path, x, y, width, height, background);
+    widget = std::make_shared<Image>(path, x, y, width, height, background);
     init(widget, parent);
 }
 

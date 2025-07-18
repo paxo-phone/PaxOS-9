@@ -4,7 +4,7 @@
 
 LuaWidget* LuaWidget::rootOfDelete = nullptr;
 
-void LuaWidget::init(gui::ElementBase* obj, LuaWidget* parent)
+void LuaWidget::init(std::shared_ptr<gui::ElementBase> obj, LuaWidget* parent)
 {
     widget = obj;
     parent->addChild(this);
@@ -20,10 +20,10 @@ LuaWidget::~LuaWidget()
     if (rootOfDelete == this && this->parent != nullptr)
     {
         LuaWidget* widget = this;
-        gui::ElementBase* reWidget = widget->widget;
+        std::shared_ptr<gui::ElementBase> reWidget = widget->widget;
 
         LuaWidget* parent = this->parent;
-        gui::ElementBase* reParent = parent->widget;
+        std::shared_ptr<gui::ElementBase> reParent = parent->widget;
 
         for (uint16_t i = 0; i < parent->children.size(); i++)
         {
@@ -55,7 +55,7 @@ LuaWidget::~LuaWidget()
 
     if (rootOfDelete == this)
     {
-        delete this->widget;
+        this->widget = nullptr;
         rootOfDelete = nullptr;
     }
     this->widget = nullptr;

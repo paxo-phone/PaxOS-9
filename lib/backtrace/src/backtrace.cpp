@@ -105,7 +105,7 @@ namespace backtrace_saver
     {
         Window win;
 
-        const auto label = new Label(0, 0, 320, 400);
+        const auto label = std::make_shared<Label>(0, 0, 320, 400);
 
         label->setText(
             "This Paxo crashed and the backtrace was saved.\n"
@@ -114,11 +114,11 @@ namespace backtrace_saver
         );
         win.addChild(label);
 
-        auto* printBacktraceButton = new gui::elements::Button(35, 370, 250, 38);
+        const auto printBacktraceButton = std::make_shared<Button>(35, 370, 250, 38);
         printBacktraceButton->setText("Print backtrace to monitor");
         win.addChild(printBacktraceButton);
 
-        auto* quitButton = new gui::elements::Button(35, 420, 250, 38);
+        const auto quitButton = std::make_shared<Button>(35, 420, 250, 38);
         quitButton->setText("Quitter");
         win.addChild(quitButton);
 

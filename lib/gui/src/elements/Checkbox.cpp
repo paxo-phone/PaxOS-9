@@ -17,7 +17,7 @@ namespace gui::elements
         height_ = 20;
         hasEvents_ = true;
 
-        m_tickIcon = new Image(storage::Path("tick.png"), 3, 4, 12, 8, COLOR_DARK);
+        m_tickIcon = std::make_shared<Image>(storage::Path("tick.png"), 3, 4, 12, 8, COLOR_DARK);
         m_tickIcon->load();
         this->addChild(m_tickIcon);
         m_tickIcon->disable();

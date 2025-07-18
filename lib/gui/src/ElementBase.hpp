@@ -17,7 +17,7 @@ typedef uint16_t color_t; // @Charles a remplacer quand tu auras mis la lib grap
 
 namespace gui
 {
-    class ElementBase
+    class ElementBase : public std::enable_shared_from_this<ElementBase>
     {
       public:
         ElementBase();
@@ -140,17 +140,22 @@ namespace gui
          * @brief Get the highest parent widget in the hierachy
          * @return the highest parent in the hierarchy
          */
-        ElementBase* getMaster();
+        std::shared_ptr<ElementBase> getMaster();
         [[nodiscard]] ElementBase* getParent() const;
-        void addChild(ElementBase* child);
+        void addChild(const std::shared_ptr<ElementBase>& child);
 
-        ElementBase* getElementAt(int index);
+        std::shared_ptr<ElementBase> getElementAt(int index);
 
+        // We can use a raw pointer here because we use it only to access the parent like a
+        // reference.
         ElementBase* parent_;
-        std::vector<ElementBase*> children_;
+        std::vector<std::shared_ptr<ElementBase>> children_;
 
-        static int16_t touchX, touchY;
-        static int16_t lastEventTouchX, lastEventTouchY;
+        static int16_t touchX;
+        static int16_t touchY;
+
+        static int16_t lastEventTouchX;
+        static int16_t lastEventTouchY;
 
         /**
          * Get the surface of the ElementBase.
@@ -161,7 +166,7 @@ namespace gui
         void forceUpdate();
 
       protected:
-        void freeRamFor(uint32_t size, ElementBase* window);
+        static void freeRamFor(uint32_t size, const std::shared_ptr<ElementBase>& window);
 
         // Position and size.
         uint16_t x_;
@@ -195,8 +200,8 @@ namespace gui
         bool isRendered_; // Is buffer up-to-date?
         bool isDrawn_;    // Is up-to-date on screen?
 
-        static ElementBase* masterOfRender;
-        static ElementBase* mainWindow;
+        static std::shared_ptr<ElementBase> masterOfRender;
+        static std::shared_ptr<ElementBase> mainWindow;
 
         enum PressedState
         {
@@ -212,13 +217,15 @@ namespace gui
         PressedState pressedState_;
 
         static PressedState globalPressedState;
-        static ElementBase*
-            widgetPressed; // The widget that is currently pressed (or nullptr if none).
+
+        // The widget that is currently pressed (or nullptr if none).
+        static std::shared_ptr<ElementBase> widgetPressed;
+
         static int16_t originTouchX;
         static int16_t originTouchY;
 
-        ElementBase* getHighestXScrollableParent();
-        ElementBase* getHighestYScrollableParent();
+        std::shared_ptr<ElementBase> getHighestXScrollableParent();
+        std::shared_ptr<ElementBase> getHighestYScrollableParent();
 
         /**
          * @brief Check if the widget is visible inside its parent.

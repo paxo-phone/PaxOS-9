@@ -119,7 +119,7 @@ namespace gui::elements
     {
         if (m_label == nullptr)
         {
-            m_label = new Label(0, 0, 0, 0);
+            m_label = std::make_shared<Label>(0, 0, 0, 0);
             addChild(m_label);
         }
         this->m_label->setText(text);
@@ -130,7 +130,7 @@ namespace gui::elements
     {
         if (m_image == nullptr)
         {
-            m_image = new Image(path, 0, 10, 20, 20);
+            m_image = std::make_shared<Image>(path, 0, 10, 20, 20);
             m_image->load();
             addChild(m_image);
             format();

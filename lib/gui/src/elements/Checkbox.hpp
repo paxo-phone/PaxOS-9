@@ -22,7 +22,7 @@ namespace gui::elements
 
       private:
         bool m_state = false;
-        Image* m_tickIcon = nullptr;
+        std::shared_ptr<Image> m_tickIcon = nullptr;
     };
 } // namespace gui::elements
 

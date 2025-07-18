@@ -27,7 +27,7 @@ class LuaSlider : public LuaWidget
     void specificUpdate();
 
   private:
-    Slider* widget = nullptr;
+    std::shared_ptr<Slider> widget = nullptr;
     sol::protected_function onChangeFunc;
 };
 

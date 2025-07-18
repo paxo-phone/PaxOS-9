@@ -5,7 +5,7 @@ LuaSlider::LuaSlider(
     int defaultValue
 )
 {
-    widget = new Slider(x, y, width, height, minValue, maxValue, defaultValue);
+    widget = std::make_shared<Slider>(x, y, width, height, minValue, maxValue, defaultValue);
     init(widget, parent);
 }
 

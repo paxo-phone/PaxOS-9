@@ -16,7 +16,7 @@ namespace gui::elements
         Window();
         ~Window() override;
 
-        static std::vector<Window*> windows;
+        static std::vector<std::shared_ptr<gui::ElementBase>> windows;
 
         void render() override;
     };

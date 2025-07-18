@@ -2,7 +2,7 @@
 
 LuaBox::LuaBox(LuaWidget* parent, int x, int y, int width, int height)
 {
-    widget = new Box(x, y, width, height);
+    widget = std::make_shared<Box>(x, y, width, height);
     init(widget, parent);
     widget->setBackgroundColor(
         widget->parent_ == nullptr ? COLOR_WHITE : widget->parent_->getBackgroundColor()

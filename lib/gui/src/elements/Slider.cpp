@@ -120,7 +120,7 @@ namespace gui::elements
 
     void Slider::widgetUpdate()
     {
-        if (widgetPressed == this &&
+        if (widgetPressed.get() == this &&
             (globalPressedState == PressedState::PRESSED ||
              globalPressedState == PressedState::SCROLL_X) &&
             touchX >= 0 && touchY >= 0)

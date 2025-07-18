@@ -18,7 +18,7 @@ namespace gui::elements
         void render() override;
         void postRender();
 
-        void add(ElementBase* widget);
+        void add(const std::shared_ptr<ElementBase>& widget);
         void setIndex(int index);
         void setSpaceLine(uint16_t y);
         void updateFocusedIndex();
@@ -43,7 +43,7 @@ namespace gui::elements
       private:
         int16_t m_focusedIndex = 0;
         int16_t m_oldFocusedIndex = 0;
-        ElementBase* m_focusedElement = nullptr;
+        std::shared_ptr<ElementBase> m_focusedElement = nullptr;
 
         uint16_t m_lineSpace = 0;
         SelectionFocus m_selectionFocus = SelectionFocus::UP;
@@ -61,7 +61,7 @@ namespace gui::elements
         void render() override;
         void postRender();
 
-        void add(ElementBase* widget);
+        void add(const std::shared_ptr<ElementBase>& widget);
         void setIndex(int index);
         void setSpaceLine(uint16_t y);
         void updateFocusedIndex();
@@ -85,7 +85,7 @@ namespace gui::elements
       private:
         int16_t m_focusedIndex = 0;
         int16_t m_oldFocusedIndex = 0;
-        ElementBase* m_focusedElement = nullptr;
+        std::shared_ptr<ElementBase> m_focusedElement = nullptr;
 
         uint16_t m_lineSpace = 0;
         SelectionFocus m_selectionFocus = SelectionFocus::LEFT;

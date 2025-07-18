@@ -50,7 +50,7 @@ namespace gui::elements
         std::string m_placeholder;
         std::string m_defaultText;
 
-        Label* m_label;
+        std::shared_ptr<Label> m_label;
 
         bool m_exit = false;
 
@@ -62,24 +62,24 @@ namespace gui::elements
 
         uint8_t m_caps;
 
-        Canvas* m_keysCanvas;
+        std::shared_ptr<Canvas> m_keysCanvas;
 
-        Image* m_capsIcon0;
-        Image* m_capsIcon1;
-        Image* m_capsIcon2;
-        Image* m_backspaceIcon;
-        Image* m_layoutIcon0;
-        Image* m_layoutIcon1;
-        Image* m_exitIcon;
-        Image* m_confirmIcon;
-        Image* m_trackpadActiveIcon;
+        std::shared_ptr<Image> m_capsIcon0;
+        std::shared_ptr<Image> m_capsIcon1;
+        std::shared_ptr<Image> m_capsIcon2;
+        std::shared_ptr<Image> m_backspaceIcon;
+        std::shared_ptr<Image> m_layoutIcon0;
+        std::shared_ptr<Image> m_layoutIcon1;
+        std::shared_ptr<Image> m_exitIcon;
+        std::shared_ptr<Image> m_confirmIcon;
+        std::shared_ptr<Image> m_trackpadActiveIcon;
 
-        Box* m_capsBox;
-        Box* m_layoutBox;
-        Box* m_backspaceBox;
-        Box* m_exitBox;
-        Box* m_confirmBox;
-        Box* m_trackpadActiveBox;
+        std::shared_ptr<Box> m_capsBox;
+        std::shared_ptr<Box> m_layoutBox;
+        std::shared_ptr<Box> m_backspaceBox;
+        std::shared_ptr<Box> m_exitBox;
+        std::shared_ptr<Box> m_confirmBox;
+        std::shared_ptr<Box> m_trackpadActiveBox;
 
         uint8_t m_trackpadTicks;
         int32_t m_trackpadLastDeltaX;

@@ -46,7 +46,7 @@ class LuaLabel : public LuaWidget
     void setTextColor(color_t color) const;
     void setTextColorRGB(uint8_t r, uint8_t g, uint8_t b) const;
 
-    Label* widget = nullptr;
+    std::shared_ptr<Label> widget = nullptr;
 };
 
 #endif

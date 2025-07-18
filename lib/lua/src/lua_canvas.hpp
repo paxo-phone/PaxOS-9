@@ -106,7 +106,7 @@ class LuaCanvas : public LuaWidget
     void specificUpdate();
 
     LuaFile* lua = nullptr;
-    gui::elements::Canvas* widget = nullptr;
+    std::shared_ptr<Canvas> widget = nullptr;
 
     sol::protected_function onTouchFunc;
 };

@@ -24,7 +24,7 @@ class LuaVerticalList : public LuaWidget
     void onSelect(sol::protected_function func);
 
   protected:
-    VerticalList* widget = nullptr;
+    std::shared_ptr<VerticalList> widget = nullptr;
     sol::protected_function onSelectFunc;
 };
 
@@ -39,7 +39,7 @@ class LuaHorizontalList : public LuaWidget
     void addChild(LuaWidget* widget);
     void setSpaceLine(int line);
 
-    HorizontalList* widget = nullptr;
+    std::shared_ptr<HorizontalList> widget = nullptr;
 };
 
 #endif

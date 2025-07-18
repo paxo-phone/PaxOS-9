@@ -72,7 +72,7 @@ namespace gui::elements
 
         m_caps = CAPS_NONE;
 
-        m_keysCanvas = new Canvas(30, 140, 420, 160);
+        m_keysCanvas = std::make_shared<Canvas>(30, 140, 420, 160);
         addChild(m_keysCanvas);
 
         m_layoutLowercase = new char*[4];
@@ -99,7 +99,7 @@ namespace gui::elements
         m_currentLayout = LAYOUT_LOWERCASE;
 
         // Create label for text
-        m_label = new Label(30, 30, 380, 80);
+        m_label = std::make_shared<Label>(30, 30, 380, 80);
         // m_label->setFont(graphics::ARIAL);
         m_label->setFontSize(24);
         m_label->setCursorEnabled(true);
@@ -108,24 +108,49 @@ namespace gui::elements
         addChild(m_label);
 
         // Create images box (for better performances ?)
-        m_capsBox = new Box(30, 220, 47, 40);
-        m_layoutBox = new Box(30, 260, 80, 40);
-        m_backspaceBox = new Box(403, 220, 47, 40);
-        m_exitBox = new Box(370, 260, 80, 40);
-        m_confirmBox = new Box(410, 30, 40, 40);
+        m_capsBox = std::make_shared<Box>(30, 220, 47, 40);
+        m_layoutBox = std::make_shared<Box>(30, 260, 80, 40);
+        m_backspaceBox = std::make_shared<Box>(403, 220, 47, 40);
+        m_exitBox = std::make_shared<Box>(370, 260, 80, 40);
+        m_confirmBox = std::make_shared<Box>(410, 30, 40, 40);
 
         // Create images
-        m_capsIcon0 = new Image(storage::Path("system/keyboard/caps_icon_0.png"), 0, 0, 40, 40);
-        m_capsIcon1 = new Image(storage::Path("system/keyboard/caps_icon_1.png"), 0, 0, 40, 40);
-        m_capsIcon2 = new Image(storage::Path("system/keyboard/caps_icon_2.png"), 0, 0, 40, 40);
-        m_backspaceIcon =
-            new Image(storage::Path("system/keyboard/backspace_icon.png"), 0, 0, 40, 40);
-        m_layoutIcon0 =
-            new Image(storage::Path("system/keyboard/layout_icon_0.png"), 20, 0, 40, 40);
-        m_layoutIcon1 =
-            new Image(storage::Path("system/keyboard/layout_icon_1.png"), 20, 0, 40, 40);
-        m_exitIcon = new Image(storage::Path("system/keyboard/exit_icon.png"), 0, 0, 40, 40);
-        m_confirmIcon = new Image(storage::Path("system/keyboard/confirm_icon.png"), 0, 0, 40, 40);
+        m_capsIcon0 =
+            std::make_shared<Image>(storage::Path("system/keyboard/caps_icon_0.png"), 0, 0, 40, 40);
+        m_capsIcon1 =
+            std::make_shared<Image>(storage::Path("system/keyboard/caps_icon_1.png"), 0, 0, 40, 40);
+        m_capsIcon2 =
+            std::make_shared<Image>(storage::Path("system/keyboard/caps_icon_2.png"), 0, 0, 40, 40);
+        m_backspaceIcon = std::make_shared<Image>(
+            storage::Path("system/keyboard/backspace_icon.png"),
+            0,
+            0,
+            40,
+            40
+        );
+        m_layoutIcon0 = std::make_shared<Image>(
+            storage::Path("system/keyboard/layout_icon_0.png"),
+            20,
+            0,
+            40,
+            40
+        );
+        m_layoutIcon1 = std::make_shared<Image>(
+            storage::Path("system/keyboard/layout_icon_1.png"),
+            20,
+            0,
+            40,
+            40
+        );
+        m_exitIcon =
+            std::make_shared<Image>(storage::Path("system/keyboard/exit_icon.png"), 0, 0, 40, 40);
+        m_confirmIcon = std::make_shared<Image>(
+            storage::Path("system/keyboard/confirm_icon.png"),
+            0,
+            0,
+            40,
+            40
+        );
 
         // Load images into RAM
         m_capsIcon0->load();
@@ -159,13 +184,18 @@ namespace gui::elements
         updateCapsIcon();
         updateLayoutIcon();
 
-        m_trackpadActiveBox = new Box(192, 112, 96, 96);
+        m_trackpadActiveBox = std::make_shared<Box>(192, 112, 96, 96);
         m_trackpadActiveBox->setBackgroundColor(TFT_BLACK);
         m_trackpadActiveBox->setRadius(8);
         addChild(m_trackpadActiveBox);
 
-        m_trackpadActiveIcon =
-            new Image(storage::Path("system/keyboard/trackpad_active_icon.png"), 16, 16, 64, 64);
+        m_trackpadActiveIcon = std::make_shared<Image>(
+            storage::Path("system/keyboard/trackpad_active_icon.png"),
+            16,
+            16,
+            64,
+            64
+        );
         m_trackpadActiveIcon->load(TFT_BLACK);
         m_trackpadActiveBox->addChild(m_trackpadActiveIcon);
 

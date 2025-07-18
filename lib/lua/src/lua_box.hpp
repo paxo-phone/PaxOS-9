@@ -10,7 +10,7 @@ class LuaBox : public LuaWidget
 
     void setRadius(uint16_t radius);
 
-    Box* widget = nullptr;
+    std::shared_ptr<Box> widget = nullptr;
 };
 
 #endif // LUA_BOX_MODULE

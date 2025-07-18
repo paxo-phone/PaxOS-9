@@ -35,7 +35,7 @@ class LuaButton : public LuaWidget
         widget->format();
     }
 
-    Button* widget = nullptr;
+    std::shared_ptr<Button> widget = nullptr;
 };
 
 #endif
