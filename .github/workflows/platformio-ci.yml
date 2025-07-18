@@ -200,30 +200,6 @@ jobs:
         - name: Install PlatformIO Core
           run: pip install --upgrade platformio
 
-        # ──────────────────────────────────────────────────────────────
-        # Install libcurl (headers and libraries) for Windows builds
-        - name: Download and extract libcurl for Windows
-          shell: bash
-          run: |
-            curl -L -o curl.zip https://curl.se/windows/latest.cgi?p=win64-mingw.zip
-            unzip curl.zip -d curl
-            mkdir -p curl-install
-            cp -r curl/curl-*-win64-mingw/include curl-install/
-            cp -r curl/curl-*-win64-mingw/lib     curl-install/
-
-        # Optional: Install the curl CLI tool if your code invokes curl.exe
-        - name: Install curl CLI
-          run: choco install curl
-
-        # Install MSYS2 + MinGW-w64 toolchain for native Windows C/C++ builds
-        - name: Setup MSYS2 + install MinGW‑w64 GCC
-          uses: msys2/setup-msys2@v2
-          with:
-            update: true
-            install: >
-              mingw-w64-x86_64-toolchain
-
-        # Run PlatformIO tests for Windows
         - name: Run tests for Windows
           run: pio test -e windows --json-output-path windows-test-report.json --junit-output-path windows-test-report.xml
 
@@ -236,4 +212,24 @@ jobs:
               windows-test-report.json
               windows-test-report.xml
 
-        # Build the project for Wi
+        -   name: Build PlatformIO Project for Windows
+            run: pio run -e windows
+
+        -   name: Move files into artifact directory
+            shell: bash
+            run: |
+              mkdir build
+              cp -r .pio/build/windows/program.exe build
+              cp -r .pio/build/windows/*.dll build
+              cp -r storage build
+
+        -   name: Copy required DLLs into artifact directory
+            run: python scripts/github_actions/windows/get_dll.py build
+
+        -   name: Upload artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: windows-build
+              include-hidden-files: true
+              path: |
+                build/
