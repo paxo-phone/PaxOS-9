@@ -350,9 +350,9 @@ namespace Network
 
     void NetworkManager::_executeRequest(std::shared_ptr<Request> request)
     {
-        NetworkInterface interface = getBestAvailableInterface();
+        NetworkInterface bestInterface = getBestAvailableInterface();
 
-        switch (interface)
+        switch (bestInterface)
         {
         case NetworkInterface::WIFI:
             std::cout << "[" << NETWORK_TAG << "] Routing request ID " << request->id
