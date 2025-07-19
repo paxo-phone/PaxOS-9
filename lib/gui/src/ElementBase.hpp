@@ -76,10 +76,7 @@ namespace gui
          * \brief When the widget is no longer considered as touched even if the finger is still on
          * the screen
          */
-        virtual void
-            onNotClicked()
-        {
-        }
+        virtual void onNotClicked() {}
 
         void enable();
         void disable();
@@ -180,8 +177,10 @@ namespace gui
         std::shared_ptr<graphics::Surface> m_surface;         // Surface to render the widget
         std::shared_ptr<graphics::Surface> m_surface_for_dma; // double buffer for DMA transfer
         bool do_use_double_buffering = false;
-        std::shared_ptr<graphics::Surface> getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it is nullptr
-    protected:
+        std::shared_ptr<graphics::Surface>
+            getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it
+                                // is nullptr
+      protected:
         void localGraphicalUpdate();
         void globalGraphicalUpdate();
         void setParentNotRendered();

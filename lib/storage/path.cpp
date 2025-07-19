@@ -1,12 +1,11 @@
 #include "path.hpp"
 
 #include <cstdint>
+#include <filestream.hpp>
 #include <iostream>
 #include <libsystem.hpp>
 #include <string>
 #include <vector>
-
-#include <filestream.hpp>
 
 #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__)
 #include <filesystem>
@@ -353,9 +352,18 @@ namespace storage
                 };
             */
             if (std::filesystem::is_directory(this->str()))
-                std::filesystem::copy(this->str(), destinationPath.str(), std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing);
+                std::filesystem::copy(
+                    this->str(),
+                    destinationPath.str(),
+                    std::filesystem::copy_options::recursive |
+                        std::filesystem::copy_options::skip_existing
+                );
             else
-                std::filesystem::copy_file(this->str(), destinationPath.str(), std::filesystem::copy_options::skip_existing);
+                std::filesystem::copy_file(
+                    this->str(),
+                    destinationPath.str(),
+                    std::filesystem::copy_options::skip_existing
+                );
             return true;
         }
         return false;
@@ -382,7 +390,7 @@ namespace storage
         {
             destinationPath.newfile();
 
-            storage::FileStream source(this->str(), storage::Mode::READ); 
+            storage::FileStream source(this->str(), storage::Mode::READ);
             storage::FileStream destination(destinationPath.str(), storage::Mode::WRITE);
 
             if (!source.isopen() || !destination.isopen())
@@ -450,19 +458,20 @@ namespace storage
 #ifdef ESP_PLATFORM
         if (this->isdir())
         {
-            //serialcom::SerialManager::sharedInstance->commandLog("Remove dir");
+            // serialcom::SerialManager::sharedInstance->commandLog("Remove dir");
             std::cout << "Remove dir" << std::endl;
             std::vector<std::string> children = this->listdir();
             if (!children.empty())
             {
-                //serialcom::SerialManager::sharedInstance->commandLog("Remove children");
+                // serialcom::SerialManager::sharedInstance->commandLog("Remove children");
                 std::cout << "Remove children" << std::endl;
                 for (std::string child : children)
                 {
                     Path childPath = *this / child;
                     if (!childPath.remove())
                         return false;
-                    //serialcom::SerialManager::sharedInstance->commandLog("Removing child " + child);
+                    // serialcom::SerialManager::sharedInstance->commandLog("Removing child " +
+                    // child);
                     std::cout << "Removing child " << childPath.str() << std::endl;
                 }
             }

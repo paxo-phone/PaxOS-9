@@ -270,7 +270,7 @@ void graphics::setWindow(
     const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height
 )
 {
-    lcd->setWindow(x, y, x+width, y+height);
+    lcd->setWindow(x, y, x + width, y + height);
 }
 
 void graphics::setWindow()
@@ -318,17 +318,17 @@ void graphics::touchUpdate()
 #ifdef ESP_PLATFORM
     uint16_t points[4];
     int i = getTouch(points);
-    if(i == 1)
+    if (i == 1)
     {
-        if(screenOrientation == PORTRAIT)
+        if (screenOrientation == PORTRAIT)
         {
-            currentLiveTouchX = (points[0]-16) * 320 / 303;
-            currentLiveTouchY = (points[1]-23) * 480 / 442;
+            currentLiveTouchX = (points[0] - 16) * 320 / 303;
+            currentLiveTouchY = (points[1] - 23) * 480 / 442;
         }
         else
         {
-            currentLiveTouchX = (points[1]-23) * 480 / 442;
-            currentLiveTouchY = 320 - (points[0]-16) * 320 / 303 -10;
+            currentLiveTouchX = (points[1] - 23) * 480 / 442;
+            currentLiveTouchY = 320 - (points[0] - 16) * 320 / 303 - 10;
         }
     }
     else
@@ -338,7 +338,7 @@ void graphics::touchUpdate()
     }
 #else // Simulator path
     bool rawTouchActive = lcd->getTouch(&currentLiveTouchX, &currentLiveTouchY);
-    if(!rawTouchActive)
+    if (!rawTouchActive)
     {
         currentLiveTouchX = -1;
         currentLiveTouchY = -1;
@@ -347,7 +347,8 @@ void graphics::touchUpdate()
 
     // 2. Validate and normalize touch data (e.g., boundary checks, map to -1 if invalid)
     if (currentLiveTouchX <= 0 || currentLiveTouchY <= 0 ||
-        currentLiveTouchX > graphics::getScreenWidth() || currentLiveTouchY > graphics::getScreenHeight())
+        currentLiveTouchX > graphics::getScreenWidth() ||
+        currentLiveTouchY > graphics::getScreenHeight())
     {
         currentLiveTouchX = -1;
         currentLiveTouchY = -1;
@@ -358,23 +359,24 @@ void graphics::touchUpdate()
     if (currentLiveTouchX != touchX || currentLiveTouchY != touchY)
     {
         if (!StandbyMode::state()) // only trigger if not already in standby
-        {
             StandbyMode::trigger();
-        }
     }
     // else
     // {
     //     // Debugging: Touch state for standby trigger is unchanged
-    //     std::cout << "Touch state for standby unchanged: live(" << currentLiveTouchX << "," << currentLiveTouchY
+    //     std::cout << "Touch state for standby unchanged: live(" << currentLiveTouchX << "," <<
+    //     currentLiveTouchY
     //               << ") vs app_ack(" << touchX << "," << touchY << ")" << std::endl;
     // }
 
     // 4. Update the intermediate buffer (newTouchX, newTouchY) with the current live state.
-    //    This ensures newTouchX/Y always reflect the latest hardware reading, including -1 for no touch.
+    //    This ensures newTouchX/Y always reflect the latest hardware reading, including -1 for no
+    //    touch.
     newTouchX = currentLiveTouchX;
     newTouchY = currentLiveTouchY;
 
-    // 5. If the application has processed the previous `touchX`/`touchY` values (isTouchRead == true):
+    // 5. If the application has processed the previous `touchX`/`touchY` values (isTouchRead ==
+    // true):
     //    Update `touchX`/`touchY` to the new state from the buffer.
     if (isTouchRead)
     {

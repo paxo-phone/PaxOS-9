@@ -245,12 +245,13 @@ void LuaGui::keyboard_async(
                     showErrorMessage(error_message);
                 }
 
-            //Optionally Remove, see notes below
-            //callback_memory[index].reset();
-            //callback_memory.erase(callback_memory.begin() + index);
+                // Optionally Remove, see notes below
+                // callback_memory[index].reset();
+                // callback_memory.erase(callback_memory.begin() + index);
+            }
         }
-    });
-    //printf("end keyboard_async");
+    );
+    // printf("end keyboard_async");
 }
 
 void LuaGui::setMainWindow(LuaWindow* window)

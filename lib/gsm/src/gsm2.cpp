@@ -3170,9 +3170,13 @@ namespace Gsm
             30000
         );
 
-        eventHandlerGsm.setInterval([&]() {
-            Time::syncNetworkTime();
-        }, 5000);
+        eventHandlerGsm.setInterval(
+            [&]()
+            {
+                Time::syncNetworkTime();
+            },
+            5000
+        );
 
         while (true)
         {

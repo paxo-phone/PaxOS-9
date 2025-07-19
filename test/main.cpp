@@ -14,12 +14,14 @@
 
 #if ESP_PLATFORM
 
-void setup() {
+void setup()
+{
     ::testing::InitGoogleTest();
-    
+
     if (RUN_ALL_TESTS())
-    {}
-    
+    {
+    }
+
     return;
 }
 

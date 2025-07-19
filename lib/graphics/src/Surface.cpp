@@ -83,7 +83,8 @@ namespace graphics
         m_sprite.createSprite(width, height);
         if (m_sprite.getBuffer() == nullptr)
         {
-            std::cerr << "[Error] Unable to allocate a new surface: " << width * height * 2 << " bytes" << std::endl;
+            std::cerr << "[Error] Unable to allocate a new surface: " << width * height * 2
+                      << " bytes" << std::endl;
         }
         else
         {
@@ -262,7 +263,7 @@ namespace graphics
         const SImage& image, const int16_t x, const int16_t y, const uint16_t w, const uint16_t h
     )
     {
-        //printf("IMG--3-drawImage-1\n");
+        // printf("IMG--3-drawImage-1\n");
         float scaleX = static_cast<float>(w) / static_cast<float>(image.getWidth());
         float scaleY = static_cast<float>(h) / static_cast<float>(image.getHeight());
 
@@ -295,25 +296,25 @@ namespace graphics
             delete[] buffer;
             std::cout << "End Reading PNG...: " << size << std::endl;
 
-                return;
-            }
-            switch (image.getType()) // image size with right format
-            {
-                case BMP:
-                    m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                break;
-                case PNG:
-                    //printf("IMG--3-drawImage-2\n");
-                    m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                    //printf("IMG--3-drawImage-3\n");
-                break;
-                case JPG:
-                    m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
-                break;
-            };
-            
-        #else
-            lgfx::FileWrapper file;
+            return;
+        }
+        switch (image.getType()) // image size with right format
+        {
+        case BMP:
+            m_sprite.drawBmpFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+            break;
+        case PNG:
+            // printf("IMG--3-drawImage-2\n");
+            m_sprite.drawPngFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+            // printf("IMG--3-drawImage-3\n");
+            break;
+        case JPG:
+            m_sprite.drawJpgFile(image.getPath().str().c_str(), x, y, 0, 0, 0, 0, scaleX, scaleY);
+            break;
+        };
+
+#else
+        lgfx::FileWrapper file;
 
         switch (image.getType())
         {

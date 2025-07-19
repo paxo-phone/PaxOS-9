@@ -23,8 +23,8 @@ namespace gui::elements
 
         void render() override;
         void postRender() override;
-    
-        private:
+
+      private:
         color_t m_borderColorSave;
         bool pressed = false;
         uint8_t m_borderSizeSave;

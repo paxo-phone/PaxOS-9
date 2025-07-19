@@ -81,7 +81,7 @@ namespace gui::elements
         void setIsSelected(bool autoSelect);
         bool getIsSelected();
 
-    private:
+      private:
         int16_t m_focusedIndex = 0;
         int16_t m_oldFocusedIndex = 0;
         ElementBase* m_focusedElement = nullptr;

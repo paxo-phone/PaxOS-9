@@ -17,7 +17,8 @@ int16_t gui::ElementBase::m_lastTouchX, gui::ElementBase::m_lastTouchY;
 int16_t gui::ElementBase::lastEventTouchX, gui::ElementBase::lastEventTouchY;
 bool gui::ElementBase::scrolling = false;
 bool gui::ElementBase::wasPressed = false; // if the screen was pressed in the last update
-gui::ElementBase::PressedState gui::ElementBase::globalPressedState = gui::ElementBase::PressedState::NOT_PRESSED;
+gui::ElementBase::PressedState gui::ElementBase::globalPressedState =
+    gui::ElementBase::PressedState::NOT_PRESSED;
 
 void gui::ElementBase::resetStates()
 {
@@ -111,43 +112,57 @@ void gui::ElementBase::renderAll(bool onScreen)
         }
         else // le parent ne demande pas de rendu ou le parent n'existe pas
         {
-            
-            if(m_parent != nullptr)
+
+            if (m_parent != nullptr)
             {
-                graphics::getLCD()->setClipRect(std::max(m_parent->getAbsoluteX(), getAbsoluteX()), 
-                    std::max(m_parent->getAbsoluteY(), getAbsoluteY()), 
-                    std::min(m_parent->getAbsoluteX() + m_parent->getWidth(), getAbsoluteX() + getWidth()) - std::max(m_parent->getAbsoluteX(), getAbsoluteX()), 
-                    std::min(m_parent->getAbsoluteY() + m_parent->getHeight(), getAbsoluteY() + getHeight()) - std::max(m_parent->getAbsoluteY(), getAbsoluteY()));
+                graphics::getLCD()->setClipRect(
+                    std::max(m_parent->getAbsoluteX(), getAbsoluteX()),
+                    std::max(m_parent->getAbsoluteY(), getAbsoluteY()),
+                    std::min(
+                        m_parent->getAbsoluteX() + m_parent->getWidth(),
+                        getAbsoluteX() + getWidth()
+                    ) - std::max(m_parent->getAbsoluteX(), getAbsoluteX()),
+                    std::min(
+                        m_parent->getAbsoluteY() + m_parent->getHeight(),
+                        getAbsoluteY() + getHeight()
+                    ) - std::max(m_parent->getAbsoluteY(), getAbsoluteY())
+                );
             }
             else
             {
-                graphics::getLCD()->setClipRect(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
+                graphics::getLCD()
+                    ->setClipRect(getAbsoluteX(), getAbsoluteY(), getWidth(), getHeight());
             }
 
 #if defined(ESP_PLATFORM) && defined(USE_DOUBLE_BUFFERING)
             // swap buffers for double buffering
 
-            if(do_use_double_buffering && false)
+            if (do_use_double_buffering && false)
             {
-                if(m_surface.get() == nullptr)
-                {
+                if (m_surface.get() == nullptr)
                     return;
-                }
 
                 graphics::getLCD()->waitDMA();
                 m_surface_for_dma.swap(m_surface);
-                graphics::getLCD()->pushImageDMA(getAbsoluteX(), getAbsoluteY(), m_surface_for_dma.get()->getWidth(), m_surface_for_dma.get()->getHeight(), m_surface_for_dma.get()->m_sprite.getBuffer(), lgfx::color_depth_t::rgb565_2Byte, m_surface_for_dma.get()->m_sprite.getPalette());
-                
+                graphics::getLCD()->pushImageDMA(
+                    getAbsoluteX(),
+                    getAbsoluteY(),
+                    m_surface_for_dma.get()->getWidth(),
+                    m_surface_for_dma.get()->getHeight(),
+                    m_surface_for_dma.get()->m_sprite.getBuffer(),
+                    lgfx::color_depth_t::rgb565_2Byte,
+                    m_surface_for_dma.get()->m_sprite.getPalette()
+                );
             }
             else
             {
                 // push the surface to the screen
                 graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
             }
-            
-            #else
+
+#else
             graphics::showSurface(m_surface.get(), getAbsoluteX(), getAbsoluteY());
-            #endif
+#endif
 
             setChildrenDrawn();
         }
@@ -248,11 +263,11 @@ bool gui::ElementBase::update()
 
     bool returnValue = false;
 
-    if(isScreenTouched == false && widgetPressed == nullptr)
+    if (isScreenTouched == false && widgetPressed == nullptr)
         return false;
 
-    //std::cout << "globalPressedState: " << globalPressedState << std::endl;
-    //std::cout << "widgetPressed: " << int(widgetPressed != nullptr) << std::endl;
+    // std::cout << "globalPressedState: " << globalPressedState << std::endl;
+    // std::cout << "widgetPressed: " << int(widgetPressed != nullptr) << std::endl;
 
     if (isScreenTouched)
     {
@@ -352,7 +367,7 @@ bool gui::ElementBase::update()
     {
         onNotClicked();
 
-        if(globalPressedState == PRESSED)
+        if (globalPressedState == PRESSED)
         {
             this->m_pressedState = RELEASED;
             lastEventTouchX = originTouchX;

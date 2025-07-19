@@ -1,7 +1,7 @@
 #include "Button.hpp"
 
-#include <iostream>
 #include <color.hpp>
+#include <iostream>
 
 namespace gui::elements
 {
@@ -44,12 +44,12 @@ namespace gui::elements
         );
     }
 
-    void Button::onClick()  // 
+    void Button::onClick() //
     {
         m_backgroundColorSave = this->m_borderSize;
         this->m_borderSize += 2;
 
-        //m_surface->applyFilter(graphics::Surface::Filter::DARKEN, 100);
+        // m_surface->applyFilter(graphics::Surface::Filter::DARKEN, 100);
 
         /*uint8_t r, g, b;
 
@@ -63,12 +63,12 @@ namespace gui::elements
 
         localGraphicalUpdate();
 
-        //m_isDrawn = false;
+        // m_isDrawn = false;
     }
 
     void Button::onNotClicked()
     {
-        //this->m_backgroundColor = this->m_backgroundColorSave;
+        // this->m_backgroundColor = this->m_backgroundColorSave;
         m_borderSize = m_backgroundColorSave;
         localGraphicalUpdate();
     }
