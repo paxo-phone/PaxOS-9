@@ -48,6 +48,7 @@ jobs:
               [[ -e .pio/build/paxo-v5/firmware.map ]] && cp -r .pio/build/paxo-v5/firmware.map build
               cp -r .pio/build/paxo-v5/bootloader.bin build
               cp -r .pio/build/paxo-v5/partitions.bin build
+              cp -r cacert.pem build
               cp -r storage build
 
           - name: Upload artifact
@@ -108,6 +109,7 @@ jobs:
           mkdir build
           cp -r .pio/build/linux/program build
           cp -r storage build
+          cp -r cacert.pem build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -167,6 +169,7 @@ jobs:
           mkdir build
           cp -r .pio/build/macos/program build
           cp -r storage build
+          cp -r cacert.pem build
           chmod +x build/program
 
       - name: Upload artifact
@@ -224,6 +227,7 @@ jobs:
           mkdir build
           cp -r .pio/build/windows/program.exe build
           cp -r .pio/build/windows/*.dll build
+          cp -r cacert.pem build
           cp -r storage build
 
       - name: Copy required DLLs into artifact directory
