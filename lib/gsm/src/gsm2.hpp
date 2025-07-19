@@ -125,6 +125,7 @@ namespace Gsm
     // Returns true if GPRS is attached
     bool isConnected();
     bool isConnectedStateValid(); // Check if connection state has been read
+    bool isSimInserted();
 
     // Returns true if flight mode (RF OFF) is active
     bool isFlightModeActive();

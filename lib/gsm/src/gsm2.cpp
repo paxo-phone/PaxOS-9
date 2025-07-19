@@ -2166,6 +2166,13 @@ namespace Gsm
         return gprsStateValid;
     }
 
+    bool isSimInserted()
+    {
+        if (!pinStatusValid)
+            return false;
+        return !pinRequiresPin;
+    }
+
     bool isFlightModeActive()
     {
         return flightModeState;
