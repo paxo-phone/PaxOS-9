@@ -666,6 +666,13 @@ namespace Network
         // Set URL
         curl_easy_setopt(m_curlEasyHandle, CURLOPT_URL, request->url.c_str());
 
+        // --- SSL Verification Setup ---
+        // Enforce peer verification. This is the default, but it's good to be explicit.
+        curl_easy_setopt(m_curlEasyHandle, CURLOPT_SSL_VERIFYPEER, 1L);
+        // Provide the path to the certificate bundle.
+        // This file must be present in the same directory as the executable.
+        curl_easy_setopt(m_curlEasyHandle, CURLOPT_CAINFO, "cacert.pem");
+
         // Set headers
         struct curl_slist* headers = nullptr;
         for (const auto& header : request->headers)
