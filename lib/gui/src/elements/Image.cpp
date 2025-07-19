@@ -58,7 +58,7 @@ namespace gui::ImagesList
         for (auto img = images.begin(); img != images.end();)
         {
             // TODO: Refactor this logic
-            if (img->surface.unique())
+            if (img->surface.use_count() == 1)
             {
                 img = images.erase(img);
                 // std::cout << "[Image] image deleted" << std::endl;
