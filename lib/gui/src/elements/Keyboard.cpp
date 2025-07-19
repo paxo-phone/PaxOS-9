@@ -55,9 +55,9 @@ namespace gui::elements
         }
         else
         {
-            std::cerr << "[Warning] It seems that you are using the Keyboard "
-                         "element in potrait mode."
-                      << std::endl;
+            std::cerr
+                << "[Warning] It seems that you are using the Keyboard element in potrait mode."
+                << std::endl;
 
             m_width = graphics::getScreenHeight();
             m_height = graphics::getScreenWidth();
@@ -357,8 +357,7 @@ namespace gui::elements
                     if (key == output_index_to_char[i])
                     {
                         proba = probabilities[i];
-                        // std::cout << "Key: " << key << ", Probability: " << proba
-                        // << std::endl;
+                        // std::cout << "Key: " << key << ", Probability: " << proba << std::endl;
                         break;
                     }
                 }
@@ -415,8 +414,8 @@ namespace gui::elements
         case KEY_CAPS:
         case KEY_LAYOUT_STANDARD:
         case KEY_LAYOUT_NUMBERS:
-            // KEY_EXIT & KEY_BACKSPACE & KEY_CAPS & KEY_LAYOUT_STANDARD &
-            // KEY_LAYOUT_NUMBERS are handled directly in update function
+            // KEY_EXIT & KEY_BACKSPACE & KEY_CAPS & KEY_LAYOUT_STANDARD & KEY_LAYOUT_NUMBERS are
+            // handled directly in update function
             return;
         case KEY_SPACE:
             addChar(' ');
@@ -569,11 +568,10 @@ namespace gui::elements
         // Check if finger is on screen
         if ((rawTouchX != -1 && rawTouchY != -1) && isPointInTrackpad(originTouchX, originTouchY))
         {
-            // libsystem::log("[TRACKPAD] Raw Touch : " + std::to_string(rawTouchX)
-            // + ", " + std::to_string(rawTouchY) + "."); libsystem::log("[TRACKPAD]
-            // Last Touch : " + std::to_string(m_lastTouchX) + ", " +
-            // std::to_string(m_lastTouchY) + "."); libsystem::log("[TRACKPAD]
-            // Origin Touch : " + std::to_string(originTouchX) + ", " +
+            // libsystem::log("[TRACKPAD] Raw Touch : " + std::to_string(rawTouchX) + ", " +
+            // std::to_string(rawTouchY) + "."); libsystem::log("[TRACKPAD] Last Touch : " +
+            // std::to_string(m_lastTouchX) + ", " + std::to_string(m_lastTouchY) + ".");
+            // libsystem::log("[TRACKPAD] Origin Touch : " + std::to_string(originTouchX) + ", " +
             // std::to_string(originTouchY) + ".");
 
             if (m_trackpadTicks < UINT8_MAX)
@@ -600,9 +598,8 @@ namespace gui::elements
                 constexpr int32_t stepsByChar = 8;
                 const int32_t toMove = (deltaX - m_trackpadLastDeltaX) / stepsByChar;
 
-                // libsystem::log("[TRACKPAD] Delta X : " + std::to_string(deltaX) +
-                // "."); libsystem::log("[TRACKPAD] To Move : " +
-                // std::to_string(toMove) + ".");
+                // libsystem::log("[TRACKPAD] Delta X : " + std::to_string(deltaX) + ".");
+                // libsystem::log("[TRACKPAD] To Move : " + std::to_string(toMove) + ".");
 
                 if (toMove > 0)
                 {

@@ -8,7 +8,6 @@
 #include "i18n/test.cpp"
 #include "storage/storage_test.cpp"
 
-#include <gtest/gtest.h>
 #if ESP_PLATFORM
 #include "serialcom/command.cpp"
 #endif

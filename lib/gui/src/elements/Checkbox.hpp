@@ -13,7 +13,7 @@ namespace gui::elements
     {
       public:
         Checkbox(uint16_t x, uint16_t y);
-        ~Checkbox() override;
+        ~Checkbox();
 
         void render() override;
         void onReleased();

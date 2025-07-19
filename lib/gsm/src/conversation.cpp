@@ -10,8 +10,7 @@ namespace Conversations
 {
     void loadConversation(const storage::Path& filePath, Conversation& conv)
     {
-        // std::cout << "Loading conversation from: " << filePath.str() <<
-        // std::endl;
+        // std::cout << "Loading conversation from: " << filePath.str() << std::endl;
 
         if (!filePath.exists())
         {

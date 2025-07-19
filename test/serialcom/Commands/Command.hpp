@@ -7,8 +7,8 @@ using namespace serialcom;
 TEST(Commands, COMMAND_STRUCTURE)
 {
 
-    // tests for the "Command" structure (no precise command type is tested
-    // here, only the constructor and the structure itself)
+    // tests for the "Command" structure (no precise command type is tested here, only the
+    // constructor and the structure itself)
 
     // test the constructor
     char input[INPUT_MAX_SIZE] = {'\0'};

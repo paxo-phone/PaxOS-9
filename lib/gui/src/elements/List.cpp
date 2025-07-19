@@ -33,9 +33,7 @@ namespace gui::elements
         // No scrollbar needed if list fits in view
         if (m_children.empty() ||
             (m_children.back()->m_y + m_children.back()->getHeight()) < getHeight())
-        {
             return;
-        }
 
         // Draw selection indicator for CENTER focus
         if (m_selectionFocus == SelectionFocus::CENTER && !m_children.empty())
@@ -418,10 +416,8 @@ namespace gui::elements
 
                     m_horizontalScroll = m_children[m_focusedIndex]->m_x;
                     if (m_selectionFocus == SelectionFocus::CENTER)
-                    {
                         m_horizontalScroll = m_horizontalScroll - getWidth() / 2 +
                                              m_children[m_focusedIndex]->getWidth() / 2;
-                    }
 
                     localGraphicalUpdate();
                 }

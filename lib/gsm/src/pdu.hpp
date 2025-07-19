@@ -3,8 +3,8 @@
 
 /*
     PDU decoder:
-    Pdu is a format used in the encodage of SMS and MMS. Decoding it is
-   necessary to get the sender, the message and the URL of any SMS or MMS.
+    Pdu is a format used in the encodage of SMS and MMS. Decoding it is necessary to get the sender,
+   the message and the URL of any SMS or MMS.
 */
 
 #include <string>

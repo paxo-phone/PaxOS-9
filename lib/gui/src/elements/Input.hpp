@@ -11,14 +11,13 @@
 namespace gui::elements
 {
     /**
-     * @brief Input is a label where you can write text by clicking on it (open a
-     *keyboard)
+     * @brief Input is a label where you can write text by clicking on it (open a keyboard)
      **/
     class Input final : public ElementBase
     {
       public:
         Input(uint16_t x, uint16_t y);
-        ~Input() override;
+        ~Input();
 
         enum Alignement
         {

@@ -8,8 +8,8 @@
 namespace gui::elements
 {
     /**
-     * @brief Widget image: can load an image from a path with a background or not.
-     *Support png, jpeg and bmp
+     * @brief Widget image: can load an image from a path with a background or not. Support png,
+     *jpeg and bmp
      **/
     class Image final : public ElementBase
     {
@@ -18,7 +18,7 @@ namespace gui::elements
             storage::Path path, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
             color_t backgroundColor = COLOR_WHITE
         );
-        ~Image() override;
+        ~Image();
 
         void render() override;
 

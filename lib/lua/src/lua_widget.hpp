@@ -18,7 +18,7 @@ class LuaWidget
         widget = obj;
     }
 
-    ~LuaWidget();
+    virtual ~LuaWidget();
 
     void setX(int x)
     {

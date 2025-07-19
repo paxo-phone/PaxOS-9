@@ -8,8 +8,8 @@
 namespace gui::elements
 {
     /**
-     * @brief It is a simple virtual screen where you can draw pixels or shapes as
-     *you want. Useful for games or custom widgets
+     * @brief It is a simple virtual screen where you can draw pixels or shapes as you want. Useful
+     *for games or custom widgets
      **/
     class Canvas final : public ElementBase
     {
@@ -17,7 +17,7 @@ namespace gui::elements
         typedef std::pair<int16_t, int16_t> point_t;
 
         Canvas(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-        ~Canvas() override;
+        ~Canvas();
 
         void render() override;
 

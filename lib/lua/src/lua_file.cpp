@@ -50,8 +50,7 @@ std::shared_ptr<LuaHttpClient> LuaNetwork::createHttpClient()
 }*/
 
 LuaFile::LuaFile(storage::Path filename, storage::Path manifest) :
-    lua_gui(this), lua_storage(this), lua_time(this) /*,
-                                       lua_network(this)*/
+    lua_gui(this), lua_storage(this), lua_time(this), lua_network(this)
 {
     this->filename = filename;
     this->manifest = manifest;
@@ -60,8 +59,7 @@ LuaFile::LuaFile(storage::Path filename, storage::Path manifest) :
 
 LuaFile::~LuaFile()
 {
-    // prevent a crash if the app is deleted and one or more callbacks are
-    // defined
+    // prevent a crash if the app is deleted and one or more callbacks are defined
     this->onmessage = sol::nil;
     this->onmessageerror = sol::nil;
     this->oncall = sol::nil;
@@ -131,11 +129,17 @@ std::string tableToString(const sol::table& table)
     for (const auto& pair : table)
     {
         if (pair.first.is<std::string>())
+        {
             ss << "[\"" << pair.first.as<std::string>() << "\"]";
+        }
         else if (pair.first.is<int>())
+        {
             ss << "[" << pair.first.as<int>() << "]";
-        else // Assuming it's an identifier
+        }
+        else
+        { // Assuming it's an identifier
             ss << "[\"" << pair.first.as<std::string>() << "\"]";
+        }
         i++;
         ss << "=";
 
@@ -241,8 +245,7 @@ sol::table load_lua_table(sol::state& lua, const std::string& path)
         std::cerr << "Unknown error" << std::endl;
     }
 
-    // Get the global table name (assuming the string defines a table named
-    // 'resultTable')
+    // Get the global table name (assuming the string defines a table named 'resultTable')
 
     return resultTable;
 }
@@ -405,6 +408,7 @@ void LuaFile::load()
             "__index",
             sol::overload(
                 static_cast<LuaJson (LuaJson::*)(std::string)>(&LuaJson::op),
+                static_cast<LuaJson (LuaJson::*)(int)>(&LuaJson::op),
                 static_cast<int (LuaJson::*)(std::string)>(&LuaJson::get_int),
                 static_cast<double (LuaJson::*)(std::string)>(&LuaJson::get_double),
                 static_cast<bool (LuaJson::*)(std::string)>(&LuaJson::get_bool)
@@ -869,6 +873,21 @@ void LuaFile::load()
                 }
             )
         );
+    }
+
+    if (perms.acces_web)
+    {
+        lua.new_usertype<LuaHttpClient>(
+            "HttpClient",
+            "get",
+            &LuaHttpClient::get,
+            "post",
+            &LuaHttpClient::post
+        );
+
+        lua.new_usertype<LuaNetwork>("Network", "createHttpClient", &LuaNetwork::createHttpClient);
+
+        lua["network"] = &lua_network;
     }
 
     if (perms.acces_time)

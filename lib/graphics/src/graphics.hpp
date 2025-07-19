@@ -52,11 +52,10 @@ namespace graphics
     [[nodiscard]] uint16_t getBrightness();
 
     /**
-     * Set the current screen brightness with a smooth animation (abs(newValue -
-     * oldValue) ms).
+     * Set the current screen brightness with a smooth animation (abs(newValue - oldValue) ms).
      * @param value The new brightness of the screen.
-     * @param temp If true, the brightness value will not be saved (getBrightness()
-     * will still return the old value).
+     * @param temp If true, the brightness value will not be saved (getBrightness() will still
+     * return the old value).
      */
     void setBrightness(uint16_t value, bool temp = false);
 
@@ -69,8 +68,8 @@ namespace graphics
 
     /**
      * Show a surface on the screen.
-     * You should probably send every surface to the screen using directly this
-     * call, but with a smart use of Surface::pushSurface.
+     * You should probably send every surface to the screen using directly this call,
+     * but with a smart use of Surface::pushSurface.
      * @param surface The surface to push to the screen.
      * @param x The x position of the surface, default is 0.
      * @param y The y position of the surface, default is 0.
@@ -78,8 +77,7 @@ namespace graphics
     void showSurface(const Surface* surface, int x = 0, int y = 0);
 
     /**
-     * Set a clip rect for the screen, only the provided zone will be sent to the
-     * LCD.
+     * Set a clip rect for the screen, only the provided zone will be sent to the LCD.
      * @param x The x of the clip rect.
      * @param y The y of the clip rect.
      * @param width The width of the clip rect.

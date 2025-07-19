@@ -10,7 +10,7 @@ namespace gui::elements
     {
       public:
         Radio(uint16_t x, uint16_t y);
-        ~Radio() override;
+        ~Radio();
 
         void render() override;
         void onReleased();

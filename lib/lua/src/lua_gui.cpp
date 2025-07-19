@@ -239,8 +239,8 @@ void LuaGui::keyboard_async(
                     std::cerr << "Callback error: " << err.what() << std::endl;
 
                     // Show error (same as your pushError function)
-                    std::string error_message = "The callback for keyboard_async encountered an "
-                                                "error: ";
+                    std::string error_message =
+                        "The callback for keyboard_async encountered an error: ";
                     error_message += err.what();
                     showErrorMessage(error_message);
                 }

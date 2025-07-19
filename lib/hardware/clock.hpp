@@ -28,8 +28,7 @@ uint64_t os_millis(void);
  */
 uint64_t os_millis(void);
 
-#else /* #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) ||                           \
-         defined(__APPLE__) */
+#else /* #if defined(__linux__) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) */
 
 extern unsigned long sleepStartTimeMillis;
 extern long long sleepTimeCorrectionOffset;

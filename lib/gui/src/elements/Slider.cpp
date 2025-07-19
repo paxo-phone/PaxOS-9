@@ -106,8 +106,7 @@ namespace gui::elements
     void Slider::slide()
     {
         // m_positionValue = (touchX - getAbsoluteX());
-        // m_Value = (m_positionValue * (m_maxValue - m_minValue)) / m_width +
-        // m_minValue;
+        // m_Value = (m_positionValue * (m_maxValue - m_minValue)) / m_width + m_minValue;
         float value = (touchX - getAbsoluteX()) * (m_maxValue - m_minValue) / m_width + m_minValue;
         value = value < m_minValue ? m_minValue : value > m_maxValue ? m_maxValue : value;
 

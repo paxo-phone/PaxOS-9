@@ -92,14 +92,12 @@ void libsystem::panic(const std::string& message, const bool restart)
 
     // Show instructions
     lcd->printf(
-        "This is not an expected behavior, please report this to the "
-        "Paxo / PaxOS team.\n\n"
+        "This is not an expected behavior, please report this to the Paxo / PaxOS team.\n\n"
     );
     lcd->printf("Contact us :\n- https://paxo.fr/\n\n");
     lcd->printf("What you should do:\n");
     lcd->printf(
-        "- Report this issue with every possible detail (what you "
-        "done, installed "
+        "- Report this issue with every possible detail (what you done, installed "
         "applications...).\n"
     );
     lcd->printf("- Check and clean the SD Card.\n");
@@ -109,8 +107,7 @@ void libsystem::panic(const std::string& message, const bool restart)
 
     // Backtrace
 
-    // backtrace_saver::re_restart_debug_t backtraceData =
-    // backtrace_saver::getCurrentBacktrace();
+    // backtrace_saver::re_restart_debug_t backtraceData = backtrace_saver::getCurrentBacktrace();
     std::string fullBacktraceData;
 
     std::cerr << "Backtrace:" << std::endl;

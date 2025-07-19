@@ -43,8 +43,8 @@ namespace serialcom
             unknown
         };
 
-        // a static unordered map between the raw strings of the command types and
-        // the CommandType enum
+        // a static unordered map between the raw strings of the command types and the CommandType
+        // enum
 
         static std::unordered_map<CommandType, std::string> command_types_raw_strings;
 

@@ -43,7 +43,7 @@ bool storage::init()
     delay(100);
     for (int i = 0; i < sdBeginTryCount; i++)
     {
-        if (SD.begin(4, SPI, 8000000))
+        if (SD.begin(4, SPI, 5000000))
         {
             libsystem::log("SD card initialized.");
             return true;
@@ -245,8 +245,7 @@ namespace storage
 
         if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath))
         {
-            std::cerr << "Error: The directory does not exist or is not a valid "
-                         "directory."
+            std::cerr << "Error: The directory does not exist or is not a valid directory."
                       << std::endl;
             return {};
         }
@@ -349,27 +348,22 @@ namespace storage
                     skip_existing = 1, overwrite_existing = 2, update_existing = 4,
                     recursive = 8,
                     copy_symlinks = 16, skip_symlinks = 32,
-                    directories_only = 64, create_symlinks = 128, create_hard_links
-               = 256
+                    directories_only = 64, create_symlinks = 128, create_hard_links = 256
                 };
             */
             if (std::filesystem::is_directory(this->str()))
-            {
                 std::filesystem::copy(
                     this->str(),
                     destinationPath.str(),
                     std::filesystem::copy_options::recursive |
                         std::filesystem::copy_options::skip_existing
                 );
-            }
             else
-            {
                 std::filesystem::copy_file(
                     this->str(),
                     destinationPath.str(),
                     std::filesystem::copy_options::skip_existing
                 );
-            }
             return true;
         }
         return false;
@@ -469,25 +463,22 @@ namespace storage
             std::vector<std::string> children = this->listdir();
             if (!children.empty())
             {
-                // serialcom::SerialManager::sharedInstance->commandLog("Remove
-                // children");
+                // serialcom::SerialManager::sharedInstance->commandLog("Remove children");
                 std::cout << "Remove children" << std::endl;
                 for (std::string child : children)
                 {
                     Path childPath = *this / child;
                     if (!childPath.remove())
                         return false;
-                    // serialcom::SerialManager::sharedInstance->commandLog("Removing
-                    // child " + child);
+                    // serialcom::SerialManager::sharedInstance->commandLog("Removing child " +
+                    // child);
                     std::cout << "Removing child " << childPath.str() << std::endl;
                 }
             }
             return ::rmdir(this->str().c_str()) == 0;
         }
         else
-        {
             return ::remove(this->str().c_str()) == 0;
-        }
 #endif
     }
 

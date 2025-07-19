@@ -200,10 +200,8 @@ Contributions are welcome! If you'd like to contribute to PaxOS 9, please follow
 3.  Make your changes and commit them with clear, descriptive messages.
 4.  Ensure your code builds successfully for the relevant environments (especially `paxo-v5` and native ones if applicable).
 5.  If you add new functionality, consider adding tests.
-6. Make sure to use ``./format.sh`` or ``./format.bat`` to format your code according to the project's style
-   guidelines (you can install ClangFormat via ``python3 -m pip install clang-format``).
-7. Push your branch to your fork: `git push origin feature/your-feature-name`.
-8. Open a Pull Request against the `main` branch of the `paxo-phone/PaxOS-9` repository.
+6.  Push your branch to your fork: `git push origin feature/your-feature-name`.
+7.  Open a Pull Request against the `main` branch of the `paxo-phone/PaxOS-9` repository.
 
 Please check if there's a `CONTRIBUTING.md` file for more specific guidelines.
 

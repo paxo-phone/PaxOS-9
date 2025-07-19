@@ -83,9 +83,7 @@ void gui::ElementBase::renderAll(bool onScreen)
         // initialiser le buffer ou le clear
         if (m_surface != nullptr && (m_surface->getWidth() != this->getWidth() ||
                                      m_surface->getHeight() != this->getHeight()))
-        {
             m_surface = nullptr;
-        }
 
         if (m_surface == nullptr)
         {
@@ -269,8 +267,7 @@ bool gui::ElementBase::update()
         return false;
 
     // std::cout << "globalPressedState: " << globalPressedState << std::endl;
-    // std::cout << "widgetPressed: " << int(widgetPressed != nullptr) <<
-    // std::endl;
+    // std::cout << "widgetPressed: " << int(widgetPressed != nullptr) << std::endl;
 
     if (isScreenTouched)
     {
@@ -622,8 +619,10 @@ void gui::ElementBase::setChildrenDrawn()
 
     for (int i = 0; i < m_children.size();
          i++) // dire aux enfants qu'il sont actualisés sur l'écran
+    {
         if (m_children[i] != nullptr)
             m_children[i]->setChildrenDrawn();
+    }
 }
 
 void gui::ElementBase::setChildrenNotDrawn()
@@ -632,8 +631,10 @@ void gui::ElementBase::setChildrenNotDrawn()
 
     for (int i = 0; i < m_children.size();
          i++) // dire aux enfants qu'il sont actualisés sur l'écran
+    {
         if (m_children[i] != nullptr)
             m_children[i]->m_isDrawn = false;
+    }
 }
 
 /**

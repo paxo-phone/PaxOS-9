@@ -49,8 +49,7 @@ namespace graphics
         if (!path.exists() || !path.isfile())
         {
             std::cerr << "Path does not exist : " << path.str() << std::endl;
-            // throw libsystem::exceptions::InvalidArgument("Path does not exist : "
-            // + path.str() +
+            // throw libsystem::exceptions::InvalidArgument("Path does not exist : " + path.str() +
             // ".");    // trop radical
             m_width = 0;
             m_height = 0;

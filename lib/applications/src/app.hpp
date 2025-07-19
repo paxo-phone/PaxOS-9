@@ -36,8 +36,7 @@ namespace AppManager
             bool auth);
 
         /**
-         * @param parameters List of parameters to send to the lua run function of
-         * the app
+         * @param parameters List of parameters to send to the lua run function of the app
          */
         void run(const std::vector<std::string>& parameters = {});
 
@@ -47,8 +46,8 @@ namespace AppManager
         void wakeup();
 
         /**
-         * @brief Put the app to sleep = the app will still loaded, but it will have
-         * neither events nor code that run.
+         * @brief Put the app to sleep = the app will still loaded, but it will have neither events
+         * nor code that run.
          *
          * @note If the app is not running, this function does nothing
          */
@@ -85,8 +84,8 @@ namespace AppManager
         std::string name;       // app name
         std::string fullName;   // app directory name, full name
         storage::Path path;     // app directory
-        storage::Path manifest; // app manifest (can be in the app folder is not
-                                // validated, or in the system folder if validated)
+        storage::Path manifest; // app manifest (can be in the app folder is not validated, or in
+                                // the system folder if validated)
         bool auth;              // is allowed to run
         bool visible = false;   // is visible on the menu (if it has a . before the folder name)
 
@@ -108,10 +107,10 @@ namespace AppManager
     extern std::mutex threadsync; // mutex for thread-safe operations between threads
 
     extern std::vector<std::shared_ptr<App>> appList; // list of apps in the apps folder
-    extern std::vector<App*> appStack;                // stack of the apps that are using the GUI,
-                                                      // the last one is shown on the screen
-    extern bool didRequestAuth; // a boolean indicating whether the request auth action has
-                                // been triggered, should be turned off in the main loop
+    extern std::vector<App*>
+        appStack; // stack of the apps that are using the GUI, the last one is shown on the screen
+    extern bool didRequestAuth; // a boolean indicating whether the request auth action has been
+                                // triggered, should be turned off in the main loop
 
     // keyboard management
     namespace Keyboard_manager

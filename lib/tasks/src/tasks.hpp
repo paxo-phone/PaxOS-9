@@ -11,6 +11,7 @@
 class Function
 {
   public:
+    virtual ~Function() = default;
     virtual bool call() = 0;
 };
 

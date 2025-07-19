@@ -144,8 +144,8 @@ PDU decodePDU(std::string pdu)
     char PDU_mode = hex_to_int(pdu.substr(i, 2)) - 2;
     i += 2;
 
-    // std::cout << "PDU_mode: " << int(PDU_mode) << " " <<
-    // std::bitset<8>(PDU_mode).to_string() << std::endl;
+    // std::cout << "PDU_mode: " << int(PDU_mode) << " " << std::bitset<8>(PDU_mode).to_string() <<
+    // std::endl;
 
     /*if(getBit(PDU_mode, 7))
         std::cout << "TP-RP enabled" << std::endl;
@@ -159,8 +159,8 @@ PDU decodePDU(std::string pdu)
     if(getBit(PDU_mode, 2))
         std::cout << "TP-MMS enabled" << std::endl;*/
 
-    // std::cout << "TP-MTI: " << (int) getBit(PDU_mode, 0) << (int)
-    // getBit(PDU_mode, 1) << std::endl;
+    // std::cout << "TP-MTI: " << (int) getBit(PDU_mode, 0) << (int) getBit(PDU_mode, 1) <<
+    // std::endl;
 
     int Adress_length = hex_to_int(pdu.substr(i, 2)) + 1;
     i += 2;
@@ -202,8 +202,8 @@ PDU decodePDU(std::string pdu)
     {
         // std::cout << "Unknown mode" << std::endl;
     }
-    // std::cout << "DSC: " << (int) getBit(DSC, 3) << (int) getBit(DSC, 2) << "
-    // " << std::bitset<8>(DSC).to_string() << std::endl;
+    // std::cout << "DSC: " << (int) getBit(DSC, 3) << (int) getBit(DSC, 2) << "  " <<
+    // std::bitset<8>(DSC).to_string() << std::endl;
 
     i += 7 * 2; // timestamp
 
@@ -227,9 +227,7 @@ PDU decodePDU(std::string pdu)
             text = latin1HexToUtf8(Message);
         }
         else
-        {
             text = decodeGSM7bit(Message);
-        }
     }
     else
     {

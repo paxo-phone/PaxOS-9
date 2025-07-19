@@ -63,11 +63,9 @@ storage::Path LuaStorage::convertPath(std::string path)
 {
     // std::cout << "convertPath: " << path << std::endl;
     if (!legalPath(path))
-    {
         throw libsystem::exceptions::RuntimeError(
             "The app is not allowed to access this path: " + path
         );
-    }
 
     if (path[0] == '/')
     {
@@ -77,8 +75,8 @@ storage::Path LuaStorage::convertPath(std::string path)
     else
     {
         storage::Path fullPath = this->lua->directory / path;
-        // std::cout << "Returning full path: " << this->lua->directory.str() <<
-        // " + " << path << " = " << fullPath.str() << std::endl;
+        // std::cout << "Returning full path: " << this->lua->directory.str() << " + " << path << "
+        // = " << fullPath.str() << std::endl;
         return fullPath;
     }
 }

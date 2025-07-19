@@ -23,10 +23,12 @@ SET_LOOP_TASK_STACK_SIZE(12 * 1024);
 #include <iostream>
 #include <libsystem.hpp>
 #include <lua_file.hpp>
+#include <network.hpp>
 #include <path.hpp>
 #include <standby.hpp>
 #include <threads.hpp>
 #include <unistd.h>
+
 #ifdef ESP_PLATFORM
 #include "esp_heap_caps.h"
 #endif
@@ -82,8 +84,8 @@ void mainLoop(void* data)
         AppManager::loop();
         eventHandlerApp.update();
 
-        if (AppManager::isAnyVisibleApp() && launcher) // free the launcher is an app is running and
-                                                       // the launcher is active
+        if (AppManager::isAnyVisibleApp() &&
+            launcher) // free the launcher is an app is running and the launcher is active
         {
             applications::launcher::free();
             launcher = false;
@@ -163,8 +165,7 @@ void mainLoop(void* data)
             StandbyMode::expired()) // innactivity detected -> go to sleep mode
         {
             for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp();
-                 i++) // define a limit on how many apps can be stopped (prevent
-                      // from a loop)
+                 i++) // define a limit on how many apps can be stopped (prevent from a loop)
             {
                 AppManager::quitApp();
             }
@@ -178,12 +179,10 @@ void mainLoop(void* data)
             StandbyMode::wait();
 
         /*std::cout << "states: "
-                  << "StandbyMode: " << (StandbyMode::state() ? "enabled" :
-           "disabled")
-                  << ", deviceMode: " << (libsystem::getDeviceMode() ==
-           libsystem::NORMAL ? "normal" : "sleep")
-                  << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ?
-           "true" : "false")
+                  << "StandbyMode: " << (StandbyMode::state() ? "enabled" : "disabled")
+                  << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal"
+           : "sleep")
+                  << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ? "true" : "false")
                   << std::endl;*/
     }
 }
@@ -191,8 +190,7 @@ void mainLoop(void* data)
 void init(void* data)
 {
 /**
- * Initialisation du hardware, de l'écran, lecture des applications stcokées
- * dans storage
+ * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
  */
 #ifdef ESP_PLATFORM
     ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
@@ -221,8 +219,7 @@ void init(void* data)
     // But display error
     /*if (GSM::getBatteryLevel() < 0.05 && !hardware::isCharging()) {
         libsystem::registerBootError("Battery level is too low.");
-        libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel()
-    * 100))
+        libsystem::registerBootError(std::to_string(static_cast<int>(GSM::getBatteryLevel() * 100))
     + "% < 5%"); libsystem::registerBootError("Please charge your Paxo.");
         libsystem::registerBootError("Tip: Force boot by plugging a charger.");
 
@@ -240,9 +237,7 @@ void init(void* data)
         libsystem::registerBootError("Please check the SD Card.");
     }
     else
-    {
         libsystem::log("[STARTUP]: Storage initialized");
-    }
 
 #ifdef ESP_PLATFORM
     backtrace_saver::init();
@@ -297,6 +292,9 @@ void init(void* data)
         libsystem::displayBootErrors();
         libsystem::restart(true, 10000);
     }
+
+    Network::init();
+    libsystem::log("[STARTUP]: Network initialized");
 
     /**
      * Gestion des eventHandlers pour les evenements
@@ -368,14 +366,27 @@ void init(void* data)
     mainLoop(NULL);
 }
 
-void setup()
+#ifdef __cplusplus
+extern "C"
 {
-#ifdef ESP_PLATFORM
-    esp_task_wdt_init(5000, true);
 #endif
 
-    init(NULL);
+    void app_main(void)
+    {
+#ifdef ESP_PLATFORM
+        esp_task_wdt_init(5000, true);
+#endif
+
+        init(NULL);
+
+        // An app_main function running as a FreeRTOS task should not return.
+        // If init() creates other tasks and this one is done, it should delete itself.
+        // For example: vTaskDelete(NULL);
+    }
+
+#ifdef __cplusplus
 }
+#endif
 
 void loop() {}
 
@@ -384,7 +395,7 @@ void loop() {}
 // Native main
 int main(int argc, char** argv)
 {
-    graphics::SDLInit(setup);
+    graphics::SDLInit(app_main);
 }
 
 #endif

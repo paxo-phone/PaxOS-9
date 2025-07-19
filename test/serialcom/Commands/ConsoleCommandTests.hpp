@@ -42,8 +42,8 @@ TEST(Commands, CONSOLE_COMMAND)
 
     SerialManager::sharedInstance->changeConsoleLockTo(false);
 
-    // test the lock effect, it should block any output that is not from the
-    // commands and only output them when the unlock is called
+    // test the lock effect, it should block any output that is not from the commands and only
+    // output them when the unlock is called
 
     std::stringstream buffer;
 

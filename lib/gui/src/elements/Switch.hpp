@@ -9,7 +9,7 @@ namespace gui::elements
     {
       public:
         Switch(uint16_t x, uint16_t y);
-        ~Switch() override;
+        ~Switch();
 
         void render() override;
         void onReleased();

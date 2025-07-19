@@ -6,14 +6,13 @@
 namespace gui::elements
 {
     /**
-     * @brief Can contain a list of elements and is scrollable and is memory
-     *efficient
+     * @brief Can contain a list of elements and is scrollable and is memory efficient
      **/
     class VerticalList final : public ElementBase
     {
       public:
         VerticalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-        ~VerticalList() override;
+        ~VerticalList();
 
         void render() override;
         void postRender();
@@ -56,7 +55,7 @@ namespace gui::elements
     {
       public:
         HorizontalList(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-        ~HorizontalList() override;
+        ~HorizontalList();
 
         void render() override;
         void postRender();

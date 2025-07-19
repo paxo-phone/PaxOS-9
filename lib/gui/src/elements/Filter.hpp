@@ -16,7 +16,7 @@ namespace gui::elements
         typedef std::pair<int16_t, int16_t> point_t;
 
         Filter(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-        ~Filter() override;
+        ~Filter();
 
         void render() override;
 

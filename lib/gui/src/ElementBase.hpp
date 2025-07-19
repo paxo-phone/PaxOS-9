@@ -59,8 +59,8 @@ namespace gui
         color_t getBackgroundColor() const;
         color_t getBorderColor() const;
 
-        bool isTouched();                    // retourne si le widget a été pressé puis relaché (nb,
-                                             // l'appel de la fonction annule m'état précédent)
+        bool isTouched(); // retourne si le widget a été pressé puis relaché (nb, l'appel de la
+                          // fonction annule m'état précédent)
         bool isFocused(bool forced = false); // retourne si le doigt est sur le widget
 
         virtual void onClick() {}
@@ -73,8 +73,8 @@ namespace gui
         virtual void onReleased() {}
 
         /**
-         * \brief When the widget is no longer considered as touched even if the
-         * finger is still on the screen
+         * \brief When the widget is no longer considered as touched even if the finger is still on
+         * the screen
          */
         virtual void onNotClicked() {}
 
@@ -82,8 +82,7 @@ namespace gui
         void disable();
         bool getIsEnabled() const;
 
-        void free(); // free the buffers in the ram to allow more windows to work at
-                     // the same time
+        void free(); // free the buffers in the ram to allow more windows to work at the same time
 
         void setEnabled(bool enabled);
         [[nodiscard]] bool isEnabled() const;
@@ -179,8 +178,8 @@ namespace gui
         std::shared_ptr<graphics::Surface> m_surface_for_dma; // double buffer for DMA transfer
         bool do_use_double_buffering = false;
         std::shared_ptr<graphics::Surface>
-            getAndSetSurface(); // Get the m_surface of the the ElementBase and
-                                // initialize it if it is nullptr
+            getAndSetSurface(); // Get the m_surface of the the ElementBase and initialize it if it
+                                // is nullptr
       protected:
         void localGraphicalUpdate();
         void globalGraphicalUpdate();

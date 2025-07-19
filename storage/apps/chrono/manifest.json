@@ -1,4 +1,3 @@
 {
-    "access": ["gui","time"],
-    "name": "Chronomètre"
+    "access": ["gui","time"]
 }

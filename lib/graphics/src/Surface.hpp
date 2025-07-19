@@ -82,8 +82,7 @@ namespace graphics
             std::string& otext, int16_t x, int16_t y, std::optional<color_t> color = std::nullopt
         );
 
-        // w and h are the width and height of the bounding box where the text will
-        // be centered
+        // w and h are the width and height of the bounding box where the text will be centered
         void drawTextCentered(
             std::string& text, const int16_t x, const int16_t y, const uint16_t w = -1,
             const uint16_t h = -1, const bool horizontallyCentered = true,

@@ -144,8 +144,7 @@ namespace AppManager
     std::vector<std::shared_ptr<App>> appList;
 
     /**
-     * The stack is used only for foreground applications THAT HAVE a Window
-     * created.
+     * The stack is used only for foreground applications THAT HAVE a Window created.
      */
     std::vector<App*> appStack;
 
@@ -308,15 +307,11 @@ namespace AppManager
             if (manifest["subdir"].is_string()) // todo, restrict only for subdirs
             {
                 if ((app.get()->path / "../" / manifest["subdir"]).exists())
-                {
                     loadDir(app.get()->path / "../" / manifest["subdir"], root, app->fullName);
-                }
                 else
-                {
                     std::cerr << "Error: subdir \""
                               << (app.get()->path / "../" / manifest["subdir"]).str()
                               << "\" does not exist" << std::endl;
-                }
             }
 
             appList.push_back(app);
@@ -389,8 +384,10 @@ namespace AppManager
         {
             if (app->background == true) // app is in background
             {
-                if (app->isRunning()) // app is running
+                if (app->isRunning())
+                { // app is running
                     app->luaInstance->loop();
+                }
             }
         }
 
@@ -538,7 +535,7 @@ namespace AppManager
             std::function<void(std::string)> callback
         )
         {
-            // printf("---- 1\n");
+            printf("---- 1\n");
             graphics::setScreenOrientation(graphics::LANDSCAPE);
             // printf("---- 2\n");
             Keyboard_manager::app = app;

@@ -12,6 +12,7 @@ class LuaJson
 
     std::string get();
     LuaJson op(std::string key);
+    LuaJson op(int index);
     void set(std::string id, std::string value);
 
     bool is_null();

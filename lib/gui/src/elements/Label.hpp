@@ -18,7 +18,7 @@ namespace gui::elements
     {
       public:
         Label(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-        ~Label() override;
+        ~Label();
 
         enum Alignement
         {
@@ -58,8 +58,9 @@ namespace gui::elements
         };
 
         ParseDataOutput parse(void);
-        uint16_t getUsableWidth(void); // retourne la largeur réelle maximale utilisée par le texte
-                                       // (sans les bordure etc...)
+        uint16_t getUsableWidth(
+            void
+        ); // retourne la largeur réelle maximale utilisée par le texte (sans les bordure etc...)
         uint16_t getUsableHeight(void);
 
         uint16_t m_fontSize;

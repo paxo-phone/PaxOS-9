@@ -20,8 +20,8 @@ namespace libsystem
      * @brief Class to store user preferences in a binary format.
      *
      * File config is a binary file format (.bfc).
-     * It is used to store simple data like user preferences (E.g. screen
-     * brightness). Should be faster than JSON.
+     * It is used to store simple data like user preferences (E.g. screen brightness).
+     * Should be faster than JSON.
      *
      * @todo Write better FileStream implementation.
      *
@@ -225,8 +225,7 @@ namespace libsystem
         /**
          * Split a namespaced key to a vector.
          * @param namespacedKey The key to split.
-         * @return A vector containing every namespace before the key (also
-         * included).
+         * @return A vector containing every namespace before the key (also included).
          */
         static std::vector<std::string> getSplicedNamespacedKey(const std::string& namespacedKey);
 

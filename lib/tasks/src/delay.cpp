@@ -6,7 +6,7 @@
 #ifdef ESP_PLATFORM
 #include <LovyanGFX.hpp>
 #else
-#if defined(__linux__)
+#if __has_include(<SDL2/SDL.h>)
 #include <SDL2/SDL.h>
 #else
 #include <SDL.h>

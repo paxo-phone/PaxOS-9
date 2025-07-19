@@ -14,10 +14,10 @@
 
 #else
 
-#ifdef __linux__
+#if __has_include(<SDL2/SDL.h>)
 #include <SDL2/SDL.h>
 #else
-#include <SDL_keyboard.h>
+#include <SDL.h>
 #endif
 
 #endif
@@ -55,8 +55,8 @@ void hardware::init()
     ESP_ERROR_CHECK(uart_param_config(UART_NUM_0, &uart_config));
 
     // Set UART pins (using default pins)
-    ESP_ERROR_CHECK(uart_set_pin(UART_NUM_0, UART_PIN_NO_CHANGE,
-    UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(uart_set_pin(UART_NUM_0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE,
+    UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
     // Install UART driver
     ESP_ERROR_CHECK(uart_driver_install(UART_NUM_0, 256, 0, 0, NULL, 0));*/

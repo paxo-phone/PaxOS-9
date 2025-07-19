@@ -1,6 +1,7 @@
 import argparse
 import fnmatch
 import os
+import re  # Added for robust version parsing
 import shutil
 import subprocess
 
@@ -23,21 +24,14 @@ def get_clang_format_path():
         capture_output=True,
         text=True
     )
-    if version_result.returncode != 0:
-        raise RuntimeError("Failed to get clang-format version. Ensure clang-format is installed correctly.")
     version_string = version_result.stdout.strip()
-    version = version_string.split("version ")[1]
-    major_version = version.split(".")[0]
-    minor_version = version.split(".")[1]
-    patch_version = version.split(".")[2]
-    if int(major_version) < 20:
+    # Robustly find the version number
+    match = re.search(r'(\d+)\.(\d+)\.(\d+)', version_string)
+    if not match:
+        raise RuntimeError(f"Could not parse clang-format version from: {version_string}")
+    major_version, minor_version, patch_version = map(int, match.groups())
+    if (major_version, minor_version, patch_version) < (20, 1, 5):
         raise EnvironmentError("clang-format version 20.1.5 or higher is required. Please update clang-format.")
-    if int(major_version) == 20:
-        if int(minor_version) < 1:
-            raise EnvironmentError("clang-format version 20.1.5 or higher is required. Please update clang-format.")
-        if int(minor_version) == 1:
-            if int(patch_version) < 5:
-                raise EnvironmentError("clang-format version 20.1.5 or higher is required. Please update clang-format.")
     if not os.path.isfile(CLANG_FORMAT_FILE):
         raise FileNotFoundError(f".clang-format file not found at {CLANG_FORMAT_FILE}. Please create one.")
     return clang_format

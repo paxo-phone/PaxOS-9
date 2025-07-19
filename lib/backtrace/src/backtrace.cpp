@@ -108,8 +108,8 @@ namespace backtrace_saver
         const auto label = new Label(0, 0, 320, 400);
 
         label->setText(
-            "This Paxo crashed and the backtrace was saved.\n"
-            "Please report this issue to the developers.\n\n" +
+            "This Paxo crashed and the backtrace was saved.\nPlease report this issue to the "
+            "developers.\n\n" +
             getBacktraceMessage()
         );
         win.addChild(label);

@@ -43,9 +43,8 @@ int paxolua::system::config::getInt(const std::string& key)
             }
             else if constexpr (std::is_same_v<T, std::vector<std::string>>)
             {
-                // Handle vector of strings (e.g., return size, first element as
-                // int, etc.) For this example, let's return the size of the
-                // vector
+                // Handle vector of strings (e.g., return size, first element as int, etc.)
+                // For this example, let's return the size of the vector
                 return arg.size();
             }
             else

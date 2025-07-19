@@ -21,7 +21,7 @@ namespace gui::elements
       public:
         explicit Keyboard(const std::string& defaultText = "");
 
-        ~Keyboard() override;
+        ~Keyboard();
 
         void render() override;
 

@@ -109,8 +109,7 @@ namespace gui::elements
 
         for (std::pair<int16_t, int16_t> vertex : vertices)
         {
-            // std::cout << "Vertex: " << vertex.first << ", " << vertex.second <<
-            // std::endl;
+            // std::cout << "Vertex: " << vertex.first << ", " << vertex.second << std::endl;
         }
 
         // assuming the polygon is convex
@@ -147,18 +146,16 @@ namespace gui::elements
             {
                 point_t vertex1 = vertices[i];
                 point_t vertex2 = vertices
-                    [(i + 1) % verticesCount /* to get the first vertex if we reach
-                                                the end of the vector */
-                ];
+                    [(i + 1) %
+                     verticesCount /* to get the first vertex if we reach the end of the vector */];
 
                 if (vertex1.second > vertex2.second)
                     std::swap(vertex1, vertex2);
 
                 if (y >= vertex1.second && y < vertex2.second) // avoid division by zero
                 {
-                    // calculate the x coordinate of the intersection point of the
-                    // line between vertex1 and vertex2 with the horizontal line at
-                    // y
+                    // calculate the x coordinate of the intersection point of the line between
+                    // vertex1 and vertex2 with the horizontal line at y
                     uint16_t xIntersection = vertex1.first + (y - vertex1.second) *
                                                                  (vertex2.first - vertex1.first) /
                                                                  (vertex2.second - vertex1.second);
@@ -169,10 +166,8 @@ namespace gui::elements
 
                     if (minimumXIntersection <= k_maximumXIntersection &&
                         maximumXIntersection >= k_minimumXIntersection)
-                    { // no need to continue
-                      // iterating, we already
-                      // known that the whole
-                      // line has to be filled
+                    { // no need to continue iterating, we already known that the whole line has to
+                      // be filled
                         break;
                     }
                 }

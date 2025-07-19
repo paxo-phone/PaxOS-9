@@ -1,6 +1,8 @@
 .pio/**
+extern/**
 lib/imgdec/src/toojpeg.cpp
 lib/imgdec/src/toojpeg.h
 lib/json/src/**
 lib/lua/src/lua/**
 lib/lua/src/SOL2/**
+.github/*

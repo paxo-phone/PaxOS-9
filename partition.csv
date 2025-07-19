@@ -1,0 +1,9 @@
+# ESP-IDF Partition Table for 16MB Flash
+# Name,     Type, SubType,  Offset,   Size,     Flags
+#
+# This table maximizes the application partition size for a 16MB flash chip.
+# It assumes no OTA updates are needed. The 'factory' partition will be ~15.9MB.
+
+nvs,      data, nvs,      0x9000,   0x4000,
+phy_init, data, phy,      0xd000,   0x1000,
+factory,  app,  factory,  0x10000,  0xFF0000,

@@ -51,10 +51,8 @@ class LuaGui
         LuaWidget* parent, int x, int y, int width, int height, int minValue, int maxValue,
         int defaultValue
     );
-    std::string keyboard(
-        const std::string& placeholder,
-        const std::string& defaultText
-    ); // deprecated
+    std::string
+        keyboard(const std::string& placeholder, const std::string& defaultText); // deprecated
     void keyboard_async(
         const std::string& placeholder, const std::string& defaultText, sol::function callback
     );

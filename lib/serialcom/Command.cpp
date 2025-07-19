@@ -72,9 +72,9 @@ namespace serialcom
 
         // size_t current_index = 0;
 
-        // detect the command type knowing that the maximum size that the command
-        // type can have is MAX_COMMMAND_TYPE_SIZE char
-        // command_type[MAX_COMMMAND_TYPE_SIZE];
+        // detect the command type knowing that the maximum size that the command type can have is
+        // MAX_COMMMAND_TYPE_SIZE
+        // char command_type[MAX_COMMMAND_TYPE_SIZE];
 
         size_t command_size = MAX_COMMMAND_TYPE_SIZE;
 
@@ -93,8 +93,8 @@ namespace serialcom
 
         current_index += command_size;
 
-        // match the command_type with a loop with the CommandType enum but don't
-        // forget that the input is a 16 char array
+        // match the command_type with a loop with the CommandType enum but don't forget that the
+        // input is a 16 char array
 
         this->type = CommandType::unknown;
 
@@ -228,19 +228,14 @@ namespace serialcom
                         if (shellMode)
                         {
                             SerialManager::sharedInstance->commandLog(
-                                "ERROR: UNEXPECTED QUOTE CHARACTER AT "
-                                "POSITION " +
-                                std::to_string(i)
+                                "ERROR: UNEXPECTED QUOTE CHARACTER AT POSITION " + std::to_string(i)
                             );
                         }
                         else
                         {
                             SerialManager::sharedInstance->commandLog(
                                 NON_SHELL_MODE_ERROR_CODE +
-                                std::string(
-                                    "ERROR: UNEXPECTED QUOTE CHARACTER "
-                                    "AT POSITION "
-                                ) +
+                                std::string("ERROR: UNEXPECTED QUOTE CHARACTER AT POSITION ") +
                                 std::to_string(i)
                             );
                         }

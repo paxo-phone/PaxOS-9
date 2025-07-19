@@ -41,8 +41,7 @@
     uint32_t total_heap = 270000;
 
     // Get largest free block
-    uint32_t largest_free_block =
-heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
+    uint32_t largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
 
     // Get PSRAM info (if available)
     uint32_t psram_free = 0;
@@ -52,8 +51,7 @@ heap_caps_get_largest_free_block(MALLOC_CAP_DEFAULT);
     if (esp_spiram_is_initialized()) {
         psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
         psram_size = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
-        psram_largest_free_block =
-heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
+        psram_largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM);
     }
 
     // Print memory info
@@ -96,18 +94,15 @@ namespace graphics
 
             // if(size < k)
             // {
-            //     std::cout << "[Debug] New surface: " << size << " bytes" <<
-            //     std::endl;
+            //     std::cout << "[Debug] New surface: " << size << " bytes" << std::endl;
             // }
             // else if(size < m)
             // {
-            //     std::cout << "[Debug] New surface: " << size / k << " Ko" <<
-            //     std::endl;
+            //     std::cout << "[Debug] New surface: " << size / k << " Ko" << std::endl;
             // }
             // else
             // {
-            //     std::cout << "[Debug] New surface: " << size / m << " Mo" <<
-            //     std::endl;
+            //     std::cout << "[Debug] New surface: " << size / m << " Mo" << std::endl;
             // }
         }
     }
@@ -395,9 +390,9 @@ namespace graphics
         JPEGENCODE jpe;
 
         // Start the JPEG encoding process
-        int rc = jpg.encodeBegin(&jpe, width, height, JPEG_PIXEL_RGB565,
-        JPEG_SUBSAMPLE_444, quality); if (rc != 0) { Serial.println("Failed to start
-        JPEG encoding"); outFile.close(); return false;
+        int rc = jpg.encodeBegin(&jpe, width, height, JPEG_PIXEL_RGB565, JPEG_SUBSAMPLE_444,
+        quality); if (rc != 0) { Serial.println("Failed to start JPEG encoding"); outFile.close();
+            return false;
         }
 
         // Calculate MCU dimensions
@@ -679,6 +674,7 @@ namespace graphics
         // Copy
         auto copy = lgfx::LGFX_Sprite();
         copy.setColorDepth(m_color_depth);
+        copy.setPsram(true);
         copy.createSprite(getWidth(), getHeight());
 
         // Apply blur effect

@@ -165,8 +165,8 @@ namespace StandbyMode
         esp_sleep_enable_timer_wakeup(time_us);
         // printf("Timer wake-up enabled for %lu ms (%llu us)\n", t, time_us);
 
-        // 2. External Wake-up (GPIO Ext0): Wake up when PIN_HOME_BUTTON (GPIO 15)
-        // goes low GPIO 15 is an RTC GPIO and supported by ext0.
+        // 2. External Wake-up (GPIO Ext0): Wake up when PIN_HOME_BUTTON (GPIO 15) goes low
+        // GPIO 15 is an RTC GPIO and supported by ext0.
         esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, 0); // Wake up on GPIO 15 LOW
         // printf("GPIO (Ext0) wake-up enabled on pin %d (LOW)\n", PIN_HOME_BUTTON);
 
@@ -178,8 +178,8 @@ namespace StandbyMode
         // Configure Ext1 to wake up on ANY of the pins in the mask going LOW.
         // This is suitable for detecting the serial start bit (idle HIGH -> LOW).
         esp_sleep_enable_ext1_wakeup(ext1_wakeup_mask, (esp_sleep_ext1_wakeup_mode_t) 0);
-        // printf("GPIO (Ext1) wake-up enabled on pin %d (ANY_LOW - detects serial
-        // start bit)\n", RX);
+        // printf("GPIO (Ext1) wake-up enabled on pin %d (ANY_LOW - detects serial start bit)\n",
+        // RX);
 
         // --- Enter Light Sleep ---
         // printf("Entering Light Sleep...\n");
@@ -206,8 +206,7 @@ namespace StandbyMode
             // printf("Wakeup cause: External signal (GPIO 15)\n");
             break;
         case ESP_SLEEP_WAKEUP_EXT1:
-            // printf("Wakeup cause: External signal (GPIO 26 - likely serial
-            // data)\n");
+            // printf("Wakeup cause: External signal (GPIO 26 - likely serial data)\n");
             //  Note: Data might already be in the buffer.
             //  You might want to read it here or in your loop.
             libsystem::setDeviceMode(libsystem::NORMAL);
@@ -220,9 +219,9 @@ namespace StandbyMode
             break;
         }
         // It's good practice to disable wake-up sources if you don't immediately
-        // go back to sleep, although they are typically cleared on reset/deep
-        // sleep. For light sleep and immediate re-entry, you might not need to
-        // disable. esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
+        // go back to sleep, although they are typically cleared on reset/deep sleep.
+        // For light sleep and immediate re-entry, you might not need to disable.
+        // esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
 
         // Get RTC time after wake-up
         time_t rtcTimeAfterWakeup;
@@ -234,8 +233,7 @@ namespace StandbyMode
             "%Y-%m-%d %H:%M:%S",
             localtime(&rtcTimeAfterWakeup)
         );
-        // printf("RTC Time After Wakeup: %s (%ld)\n", rtcAfterBuf,
-        // rtcTimeAfterWakeup);
+        // printf("RTC Time After Wakeup: %s (%ld)\n", rtcAfterBuf, rtcTimeAfterWakeup);
 
         double sleepDurationSeconds = difftime(rtcTimeAfterWakeup, rtcTimeBeforeSleep);
         unsigned long actualSleepDurationMillis =
@@ -318,8 +316,7 @@ namespace StandbyMode
 #endif
 
 #ifdef ESP_PLATFORM
-// std::cout << "CPU USAGE: " << (float) (100*(dt/TICKS_MS)) << "%" <<
-// std::endl;
+// std::cout << "CPU USAGE: " << (float) (100*(dt/TICKS_MS)) << "%" << std::endl;
 #endif
 
         timer = os_millis();

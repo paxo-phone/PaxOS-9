@@ -11,8 +11,7 @@
 namespace serialcom
 {
 
-    /// Adapted from https://en.cppreference.com/w/cpp/io/basic_streambuf/overflow's
-    /// example
+    /// Adapted from https://en.cppreference.com/w/cpp/io/basic_streambuf/overflow's example
     template <std::size_t size, class CharT = char>
     struct ArrayedStreamBuffer : std::basic_streambuf<CharT>
     {
@@ -95,8 +94,8 @@ namespace serialcom
             if (!this->stream)
                 return Base::overflow(ch);
 
-            // TODO: find a way to force flush on overflow without compromising an
-            // eventual command log.
+            // TODO: find a way to force flush on overflow without compromising an eventual command
+            // log.
             if (canFlushOnOverflow)
             {
                 flushBuffer();

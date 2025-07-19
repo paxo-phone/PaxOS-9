@@ -95,8 +95,7 @@ uint32_t LuaTimeEvent::addEventListener(
     // this->id =
     // eventHandlerApp.setInterval(std::function<void(void)>(std::bind(&LuaTimeInterval::call,
     // this)),);
-    return 0; // eventHandlerApp.addEventListener( (Function *) condition,
-              // (Function *) callback);
+    return 0; // eventHandlerApp.addEventListener( (Function *) condition, (Function *) callback);
 }
 
 int LuaTimeInterval::getId()

@@ -7,6 +7,7 @@
 #include "lua_gui.hpp"
 #include "lua_hardware.hpp"
 #include "lua_json.hpp"
+#include "lua_network.hpp"
 #include "lua_storage.hpp"
 
 #include <filestream.hpp>
@@ -119,10 +120,10 @@ class LuaFile
     LuaGui lua_gui;
     LuaStorage lua_storage;
     LuaTime lua_time;
+    LuaNetwork lua_network;
     // LuaNetwork lua_network;
 
-    AppManager::App* app; // using raw pointer, because this class will NEVER
-                          // call the deleter
+    AppManager::App* app; // using raw pointer, because this class will NEVER call the deleter
 
   private:
     enum Command

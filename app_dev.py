@@ -1,7 +1,6 @@
-import os
-import subprocess
-
 import pyinotify
+import subprocess
+import os
 
 # Get the directory where the script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))

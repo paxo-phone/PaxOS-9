@@ -324,11 +324,12 @@ namespace serialcom
             SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_ERROR_CODE);
     }
 
-    // WARNING: you have to set the command id of a download command to something
-    // with trailing zeros, the index of the chunk sent will be added (+) to the two
-    // last bytey of the command id. first chunk index is 1, max index is 2^16 - 1 =
-    // 65535 arg1 = file to download output = file content in chunks of 2048 bytes
-    // (or less for the last chunk), each one encoded in base64
+    // WARNING: you have to set the command id of a download command to something with trailing
+    // zeros, the index of the chunk sent will be added (+) to the two last bytey of the command id.
+    // first chunk index is 1, max index is 2^16 - 1 = 65535
+    // arg1 = file to download
+    // output = file content in chunks of 2048 bytes (or less for the last chunk), each one encoded
+    // in base64
     /* if !shellMode
         1. OK + 4 bytes (file size)
         2. file content in chunks of 2048 bytes (or less for the last chunk)
@@ -362,15 +363,12 @@ namespace serialcom
 #define BOOL_STR(b) (b ? "true" : "false")
 
         if (this->shellMode)
-        {
             // SerialManager::sharedInstance->commandLog("File size " +
-            // std::to_string(fileStream.size()) + " : " +
-            // std::to_string(fileStream.size() + 1) + " : "
-            // + BOOL_STR(fileStream.size() == 0));
+            // std::to_string(fileStream.size()) + " : " + std::to_string(fileStream.size() + 1) + "
+            // : " + BOOL_STR(fileStream.size() == 0));
             SerialManager::sharedInstance->commandLog(
                 FILE_SIZE_MESSAGE(std::to_string(fileStream.size()))
             );
-        }
         else
         {
             uint32_t fileSize = fileStream.size();
@@ -396,7 +394,6 @@ namespace serialcom
         while (true)
         {
             char buffer[CHUNK_SIZE];
-            memcpy(buffer, "\0", CHUNK_SIZE);
 
             std::streamsize readSize = fileStream.read(buffer, CHUNK_SIZE);
 
@@ -414,9 +411,8 @@ namespace serialcom
             }
             else
             {
-                // add chunkIndex to the command id (ex command id is
-                // 0x1234567890123400, chunkIndex is 1, command id will be
-                // 0x1234567890123401)
+                // add chunkIndex to the command id (ex command id is 0x1234567890123400, chunkIndex
+                // is 1, command id will be 0x1234567890123401)
                 char commandIdWithChunkIndex[COMMAND_ID_SIZE];
                 memcpy(commandIdWithChunkIndex, command.command_id, COMMAND_ID_SIZE);
                 uint16_t truncatedIndex = static_cast<uint16_t>(chunkIndex & 0xFFFF);
@@ -447,8 +443,8 @@ namespace serialcom
 
     // arg1 = fileName to upload
     // arg2 = size of the file in bytes
-    // input = file content in chunks of 2048 bytes (or less for the last chunk),
-    // each one encoded in base64
+    // input = file content in chunks of 2048 bytes (or less for the last chunk), each one encoded
+    // in base64
     /* NON SHELL MODE
         -> upload filename size
         <- OK
@@ -458,8 +454,8 @@ namespace serialcom
                 {
                     -> send chunk again
                     OR
-                    -> send a packet with the first bit of the options being set to
-       1 => end the communication
+                    -> send a packet with the first bit of the options being set to 1 => end the
+       communication
                 }
             OR
             <- OK => send next chunk
@@ -471,8 +467,8 @@ namespace serialcom
     void CommandsManager::processUploadCommand(const Command& command) const
     {
         storage::Path uploadPath(command.arguments[0]);
-        // SerialManager::sharedInstance->commandLog("Uploading file to " +
-        // uploadPath.str() + " with size " + command.arguments[1] + " bytes");
+        // SerialManager::sharedInstance->commandLog("Uploading file to " + uploadPath.str() + "
+        // with size " + command.arguments[1] + " bytes");
         try
         {
             size_t fileSize = std::stoi(command.arguments[1]);
@@ -484,8 +480,7 @@ namespace serialcom
             {
                 for (size_t i = 0; i < fileSize; i += 2048)
                 {
-                    // SerialManager::sharedInstance->commandLog("Getting encoded
-                    // chunk");
+                    // SerialManager::sharedInstance->commandLog("Getting encoded chunk");
                     std::string encodedChunk;
                     while (encodedChunk.empty())
                     {
@@ -612,8 +607,7 @@ namespace serialcom
                         if (bufferView.size() < HEADER_PREFIX_LEN)
                             continue;
 
-                        // We have enough for the prefix, now read the expected data
-                        // payload size.
+                        // We have enough for the prefix, now read the expected data payload size.
                         expectedDataSize = static_cast<uint8_t>(bufferView[11]) +
                                            (static_cast<uint8_t>(bufferView[12]) << 8);
 
@@ -699,31 +693,23 @@ namespace serialcom
             fileStream.close();
 
             if (this->shellMode)
-            {
                 SerialManager::sharedInstance->commandLog(
                     "File " + uploadPath.str() + " with size " + std::to_string(fileSize) +
                     " uploaded successfully."
                 );
-            }
             else
-            {
                 SerialManager::sharedInstance->commandLog(NON_SHELL_MODE_NO_ERROR_CODE);
-            }
         }
         catch (const std::exception& e)
         {
             if (this->shellMode)
-            {
                 SerialManager::sharedInstance->commandLog(
                     "Error uploading file: " + std::string(e.what())
                 );
-            }
             else
-            {
                 SerialManager::sharedInstance->commandLog(
                     NON_SHELL_MODE_ERROR_CODE + std::string(e.what())
                 );
-            }
 
             uploadPath.remove();
             return;

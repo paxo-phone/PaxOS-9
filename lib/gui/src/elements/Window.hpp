@@ -14,7 +14,7 @@ namespace gui::elements
       private:
       public:
         Window();
-        ~Window() override;
+        ~Window();
 
         static std::vector<Window*> windows;
 

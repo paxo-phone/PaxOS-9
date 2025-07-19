@@ -6,6 +6,7 @@
 #endif
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -70,11 +71,22 @@ namespace Gsm
         READ_ERROR
     };
 
-    struct HttpGetCallbacks
+    enum class HttpMethod
     {
-        std::function<void(HttpResult result)> on_init;
+        GET,
+        POST
+    };
+
+    struct HttpRequest
+    {
+        HttpMethod method = HttpMethod::GET;
+        std::string url;
+        std::map<std::string, std::string> headers;
+        std::string body;
+
+        std::function<void(int http_code)> on_response;
         std::function<void(const std::string_view& data)> on_data;
-        std::function<void(void)> on_complete;
+        std::function<void(HttpResult result)> on_complete;
     };
 
     enum class HttpState
@@ -86,13 +98,14 @@ namespace Gsm
         TERMINATING
     };
     static HttpState currentHttpState = HttpState::IDLE;
-    static HttpGetCallbacks currentHttpCallbacks;
+    static std::unique_ptr<HttpRequest> currentHttpRequestDetails;
     static int httpBytesTotal = 0;
     static int httpBytesRead = 0;
 
     // Forward declarations for our new helper functions
     static void _completeHttpRequest(HttpResult result);
     static void _queueNextHttpRead();
+    void httpRequest(HttpRequest request);
 
     // --- Public Function Declarations ---
 
@@ -126,8 +139,6 @@ namespace Gsm
     bool isPinRequired();
     bool isPinStatusValid(); // Check if PIN status has been read
 
-    bool isSimInserted();
-
     // Returns true if PDU mode (CMGF=0) is active
     bool isPduModeEnabled();
     bool isPduModeStateValid(); // Check if PDU mode has been read
@@ -139,8 +150,7 @@ namespace Gsm
     std::string getLastIncomingNumber();
 
     // --- Public Action Functions ---
-    // Optional callbacks can be provided to know if the command was *accepted*
-    // (OK/ERROR)
+    // Optional callbacks can be provided to know if the command was *accepted* (OK/ERROR)
 
     // Set the SIM PIN
     void setPin(
@@ -156,8 +166,7 @@ namespace Gsm
     void setPduMode(bool enablePdu, std::function<void(bool success)> completionCallback = nullptr);
 
     // Send SMS in PDU format (assumes PDU mode is set)
-    // Callback provides command success and message reference number (-1 on
-    // failure)
+    // Callback provides command success and message reference number (-1 on failure)
     void sendMessagePDU(
         const std::string& pdu, int length,
         std::function<void(bool success, int messageRef)> completionCallback = nullptr
@@ -196,8 +205,7 @@ namespace Gsm
     namespace Time
     {
         // Request network time synchronization
-        // Note: Timezone handling is basic; it stores the modem's reported time and
-        // offset.
+        // Note: Timezone handling is basic; it stores the modem's reported time and offset.
         void syncNetworkTime();
 
         // Getters for the last known time (returns -1 if not valid)

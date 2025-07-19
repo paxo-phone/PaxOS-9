@@ -1041,8 +1041,7 @@ void predict_next_char_probs(
         for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k) probabilities_out[k] /= exp_sum;
     }
     else
-    { // Handle potential issue, e.g., all logits are -infinity (very
-      // unlikely)
+    { // Handle potential issue, e.g., all logits are -infinity (very unlikely)
         // Could set uniform probability or 0, setting 0 for safety
         for (int k = 0; k < OUTPUT_VOCAB_SIZE; ++k) probabilities_out[k] = 0.0f;
     }
