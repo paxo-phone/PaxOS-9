@@ -17,6 +17,8 @@ local num2 = nil
 local nouveauNombre = true
 local operation = ""
 
+local historique = {} -- Historique des calculs
+
 function run()
     initCalculatrice()
 end
@@ -33,15 +35,15 @@ function initCalculatrice()
     -- Création du nouvel écran
     win = gui:window()
 
-     boxRadiux = 10
-     spaceBox = 10
-     spaceBord = 10
+    boxRadiux = 10
+    spaceBox = 10
+    spaceBord = 10
 
-     sizeButton = int( (win:getWidth() - 3* spaceBox - 2*spaceBord) / 4)
-     widthResult = 300
-     heightResult = 70
-     sizeLabelOperation = 20
-     sizeLabelResult = 40
+    sizeButton = int( (win:getWidth() - 3* spaceBox - 2*spaceBord) / 4)
+    widthResult = 300
+    heightResult = 70
+    sizeLabelOperation = 20
+    sizeLabelResult = 40
     
     -- Création de la partie résultat
 
@@ -61,33 +63,34 @@ function initCalculatrice()
     lblOperation:setHorizontalAlignment(RIGHT_ALIGNMENT)
 
     -- Special
-    keyC = drawKey(1, 1, "C", colorTopRow, erase)
-    keyPlusMoins= drawKey(1, 2, "+/-", colorTopRow, plusMoins)
-    keyPourcentage = drawKey(1, 3, "%", colorTopRow, percent)
+    keyHistory = drawKey(1, 1, "H", colorTopRow, afficherHistorique)
+    keyC = drawKey(1, 2, "C", colorTopRow, erase)
+    keyPlusMoins= drawKey(1, 3, "+/-", colorTopRow, plusMoins)
+    keyPourcentage = drawKey(1, 4, "%", colorTopRow, percent)
 
     -- Opérations
-    keyDivide = drawKey(1, 4, "/", colorOperation, divide)
+    keyDivide = drawKey(2, 4, "/", colorOperation, divide)
     --selectionButton(keyDivide)
 
 
-    keyMultiply = drawKey(2, 4, "x", colorOperation, multiply)
-    keySubstract = drawKey(3, 4, "-", colorOperation, substract)
-    keyAdd = drawKey(4, 4, "+", colorOperation, add)
-    keyEqual = drawKey(5, 4, "=", colorOperation, equal)
+    keyMultiply = drawKey(3, 4, "x", colorOperation, multiply)
+    keySubstract = drawKey(4, 4, "-", colorOperation, substract)
+    keyAdd = drawKey(5, 4, "+", colorOperation, add)
+    keyEqual = drawKey(6, 4, "=", colorOperation, equal)
     
-    keyComma = drawKey(5, 3, ".", colorButtonNumber, comma)
+    keyComma = drawKey(6, 3, ".", colorButtonNumber, comma)
 
     -- nombre
-    key0 = drawDoubleKey(5, 1, "0", colorButtonNumber, clickKey, "0")
-    key1 = drawKey(4, 1, "1", colorButtonNumber, clickKey, "1")
-    key2 = drawKey(4, 2, "2", colorButtonNumber, clickKey, "2")
-    key3 = drawKey(4, 3, "3", colorButtonNumber, clickKey, "3")
-    key4 = drawKey(3, 1, "4", colorButtonNumber, clickKey, "4")
-    key5 = drawKey(3, 2, "5", colorButtonNumber, clickKey, "5")
-    key6 = drawKey(3, 3, "6", colorButtonNumber, clickKey, "6")
-    key7 = drawKey(2, 1, "7", colorButtonNumber, clickKey, "7")
-    key8 = drawKey(2, 2, "8", colorButtonNumber, clickKey, "8")
-    key9 = drawKey(2, 3, "9", colorButtonNumber, clickKey, "9")
+    key0 = drawDoubleKey(6, 1, "0", colorButtonNumber, clickKey, "0")
+    key1 = drawKey(5, 1, "1", colorButtonNumber, clickKey, "1")
+    key2 = drawKey(5, 2, "2", colorButtonNumber, clickKey, "2")
+    key3 = drawKey(5, 3, "3", colorButtonNumber, clickKey, "3")
+    key4 = drawKey(4, 1, "4", colorButtonNumber, clickKey, "4")
+    key5 = drawKey(4, 2, "5", colorButtonNumber, clickKey, "5")
+    key6 = drawKey(4, 3, "6", colorButtonNumber, clickKey, "6")
+    key7 = drawKey(3, 1, "7", colorButtonNumber, clickKey, "7")
+    key8 = drawKey(3, 2, "8", colorButtonNumber, clickKey, "8")
+    key9 = drawKey(3, 3, "9", colorButtonNumber, clickKey, "9")
 
     -- Affichage de l'écran
     gui:setWindow(win)
@@ -152,7 +155,7 @@ function clickKey(key)
         end
         lblResultat:setText(key)
     else
-            -- si on a plus de 14 caractères, on arrete la saisie
+        -- si on a plus de 14 caractères, on arrete la saisie
         if (string.len(result) > 13) then
             return    
         else
@@ -169,14 +172,9 @@ function clickKey(key)
         lblResultat:setText("-"..key)
     end
 
-      --  lblResultat:setText(key)
-    
     if (num2 ~= nil) then
         displayOperation(false)
     end
-
-
-
 end --clickKey
 
 -- Efface l'écran
@@ -198,14 +196,13 @@ function percent()
     if (nouveauNombre) then
         displayOperation(false)
     end
-
 end
 
 -- ajoute ou enleve le signe moins devant le nombre
 function plusMoins()
     local result = lblResultat:getText()
     if (string.len(result)>0) then
-        if (string.sub(result, 0,1) == "-") then
+        if (string.sub(result, 1,1) == "-") then
             lblResultat:setText(string.sub(result, 2, -1))
         else
             lblResultat:setText("-"..result)
@@ -260,45 +257,42 @@ function substract()
 
     displayOperation(true)
     selectionButton(keySubstract)
-
 end
 
 -- egal - calcule de l'opération sélectionnée
 function equal()
-
-    -- On déseclectionne les boutons d'opération
     unslectButtons()
 
-    -- si le 2eme nombre est vide, alors, on prend la saisie pour num2
     if (num2 == nil) then
         num2 = tonumber(lblResultat:getText())
     end
-        local result
-        if (operation == "+") then
-            result= num1 + num2
-        elseif (operation == "-") then
-            result= num1 - num2
-        elseif (operation == "/") then
-            result= num1 / num2
-        elseif (operation == "x") then
-            result= num1 * num2
-        else
-            return
-        end
-        lblResultat:setText(tostring(result))
-        
-        -- affichage de l'opération efefctuée
-        displayOperation(true)
-        
-        -- sauvegarde du résultat pour les opérations suivantes
-        num1 = result
-        nouveauNombre = true    
 
+    local result
+    if (operation == "+") then
+        result = num1 + num2
+    elseif (operation == "-") then
+        result = num1 - num2
+    elseif (operation == "/") then
+        result = num1 / num2
+    elseif (operation == "x") then
+        result = num1 * num2
+    else
+        return
+    end
+
+    -- Enregistre dans l'historique
+    local operationString = tostring(num1).." "..operation.." "..tostring(num2).." = "..tostring(result)
+    table.insert(historique, operationString)
+
+    lblResultat:setText(tostring(result))
+    displayOperation(true)
+
+    num1 = result
+    nouveauNombre = true    
 end
 
 -- Ajoute une virgule s'il n'y en a pas déjà une
 function comma()
-
     -- on recherche %. avec le caractère d'échappement
     -- si pas trouvé, on ajoute un point au nombre affiché
     if (string.find(lblResultat:getText(), "%.") == nil) then
@@ -308,7 +302,6 @@ end
 
 -- Affichage de l'opération effectuée
 function displayOperation(display)
-
     if (display) then
         if (num2 == nil) then
             lblOperation:setText(tostring(num1).." "..operation)
@@ -326,12 +319,40 @@ function unslectButtons()
     keyAdd:setBackgroundColor(colorOperation)
     keyMultiply:setBackgroundColor(colorOperation)
     keySubstract:setBackgroundColor(colorOperation)
-
 end
-
 
 function selectionButton(selectedKey)
     unslectButtons()
     selectedKey:setBackgroundColor(COLOR_LIGHT_ORANGE)
+end
 
+
+-- Affiche la fenêtre historique
+function afficherHistorique()
+    local histWin = gui:window()
+    histWin:setTitle("Historique")
+
+    local y = 10
+    local maxAffiche = 10
+    local startIndex = math.max(1, #historique - maxAffiche + 1)
+
+    for i = startIndex, #historique do
+        local ligne = gui:label(histWin, 10, y, 280, 25)
+        ligne:setText(historique[i])
+        ligne:setFontSize(14)
+        ligne:setHorizontalAlignment(LEFT_ALIGNMENT)
+        y = y + 30
+    end
+
+    -- Bouton fermer
+    local btnClose = gui:label(histWin, 100, y + 10, 100, 30)
+    btnClose:setText("Fermer")
+    btnClose:setFontSize(16)
+    btnClose:setBackgroundColor(colorTopRow)
+    btnClose:setHorizontalAlignment(CENTER_ALIGNMENT)
+    btnClose:setVerticalAlignment(CENTER_ALIGNMENT)
+    btnClose:setRadius(10)
+    btnClose:onClick(function() gui:setWindow(win) end)
+
+    gui:setWindow(histWin)
 end
