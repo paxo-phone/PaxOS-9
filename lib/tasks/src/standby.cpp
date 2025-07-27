@@ -243,7 +243,7 @@ namespace StandbyMode
         unsigned long apparentSleepDurationMillis = millis() - sleepStartTimeMillis;
 
         // Calculate the correction offset
-        sleepTimeCorrectionOffset += apparentSleepDurationMillis;
+        sleepTimeCorrectionOffset += t;
 #endif
     }
 

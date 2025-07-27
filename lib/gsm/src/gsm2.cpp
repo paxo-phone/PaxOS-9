@@ -1270,7 +1270,7 @@ namespace Gsm
             }
             else if (command_error)
             {
-                reboot();
+                //reboot();
             }
             else if (messages_found_and_processed > 0)
             {
@@ -1675,16 +1675,6 @@ namespace Gsm
         digitalWrite(GSM_PWR_PIN, 0);
         gsm.setRxBufferSize(4096);
 
-        digitalWrite(GSM_PWR_PIN, 1);
-        delay(1500);
-        digitalWrite(GSM_PWR_PIN, 0);
-        delay(3000);
-
-        digitalWrite(GSM_PWR_PIN, 1);
-        delay(1200);
-        digitalWrite(GSM_PWR_PIN, 0);
-        delay(10000);
-
         bool comm_ok = false;
         int attempts = 0;
         const int max_attempts = 3;
@@ -1704,7 +1694,12 @@ namespace Gsm
             if (data.indexOf("OK") != -1)
                 comm_ok = true;
             else
-                delay(2000);
+            {
+                digitalWrite(GSM_PWR_PIN, 1);
+                delay(500);
+                digitalWrite(GSM_PWR_PIN, 0);
+                delay(5500);
+            }
             attempts++;
         }
 

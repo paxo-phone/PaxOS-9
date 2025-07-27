@@ -39,149 +39,182 @@ SET_LOOP_TASK_STACK_SIZE(4 * 1024);
 
 using namespace gui::elements;
 
+/**
+ * @brief The main loop of the system.
+ *
+ * This function orchestrates the entire device's lifecycle, including:
+ * - Initial setup and configuration.
+ * - Running the Out-of-Box Experience (OOBE) on first launch.
+ * - Managing the application lifecycle (launching, running, quitting).
+ * - Handling the launcher UI.
+ * - Managing the device's power states (NORMAL, SLEEP).
+ * - Responding to hardware button presses.
+ *
+ * @param data A pointer to any data that might be passed to the main loop thread.
+ */
 void mainLoop(void* data)
 {
     libsystem::log("[STARTUP]: run mainLoop");
+
 #ifdef ESP_PLATFORM
+    // On ESP platforms, check for and display any saved crash backtraces.
     if (!backtrace_saver::isBacktraceEmpty())
         backtrace_saver::backtraceMessageGUI();
-
-    // libsystem::setDeviceMode(libsystem::NORMAL);
 #endif
 
+    // Get a reference to the singleton GuiManager instance.
     GuiManager& guiManager = GuiManager::getInstance();
 
-    // ReSharper disable once CppTooWideScopeInitStatement
+    // Load the system configuration from a file.
     const libsystem::FileConfig systemConfig = libsystem::getSystemConfig();
 
-    // TODO: Load launcher before OOBE app, to make the experience smoother.
-
-    // Check if OOBE app need to be launched
+    // Check if the Out-of-Box Experience (OOBE) app needs to be run.
+    // This is typically done on the first boot or after a factory reset.
     if (!systemConfig.has("oobe") || !systemConfig.get<bool>("oobe"))
     {
-        // Launch OOBE app
         try
         {
+            // Find the OOBE app using the AppManager.
             const std::shared_ptr<AppManager::App> oobeApp = AppManager::get(".oobe");
 
             if (oobeApp == nullptr)
                 throw std::runtime_error("OOBE app not found.");
 
+            // Run the OOBE app. This is a blocking call until the app finishes.
             oobeApp->run();
         }
         catch (std::runtime_error& e)
         {
-            // std::cerr << "Lua error: " << e.what() << std::endl;
-            // guiManager.showErrorMessage(e.what());
-            // AppManager::appList[i].kill();
+            // If the OOBE app fails to launch or crashes, show an error message.
+            guiManager.showErrorMessage(e.what());
         }
     }
 
+    // Flag to track if the launcher is currently active and initialized.
     bool launcher = false;
-    while (true) // manage the running apps, the launcher and the sleep mode
+
+    // This is the main event loop that runs for the lifetime of the device.
+    while (true)
     {
+        // Poll for hardware input events (e.g., button presses, touch screen).
         hardware::input::update();
+        // Allow the AppManager to perform its own loop tasks (e.g., IPC, state checks).
         AppManager::loop();
+        // Update the event handler application.
         eventHandlerApp.update();
 
-        if (AppManager::isAnyVisibleApp() &&
-            launcher) // free the launcher is an app is running and the launcher is active
+        // If an application is running and visible, the launcher is not needed.
+        // This block frees the launcher's resources to save memory.
+        if (AppManager::isAnyVisibleApp() && launcher)
         {
             applications::launcher::free();
             launcher = false;
         }
 
+        // If the launcher is active, update its state (e.g., handle UI animations, touch events).
         if (launcher)
             applications::launcher::update();
 
-        if (libsystem::getDeviceMode() == libsystem::NORMAL &&
-            !AppManager::isAnyVisibleApp()) // si mode normal et pas d'app en cours
+        // If we are in NORMAL mode and no app is visible, we should display the launcher.
+        if (libsystem::getDeviceMode() == libsystem::NORMAL && !AppManager::isAnyVisibleApp())
         {
-            if (!launcher) // si pas de launcher -> afficher un launcher
+            // If the launcher isn't already active, initialize it.
+            if (!launcher)
             {
                 applications::launcher::init();
                 launcher = true;
             }
-            else // si launcher -> l'update et peut être lancer une app
-                if (applications::launcher::iconTouched())
+            // If the launcher is active, check if an app icon has been touched.
+            else if (applications::launcher::iconTouched())
+            {
+                // Get the application associated with the touched icon.
+                const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
+
+                // Free launcher resources before launching the app.
+                applications::launcher::free();
+                launcher = false;
+
+                // Launch the selected app.
+                try
                 {
-                    // run the app
-                    const std::shared_ptr<AppManager::App> app = applications::launcher::getApp();
-
-                    // Free the launcher resources
-                    applications::launcher::free();
-                    launcher = false;
-
-                    // Launch the app
-                    try
-                    {
-                        app->run();
-                    }
-                    catch (std::runtime_error& e)
-                    {
-                        std::cerr << "Erreur: " << e.what() << std::endl;
-                        // Affichage du msg d'erreur
-                        guiManager.showErrorMessage(e.what());
-                    }
+                    app->run();
                 }
+                catch (std::runtime_error& e)
+                {
+                    // If the app fails to run, display an error message.
+                    std::cerr << "Erreur: " << e.what() << std::endl;
+                    guiManager.showErrorMessage(e.what());
+                }
+            }
         }
 
-        if (hardware::getHomeButton()) // si on appuie sur HOME
+        // --- STATE MANAGEMENT LOGIC ---
+        // This section manages transitions between NORMAL and SLEEP modes.
+        // It has been structured as an if-else if chain to prevent race conditions.
+        // Using else-if ensures that ONLY ONE of these blocks can execute in a single loop pass,
+        // which fixes the bug of cascading state changes leading to an inconsistent state.
+
+        // Priority 1: Handle user input from the Home button. This should be the most responsive action.
+        if (hardware::getHomeButton())
         {
+            // Wait for the button to be released to debounce it.
             while (hardware::getHomeButton());
 
+            // If the device is asleep, the home button wakes it up.
             if (libsystem::getDeviceMode() == libsystem::SLEEP)
             {
                 setDeviceMode(libsystem::NORMAL);
                 StandbyMode::disable();
-
-#ifndef ESP_PLATFORM
-                applications::launcher::draw();
-#endif
             }
+            // If the launcher is active, the home button puts the device to sleep.
             else if (launcher && !AppManager::didRequestAuth)
             {
                 libsystem::setDeviceMode(libsystem::SLEEP);
                 StandbyMode::enable();
+                // Continue to the next loop iteration to immediately start the sleep cycle.
                 continue;
             }
+            // If an app is visible, the home button quits the app, returning to the launcher.
             else if (AppManager::isAnyVisibleApp())
             {
                 AppManager::quitApp();
             }
+            // Handle cancellation of an authentication request.
             else if (AppManager::didRequestAuth)
             {
                 AppManager::didRequestAuth = false;
             }
         }
-
-        if (libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
+        // Priority 2: Fix an inconsistent state. If the device is in SLEEP mode but an app is still visible, wake it up.
+        else if (libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
         {
             setDeviceMode(libsystem::NORMAL);
             StandbyMode::disable();
         }
-
-        if (libsystem::getDeviceMode() != libsystem::SLEEP &&
-            StandbyMode::expired()) // innactivity detected -> go to sleep mode
+        // Priority 3: Handle inactivity. If the device is awake and the inactivity timer has expired, go to sleep.
+        else if (libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
         {
-            for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp();
-                 i++) // define a limit on how many apps can be stopped (prevent from a loop)
+            // Before sleeping, attempt to quit any visible apps.
+            for (uint32_t i = 0; i < 10 && AppManager::isAnyVisibleApp(); i++)
             {
                 AppManager::quitApp();
             }
+            // Set the device to sleep mode.
             libsystem::setDeviceMode(libsystem::SLEEP);
             StandbyMode::enable();
         }
 
+        // Based on the final state determined above, either perform a low-power sleep
+        // cycle or wait for a short period before the next loop iteration.
         if (libsystem::getDeviceMode() == libsystem::SLEEP)
-            StandbyMode::sleepCycle();
+            StandbyMode::sleepCycle(); // Low-power wait
         else
-            StandbyMode::wait();
+            StandbyMode::wait(); // Normal wait
 
+        // Logging for debugging the device's state at the end of each loop.
         /*std::cout << "states: "
                   << "StandbyMode: " << (StandbyMode::state() ? "enabled" : "disabled")
-                  << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal"
-           : "sleep")
+                  << ", deviceMode: " << (libsystem::getDeviceMode() == libsystem::NORMAL ? "normal" : "sleep")
                   << ", anyVisibleApp: " << (AppManager::isAnyVisibleApp() ? "true" : "false")
                   << std::endl;*/
     }

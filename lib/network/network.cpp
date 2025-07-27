@@ -542,7 +542,14 @@ namespace Network
 
         // FIX: Properly configure SSL/TLS certificate bundle
         config.use_global_ca_store = true;
+#if defined(ESP_ARDUINO_VERSION) && ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+        // For arduino-esp32 v3.0.0 and later
+        config.crt_bundle_attach = arduino_esp_crt_bundle_attach;
+#else
+        // For older versions
         config.crt_bundle_attach = esp_crt_bundle_attach;
+#endif
+
 
         // Additional SSL/TLS configuration for better compatibility
         config.skip_cert_common_name_check = false;
