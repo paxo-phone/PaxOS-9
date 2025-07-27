@@ -71,6 +71,11 @@ namespace Network
             return m_isWifiConnected;
         }
 
+        bool isWifiEnabled()
+        {
+            return m_isWifiEnabled;
+        }
+
         NetworkInterface getBestAvailableInterface();
 
         // Main processing loop, called by the thread
@@ -137,6 +142,8 @@ namespace Network
 
     void enableWifi()
     {
+        std::cout << "[" << NETWORK_TAG << "] Wifi is disabled for now because it may crash the system...\n     Please use 4G instead." << std::endl;
+        return;
         NetworkManager::getInstance().enableWifi();
     }
 
@@ -173,6 +180,11 @@ namespace Network
     bool isWifiConnected()
     {
         return NetworkManager::getInstance().isWifiConnected();
+    }
+
+    bool isWifiEnabled()
+    {
+        return NetworkManager::getInstance().isWifiEnabled();
     }
 
     // --- Thread Function ---
@@ -392,6 +404,11 @@ namespace Network
     {
         if (m_isWifiEnabled)
             return;
+
+        size_t free_heap = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+        size_t largest_free_block = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL);
+        std::cout << "[" << NETWORK_TAG << "] Current free heap size: " << free_heap << ", largest free block: " << largest_free_block << std::endl;
+
         std::cout << "[" << NETWORK_TAG << "] Enabling Wi-Fi." << std::endl;
         esp_netif_create_default_wifi_sta();
         wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();

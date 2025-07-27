@@ -8,7 +8,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-SET_LOOP_TASK_STACK_SIZE(12 * 1024);
+SET_LOOP_TASK_STACK_SIZE(4 * 1024);
 
 #endif
 

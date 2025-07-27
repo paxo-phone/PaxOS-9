@@ -1,4 +1,5 @@
 #include "lua_file.hpp"
+#include "network.hpp"
 
 #include <app.hpp>
 #include <contacts.hpp>
@@ -1079,6 +1080,20 @@ void LuaFile::load()
 
         auto system = lua["system"].get_or_create<sol::table>(sol::new_table());
         auto systemSettings = lua["settings"].get_or_create<sol::table>(sol::new_table());
+
+        // --- Network ---
+        auto networkSettings = systemSettings["network"].get_or_create<sol::table>(sol::new_table());
+        networkSettings.set_function("isCellularEnabled", []() { return !Gsm::isFlightModeActive(); });
+        networkSettings.set_function("setCellularEnabled", [](bool enable) { Gsm::setFlightMode(!enable); });
+        networkSettings.set_function("isSimPinRequired", &Gsm::isPinRequired);
+        networkSettings.set_function("setSimPin", &Gsm::setPin);
+        networkSettings.set_function("isWifiEnabled", &Network::isWifiEnabled);
+        networkSettings.set_function("enableWifi", &Network::enableWifi);
+        networkSettings.set_function("disableWifi", &Network::disableWifi);
+        networkSettings.set_function("getAvailableWifiSSID", &libsystem::paxoConfig::getAvailableWifiSSID);
+        networkSettings.set_function("getConnectedWifi", &libsystem::paxoConfig::getConnectedWifi);
+        networkSettings.set_function("connectWifi", &libsystem::paxoConfig::connectWifi);
+        // --- End of Network ---
 
         systemSettings.set_function("getBrightness", &libsystem::paxoConfig::getBrightness);
         systemSettings.set_function("setBrightness", &libsystem::paxoConfig::setBrightness);

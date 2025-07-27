@@ -14,6 +14,115 @@ function createBox(parent, y, h)
     return box
 end
 
+function pinSettings()
+    win3 = gui:window()
+
+    local backbox = gui:box(win3, 19, 19, 166, 27)
+    local icon = gui:image(backbox, "back.png", 0, 3, 18, 18)
+    local text = gui:label(backbox, 25, 0, 166, 27)
+    text:setFontSize(20)
+    text:setVerticalAlignment(CENTER_ALIGNMENT)
+    text:setText("Réseau")
+    backbox:onClick(function()
+        gui:setWindow(win2)
+        gui:del(win3)
+    end)
+
+    local title = gui:label(win3, 88, 55, 143, 42)
+    title:setFontSize(36)
+    title:setHorizontalAlignment(CENTER_ALIGNMENT)
+    title:setVerticalAlignment(CENTER_ALIGNMENT)
+    title:setText("Code PIN")
+
+    local pinLabel = gui:label(win3, 88, 120, 143, 42)
+    pinLabel:setFontSize(36)
+    pinLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
+    pinLabel:setVerticalAlignment(CENTER_ALIGNMENT)
+    pinLabel:setText("")
+
+    local pin = ""
+
+    local function addDigit(digit)
+        if #pin < 8 then
+            pin = pin .. digit
+            pinLabel:setText(string.rep("*", #pin))
+        end
+    end
+
+    local function deleteDigit()
+        if #pin > 0 then
+            pin = string.sub(pin, 1, #pin - 1)
+            pinLabel:setText(string.rep("*", #pin))
+        end
+    end
+
+    local function submitPin()
+        settings.network.setSimPin(pin, function(success)
+            if success then
+                gui:setWindow(win2)
+                gui:del(win3)
+            else
+                pinLabel:setText("PIN incorrect")
+                pin = ""
+            end
+        end)
+    end
+
+    -- Create a table for the buttons
+    buttons = {}
+
+    -- Create a loop to generate the number buttons
+    for row = 1, 3 do
+        for col = 1, 3 do
+            local num = (row - 1) * 3 + col
+            buttons[num] = gui:label(win3, 51 + 72 * (col - 1), 174 + 68 * (row - 1), 72, 68)
+            buttons[num]:setVerticalAlignment(CENTER_ALIGNMENT)
+            buttons[num]:setHorizontalAlignment(CENTER_ALIGNMENT)
+            buttons[num]:setText(tostring(num))
+            buttons[num]:setFontSize(24)
+
+            -- Add onClick event to each button
+            buttons[num]:onClick(function()
+                addDigit(tostring(num))
+            end)
+        end
+    end
+
+    -- Create the 0 button
+    buttons[0] = gui:label(win3, 123, 378, 72, 68)
+    buttons[0]:setText("0")
+    buttons[0]:setVerticalAlignment(CENTER_ALIGNMENT)
+    buttons[0]:setHorizontalAlignment(CENTER_ALIGNMENT)
+    buttons[0]:setFontSize(24)
+
+    -- Add onClick event to the 0 button
+    buttons[0]:onClick(function()
+        addDigit("0")
+    end)
+
+    buttons[11] = gui:label(win3, 51, 378, 72, 68)
+    buttons[11]:setText("Effacer")
+    buttons[11]:setVerticalAlignment(CENTER_ALIGNMENT)
+    buttons[11]:setHorizontalAlignment(CENTER_ALIGNMENT)
+    buttons[11]:setFontSize(16)
+
+    buttons[11]:onClick(function()
+        deleteDigit()
+    end)
+
+    call = gui:label(win3, 195, 378, 72, 68)
+    call:setText("Valider")
+    call:setVerticalAlignment(CENTER_ALIGNMENT)
+    call:setHorizontalAlignment(CENTER_ALIGNMENT)
+    call:setFontSize(16)
+
+    call:onClick(function()
+        submitPin()
+    end)
+
+    gui:setWindow(win3)
+end
+
 function networkSettings()
     win2 = gui:window()
 
@@ -44,12 +153,14 @@ function networkSettings()
         local buttonPin4G = gui:button(box4G, 5, 49, 250, 38)
             buttonPin4G:setText("Code Pin de la carte SIM")
             buttonPin4G:disable()
-        local switch = gui:switch(box4G, 201, 17)
-            switch:setState(false) -- place holder: use the 4G state
-            switch:onClick(function ()
-                -- place holder: onclick -> set the 4G state
-                if(true) then   -- place holder: if code pin is required for the sim card
-                    if(switch:getState()) then
+            buttonPin4G:onClick(pinSettings)
+
+        local switch4G = gui:switch(box4G, 201, 17)
+            switch4G:setState(settings.network.isCellularEnabled())
+            switch4G:onClick(function ()
+                settings.network.setCellularEnabled(switch4G:getState())
+                if(settings.network.isSimPinRequired()) then
+                    if(switch4G:getState()) then
                         box4G:setHeight(boxHeight_base_button)
                         buttonPin4G:enable()
                     else
@@ -65,35 +176,38 @@ function networkSettings()
             textWifi:setVerticalAlignment(CENTER_ALIGNMENT)
             textWifi:setText("Wifi")
 
-        local switch = gui:switch(boxWifi, 201, 17)
-            switch:setState(false) -- place holder: use the Wifi state
-            switch:onClick(function ()
-                -- place holder: onclick -> set the Wifi state
+        local switchWifi = gui:switch(boxWifi, 201, 17)
+            switchWifi:setState(settings.network.isWifiEnabled())
+            switchWifi:onClick(function ()
+                if(switchWifi:getState()) then
+                    settings.network.enableWifi()
+                else
+                    settings.network.disableWifi()
+                end
 
-                if(not switch:getState()) then
-                    gui:del(wifiList)
-                    wifiList = nil
+                if(not switchWifi:getState()) then
+                    if(wifiList) then
+                        gui:del(wifiList)
+                        wifiList = nil
+                    end
                     boxWifi:setHeight(boxHeight_base)
                 end
             end)
         
         boxWifi:onClick(function()
-            if(not switch:getState()) then
+            if(not switchWifi:getState()) then
                 return
             end
 
             if(wifiList ~= nil) then
                 gui:del(wifiList)
+                wifiList = nil
             end
             
             -- show the list of available networks
-            local wifi_list = {
-                "Wifi1",
-                "Wifi2",
-                "Wifi3"
-            }
+            local wifi_list = settings.network.getAvailableWifiSSID()
             local nbWifi = #wifi_list
-            local connectedWifi = "Wifi1"
+            local connectedWifi = settings.network.getConnectedWifi()
 
             wifiList = gui:vlist(boxWifi, 24, 60, 211, nbWifi*30)
             wifiList:setSpaceLine(0)
@@ -104,8 +218,11 @@ function networkSettings()
                             text:setFontSize(20)
                         
                         case:onClick(function()
-                            -- place holder: onclick -> connect to the selected network
-                            print("Connect wifi to SSID: " .. value)
+                            gui:keyboard("Mot de passe pour " .. value, "", function(password)
+                                if password ~= "" then
+                                    settings.network.connectWifi(value, password)
+                                end
+                            end)
                         end)
 
                         if(value == connectedWifi) then

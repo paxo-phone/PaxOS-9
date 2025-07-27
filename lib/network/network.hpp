@@ -121,6 +121,12 @@ namespace Network
      */
     bool isWifiConnected();
 
+    /**
+     * @brief Checks if the Wi-Fi module is currently enabled.
+     * @return True if enabled, false otherwise.
+     */
+    bool isWifiEnabled();
+
     // --- Policy Management ---
 
     /**
