@@ -297,7 +297,7 @@ function PaxOSSettings()
 
     local Licence = "AGPL-3.0"
 
-    local OS_VERSION = OS_VERSION_MAJOR .. "." .. OS_VERSION_MINOR .. "." .. OS_VERSION_PATCH .. "." .. OS_VERSION_BUILD
+    local OS_VERSION = OS_VERSION_MAJOR .. "." .. OS_VERSION_MINOR .. "." .. OS_VERSION_PATCH .. "-" .. OS_VERSION_BUILD
 
     local backbox = gui:box(win2, 19, 19, 166, 27)
         local icon = gui:image(backbox, "back.png", 0, 3, 18, 18)
