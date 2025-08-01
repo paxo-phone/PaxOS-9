@@ -288,6 +288,17 @@ function PaxOSSettings()
 
     win2 = gui:window()
 
+    local OS_VERSION_MAJOR = 9
+    local OS_VERSION_MINOR = 0
+    local OS_VERSION_PATCH = 0
+    local OS_VERSION_BUILD = 0
+
+    local OS_VERSION_CODENAME = "Red Panic"
+
+    local Licence = "AGPL-3.0"
+
+    local OS_VERSION = OS_VERSION_MAJOR .. "." .. OS_VERSION_MINOR .. "." .. OS_VERSION_PATCH .. "-" .. OS_VERSION_BUILD
+
     local backbox = gui:box(win2, 19, 19, 166, 27)
         local icon = gui:image(backbox, "back.png", 0, 3, 18, 18)
         local text = gui:label(backbox, 25, 0, 166, 27)
@@ -310,14 +321,27 @@ function PaxOSSettings()
     versionLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
     versionLabel:setVerticalAlignment(CENTER_ALIGNMENT)
     versionLabel:setTextColor(COLOR_GREY)
-    versionLabel:setText("Version : 9.0.0.0")
+    versionLabel:setText(OS_VERSION)
+
+    local Debounce = true
+    
+    versionLabel:onClick(function()
+        if Debounce == true then
+            Debounce = false
+            versionLabel:setText(OS_VERSION_CODENAME)
+
+        elseif Debounce == false then
+            Debounce = true
+            versionLabel:setText(OS_VERSION)
+        end
+    end)
 
     local licenceLabel = gui:label(win2, 86, 155, 150, 25)
     licenceLabel:setFontSize(20)
     licenceLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
     licenceLabel:setVerticalAlignment(CENTER_ALIGNMENT)
     licenceLabel:setTextColor(COLOR_GREY)
-    licenceLabel:setText("Licence : AGPL-3.0")
+    licenceLabel:setText("Licence : " .. Licence)
 
     local updateLabel = gui:label(win2, 20, 240, 280, 100)
     updateLabel:setFontSize(18)
@@ -331,7 +355,6 @@ function PaxOSSettings()
     infoLabel:setHorizontalAlignment(CENTER_ALIGNMENT)
     infoLabel:setVerticalAlignment(CENTER_ALIGNMENT)
     infoLabel:setText("Pour toute autre information rendez-vous sur Paxo.fr ")
-
 
     gui:setWindow(win2)
 end
@@ -375,7 +398,6 @@ function run() -- create the menu
             text_personalization:setVerticalAlignment(CENTER_ALIGNMENT)
             text_personalization:setText("Personnalisation")
         local img = gui:image(box_personalization, "r_arrow.png", 219, 15, 25, 25)
-        -- box_personalization:onClick(personalizationSettings)
         box_personalization:onClick(initColorScreen)
     
     local box_PaxOS = gui:box(win, 30, 338, 260, 55, boxHeight_base)
