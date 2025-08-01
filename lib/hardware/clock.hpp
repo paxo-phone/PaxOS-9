@@ -3,7 +3,7 @@
 
 #ifdef ESP32
 #include "esp_heap_caps.h"
-#include "soc/rtc_wdt.h"
+#include <rtc_wdt.h>
 
 #include <Arduino.h>
 #include <esp_task_wdt.h>

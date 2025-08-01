@@ -133,7 +133,7 @@ namespace Gsm
 
     // Returns voltage in millivolts (mV), or -1 if unknown
     int getVoltage();
-    double getBatteryLevel();
+    double getBatteryLevel(); // 0 to 1, where 1 is fully charged, -1 if unknown
     bool isVoltageValid(); // Check if voltage has been read
 
     // Returns true if SIM requires a PIN
