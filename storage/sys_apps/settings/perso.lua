@@ -13,15 +13,24 @@ function initColorScreen()
 
     local winColor = manageWindow()
 
-    local btnBack = gui:image(winColor, "back.png",10, 20, 20, 20, color.white)
-    btnBack:onClick(initMainScreen)
+    local backbox = gui:box(winColor, 19, 19, 166, 27)
+        local icon = gui:image(backbox, "back.png", 0, 3, 18, 18)
+        local text = gui:label(backbox, 25, 0, 166, 27)
+            text:setFontSize(20)
+            text:setVerticalAlignment(CENTER_ALIGNMENT)
+            text:setText("Paramètres")
+        backbox:onClick(function()
+            gui:setWindow(win)
+            gui:del(win2)
+        end)
 
-    local title = gui:label(winColor, 40, 20, 280, 40)
+    local title = gui:label(winColor, 100, 50, 120, 40)-- 
+    title:setHorizontalAlignment(CENTER_ALIGNMENT)
     title:setText("Couleurs")
     title:setTextColor(97, 183, 157)
     title:setFontSize(30)
 
-    local topRadio = 80
+    local topRadio = 100
 
     -- Gestion des boutons radios
     radioText = gui:radio(winColor, 20, topRadio)
@@ -163,11 +172,12 @@ end
 
 
 function saveColor()
-    settings.setBackgroundColor(backgroundColor)
-    --settings:setTextColor(textColor, true)
-    --settings:setBorderColor(borderColor, true)
 
-    initMainScreen()
+    settings.setBackgroundColor(backgroundColor)
+    --settings.setTextColor(textColor, true)
+    --settings.setBorderColor(borderColor, true)
+
+    run()
 
 end
 
