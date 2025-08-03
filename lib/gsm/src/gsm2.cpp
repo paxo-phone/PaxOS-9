@@ -19,6 +19,8 @@
 #include <threads.hpp> // Assumes eventHandlerBack
 #include <vector>
 
+#define GSM_DEBUG
+
 #ifdef ESP_PLATFORM
 #include <Arduino.h>
 
@@ -68,6 +70,59 @@ inline long long getCurrentTimestamp()
 
 namespace Gsm
 {
+// --- START: Debugging Macros ---
+#ifdef GSM_DEBUG
+#define GSM_DEEP_DEBUG // Also enable deep debugging of results
+
+#define GSM_LOG(msg)                                                                               \
+    do                                                                                             \
+    {                                                                                              \
+        std::cout << "[GSM DBG] " << msg << std::endl;                                              \
+    } while (0)
+#define GSM_LOG_CMD_SENT(cmd)                                                                      \
+    do                                                                                             \
+    {                                                                                              \
+        std::cout << "[GSM CMD TX] " << cmd << std::endl;                                           \
+    } while (0)
+#define GSM_LOG_CMD_RECV(resp)                                                                     \
+    do                                                                                             \
+    {                                                                                              \
+        std::cout << "[GSM CMD RX] <<<\n" << resp << ">>>" << std::endl;                             \
+    } while (0)
+
+#ifdef GSM_DEEP_DEBUG
+#define GSM_LOG_DEEP(msg)                                                                          \
+    do                                                                                             \
+    {                                                                                              \
+        std::cout << "[GSM DEEP] " << msg << std::endl;                                             \
+    } while (0)
+#else
+#define GSM_LOG_DEEP(msg)                                                                          \
+    do                                                                                             \
+    {                                                                                              \
+    } while (0)
+#endif
+
+#else
+#define GSM_LOG(msg)                                                                               \
+    do                                                                                             \
+    {                                                                                              \
+    } while (0)
+#define GSM_LOG_CMD_SENT(cmd)                                                                      \
+    do                                                                                             \
+    {                                                                                              \
+    } while (0)
+#define GSM_LOG_CMD_RECV(resp)                                                                     \
+    do                                                                                             \
+    {                                                                                              \
+    } while (0)
+#define GSM_LOG_DEEP(msg)                                                                          \
+    do                                                                                             \
+    {                                                                                              \
+    } while (0)
+#endif
+    // --- END: Debugging Macros ---
+
     // --- Internal State Variables ---
 
     EventHandler eventHandlerGsm;
@@ -188,6 +243,10 @@ namespace Gsm
                                 timeValid = true;
                                 lastTimeUpdateTime = std::chrono::steady_clock::now();
                                 parsed_ok = true;
+                                GSM_LOG_DEEP(
+                                    "Time Updated: " << year << "/" << month << "/" << day << " "
+                                                     << hour << ":" << minute << ":" << second
+                                );
                             }
                         }
                     }
@@ -210,6 +269,7 @@ namespace Gsm
                         timezoneOffsetQuarterHours = 0;
                         timeValid = true;
                         lastTimeUpdateTime = std::chrono::steady_clock::now();
+                        GSM_LOG_DEEP("Time Fallback to System Time");
                     }
 #endif
                 }
@@ -1063,18 +1123,24 @@ namespace Gsm
         DecodedPdu decoded_sms;
         if (decodePduDeliver(pdu_hex_string, decoded_sms))
         {
+            GSM_LOG_DEEP(
+                "Decoded SMS from " << decoded_sms.senderNumber << " with type "
+                                    << static_cast<int>(decoded_sms.type)
+            );
 
             if (decoded_sms.type == SmsType::TEXT_SMS ||
                 decoded_sms.type == SmsType::MMS_NOTIFICATION)
             {
                 if (decoded_sms.type == SmsType::MMS_NOTIFICATION)
                 {
+                    GSM_LOG_DEEP("MMS Notification. URL: " << decoded_sms.mmsUrl);
                     if (!decoded_sms.mmsUrl.empty())
                     {
                     }
                 }
                 else
                 {
+                    GSM_LOG_DEEP("Text SMS content: '" << decoded_sms.messageContent << "'");
                     auto contact = Contacts::getByNumber("+" + decoded_sms.senderNumber);
 
                     Conversations::Conversation conv;
@@ -1118,9 +1184,11 @@ namespace Gsm
             {
                 if (response.find("OK") != std::string::npos)
                 {
+                    GSM_LOG_DEEP("Successfully deleted SMS at index " << message_idx);
                 }
                 else
                 {
+                    GSM_LOG_DEEP("Failed to delete SMS at index " << message_idx);
                 }
                 return false;
             };
@@ -1129,6 +1197,7 @@ namespace Gsm
         }
         else
         {
+            GSM_LOG("Failed to decode PDU for message at index " << message_idx);
         }
     }
 
@@ -1174,10 +1243,12 @@ namespace Gsm
 
             if (found_pdu)
             {
+                GSM_LOG_DEEP("Found PDU for SMS at index " << index << ". Processing.");
                 processAndStoreSms(pdu_line, index);
             }
             else
             {
+                GSM_LOG_DEEP("Could not find PDU for SMS at index " << index << " in response.");
             }
             return false;
         };
@@ -1244,6 +1315,9 @@ namespace Gsm
                 else if (expect_pdu_next && current_message_idx != -1)
                 {
                     std::string pdu_data_line = line;
+                    GSM_LOG_DEEP(
+                        "Found message at index " << current_message_idx << " from CMGL list."
+                    );
                     processAndStoreSms(pdu_data_line, current_message_idx);
                     messages_found_and_processed++;
                     expect_pdu_next = false;
@@ -1263,20 +1337,31 @@ namespace Gsm
             {
                 if (messages_found_and_processed > 0)
                 {
+                    GSM_LOG_DEEP(
+                        "CMGL command OK. Processed " << messages_found_and_processed
+                                                      << " messages."
+                    );
                 }
                 else
                 {
+                    GSM_LOG_DEEP("CMGL command OK. No unread messages found.");
                 }
             }
             else if (command_error)
             {
+                GSM_LOG("CMGL command returned ERROR.");
                 //reboot();
             }
             else if (messages_found_and_processed > 0)
             {
+                GSM_LOG_DEEP(
+                    "CMGL command finished. Processed " << messages_found_and_processed
+                                                        << " messages."
+                );
             }
             else
             {
+                GSM_LOG_DEEP("CMGL command finished. No messages found or processed.");
             }
             return false;
         };
@@ -1310,10 +1395,12 @@ namespace Gsm
                 currentBer = ber;
                 networkQualityValid = true;
                 lastQualityUpdateTime = std::chrono::steady_clock::now();
+                GSM_LOG_DEEP("Network Quality: RSSI=" << currentRssi << ", BER=" << currentBer);
             }
             else
             {
                 networkQualityValid = false;
+                GSM_LOG_DEEP("Failed to parse network quality.");
             }
             return false;
         };
@@ -1369,10 +1456,12 @@ namespace Gsm
                 isGprsAttached = attached;
                 gprsStateValid = true;
                 lastGprsUpdateTime = std::chrono::steady_clock::now();
+                GSM_LOG_DEEP("GPRS Attached: " << (isGprsAttached ? "Yes" : "No"));
             }
             else
             {
                 gprsStateValid = false;
+                GSM_LOG_DEEP("Failed to parse GPRS attachment status.");
             }
             return false;
         };
@@ -1412,10 +1501,12 @@ namespace Gsm
                 flightModeState = flightMode;
                 flightModeStateValid = true;
                 lastFlightModeUpdateTime = std::chrono::steady_clock::now();
+                GSM_LOG_DEEP("Flight Mode: " << (flightModeState ? "On" : "Off"));
             }
             else
             {
                 flightModeStateValid = false;
+                GSM_LOG_DEEP("Failed to parse flight mode status.");
             }
             return false;
         };
@@ -1512,10 +1603,14 @@ namespace Gsm
                 voltageValid = true;
                 lastVoltageUpdateTime = std::chrono::steady_clock::now();
                 update_successful = true;
+                GSM_LOG_DEEP("Voltage Updated: " << currentVoltage_mV << "mV");
             }
 
             if (!update_successful)
+            {
                 voltageValid = false;
+                GSM_LOG_DEEP("Failed to parse voltage.");
+            }
             return false;
         };
         std::lock_guard<std::mutex> lock(requestMutex);
@@ -1613,10 +1708,15 @@ namespace Gsm
                 pinRequiresPin = needsPin;
                 pinStatusValid = true;
                 lastPinStatusUpdateTime = std::chrono::steady_clock::now();
+                GSM_LOG_DEEP(
+                    "PIN Status: " << parsed_status << ", Requires PIN: "
+                                   << (pinRequiresPin ? "Yes" : "No")
+                );
             }
             else
             {
                 pinStatusValid = false;
+                GSM_LOG_DEEP("Failed to determine PIN status.");
             }
             return false;
         };
@@ -1656,10 +1756,12 @@ namespace Gsm
                 pduModeEnabled = pduMode;
                 pduModeStateValid = true;
                 lastPduModeUpdateTime = std::chrono::steady_clock::now();
+                GSM_LOG_DEEP("PDU Mode Enabled: " << (pduModeEnabled ? "Yes" : "No"));
             }
             else
             {
                 pduModeStateValid = false;
+                GSM_LOG_DEEP("Failed to parse PDU mode status.");
             }
             return false;
         };
@@ -1679,11 +1781,13 @@ namespace Gsm
         int attempts = 0;
         const int max_attempts = 3;
 
+        GSM_LOG("Starting GSM initialization...");
         gsm.begin(921600, SERIAL_8N1, RX, TX);
         delay(100);
 
         while (attempts < max_attempts && !comm_ok)
         {
+            GSM_LOG("Sending AT to 921600 baud...");
             gsm.println("AT");
             delay(500);
             String data = "";
@@ -1692,9 +1796,13 @@ namespace Gsm
             Serial.println(data);
 
             if (data.indexOf("OK") != -1)
+            {
+                GSM_LOG("Communication OK at 921600 baud.");
                 comm_ok = true;
+            }
             else
             {
+                GSM_LOG("No response at 921600, power cycling module...");
                 digitalWrite(GSM_PWR_PIN, 1);
                 delay(500);
                 digitalWrite(GSM_PWR_PIN, 0);
@@ -1705,11 +1813,13 @@ namespace Gsm
 
         if (!comm_ok)
         {
+            GSM_LOG("Switching to 115200 baud for negotiation.");
             gsm.updateBaudRate(115200);
             delay(100);
             attempts = 0;
             while (attempts < max_attempts && !comm_ok)
             {
+                GSM_LOG("Sending AT to 115200 baud...");
                 gsm.println("AT");
                 delay(500);
                 String data = "";
@@ -1719,11 +1829,13 @@ namespace Gsm
 
                 if (data.indexOf("OK") != -1)
                 {
+                    GSM_LOG("Communication OK at 115200. Setting new baud rate to 921600.");
                     gsm.println("AT+IPR=921600");
                     delay(100);
                     gsm.flush();
                     gsm.updateBaudRate(921600);
                     delay(100);
+                    GSM_LOG("Switched to 921600. Sending AT for verification.");
                     gsm.println("AT");
                     delay(500);
                     data = "";
@@ -1732,10 +1844,12 @@ namespace Gsm
                     Serial.println(data);
                     if (data.indexOf("OK") != -1)
                     {
+                        GSM_LOG("Baud rate successfully changed to 921600.");
                         comm_ok = true;
                     }
                     else
                     {
+                        GSM_LOG("Failed to verify new baud rate. Reverting to 115200.");
                         gsm.updateBaudRate(115200);
                         delay(100);
                         comm_ok = true;
@@ -1751,6 +1865,7 @@ namespace Gsm
 
         if (comm_ok)
         {
+            GSM_LOG("GSM communication established. Queueing initial settings.");
             currentCallState = CallState::IDLE;
 
             updatePinStatusInternal();
@@ -1766,8 +1881,10 @@ namespace Gsm
             return;
         }
 
+        GSM_LOG("GSM initialization failed after all attempts.");
         currentCallState = CallState::UNKNOWN;
 #else
+        GSM_LOG("Non-ESP platform. Assuming GSM is ready.");
         currentCallState = CallState::IDLE;
 #endif
     }
@@ -1778,6 +1895,7 @@ namespace Gsm
         req->command = "AT+CFUN=1,1";
         req->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("Module reboot command sent. Re-initializing.");
             init();
             return false;
         };
@@ -1787,10 +1905,12 @@ namespace Gsm
 
     void uploadSettings()
     {
+        GSM_LOG("Queueing standard module settings.");
         auto requestClip = std::make_shared<Request>();
         requestClip->command = "AT+CLIP=1";
         requestClip->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("CLIP setting result: " << (response.find("OK") != std::string::npos));
             return false;
         };
         {
@@ -1802,6 +1922,7 @@ namespace Gsm
         requestClcc->command = "AT+CLCC=1";
         requestClcc->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("CLCC setting result: " << (response.find("OK") != std::string::npos));
             return false;
         };
         {
@@ -1813,6 +1934,7 @@ namespace Gsm
         requestCnmi->command = "AT+CNMI=2,1,0,0,0";
         requestCnmi->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("CNMI setting result: " << (response.find("OK") != std::string::npos));
             return false;
         };
         {
@@ -1824,6 +1946,7 @@ namespace Gsm
         requestHourSync->command = "AT+CNTP=\"time.google.com\",8";
         requestHourSync->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("CNTP server setting result: " << (response.find("OK") != std::string::npos));
             return false;
         };
         {
@@ -1835,6 +1958,7 @@ namespace Gsm
         requestMinuteSync->command = "AT+CNTP";
         requestMinuteSync->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("CNTP sync trigger result: " << (response.find("OK") != std::string::npos));
             return false;
         };
         {
@@ -1846,6 +1970,7 @@ namespace Gsm
         requestCreg->command = "AT+CREG=1";
         requestCreg->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("CREG setting result: " << (response.find("OK") != std::string::npos));
             return false;
         };
         {
@@ -1857,6 +1982,7 @@ namespace Gsm
         requestCgreg->command = "AT+CGREG=1";
         requestCgreg->callback = [](const std::string& response) -> bool
         {
+            GSM_LOG_DEEP("CGREG setting result: " << (response.find("OK") != std::string::npos));
             if (response.find("OK") != std::string::npos)
                 updateGprsAttachmentStatusInternal();
             return false;
@@ -1872,10 +1998,12 @@ namespace Gsm
             {
                 if (success)
                 {
+                    GSM_LOG_DEEP("PDU mode set successfully, checking for messages.");
                     checkForMessages();
                 }
                 else
                 {
+                    GSM_LOG_DEEP("Failed to set PDU mode.");
                 }
             }
         );
@@ -1942,6 +2070,7 @@ namespace Gsm
 
     void processURC(std::string data)
     {
+        GSM_LOG("Processing URC: " << data);
         if (data.find("RING") == 0)
         {
             currentCallState = CallState::RINGING;
@@ -1954,6 +2083,7 @@ namespace Gsm
             if (firstQuote != std::string::npos && secondQuote != std::string::npos)
             {
                 lastIncomingCallNumber = data.substr(firstQuote + 1, secondQuote - firstQuote - 1);
+                GSM_LOG_DEEP("Incoming call from: " << lastIncomingCallNumber);
                 if (ExternalEvents::onIncommingCall)
                     ExternalEvents::onIncommingCall();
                 if (currentCallState != CallState::RINGING)
@@ -1967,38 +2097,39 @@ namespace Gsm
 
             int method_urc, statusCode = 0, dataLen = 0;
             sscanf(data.c_str(), "+HTTPACTION: %d,%d,%d", &method_urc, &statusCode, &dataLen);
-            std::cout << "[HTTP URC] Method: " << method_urc << ", Status: " << statusCode
-                      << ", Data Length: " << dataLen << std::endl;
+            GSM_LOG_DEEP(
+                "[HTTP URC] Method: " << method_urc << ", Status: " << statusCode
+                                      << ", Data Length: " << dataLen
+            );
 
             if (currentHttpRequestDetails && currentHttpRequestDetails->on_response)
                 currentHttpRequestDetails->on_response(statusCode);
 
             if (statusCode >= 200 && statusCode < 400)
             { // Handle success and redirects
-                std::cout << "[HTTP URC] Request successful, data length: " << dataLen << std::endl;
+                GSM_LOG_DEEP("[HTTP URC] Request successful, data length: " << dataLen);
                 if (dataLen > 0)
                 {
                     httpBytesTotal = dataLen;
                     httpBytesRead = 0;
                     currentHttpState = HttpState::READING;
-                    std::cout << "[HTTP URC] Queueing next HTTP read." << std::endl;
+                    GSM_LOG_DEEP("[HTTP URC] Queueing next HTTP read.");
                     _queueNextHttpRead();
                 }
                 else
                 {
-                    std::cout << "[HTTP URC] No data received, completing request." << std::endl;
+                    GSM_LOG_DEEP("[HTTP URC] No data received, completing request.");
                     _completeHttpRequest(HttpResult::OK);
                 }
             }
             else if (statusCode >= 400)
             {
-                std::cout << "[HTTP URC] Request failed with status code: " << statusCode
-                          << std::endl;
+                GSM_LOG_DEEP("[HTTP URC] Request failed with status code: " << statusCode);
                 _completeHttpRequest(HttpResult::SERVER_ERROR);
             }
             else
             {
-                std::cout << "[HTTP URC] Connection failed or no data received." << std::endl;
+                GSM_LOG_DEEP("[HTTP URC] Connection failed or no data received.");
                 _completeHttpRequest(HttpResult::CONNECTION_FAILED);
             }
         }
@@ -2037,6 +2168,11 @@ namespace Gsm
                     }
                     if (currentCallState != previousState)
                     {
+                        GSM_LOG_DEEP(
+                            "Call state changed via CLCC: " << static_cast<int>(previousState)
+                                                            << " -> "
+                                                            << static_cast<int>(currentCallState)
+                        );
                         if (currentCallState == CallState::IDLE)
                             lastIncomingCallNumber = "";
                     }
@@ -2049,6 +2185,7 @@ namespace Gsm
             {
                 if (currentCallState != CallState::IDLE)
                 {
+                    GSM_LOG_DEEP("Call state changed to IDLE (empty CLCC).");
                     currentCallState = CallState::IDLE;
                     lastIncomingCallNumber = "";
                 }
@@ -2058,6 +2195,7 @@ namespace Gsm
         {
             if (currentCallState != CallState::IDLE)
             {
+                GSM_LOG_DEEP("Call ended. State changed to IDLE.");
                 currentCallState = CallState::IDLE;
                 lastIncomingCallNumber = "";
             }
@@ -2079,6 +2217,9 @@ namespace Gsm
                 try
                 {
                     int msg_idx = std::stoi(index_str);
+                    GSM_LOG_DEEP(
+                        "New message notification. Index: " << msg_idx << ", Store: " << mem_store
+                    );
                     queueReadSms(mem_store, msg_idx);
                 }
                 catch (const std::exception& e)
@@ -2108,6 +2249,10 @@ namespace Gsm
                     {
                         if (!gprsStateValid || isGprsAttached != attached)
                         {
+                            GSM_LOG_DEEP(
+                                "GPRS registration status changed via URC. Attached: "
+                                << (attached ? "Yes" : "No")
+                            );
                             isGprsAttached = attached;
                             gprsStateValid = true;
                             lastGprsUpdateTime = std::chrono::steady_clock::now();
@@ -2132,6 +2277,7 @@ namespace Gsm
             {
                 if (isGprsAttached)
                 {
+                    GSM_LOG_DEEP("GPRS detached via CGEV URC.");
                     isGprsAttached = false;
                     gprsStateValid = true;
                     lastGprsUpdateTime = std::chrono::steady_clock::now();
@@ -2226,6 +2372,7 @@ namespace Gsm
         request->callback = [completionCallback](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
+            GSM_LOG_DEEP("setPin success: " << success);
             if (success)
             {
                 pinRequiresPin = false;
@@ -2249,6 +2396,7 @@ namespace Gsm
                              enableFlightMode](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
+            GSM_LOG_DEEP("setFlightMode success: " << success);
             if (success)
             {
                 flightModeState = enableFlightMode;
@@ -2270,6 +2418,7 @@ namespace Gsm
         request->callback = [completionCallback, enablePdu](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
+            GSM_LOG_DEEP("setPduMode success: " << success);
             if (success)
             {
                 pduModeEnabled = enablePdu;
@@ -2300,10 +2449,12 @@ namespace Gsm
             size_t last_char_pos = trimmed_response.find_last_not_of(" \t\r\n");
             if (last_char_pos != std::string::npos && trimmed_response[last_char_pos] == '>')
             {
+                GSM_LOG_DEEP("Got PDU prompt '>'. Ready to send PDU data.");
                 return true;
             }
             else
             {
+                GSM_LOG_DEEP("Did not get PDU prompt for CMGS. Aborting send.");
                 if (completionCallback)
                     completionCallback(false, -1);
                 return false;
@@ -2346,6 +2497,7 @@ namespace Gsm
             {
                 success = false;
             }
+            GSM_LOG_DEEP("sendMessagePDU success: " << success << ", MR: " << messageRef);
             if (completionCallback)
                 completionCallback(success, messageRef);
             return false;
@@ -2597,7 +2749,10 @@ namespace Gsm
     {
         std::pair<std::string, int> pduData = Gsm::encodePduSubmit(recipient, text);
         if (pduData.second == -1)
+        {
+            GSM_LOG("Could not encode PDU for SMS to " << recipient << ". Invalid number?");
             return;
+        }
         std::string pduString = pduData.first;
         int cmgsLength = pduData.second;
 
@@ -2608,6 +2763,7 @@ namespace Gsm
             {
                 if (success)
                 {
+                    GSM_LOG_DEEP("SMS to " << recipient << " sent successfully. Storing in history.");
                     Conversations::Conversation conv;
                     storage::Path convPath(
                         std::string(MESSAGES_LOCATION) + "/" + recipient + ".json"
@@ -2621,6 +2777,7 @@ namespace Gsm
                 }
                 else
                 {
+                    GSM_LOG_DEEP("Failed to send SMS to " << recipient);
                 }
             }
         );
@@ -2630,6 +2787,7 @@ namespace Gsm
     {
         if (currentCallState != CallState::IDLE)
         {
+            GSM_LOG("Cannot call, not in IDLE state.");
             if (completionCallback)
                 completionCallback(false);
             return;
@@ -2639,6 +2797,7 @@ namespace Gsm
         request->callback = [completionCallback, number](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
+            GSM_LOG_DEEP("call to " << number << " success: " << success);
             if (success)
                 currentCallState = CallState::DIALING;
             if (completionCallback)
@@ -2653,6 +2812,7 @@ namespace Gsm
     {
         if (currentCallState != CallState::RINGING)
         {
+            GSM_LOG("Cannot accept call, not in RINGING state.");
             if (completionCallback)
                 completionCallback(false);
             return;
@@ -2662,6 +2822,7 @@ namespace Gsm
         request->callback = [completionCallback](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
+            GSM_LOG_DEEP("acceptCall success: " << success);
             if (success)
                 currentCallState = CallState::ACTIVE;
             if (completionCallback)
@@ -2676,6 +2837,7 @@ namespace Gsm
     {
         if (currentCallState == CallState::IDLE || currentCallState == CallState::UNKNOWN)
         {
+            GSM_LOG("Cannot reject/hangup call, no active call.");
             if (completionCallback)
                 completionCallback(false);
             return;
@@ -2685,6 +2847,7 @@ namespace Gsm
         request->callback = [completionCallback](const std::string& response) -> bool
         {
             bool success = (response.find("OK") != std::string::npos);
+            GSM_LOG_DEEP("rejectCall (hangup) success: " << success);
             if (success)
             {
                 currentCallState = CallState::IDLE;
@@ -2700,10 +2863,10 @@ namespace Gsm
 
     void httpRequest(HttpRequest request)
     {
-        std::cout << "[HTTP] Starting httpRequest for URL: " << request.url << std::endl;
+        GSM_LOG_DEEP("[HTTP] Starting httpRequest for URL: " << request.url);
         if (currentHttpState != HttpState::IDLE)
         {
-            std::cout << "[HTTP] Request busy, cannot start new request." << std::endl;
+            GSM_LOG("[HTTP] Request busy, cannot start new request.");
             if (request.on_complete)
                 request.on_complete(HttpResult::BUSY);
             std::cerr << "HTTP request already in progress, cannot start a new one." << std::endl;
@@ -2723,10 +2886,10 @@ namespace Gsm
         initReq->command = "AT+HTTPINIT";
         initReq->callback = [](const std::string& response) -> bool
         {
-            std::cout << "[HTTP] AT+HTTPINIT response: " << response << std::endl;
+            GSM_LOG_DEEP("[HTTP] AT+HTTPINIT response: " << response);
             if (response.find("OK") == std::string::npos)
             {
-                std::cout << "[HTTP] HTTPINIT failed." << std::endl;
+                GSM_LOG("[HTTP] HTTPINIT failed.");
                 _completeHttpRequest(HttpResult::INIT_FAILED);
                 return false;
             }
@@ -2738,16 +2901,16 @@ namespace Gsm
         // --- HTTPS Configuration (if applicable) ---
         if (currentHttpRequestDetails->url.rfind("https://", 0) == 0)
         {
-            std::cout << "[HTTP] HTTPS URL detected, configuring SSL context." << std::endl;
+            GSM_LOG_DEEP("[HTTP] HTTPS URL detected, configuring SSL context.");
             auto sslCfgReq = std::make_shared<Request>();
             // Associate this HTTP session with SSL context 0.
             sslCfgReq->command = "AT+HTTPPARA=\"SSLCFG\",0";
             sslCfgReq->callback = [](const std::string& response) -> bool
             {
-                std::cout << "[HTTP] AT+HTTPPARA SSLCFG response: " << response << std::endl;
+                GSM_LOG_DEEP("[HTTP] AT+HTTPPARA SSLCFG response: " << response);
                 if (response.find("OK") == std::string::npos)
                 {
-                    std::cout << "[HTTP] SSLCFG set failed." << std::endl;
+                    GSM_LOG("[HTTP] SSLCFG set failed.");
                     _completeHttpRequest(HttpResult::MODULE_ERROR);
                     return false;
                 }
@@ -2762,9 +2925,9 @@ namespace Gsm
         checkPdpReq->command = "AT+CGACT?";
         checkPdpReq->callback = [](const std::string& response) -> bool
         {
-            std::cout << "[HTTP] AT+CGACT? response: " << response << std::endl;
+            GSM_LOG_DEEP("[HTTP] AT+CGACT? response: " << response);
             if (response.find("+CGACT: 1,1") == std::string::npos)
-                std::cout << "[HTTP] PDP context 1 not active, need to activate." << std::endl;
+                GSM_LOG_DEEP("[HTTP] PDP context 1 not active, need to activate.");
             return true;
         };
         lastReq->next = checkPdpReq;
@@ -2774,11 +2937,11 @@ namespace Gsm
         activatePdpReq->command = "AT+CGACT=1,1";
         activatePdpReq->callback = [](const std::string& response) -> bool
         {
-            std::cout << "[HTTP] AT+CGACT=1,1 response: " << response << std::endl;
+            GSM_LOG_DEEP("[HTTP] AT+CGACT=1,1 response: " << response);
             if (response.find("OK") == std::string::npos &&
                 response.find("ERROR") != std::string::npos)
             {
-                std::cout << "[HTTP] PDP context activation failed." << std::endl;
+                GSM_LOG("[HTTP] PDP context activation failed.");
                 _completeHttpRequest(HttpResult::MODULE_ERROR);
                 return false;
             }
@@ -2793,10 +2956,10 @@ namespace Gsm
         setUrlReq->command = "AT+HTTPPARA=\"URL\",\"" + currentHttpRequestDetails->url + "\"";
         setUrlReq->callback = [](const std::string& response) -> bool
         {
-            std::cout << "[HTTP] AT+HTTPPARA URL response: " << response << std::endl;
+            GSM_LOG_DEEP("[HTTP] AT+HTTPPARA URL response: " << response);
             if (response.find("OK") == std::string::npos)
             {
-                std::cout << "[HTTP] URL set failed." << std::endl;
+                GSM_LOG("[HTTP] URL set failed.");
                 _completeHttpRequest(HttpResult::MODULE_ERROR);
                 return false;
             }
@@ -2810,15 +2973,15 @@ namespace Gsm
         {
             if (header.first == "Content-Type")
             {
-                std::cout << "[HTTP] Setting Content-Type: " << header.second << std::endl;
+                GSM_LOG_DEEP("[HTTP] Setting Content-Type: " << header.second);
                 auto headerReq = std::make_shared<Request>();
                 headerReq->command = "AT+HTTPPARA=\"CONTENT\",\"" + header.second + "\"";
                 headerReq->callback = [](const std::string& response) -> bool
                 {
-                    std::cout << "[HTTP] AT+HTTPPARA CONTENT response: " << response << std::endl;
+                    GSM_LOG_DEEP("[HTTP] AT+HTTPPARA CONTENT response: " << response);
                     if (response.find("OK") == std::string::npos)
                     {
-                        std::cout << "[HTTP] Content-Type set failed." << std::endl;
+                        GSM_LOG("[HTTP] Content-Type set failed.");
                         _completeHttpRequest(HttpResult::MODULE_ERROR);
                         return false;
                     }
@@ -2833,17 +2996,17 @@ namespace Gsm
         if (currentHttpRequestDetails->method == HttpMethod::POST &&
             !currentHttpRequestDetails->body.empty())
         {
-            std::cout << "[HTTP] POST method detected, preparing body." << std::endl;
+            GSM_LOG_DEEP("[HTTP] POST method detected, preparing body.");
             auto setDataReq = std::make_shared<Request>();
             setDataReq->command =
                 "AT+HTTPDATA=" + std::to_string(currentHttpRequestDetails->body.length()) +
                 ",10000";
             setDataReq->callback = [](const std::string& response) -> bool
             {
-                std::cout << "[HTTP] AT+HTTPDATA response: " << response << std::endl;
+                GSM_LOG_DEEP("[HTTP] AT+HTTPDATA response: " << response);
                 if (response.find("DOWNLOAD") != std::string::npos)
                     return true;
-                std::cout << "[HTTP] HTTPDATA failed." << std::endl;
+                GSM_LOG("[HTTP] HTTPDATA failed.");
                 _completeHttpRequest(HttpResult::MODULE_ERROR);
                 return false;
             };
@@ -2854,10 +3017,10 @@ namespace Gsm
             sendBodyReq->command = currentHttpRequestDetails->body;
             sendBodyReq->callback = [](const std::string& response) -> bool
             {
-                std::cout << "[HTTP] Body send response: " << response << std::endl;
+                GSM_LOG_DEEP("[HTTP] Body send response: " << response);
                 if (response.find("OK") != std::string::npos)
                     return true;
-                std::cout << "[HTTP] Body send failed." << std::endl;
+                GSM_LOG("[HTTP] Body send failed.");
                 _completeHttpRequest(HttpResult::MODULE_ERROR);
                 return false;
             };
@@ -2872,21 +3035,21 @@ namespace Gsm
                                  : "AT+HTTPACTION=0";
         actionReq->callback = [](const std::string& response) -> bool
         {
-            std::cout << "[HTTP] AT+HTTPACTION response: " << response << std::endl;
+            GSM_LOG_DEEP("[HTTP] AT+HTTPACTION response: " << response);
             if (response.find("OK") == std::string::npos)
             {
-                std::cout << "[HTTP] HTTPACTION failed." << std::endl;
+                GSM_LOG("[HTTP] HTTPACTION failed.");
                 _completeHttpRequest(HttpResult::MODULE_ERROR);
                 return false;
             }
-            std::cout << "[HTTP] HTTPACTION succeeded, waiting for URC." << std::endl;
+            GSM_LOG_DEEP("[HTTP] HTTPACTION succeeded, waiting for URC.");
             currentHttpState = HttpState::ACTION_IN_PROGRESS;
             return false;
         };
         lastReq->next = actionReq;
 
         // --- Queue the entire chain ---
-        std::cout << "[HTTP] Queuing HTTP request chain." << std::endl;
+        GSM_LOG_DEEP("[HTTP] Queuing HTTP request chain.");
         std::lock_guard<std::mutex> lock(requestMutex);
         requests.push_back(firstReq);
     }
@@ -2904,7 +3067,7 @@ namespace Gsm
             }
             else
             {
-                std::cout << "[HTTP Read Error] Invalid response format." << std::endl;
+                GSM_LOG("[HTTP Read Error] Invalid response format.");
                 _completeHttpRequest(HttpResult::READ_ERROR);
             }
             return false;
@@ -2924,6 +3087,7 @@ namespace Gsm
 
     static void _completeHttpRequest(HttpResult result)
     {
+        GSM_LOG_DEEP("[HTTP] Completing request with result: " << static_cast<int>(result));
         if (currentHttpRequestDetails && currentHttpRequestDetails->on_complete)
             currentHttpRequestDetails->on_complete(result);
 
@@ -2934,6 +3098,7 @@ namespace Gsm
         termReq->command = "AT+HTTPTERM";
         termReq->callback = [](const std::string&) -> bool
         {
+            GSM_LOG_DEEP("[HTTP] Session terminated. State is now IDLE.");
             currentHttpState = HttpState::IDLE;
             return false;
         };
@@ -3004,12 +3169,19 @@ namespace Gsm
 
                 if (currentRequest->command.find('\x1A') != std::string::npos)
                 {
+                    // BUG FIX: The previous logging call caused undefined behavior.
+                    // Replace with a safe iostream call.
+                    std::string pdu_to_log =
+                        currentRequest->command.substr(0, currentRequest->command.find('\x1A'));
+                    std::cout << "[GSM CMD TX] " << pdu_to_log << " <SUB>" << std::endl;
+
                     gsm.print(currentRequest->command.c_str());
                     state = SerialRunState::SENDING_PDU_DATA;
                     lastCommandTime = std::chrono::steady_clock::now();
                 }
                 else
                 {
+                    GSM_LOG_CMD_SENT(currentRequest->command);
                     gsm.print(currentRequest->command.c_str());
                     gsm.print('\r');
                     state = SerialRunState::COMMAND_RUNNING;
@@ -3026,6 +3198,7 @@ namespace Gsm
         {
             char c = gsm.read();
             incomingData += c;
+            PaxOS_Delay(0); // Yield to scheduler to prevent watchdog timeout on data flood
         }
 #endif
 
@@ -3069,7 +3242,7 @@ namespace Gsm
                 if (sscanf(line.c_str(), "+HTTPREAD: %d", &parsed_size) == 1 && parsed_size > 0)
                     datasize = static_cast<size_t>(parsed_size);
 
-                std::cout << "[HTTP] HTTPREAD datasize: " << datasize << std::endl;
+                GSM_LOG_DEEP("[HTTP] HTTPREAD datasize: " << datasize);
 
                 if (datasize > 0)
                 {
@@ -3077,8 +3250,7 @@ namespace Gsm
                     data.resize(datasize);
                     int bytesRead = 0;
 
-                    std::cout << "[DEBUG] Starting to read data, expected size: " << datasize
-                              << std::endl;
+                    GSM_LOG_DEEP("[DEBUG] Starting to read data, expected size: " << datasize);
 
                     // First, consume any data already in lineBuffer (after "+HTTPREAD:" line)
                     if (!lineBuffer.empty() && bytesRead < datasize)
@@ -3105,31 +3277,34 @@ namespace Gsm
                         if (std::chrono::duration_cast<std::chrono::seconds>(now - start_time) >
                             timeout_duration)
                         {
-                            std::cout << "[ERROR] Timeout while reading data from serial"
-                                      << std::endl;
+                            GSM_LOG("[ERROR] Timeout while reading data from serial");
                             break;
                         }
                     }
 
-                    std::cout << "[DEBUG] Total bytes read: " << bytesRead << std::endl;
+                    GSM_LOG_DEEP("[DEBUG] Total bytes read: " << bytesRead);
 
                     if (bytesRead == datasize)
                     {
                         if (currentHttpRequestDetails && currentHttpRequestDetails->on_data)
                         {
                             std::string_view data_chunk(data.data(), bytesRead);
-                            std::cout << "[DEBUG] Data chunk received, invoking on_data callback"
-                                      << std::endl;
+                            GSM_LOG_DEEP(
+                                "[DEBUG] Data chunk received, invoking on_data callback"
+                            );
                             currentHttpRequestDetails->on_data(data_chunk);
                             httpBytesRead += bytesRead;
-                            std::cout << "[DEBUG] Total HTTP bytes read so far: " << httpBytesRead
-                                      << std::endl;
+                            GSM_LOG_DEEP(
+                                "[DEBUG] Total HTTP bytes read so far: " << httpBytesRead
+                            );
                         }
                     }
                     else
                     {
-                        std::cout << "[DEBUG] Incomplete data read, expected: " << datasize
-                                  << ", got: " << bytesRead << std::endl;
+                        GSM_LOG_DEEP(
+                            "[DEBUG] Incomplete data read, expected: " << datasize
+                                                                       << ", got: " << bytesRead
+                        );
                     }
                 }
                 else // No more data to read, call completion
@@ -3139,8 +3314,9 @@ namespace Gsm
 
                 if (line.find("OK") != std::string::npos)
                 {
-                    std::cout << "[HTTP] HTTPREAD completed, total bytes read: " << httpBytesRead
-                              << std::endl;
+                    GSM_LOG_DEEP(
+                        "[HTTP] HTTPREAD completed, total bytes read: " << httpBytesRead
+                    );
 
                     if (httpBytesRead >= httpBytesTotal)
                     {
@@ -3153,8 +3329,9 @@ namespace Gsm
                 }
                 else if (line.find("ERROR") != std::string::npos)
                 {
-                    std::cout << "[HTTP] HTTPREAD error, total bytes read: " << httpBytesRead
-                              << std::endl;
+                    GSM_LOG_DEEP(
+                        "[HTTP] HTTPREAD error, total bytes read: " << httpBytesRead
+                    );
                     _completeHttpRequest(HttpResult::READ_ERROR);
                 }
             }
@@ -3167,6 +3344,7 @@ namespace Gsm
 
                 if (isFinalReply || isPduPrompt)
                 {
+                    GSM_LOG_CMD_RECV(currentResponseBlock);
                     bool executeNext = false;
                     if (currentRequest && currentRequest->callback)
                         executeNext = currentRequest->callback(currentResponseBlock);
@@ -3192,6 +3370,7 @@ namespace Gsm
             }
             else if (!potentialURC)
             {
+                GSM_LOG("<< Unhandled Data: " << line);
             }
         }
 
@@ -3201,6 +3380,7 @@ namespace Gsm
                                                                        : commandTimeoutDuration;
             if ((std::chrono::steady_clock::now() - lastCommandTime) > timeout)
             {
+                GSM_LOG("--- COMMAND TIMEOUT ---");
                 if (currentRequest && currentRequest->callback)
                     currentRequest->callback("TIMEOUT_ERROR");
                 currentRequest = nullptr;
