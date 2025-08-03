@@ -71,6 +71,13 @@ namespace LuaGSM
         Gsm::setFlightMode(mode);
     }
 
+    void reboot()
+    {
+#ifdef ESP_PLATFORM
+        Gsm::reboot();
+#endif
+    }
+
     std::string getNumber()
     {
         return Gsm::getLastIncomingNumber();

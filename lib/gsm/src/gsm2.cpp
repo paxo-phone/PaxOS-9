@@ -1903,6 +1903,15 @@ namespace Gsm
         requests.push_back(req);
     }
 
+    void powerOff()
+    {
+#ifdef ESP_PLATFORM
+        std::lock_guard<std::mutex> lock(requestMutex);
+        gsm.print("AT+QPOWD\r\n"); // Send the power off command directly
+        gsm.flush();
+#endif
+    }
+
     void uploadSettings()
     {
         GSM_LOG("Queueing standard module settings.");

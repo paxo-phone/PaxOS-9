@@ -17,7 +17,7 @@
 #define OS_VERSION_MAJOR "9"
 #define OS_VERSION_MINOR "0"
 #define OS_VERSION_PATCH "0"
-#define OS_VERSION_BUILD "0"
+#define OS_VERSION_BUILD "1"
 #define OS_VERSION_CODENAME "Red Panic"
 
 #define OS_VERSION                                                                                 \
@@ -127,6 +127,19 @@ namespace libsystem
      */
     [[nodiscard]] DeviceMode getDeviceMode();
 
+    /**
+     * @brief Poweroff the device.
+     *
+     * This function will power off the device.
+     * It is not implemented yet.
+     */
+    void poweroff();
+
+    /**
+     * @brief Reboot the device.
+     */
+    void reboot();
+    
     /**
      * @brief Get the system FileConfig.
      *

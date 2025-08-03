@@ -158,7 +158,47 @@ void mainLoop(void* data)
         if (hardware::getHomeButton())
         {
             // Wait for the button to be released to debounce it.
-            while (hardware::getHomeButton());
+            uint32_t debounceTime = os_millis();
+            while (hardware::getHomeButton() && debounceTime + 1000 > os_millis())
+            {
+                PaxOS_Delay(1);
+            }
+
+            if(debounceTime + 1000 <= os_millis())   // show the power menu if the button was held for more than 1 second
+            {
+                while (hardware::getHomeButton());
+                PaxOS_Delay(10);
+
+                auto& win = guiManager.getWindow();
+                win.setBackgroundColor(COLOR_DARK);
+                
+                Label* label = new Label(
+                    0, 200, 320, 150
+                );
+                label->setText("Toucher ici pour éteindre le paxo\n(Ou appuyer sur le bouton menu pour annuler)");
+                label->setTextColor(COLOR_WHITE);
+                label->setBackgroundColor(COLOR_DARK);
+                label->setFontSize(30);
+                label->setHorizontalAlignment(Label::Alignement::CENTER);
+                win.addChild(label);
+
+                while (true)
+                {
+                    win.updateAll();
+
+                    if(label->isF())
+                    {
+                        // If the screen is touched, power off the device.
+                        libsystem::poweroff();
+                        // No need to continue the loop, as the device is powered off. No further actions will be taken.
+                    }
+
+                    if(hardware::getHomeButton())
+                    {
+                        break;
+                    }
+                }
+            }
 
             // If the device is asleep, the home button wakes it up.
             if (libsystem::getDeviceMode() == libsystem::SLEEP)

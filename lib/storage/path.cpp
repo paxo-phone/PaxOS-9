@@ -71,6 +71,14 @@ bool storage::init()
 #endif
 }
 
+void storage::end()
+{
+#ifdef ESP_PLATFORM
+    SD.end();
+#endif
+}
+
+
 namespace storage
 {
 

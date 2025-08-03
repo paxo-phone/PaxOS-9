@@ -125,6 +125,7 @@ end
 
 function networkSettings()
     win2 = gui:window()
+    local wifiList = nil
 
     local backbox = gui:box(win2, 19, 19, 166, 27)
         local icon = gui:image(backbox, "back.png", 0, 3, 18, 18)
@@ -170,7 +171,8 @@ function networkSettings()
                 end
             end)
     
-    local boxWifi = createBox(win2, 100, boxHeight_base)
+    local boxWifiY = 100
+    local boxWifi = createBox(win2, boxWifiY, boxHeight_base)
         local textWifi = gui:label(boxWifi, 16, 0, 177, 55)
             textWifi:setFontSize(24)
             textWifi:setVerticalAlignment(CENTER_ALIGNMENT)
@@ -193,45 +195,59 @@ function networkSettings()
                     boxWifi:setHeight(boxHeight_base)
                 end
             end)
+    
+    local rebootGsmBoxY = boxWifiY + boxHeight_base + 10
+    local rebootGsmBox = createBox(win2, rebootGsmBoxY, boxHeight_base)
+    local rebootGsmButton = gui:button(rebootGsmBox, 5, 5, 250, 45)
+    rebootGsmButton:setText("Redémarrer le modem GSM")
+    rebootGsmButton:onClick(function()
+        gsm.reboot()
+        gui:showInfoMessage("Le modem GSM a été redémarré.")
+    end)
         
-        boxWifi:onClick(function()
-            if(not switchWifi:getState()) then
-                return
-            end
+    boxWifi:onClick(function()
+        if(not switchWifi:getState()) then
+            return
+        end
 
-            if(wifiList ~= nil) then
-                gui:del(wifiList)
-                wifiList = nil
-            end
-            
-            -- show the list of available networks
-            local wifi_list = settings.network.getAvailableWifiSSID()
-            local nbWifi = #wifi_list
-            local connectedWifi = settings.network.getConnectedWifi()
+        if(wifiList ~= nil) then
+            gui:del(wifiList)
+            wifiList = nil
+            boxWifi:setHeight(boxHeight_base)
+            rebootGsmBox:setY(118 + rebootGsmBoxY)
+            return
+        end
+        
+        -- show the list of available networks
+        local wifi_list = settings.network.getAvailableWifiSSID()
+        local nbWifi = #wifi_list
+        local connectedWifi = settings.network.getConnectedWifi()
 
-            wifiList = gui:vlist(boxWifi, 24, 60, 211, nbWifi*30)
-            wifiList:setSpaceLine(0)
-                for i, value in pairs(wifi_list) do
-                    local case = gui:box(wifiList, 0, 0, 211, 30)
-                        local text = gui:label(case, 0, 0, 211, 30)
-                            text:setText(value)
-                            text:setFontSize(20)
-                        
-                        case:onClick(function()
-                            gui:keyboard("Mot de passe pour " .. value, "", function(password)
-                                if password ~= "" then
-                                    settings.network.connectWifi(value, password)
-                                end
-                            end)
+        wifiList = gui:vlist(boxWifi, 24, 60, 211, nbWifi*30)
+        wifiList:setSpaceLine(0)
+            for i, value in pairs(wifi_list) do
+                local case = gui:box(wifiList, 0, 0, 211, 30)
+                    local text = gui:label(case, 0, 0, 211, 30)
+                        text:setText(value)
+                        text:setFontSize(20)
+                    
+                    case:onClick(function()
+                        gui:keyboard("Mot de passe pour " .. value, "", function(password)
+                            if password ~= "" then
+                                settings.network.connectWifi(value, password)
+                            end
                         end)
+                    end)
 
-                        if(value == connectedWifi) then
-                            local img = gui:image(case, "yes.png", 181, 0, 30, 30)
-                            img:setTransparentColor(0xFFFF)
-                        end
-                end
-            boxWifi:setHeight(boxHeight_base_text + nbWifi*30)
-        end)
+                    if(value == connectedWifi) then
+                        local img = gui:image(case, "yes.png", 181, 0, 30, 30)
+                        img:setTransparentColor(0xFFFF)
+                    end
+            end
+        local newHeight = boxHeight_base_text + nbWifi*30
+        boxWifi:setHeight(newHeight)
+        rebootGsmBox:setY(118 + boxWifiY + newHeight + 10)
+    end)
         
 
     gui:setWindow(win2)

@@ -112,6 +112,7 @@ namespace Gsm
     // Initialization and Core Loop
     void init();
     void reboot();         // Reboot the GSM module
+    void powerOff();      // Power off the GSM module
     void run();            // The main processing loop (handles internal updates)
     void uploadSettings(); // For configuring the module (e.g., enable URCs)
     void loop();           // The function containing the main run loop and periodic tasks

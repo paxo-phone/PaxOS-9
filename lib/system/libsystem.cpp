@@ -5,6 +5,7 @@
 #include "libsystem.hpp"
 
 #include <hardware.hpp>
+#include <gpio.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -22,6 +23,7 @@
 #include <delay.hpp>
 #include <graphics.hpp>
 #include <standby.hpp>
+#include <gsm2.hpp>
 
 std::vector<std::string> bootErrors;
 libsystem::DeviceMode deviceMode = libsystem::NORMAL;
@@ -267,6 +269,34 @@ void libsystem::setDeviceMode(const DeviceMode mode)
 libsystem::DeviceMode libsystem::getDeviceMode()
 {
     return deviceMode;
+}
+
+void libsystem::poweroff()
+{
+#ifdef ESP_PLATFORM
+    gpio_deep_sleep_hold_en();
+    gpio_hold_en((gpio_num_t)PIN_HOME_BUTTON);
+    esp_sleep_enable_ext0_wakeup((gpio_num_t) PIN_HOME_BUTTON, 0); 
+  
+    std::cout << "Powering off..." << std::endl;
+    graphics::setBrightness(0, true);
+    hardware::setScreenPower(false);
+    hardware::setLedPower(false);
+    Gsm::powerOff();
+    Serial.flush(); // Ensure all serial output is sent before sleeping
+    //storage::end();
+    
+    // Enter deep sleep
+    PaxOS_Delay(500);
+    esp_deep_sleep_start();
+#else
+    exit(0);
+#endif
+}
+
+void libsystem::reboot()
+{
+
 }
 
 libsystem::FileConfig libsystem::getSystemConfig()

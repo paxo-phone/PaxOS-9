@@ -18,6 +18,7 @@ namespace LuaGSM
     bool isPinNeeded();
     void setPin(std::string pin);
     void setFlightMode(bool mode);
+    void reboot();
     std::string getNumber();
     uint8_t getCallState();
     sol::table getMessages(const std::string& number, sol::state& lua);

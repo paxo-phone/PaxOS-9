@@ -33,6 +33,7 @@ void hardware::init()
     pinMode(12, OUTPUT); // Pin name ?
     pinMode(PIN_HOME_BUTTON, INPUT_PULLUP);
     pinMode(PIN_BATTERY_CHARGING_STATUS, INPUT);
+    pinMode(PIN_LED, OUTPUT);
 
     setVibrator(false);
 
@@ -73,26 +74,43 @@ void hardware::setScreenPower(bool power)
     // pinMode(23, INPUT_PULLUP);
     // pinMode(4, INPUT_PULLUP);
 
-    digitalWrite(12, 0);
-    digitalWrite(PIN_SCREEN_POWER, 0);
+    if(power)
+    {
+        digitalWrite(12, 0);
+        digitalWrite(PIN_SCREEN_POWER, 0);
+    
+        delay(500);
+    
+        digitalWrite(PIN_SCREEN_POWER, power);
+    
+        delay(500);
+    
+        digitalWrite(12, 1);
+    
+        delay(500);
+    
+        digitalWrite(12, 0);
+    
+        delay(500);
+    
+        digitalWrite(12, 1);
+    
+        delay(500);
+    }
+    else
+    {
+        digitalWrite(PIN_SCREEN_POWER, 0);
+        digitalWrite(12, 0);
+        
+    }
 
-    delay(500);
+#endif
+}
 
-    digitalWrite(PIN_SCREEN_POWER, power);
-
-    delay(500);
-
-    digitalWrite(12, 1);
-
-    delay(500);
-
-    digitalWrite(12, 0);
-
-    delay(500);
-
-    digitalWrite(12, 1);
-
-    delay(500);
+void hardware::setLedPower(bool power)
+{
+#ifdef ESP_PLATFORM
+    digitalWrite(PIN_LED, power);
 #endif
 }
 

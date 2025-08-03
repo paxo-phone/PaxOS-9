@@ -7,6 +7,7 @@
 namespace storage
 {
     bool init();
+    void end();
 
     class Path
     {

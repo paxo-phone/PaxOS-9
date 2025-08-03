@@ -923,6 +923,7 @@ void LuaFile::load()
         luaGSM["rejectCall"] = &LuaGSM::rejectCall;
         luaGSM["getNumber"] = &LuaGSM::getNumber;
         luaGSM["getCallState"] = &LuaGSM::getCallState;
+        luaGSM["reboot"] = &LuaGSM::reboot;
 
         luaGSM["IDLE"] = Gsm::CallState::IDLE;
         luaGSM["DIALING"] = Gsm::CallState::DIALING;
