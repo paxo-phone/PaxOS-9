@@ -186,7 +186,7 @@ void mainLoop(void* data)
                 {
                     win.updateAll();
 
-                    if(label->isF())
+                    if(label->isFocused())
                     {
                         // If the screen is touched, power off the device.
                         libsystem::poweroff();
