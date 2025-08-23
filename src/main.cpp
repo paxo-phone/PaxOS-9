@@ -266,7 +266,7 @@ void init(void* data)
  * Initialisation du hardware, de l'écran, lecture des applications stcokées dans storage
  */
 #ifdef ESP_PLATFORM
-    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop);
+    ThreadManager::new_thread(CORE_BACK, &serialcom::SerialManager::serialLoop, 10 * 1024);
 #endif
     hardware::init();
     libsystem::log("[STARTUP]: Hardware initialized");
