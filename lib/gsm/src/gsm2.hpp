@@ -52,6 +52,7 @@ namespace Gsm
     namespace ExternalEvents
     {
         extern std::function<void(void)> onIncommingCall;
+        extern std::function<void(void)> onCallEnded;
         extern std::function<void(void)> onNewMessage;
         extern std::function<void(void)> onNewMessageError;
     } // namespace ExternalEvents

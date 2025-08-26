@@ -186,7 +186,10 @@ void mainLoop(void* data)
                 {
                     win.updateAll();
 
-                    if(label->isFocused())
+                    eventHandlerApp.update();
+                    StandbyMode::wait();
+
+                    if(label->isFocused(true))
                     {
                         // If the screen is touched, power off the device.
                         libsystem::poweroff();
@@ -205,6 +208,7 @@ void mainLoop(void* data)
             {
                 setDeviceMode(libsystem::NORMAL);
                 StandbyMode::disable();
+                continue;
             }
             // If the launcher is active, the home button puts the device to sleep.
             else if (launcher && !AppManager::didRequestAuth)

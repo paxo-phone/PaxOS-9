@@ -2207,6 +2207,9 @@ namespace Gsm
                 GSM_LOG_DEEP("Call ended. State changed to IDLE.");
                 currentCallState = CallState::IDLE;
                 lastIncomingCallNumber = "";
+
+                if (ExternalEvents::onCallEnded)
+                    ExternalEvents::onCallEnded();
             }
         }
         else if (data.find("+CMTI:") == 0)
@@ -3213,6 +3216,43 @@ namespace Gsm
 
         if (!incomingData.empty())
             lineBuffer += incomingData;
+
+        // =================================================================
+    // START: BUG FIX
+    // =================================================================
+    // Check for the PDU prompt '>' character specifically, as it does not end with a newline.
+    if (state == SerialRunState::COMMAND_RUNNING && currentRequest)
+    {
+        size_t prompt_pos = lineBuffer.find('>');
+        if (prompt_pos != std::string::npos)
+        {
+            // Extract everything up to and including the prompt
+            std::string response_part = lineBuffer.substr(0, prompt_pos + 1);
+            lineBuffer.erase(0, prompt_pos + 1); // Consume it from the buffer
+            
+            currentResponseBlock += response_part; // Add to the main response block
+            
+            GSM_LOG_CMD_RECV(currentResponseBlock);
+
+            bool executeNext = false;
+            if (currentRequest->callback) {
+                executeNext = currentRequest->callback(currentResponseBlock);
+            }
+
+            if (executeNext && currentRequest->next)
+            {
+                std::lock_guard<std::mutex> lock(requestMutex);
+                requests.insert(requests.begin(), currentRequest->next);
+            }
+            
+            currentRequest = nullptr;
+            state = SerialRunState::NO_COMMAND;
+            currentResponseBlock = "";
+        }
+    }
+    // =================================================================
+    // END: BUG FIX
+    // =================================================================
 
         size_t lineEndPos;
         while ((lineEndPos = lineBuffer.find('\n')) != std::string::npos)
