@@ -47,21 +47,24 @@ function initColorScreen()
     local colors = {color.success, color.warning, color.error, color.white, color.black, color.red, color.green, color.blue, color.yellow, color.grey, color.magenta, color.cyan, color.violet, color.orange, color.pink, color.lightOrange, color.lightGreen, color.lightBlue, color.lightGrey} --, color.greenPaxo }
 
     -- Label Test Couleurs
-    lblTestCouleur = gui:label(winColor, 250, 370, 50, 60)
+    lblTestCouleur = gui:label(winColor, 200, 370, 50, 60)
     lblTestCouleur:setText("Test")
     lblTestCouleur:setBorderSize(1)
     lblTestCouleur:setHorizontalAlignment(CENTER_ALIGNMENT)
     lblTestCouleur:setVerticalAlignment(CENTER_ALIGNMENT)
 
-    textColor = settings:getTextColor()
-    backgroundColor = settings:getBackgroundColor()
-    borderColor = settings:getBorderColor()
+    textColor = settings.getTextColor()
+    backgroundColor = settings.getBackgroundColor()
+    borderColor = settings.getBorderColor()
 
     lblTestCouleur:setTextColor(textColor)
     lblTestCouleur:setBackgroundColor(backgroundColor)
     lblTestCouleur:setBorderColor(borderColor)
 
-    lblTestCouleur:onClick(saveColor)
+    -- Add Save button
+    local btnSave = gui:button(winColor, 260, 370, 50, 30)
+    btnSave:setText("Save")
+    btnSave:onClick(saveColor)
 
 
     local width = 300
@@ -163,9 +166,9 @@ end
 
 
 function saveColor()
-    settings.setBackgroundColor(backgroundColor)
-    --settings:setTextColor(textColor, true)
-    --settings:setBorderColor(borderColor, true)
+    settings.setBackgroundColor(backgroundColor, true)
+    settings.setTextColor(textColor, true)
+    settings.setBorderColor(borderColor, true)
 
     initMainScreen()
 
