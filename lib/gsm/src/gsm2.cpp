@@ -172,6 +172,7 @@ namespace Gsm
     namespace ExternalEvents
     {
         std::function<void(void)> onIncommingCall;
+        std::function<void(void)> onCallEnded;
         std::function<void(void)> onNewMessage;
         std::function<void(void)> onNewMessageError;
     } // namespace ExternalEvents
@@ -278,6 +279,47 @@ namespace Gsm
 
             std::lock_guard<std::mutex> lock(requestMutex);
             requests.push_back(request);
+        }
+
+        void configureAutomaticTimeSync()
+        {
+            auto checkReq = std::make_shared<Request>();
+            checkReq->command = "AT+CLTS?";
+            checkReq->callback = [](const std::string& response) -> bool {
+                // Check if the setting is already enabled
+                if (response.find("+CLTS: 1") != std::string::npos)
+                {
+                    GSM_LOG_DEEP("Automatic time sync (NITZ) is already enabled.");
+                }
+                else
+                {
+                    // If not enabled, create the request chain to set, save, and reboot
+                    GSM_LOG("NITZ not enabled. Configuring now...");
+                    
+                    auto setReq = std::make_shared<Request>();
+                    setReq->command = "AT+CLTS=1"; // Enable NITZ
+
+                    auto saveReq = std::make_shared<Request>();
+                    saveReq->command = "AT&W"; // Save the setting to memory
+                    
+                    setReq->next = saveReq; // Chain the commands
+                    
+                    saveReq->callback = [](const std::string& resp) -> bool {
+                        GSM_LOG("CLTS configured and saved. Rebooting module to apply changes.");
+                        reboot(); // Reboot is required for the setting to take effect
+                        return false;
+                    };
+
+                    // Insert the configuration chain at the front of the queue to run next
+                    std::lock_guard<std::mutex> lock(requestMutex);
+                    requests.insert(requests.begin(), setReq);
+                }
+                return false; // Callback is finished
+            };
+            
+            // Add the initial check to the queue
+            std::lock_guard<std::mutex> lock(requestMutex);
+            requests.push_back(checkReq);
         }
 
         void syncNetworkTime()
@@ -2000,6 +2042,8 @@ namespace Gsm
             std::lock_guard<std::mutex> lock(requestMutex);
             requests.push_back(requestCgreg);
         }
+
+        Time::configureAutomaticTimeSync();
 
         setPduMode(
             true,
