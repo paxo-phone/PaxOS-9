@@ -14,7 +14,7 @@ function initColorScreen()
     local winColor = manageWindow()
 
     local btnBack = gui:image(winColor, "back.png",10, 20, 20, 20, color.white)
-    btnBack:onClick(initMainScreen)
+    btnBack:onClick(run)
 
     local title = gui:label(winColor, 40, 20, 280, 40)
     title:setText("Couleurs")
@@ -62,7 +62,7 @@ function initColorScreen()
     lblTestCouleur:setBorderColor(borderColor)
 
     -- Add Save button
-    local btnSave = gui:button(winColor, 260, 370, 50, 30)
+    local btnSave = gui:button(winColor, 260, 405, 50, 30)
     btnSave:setText("Save")
     btnSave:onClick(saveColor)
 
@@ -170,7 +170,7 @@ function saveColor()
     settings.setTextColor(textColor, true)
     settings.setBorderColor(borderColor, true)
 
-    initMainScreen()
+    run()
 
 end
 
