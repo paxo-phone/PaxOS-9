@@ -239,7 +239,7 @@ void mainLoop(void* data)
             StandbyMode::enable();
         }
 
-        if(Gsm::CallState() != Gsm::CallState::IDLE)
+        if(Gsm::getCallState() != Gsm::CallState::IDLE)
             StandbyMode::reset();
 
         // Based on the final state determined above, either perform a low-power sleep
