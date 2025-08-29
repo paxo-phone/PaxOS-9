@@ -139,7 +139,7 @@ namespace StandbyMode
     void lightSleepMillis(unsigned long t)
     {
 #ifdef ESP_PLATFORM
-
+        if (hardware::isCharging()) { return; }
         graphics::getLCD()->waitDMA();
 
         // Convert milliseconds to microseconds for the timer wake-up
@@ -285,7 +285,6 @@ namespace StandbyMode
 
         lightSleepMillis(3000);
         buisy_io.unlock();
-        Gsm::checkForMessages();
 #endif
     }
 
