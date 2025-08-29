@@ -148,13 +148,6 @@ void mainLoop(void* data)
             }
         }
 
-        // --- STATE MANAGEMENT LOGIC ---
-        // This section manages transitions between NORMAL and SLEEP modes.
-        // It has been structured as an if-else if chain to prevent race conditions.
-        // Using else-if ensures that ONLY ONE of these blocks can execute in a single loop pass,
-        // which fixes the bug of cascading state changes leading to an inconsistent state.
-
-        // Priority 1: Handle user input from the Home button. This should be the most responsive action.
         if (hardware::getHomeButton())
         {
             // Wait for the button to be released to debounce it.
@@ -229,13 +222,11 @@ void mainLoop(void* data)
                 AppManager::didRequestAuth = false;
             }
         }
-        // Priority 2: Fix an inconsistent state. If the device is in SLEEP mode but an app is still visible, wake it up.
         else if (libsystem::getDeviceMode() == libsystem::SLEEP && AppManager::isAnyVisibleApp())
         {
             setDeviceMode(libsystem::NORMAL);
             StandbyMode::disable();
         }
-        // Priority 3: Handle inactivity. If the device is awake and the inactivity timer has expired, go to sleep.
         else if (libsystem::getDeviceMode() != libsystem::SLEEP && StandbyMode::expired())
         {
             // Before sleeping, attempt to quit any visible apps.
@@ -247,6 +238,9 @@ void mainLoop(void* data)
             libsystem::setDeviceMode(libsystem::SLEEP);
             StandbyMode::enable();
         }
+
+        if(Gsm::CallState() != Gsm::CallState::IDLE)
+            StandbyMode::reset();
 
         // Based on the final state determined above, either perform a low-power sleep
         // cycle or wait for a short period before the next loop iteration.
