@@ -46,6 +46,8 @@ std::string getBatteryIconFilename()
     const double batteryLevel =
         Gsm::getBatteryLevel(); // TODO: Replace with actual battery level calculation
 
+    if (batteryLevel == -1)
+        return "battery_unknown";
     if (batteryLevel < 0.2)
         return isCharging ? "battery_charging_full" : "battery_0_bar";
     if (batteryLevel < 0.3)
@@ -128,13 +130,18 @@ void applications::launcher::update()
 
     {
         static double lastBattery = Gsm::getBatteryLevel();
-        if (lastBattery != Gsm::getBatteryLevel())
+        double newBatteryLevel = Gsm::getBatteryLevel();
+        if (lastBattery != newBatteryLevel)
         {
-            batteryLabel->setText(
-                std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%"
-            );
-
-            lastBattery = Gsm::getBatteryLevel();
+            lastBattery = newBatteryLevel;
+            if (newBatteryLevel == -1)
+                batteryLabel->setText(
+                   "--%"
+                );
+            else
+                batteryLabel->setText(
+                    std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%"
+                );
         }
     }
 
@@ -282,7 +289,12 @@ void applications::launcher::draw()
 
     // Battery label
     batteryLabel = new Label(255, 10, 40, 18);
-    batteryLabel->setText(std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%");
+    if (Gsm::getBatteryLevel() == -1)
+        batteryLabel->setText("--%");
+    else
+        batteryLabel->setText(
+            std::to_string(static_cast<int>(Gsm::getBatteryLevel() * 100)) + "%"
+        );
     batteryLabel->setVerticalAlignment(Label::Alignement::CENTER);
     batteryLabel->setHorizontalAlignment(Label::Alignement::RIGHT);
     batteryLabel->setFontSize(18);
